@@ -335,10 +335,12 @@ export class MemStorage implements IStorage {
 
   // Initialize with sample data
   private async initializeSampleData() {
+    const defaultPassword = process.env.DEMO_USER_PASSWORD || crypto.randomUUID();
+    
     // Create sample users
     const owner1 = await this.createUser({
       email: "ahmed.bennani@example.com",
-      password: "hashed_password",
+      password: defaultPassword,
       firstName: "Ahmed",
       lastName: "Bennani",
       phone: "+212 6 12 34 56 78",
@@ -347,74 +349,177 @@ export class MemStorage implements IStorage {
 
     const owner2 = await this.createUser({
       email: "youssef.alami@example.com", 
-      password: "hashed_password",
+      password: defaultPassword,
       firstName: "Youssef",
       lastName: "Alami",
       phone: "+212 6 23 45 67 89",
       userType: "owner"
     });
 
+    const owner3 = await this.createUser({
+      email: "sara.idrissi@example.com", 
+      password: defaultPassword,
+      firstName: "Sara",
+      lastName: "Idrissi",
+      phone: "+212 6 45 67 89 01",
+      userType: "owner"
+    });
+
     const renter1 = await this.createUser({
       email: "fatima.zahra@example.com",
-      password: "hashed_password", 
+      password: defaultPassword, 
       firstName: "Fatima",
       lastName: "Zahra",
       phone: "+212 6 34 56 78 90",
       userType: "renter"
     });
 
-    // Create sample cars
+    // Create realistic cars with specific model images
     await this.createCar({
       ownerId: owner1.id,
-      title: "BMW Série 3 - Berline Premium",
-      description: "Berline premium en excellent état, parfaite pour les déplacements d'affaires ou les sorties en famille.",
-      make: "BMW",
-      model: "Série 3",
-      year: 2020,
+      title: "Dacia Logan - Berline Familiale",
+      description: "Berline spacieuse et économique, parfaite pour les familles. Climatisation, GPS intégré.",
+      make: "Dacia",
+      model: "Logan",
+      year: 2021,
       fuelType: "essence",
-      transmission: "automatic",
+      transmission: "manual",
       seats: 5,
-      pricePerDay: "450.00",
+      pricePerDay: "250.00",
       location: "Casablanca, Maarif",
       city: "Casablanca",
-      images: ["/assets/generated_images/Car_rental_listing_photo_bdcce465.png"],
+      images: ["https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner2.id,
-      title: "Tesla Model 3 - Électrique",
-      description: "Voiture électrique moderne avec autopilot, parfaite pour découvrir le Maroc en mode écologique.",
-      make: "Tesla",
-      model: "Model 3",
+      title: "Renault Clio - Citadine Moderne",
+      description: "Citadine moderne avec toutes les commodités. Idéale pour la ville, consommation réduite.",
+      make: "Renault",
+      model: "Clio",
       year: 2022,
-      fuelType: "electric",
+      fuelType: "essence",
       transmission: "automatic", 
       seats: 5,
-      pricePerDay: "650.00",
+      pricePerDay: "320.00",
       location: "Rabat, Agdal",
       city: "Rabat",
-      images: ["/assets/generated_images/Electric_car_in_Morocco_b06b165b.png"],
+      images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner1.id,
-      title: "Peugeot 208 - Citadine Économique",
-      description: "Citadine économique idéale pour les déplacements urbains à Marrakech.",
+      title: "Peugeot 208 - Compacte Élégante",
+      description: "Compacte élégante avec finitions soignées. Parfaite pour les déplacements urbains.",
       make: "Peugeot",
       model: "208",
-      year: 2019,
+      year: 2020,
       fuelType: "diesel",
       transmission: "manual",
       seats: 4,
       pricePerDay: "280.00",
       location: "Marrakech, Guéliz",
       city: "Marrakech",
-      images: ["/assets/generated_images/Car_rental_listing_photo_bdcce465.png"],
+      images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner3.id,
+      title: "Hyundai Tucson - SUV Confortable",
+      description: "SUV spacieux et confortable pour vos voyages. 4x4, climatisation automatique.",
+      make: "Hyundai",
+      model: "Tucson",
+      year: 2021,
+      fuelType: "diesel",
+      transmission: "automatic",
+      seats: 7,
+      pricePerDay: "480.00",
+      location: "Fès, Centre-ville",
+      city: "Fès",
+      images: ["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&h=600&fit=crop&auto=format"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner2.id,
+      title: "Volkswagen Golf - Compacte Premium",
+      description: "Compacte premium avec finitions haut de gamme. Conduite sportive et confortable.",
+      make: "Volkswagen",
+      model: "Golf",
+      year: 2021,
+      fuelType: "essence",
+      transmission: "automatic",
+      seats: 5,
+      pricePerDay: "380.00",
+      location: "Tanger, Centre",
+      city: "Tanger",
+      images: ["https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner3.id,
+      title: "Ford Focus - Berline Sportive",
+      description: "Berline sportive avec excellent rapport qualité-prix. Conduite dynamique assurée.",
+      make: "Ford",
+      model: "Focus",
+      year: 2020,
+      fuelType: "essence",
+      transmission: "manual",
+      seats: 5,
+      pricePerDay: "300.00",
+      location: "Agadir, Secteur Touristique",
+      city: "Agadir",
+      images: ["https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&h=600&fit=crop&auto=format"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner1.id,
+      title: "Nissan Qashqai - Crossover Familial",
+      description: "Crossover familial alliant confort et praticité. Position de conduite surélevée.",
+      make: "Nissan",
+      model: "Qashqai",
+      year: 2022,
+      fuelType: "hybrid",
+      transmission: "automatic",
+      seats: 5,
+      pricePerDay: "420.00",
+      location: "Casablanca, Ain Diab",
+      city: "Casablanca",
+      images: ["https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner2.id,
+      title: "Kia Picanto - Mini Citadine",
+      description: "Mini citadine parfaite pour se faufiler en ville. Économique et facile à garer.",
+      make: "Kia",
+      model: "Picanto",
+      year: 2021,
+      fuelType: "essence",
+      transmission: "manual",
+      seats: 4,
+      pricePerDay: "220.00",
+      location: "Rabat, Hassan",
+      city: "Rabat",
+      images: ["https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
   }
 }
 
-export const storage = new MemStorage();
+import { DatabaseStorage } from './db';
+
+// Use database storage instead of memory storage
+export const storage = new DatabaseStorage();
+
+// Initialize sample data on startup
+storage.initializeSampleData().catch((error) => {
+  console.error('Failed to initialize sample data:', error);
+  // Continue without sample data in production
+});

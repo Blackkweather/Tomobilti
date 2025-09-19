@@ -73,23 +73,119 @@ const bookingStatusConfig = {
   cancelled: { label: 'Annulé', variant: 'destructive' as const, icon: XCircle }
 };
 
+interface BookingCardProps {
+  booking: typeof mockBookings[0];
+  onCancel: (id: string) => void;
+  onReview: (id: string) => void;
+}
+
+const isValidId = (id: string): boolean => {
+  return typeof id === 'string' && /^[a-zA-Z0-9_-]+$/.test(id) && id.length <= 50;
+};
+
+function BookingCard({ booking, onCancel, onReview }: BookingCardProps) {
+  const statusConfig = bookingStatusConfig[booking.status as keyof typeof bookingStatusConfig] || bookingStatusConfig.upcoming;
+  const StatusIcon = statusConfig.icon;
+
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex gap-4">
+          <img 
+            src={booking.carImage} 
+            alt={booking.carTitle}
+            className="w-24 h-18 rounded-lg object-cover"
+          />
+          
+          <div className="flex-1 space-y-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-semibold text-lg">{booking.carTitle}</h3>
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <MapPin className="h-3 w-3" />
+                  <span>{booking.location}</span>
+                </div>
+              </div>
+              <Badge variant={statusConfig.variant}>
+                <StatusIcon className="h-3 w-3 mr-1" />
+                {statusConfig.label}
+              </Badge>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={booking.ownerImage} alt={booking.ownerName} />
+                <AvatarFallback className="text-xs">{booking.ownerName.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-muted-foreground">
+                Propriétaire: <span>{booking.ownerName}</span>
+              </span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="text-sm">
+                <p className="text-muted-foreground">
+                  Du {booking.startDate} au {booking.endDate}
+                </p>
+                <p className="font-semibold text-primary text-lg">
+                  {booking.totalAmount} MAD
+                </p>
+              </div>
+              
+              <div className="flex gap-2">
+                {booking.status === 'upcoming' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => onCancel(booking.id)}
+                    data-testid={`button-cancel-${booking.id}`}
+                  >
+                    Annuler
+                  </Button>
+                )}
+                {booking.canReview && (
+                  <Button 
+                    size="sm"
+                    onClick={() => onReview(booking.id)}
+                    data-testid={`button-review-${booking.id}`}
+                  >
+                    Laisser un avis
+                  </Button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function RenterDashboard() {
   const [selectedTab, setSelectedTab] = useState('bookings');
 
+  const sanitizeForLog = (input: string): string => {
+    return input.replace(/[\r\n\t\x00-\x1f\x7f-\x9f]/g, '').slice(0, 100);
+  };
+
   const handleCancelBooking = (bookingId: string) => {
-    console.log('Cancel booking:', bookingId);
+    if (!isValidId(bookingId)) return;
+    console.log('Cancel booking:', sanitizeForLog(bookingId));
   };
 
   const handleLeaveReview = (bookingId: string) => {
-    console.log('Leave review for booking:', bookingId);
+    if (!isValidId(bookingId)) return;
+    console.log('Leave review for booking:', sanitizeForLog(bookingId));
   };
 
   const handleRemoveFromFavorites = (favoriteId: string) => {
-    console.log('Remove from favorites:', favoriteId);
+    if (!isValidId(favoriteId)) return;
+    console.log('Remove from favorites:', sanitizeForLog(favoriteId));
   };
 
   const handleBookFavorite = (favoriteId: string) => {
-    console.log('Book favorite car:', favoriteId);
+    if (!isValidId(favoriteId)) return;
+    console.log('Book favorite car:', sanitizeForLog(favoriteId));
   };
 
   const totalBookings = mockBookings.length;
@@ -172,84 +268,14 @@ export default function RenterDashboard() {
             </Card>
           ) : (
             <div className="space-y-4">
-              {mockBookings.map((booking) => {
-                const StatusIcon = bookingStatusConfig[booking.status as keyof typeof bookingStatusConfig].icon;
-                return (
-                  <Card key={booking.id}>
-                    <CardContent className="p-6">
-                      <div className="flex gap-4">
-                        <img 
-                          src={booking.carImage} 
-                          alt={booking.carTitle}
-                          className="w-24 h-18 rounded-lg object-cover"
-                        />
-                        
-                        <div className="flex-1 space-y-2">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-semibold text-lg">{booking.carTitle}</h3>
-                              <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <MapPin className="h-3 w-3" />
-                                {booking.location}
-                              </div>
-                            </div>
-                            <Badge variant={bookingStatusConfig[booking.status as keyof typeof bookingStatusConfig].variant}>
-                              <StatusIcon className="h-3 w-3 mr-1" />
-                              {bookingStatusConfig[booking.status as keyof typeof bookingStatusConfig].label}
-                            </Badge>
-                          </div>
-                          
-                          <div className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={booking.ownerImage} alt={booking.ownerName} />
-                              <AvatarFallback className="text-xs">{booking.ownerName.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm text-muted-foreground">
-                              Propriétaire: {booking.ownerName}
-                            </span>
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <div className="text-sm">
-                              <p className="text-muted-foreground">
-                                Du {booking.startDate} au {booking.endDate}
-                              </p>
-                              <p className="font-semibold text-primary text-lg">
-                                {booking.totalAmount} MAD
-                              </p>
-                            </div>
-                            
-                            <div className="flex gap-2">
-                              {booking.status === 'upcoming' && (
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => handleCancelBooking(booking.id)}
-                                  data-testid={`button-cancel-${booking.id}`}
-                                  className="hover-elevate active-elevate-2"
-                                >
-                                  Annuler
-                                </Button>
-                              )}
-                              {booking.canReview && (
-                                <Button 
-                                  size="sm"
-                                  onClick={() => handleLeaveReview(booking.id)}
-                                  data-testid={`button-review-${booking.id}`}
-                                  className="hover-elevate active-elevate-2"
-                                >
-                                  <Star className="h-4 w-4 mr-1" />
-                                  Évaluer
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+              {mockBookings.map((booking) => (
+                <BookingCard
+                  key={booking.id}
+                  booking={booking}
+                  onCancel={handleCancelBooking}
+                  onReview={handleLeaveReview}
+                />
+              ))}
             </div>
           )}
         </TabsContent>

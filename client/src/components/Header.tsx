@@ -1,22 +1,21 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+} from './ui/dropdown-menu';
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Search, Menu, Car, User, Settings, LogOut, Plus } from 'lucide-react';
-import tomobiltoLogo from '@assets/IMG-20250918-WA0001_1758237414231.jpg';
 
 export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // todo: remove mock functionality
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleSearch = () => {
     console.log('Search triggered:', searchQuery);
@@ -33,7 +32,7 @@ export default function Header() {
   };
 
   const navItems = [
-    { href: '/', label: 'Accueil', icon: Car },
+    { href: '/', label: 'Accueil' },
     { href: '/cars', label: 'Véhicules' },
     { href: '/become-host', label: 'Devenir hôte' },
     { href: '/about', label: 'À propos' },
@@ -44,9 +43,8 @@ export default function Header() {
       <div className="container flex h-16 items-center gap-4 px-4">
         {/* Logo */}
         <Link href="/" data-testid="link-home">
-          <div className="flex items-center gap-2 hover-elevate rounded-md px-3 py-2">
-            <img src={tomobiltoLogo} alt="Tomobilto" className="h-8 w-auto" />
-            <span className="text-2xl font-bold text-primary">Tomobilto</span>
+          <div className="flex items-center hover-elevate rounded-md px-3 py-2">
+            <img src="/assets/logo clean jdid 7nin.png" alt="Tomobilto" className="h-10 w-12" />
           </div>
         </Link>
 
@@ -58,7 +56,6 @@ export default function Header() {
                 variant={location === item.href ? 'secondary' : 'ghost'} 
                 className="hover-elevate"
               >
-                {item.icon && <item.icon className="h-4 w-4 mr-2" />}
                 {item.label}
               </Button>
             </Link>
@@ -103,18 +100,24 @@ export default function Header() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem data-testid="menu-profile">
-                    <User className="mr-2 h-4 w-4" />
-                    Mon profil
-                  </DropdownMenuItem>
-                  <DropdownMenuItem data-testid="menu-my-cars">
-                    <Car className="mr-2 h-4 w-4" />
-                    Mes véhicules
-                  </DropdownMenuItem>
-                  <DropdownMenuItem data-testid="menu-settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Paramètres
-                  </DropdownMenuItem>
+                  <Link href="/profile">
+                    <DropdownMenuItem data-testid="menu-profile">
+                      <User className="mr-2 h-4 w-4" />
+                      Mon profil
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/owner-dashboard">
+                    <DropdownMenuItem data-testid="menu-my-cars">
+                      <Car className="mr-2 h-4 w-4" />
+                      Mes véhicules
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/settings">
+                    <DropdownMenuItem data-testid="menu-settings">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Paramètres
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem onClick={handleLogout} data-testid="menu-logout">
                     <LogOut className="mr-2 h-4 w-4" />
                     Déconnexion
@@ -124,12 +127,16 @@ export default function Header() {
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Button variant="ghost" onClick={handleLogin} data-testid="button-login" className="hover-elevate active-elevate-2">
-                Se connecter
-              </Button>
-              <Button onClick={handleLogin} data-testid="button-signup" className="hover-elevate active-elevate-2">
-                S'inscrire
-              </Button>
+              <Link href="/login">
+                <Button variant="ghost" data-testid="button-login" className="hover-elevate active-elevate-2">
+                  Se connecter
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button data-testid="button-signup" className="hover-elevate active-elevate-2">
+                  S'inscrire
+                </Button>
+              </Link>
             </div>
           )}
 
@@ -161,7 +168,6 @@ export default function Header() {
                         className="w-full justify-start hover-elevate active-elevate-2"
                         data-testid={`mobile-link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                       >
-                        {item.icon && <item.icon className="h-4 w-4 mr-2" />}
                         {item.label}
                       </Button>
                     </Link>

@@ -58,15 +58,14 @@ export default function CarCard({
 
   const handleFavorite = () => {
     setIsFavorited(!isFavorited);
-    console.log(`${isFavorited ? 'Removed from' : 'Added to'} favorites:`, id);
   };
 
   const handleBook = () => {
-    console.log('Booking car:', id);
+    // Handle booking logic
   };
 
   const handleViewDetails = () => {
-    console.log('Viewing details for car:', id);
+    // Handle view details logic
   };
 
   return (
