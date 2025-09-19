@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Search, Menu, Car, User, Settings, LogOut, Plus } from 'lucide-react';
+import tomobiltoLogo from '@assets/IMG-20250918-WA0001_1758237414231.jpg';
 
 export default function Header() {
   const [location] = useLocation();
@@ -44,8 +45,8 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" data-testid="link-home">
           <div className="flex items-center gap-2 hover-elevate rounded-md px-3 py-2">
-            <Car className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">RentMa</span>
+            <img src={tomobiltoLogo} alt="Tomobilto" className="h-8 w-auto" />
+            <span className="text-2xl font-bold text-primary">Tomobilto</span>
           </div>
         </Link>
 

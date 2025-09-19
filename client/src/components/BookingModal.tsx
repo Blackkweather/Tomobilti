@@ -74,9 +74,10 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="booking-description">
         <DialogHeader>
           <DialogTitle>Réserver ce véhicule</DialogTitle>
+          <p id="booking-description" className="sr-only">Formulaire de réservation pour le véhicule sélectionné avec calcul automatique des prix et dates de location.</p>
         </DialogHeader>
 
         <div className="space-y-6">
