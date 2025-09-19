@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import Hero from '@/components/Hero';
 import CarCard from '@/components/CarCard';
 import SearchFilters from '@/components/SearchFilters';
@@ -6,106 +7,14 @@ import BookingModal from '@/components/BookingModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { MapPin, Fuel, Users, Shield, Star, TrendingUp } from 'lucide-react';
+import { carApi } from '@/lib/api';
+import type { CarSearch } from '@shared/schema';
 
 // Import generated images
 import carImage1 from '@assets/generated_images/Car_rental_listing_photo_bdcce465.png';
 import carImage2 from '@assets/generated_images/Electric_car_in_Morocco_b06b165b.png';
 import ownerImage from '@assets/generated_images/Moroccan_car_owner_profile_7a556a9c.png';
 
-// todo: remove mock functionality
-const mockCars = [
-  {
-    id: '1',
-    title: 'BMW Série 3 - Berline Premium',
-    location: 'Casablanca, Maarif',
-    pricePerDay: 450,
-    currency: 'MAD',
-    rating: 4.8,
-    reviewCount: 23,
-    fuelType: 'essence' as const,
-    transmission: 'automatic' as const,
-    seats: 5,
-    image: carImage1,
-    ownerName: 'Ahmed Bennani',
-    ownerImage: ownerImage,
-    isAvailable: true
-  },
-  {
-    id: '2',
-    title: 'Tesla Model 3 - Électrique',
-    location: 'Rabat, Agdal',
-    pricePerDay: 650,
-    currency: 'MAD',
-    rating: 4.9,
-    reviewCount: 31,
-    fuelType: 'electric' as const,
-    transmission: 'automatic' as const,
-    seats: 5,
-    image: carImage2,
-    ownerName: 'Youssef Alami',
-    isAvailable: true
-  },
-  {
-    id: '3',
-    title: 'Peugeot 208 - Citadine Économique',
-    location: 'Marrakech, Guéliz',
-    pricePerDay: 280,
-    currency: 'MAD',
-    rating: 4.6,
-    reviewCount: 15,
-    fuelType: 'diesel' as const,
-    transmission: 'manual' as const,
-    seats: 4,
-    image: carImage1,
-    ownerName: 'Fatima Zahra',
-    isAvailable: true
-  },
-  {
-    id: '4',
-    title: 'Dacia Duster - SUV Familial',
-    location: 'Fès, Ville Nouvelle',
-    pricePerDay: 380,
-    currency: 'MAD',
-    rating: 4.5,
-    reviewCount: 18,
-    fuelType: 'essence' as const,
-    transmission: 'manual' as const,
-    seats: 7,
-    image: carImage2,
-    ownerName: 'Hassan Tazi',
-    isAvailable: false
-  },
-  {
-    id: '5',
-    title: 'Mercedes Classe A - Luxe',
-    location: 'Tangier, Marina',
-    pricePerDay: 550,
-    currency: 'MAD',
-    rating: 4.9,
-    reviewCount: 27,
-    fuelType: 'hybrid' as const,
-    transmission: 'automatic' as const,
-    seats: 5,
-    image: carImage1,
-    ownerName: 'Laila Benjelloun',
-    isAvailable: true
-  },
-  {
-    id: '6',
-    title: 'Renault Clio - Compacte',
-    location: 'Agadir, Centre',
-    pricePerDay: 250,
-    currency: 'MAD',
-    rating: 4.4,
-    reviewCount: 12,
-    fuelType: 'diesel' as const,
-    transmission: 'manual' as const,
-    seats: 4,
-    image: carImage2,
-    ownerName: 'Omar Filali',
-    isAvailable: true
-  }
-];
 
 const features = [
   {
@@ -138,21 +47,53 @@ const stats = [
 ];
 
 export default function Home() {
-  const [filteredCars, setFilteredCars] = useState(mockCars);
+  const [searchFilters, setSearchFilters] = useState<CarSearch>({
+    page: 1,
+    limit: 12
+  });
   const [selectedCar, setSelectedCar] = useState<any>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
+  // Fetch cars using React Query
+  const { data: carsData, isLoading, error } = useQuery({
+    queryKey: ['/api/cars', searchFilters],
+    queryFn: () => carApi.searchCars(searchFilters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const cars = carsData?.cars || [];
+  const totalCars = carsData?.total || 0;
+
   const handleFiltersChange = (filters: any) => {
     console.log('Filters applied:', filters);
-    // todo: remove mock functionality - implement real filtering
-    setFilteredCars(mockCars);
+    setSearchFilters({
+      ...filters,
+      page: 1,
+      limit: 12
+    });
   };
 
-  const handleCarBook = (carId: string) => {
-    const car = mockCars.find(c => c.id === carId);
-    if (car) {
-      setSelectedCar(car);
+  const handleCarBook = async (carId: string) => {
+    try {
+      const carData = await carApi.getCar(carId);
+      setSelectedCar({
+        id: carData.id,
+        title: carData.title,
+        location: carData.location,
+        pricePerDay: parseFloat(carData.pricePerDay),
+        currency: carData.currency,
+        rating: carData.rating || 0,
+        reviewCount: carData.reviewCount || 0,
+        fuelType: carData.fuelType,
+        transmission: carData.transmission,
+        seats: carData.seats,
+        image: carData.images?.[0] || carImage1,
+        ownerName: carData.owner ? `${carData.owner.firstName} ${carData.owner.lastName}` : '',
+        ownerImage: carData.owner?.profileImage || ownerImage
+      });
       setIsBookingModalOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch car details:', error);
     }
   };
 
@@ -224,7 +165,7 @@ export default function Home() {
                 <div>
                   <h2 className="text-2xl font-bold">Véhicules disponibles</h2>
                   <p className="text-muted-foreground">
-                    {filteredCars.filter(car => car.isAvailable).length} véhicules disponibles
+                    {totalCars} véhicules disponibles
                   </p>
                 </div>
                 
@@ -234,24 +175,66 @@ export default function Home() {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredCars.map((car) => (
-                  <div key={car.id} onClick={() => handleCarBook(car.id)}>
-                    <CarCard {...car} />
-                  </div>
-                ))}
-              </div>
-
-              {filteredCars.length === 0 && (
+              {isLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Card key={i} className="animate-pulse">
+                      <div className="h-48 bg-muted rounded-t-lg" />
+                      <CardContent className="p-4 space-y-3">
+                        <div className="h-4 bg-muted rounded w-3/4" />
+                        <div className="h-3 bg-muted rounded w-1/2" />
+                        <div className="h-3 bg-muted rounded w-2/3" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : error ? (
                 <Card className="p-8 text-center">
                   <CardContent>
                     <div className="text-muted-foreground">
-                      <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <h3 className="font-semibold mb-2">Aucun véhicule trouvé</h3>
-                      <p>Essayez de modifier vos critères de recherche</p>
+                      <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50 text-destructive" />
+                      <h3 className="font-semibold mb-2">Erreur de chargement</h3>
+                      <p>Impossible de charger les véhicules. Veuillez réessayer.</p>
                     </div>
                   </CardContent>
                 </Card>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {cars.map((car: any) => (
+                      <div key={car.id} onClick={() => handleCarBook(car.id)}>
+                        <CarCard 
+                          id={car.id}
+                          title={car.title}
+                          location={car.location}
+                          pricePerDay={typeof car.pricePerDay === 'string' ? parseFloat(car.pricePerDay) : car.pricePerDay}
+                          currency={car.currency}
+                          rating={car.rating || 0}
+                          reviewCount={car.reviewCount || 0}
+                          fuelType={car.fuelType}
+                          transmission={car.transmission}
+                          seats={car.seats}
+                          image={car.images?.[0] || carImage1}
+                          ownerName={car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : ''}
+                          ownerImage={car.owner?.profileImage || ownerImage}
+                          isAvailable={car.isAvailable}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {cars.length === 0 && (
+                    <Card className="p-8 text-center">
+                      <CardContent>
+                        <div className="text-muted-foreground">
+                          <MapPin className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <h3 className="font-semibold mb-2">Aucun véhicule trouvé</h3>
+                          <p>Essayez de modifier vos critères de recherche</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
               )}
             </div>
           </div>
