@@ -181,7 +181,7 @@ export default function Home() {
       <section className="py-16">
         <div className="container px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Pourquoi choisir RentMa ?</h2>
+            <h2 className="text-3xl font-bold mb-4">Pourquoi choisir Tomobilto ?</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               La première plateforme de location de voitures entre particuliers au Maroc. 
               Simple, sécurisée et adaptée aux besoins marocains.
