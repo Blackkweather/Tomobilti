@@ -1,4 +1,4 @@
-import { CarSearch } from "@shared/schema";
+import { CarSearch } from "../../shared/schema";
 
 const API_BASE = '/api';
 

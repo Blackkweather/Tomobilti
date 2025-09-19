@@ -81,17 +81,21 @@ const bookingStatusConfig = {
 export default function OwnerDashboard() {
   const [selectedTab, setSelectedTab] = useState('overview');
 
+  const sanitizeForLog = (input: string): string => {
+    return input.replace(/[\r\n\t\x00-\x1f\x7f-\x9f]/g, '').slice(0, 100);
+  };
+
   const handleAddCar = () => {
     console.log('Add new car clicked');
   };
 
   const handleEditCar = (carId: string) => {
-    console.log('Edit car clicked:', carId);
+    console.log('Edit car clicked:', sanitizeForLog(carId));
   };
 
   const totalEarnings = mockCars.reduce((sum, car) => sum + car.totalEarnings, 0);
   const totalBookings = mockCars.reduce((sum, car) => sum + car.bookingsCount, 0);
-  const averageRating = mockCars.reduce((sum, car) => sum + car.rating, 0) / mockCars.length;
+  const averageRating = mockCars.length > 0 ? mockCars.reduce((sum, car) => sum + car.rating, 0) / mockCars.length : 0;
 
   return (
     <div className="container mx-auto p-6 space-y-6">

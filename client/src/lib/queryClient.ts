@@ -7,20 +7,40 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+const ALLOWED_DOMAINS = ['localhost', '127.0.0.1', import.meta.env.VITE_API_DOMAIN].filter(Boolean);
+
+function validateUrl(url: string): void {
+  try {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
+    const urlObj = new URL(url, baseUrl);
+    if (!ALLOWED_DOMAINS.some(domain => urlObj.hostname === domain || urlObj.hostname.endsWith(`.${domain}`))) {
+      throw new Error('Invalid domain');
+    }
+  } catch {
+    throw new Error('Invalid URL format');
+  }
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  validateUrl(url);
+  
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: data ? { "Content-Type": "application/json" } : {},
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
 
-  await throwIfResNotOk(res);
-  return res;
+    await throwIfResNotOk(res);
+    return res;
+  } catch (error) {
+    throw new Error(`Network request failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -29,7 +49,10 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
+    const url = queryKey.join("/") as string;
+    validateUrl(url);
+    
+    const res = await fetch(url, {
       credentials: "include",
     });
 

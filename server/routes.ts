@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { carSearchSchema, insertCarSchema, insertBookingSchema, insertReviewSchema } from "@shared/schema";
 import { z } from "zod";
+import { csrfProtection } from "./middleware/csrf";
+import { sanitizeMiddleware } from "./middleware/sanitize";
 
 // Simple auth middleware (for demo purposes)
 const authMiddleware = (req: any, res: any, next: any) => {
@@ -19,8 +21,10 @@ const requireAuth = (req: any, res: any, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Apply auth middleware to all routes
+  // Apply security middleware to all routes
+  app.use('/api', sanitizeMiddleware);
   app.use('/api', authMiddleware);
+  app.use('/api', csrfProtection);
   
   // Car routes
   app.get("/api/cars", async (req, res) => {

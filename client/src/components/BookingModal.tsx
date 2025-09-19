@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,20 +45,46 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
     setBookingData(prev => ({ ...prev, [field]: value }));
   };
 
-  const calculateDays = () => {
-    if (!bookingData.startDate || !bookingData.endDate) return 0;
+  const validateDates = () => {
+    if (!bookingData.startDate || !bookingData.endDate) return { isValid: false, error: '' };
+    const start = new Date(bookingData.startDate);
+    const end = new Date(bookingData.endDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (start < today) {
+      return { isValid: false, error: 'La date de début ne peut pas être dans le passé' };
+    }
+    if (end <= start) {
+      return { isValid: false, error: 'La date de fin doit être après la date de début' };
+    }
+    return { isValid: true, error: '' };
+  };
+
+  const { days, subtotal, serviceFee, insurance, total, dateError } = useMemo(() => {
+    const validation = validateDates();
+    if (!validation.isValid) {
+      return { days: 0, subtotal: 0, serviceFee: 0, insurance: 0, total: 0, dateError: validation.error };
+    }
+    
     const start = new Date(bookingData.startDate);
     const end = new Date(bookingData.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
-  const days = calculateDays();
-  const subtotal = days * car.pricePerDay;
-  const serviceFee = Math.round(subtotal * 0.05); // 5% service fee
-  const insurance = Math.round(subtotal * 0.03); // 3% insurance
-  const total = subtotal + serviceFee + insurance;
+    const calculatedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const calculatedSubtotal = calculatedDays * car.pricePerDay;
+    const calculatedServiceFee = Math.round(calculatedSubtotal * 0.05);
+    const calculatedInsurance = Math.round(calculatedSubtotal * 0.03);
+    const calculatedTotal = calculatedSubtotal + calculatedServiceFee + calculatedInsurance;
+    
+    return {
+      days: calculatedDays,
+      subtotal: calculatedSubtotal,
+      serviceFee: calculatedServiceFee,
+      insurance: calculatedInsurance,
+      total: calculatedTotal,
+      dateError: ''
+    };
+  }, [bookingData.startDate, bookingData.endDate, car.pricePerDay]);
 
   const handleConfirmBooking = async () => {
     setIsLoading(true);
@@ -128,6 +154,10 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
                 Dates et horaires
               </h3>
               
+              {dateError && (
+                <div className="text-red-600 text-sm">{dateError}</div>
+              )}
+              
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Date de début</Label>
@@ -136,6 +166,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
                     value={bookingData.startDate}
                     onChange={(e) => handleInputChange('startDate', e.target.value)}
                     data-testid="input-booking-start-date"
+                    min={new Date().toISOString().split('T')[0]}
                   />
                 </div>
                 
@@ -158,6 +189,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
                     value={bookingData.endDate}
                     onChange={(e) => handleInputChange('endDate', e.target.value)}
                     data-testid="input-booking-end-date"
+                    min={bookingData.startDate || new Date().toISOString().split('T')[0]}
                   />
                 </div>
                 
