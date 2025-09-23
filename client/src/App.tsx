@@ -1,6 +1,8 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from "./components/ui/toaster";
 
 // Import existing pages first to test
 import Home from "./pages/Home";
@@ -19,6 +21,7 @@ import NotFound from "./pages/not-found";
 import Header from "./components/Header";
 import OwnerDashboard from "./components/OwnerDashboard";
 import RenterDashboard from "./components/RenterDashboard";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 // Import new pages
 import Register from "./pages/Register";
@@ -107,10 +110,13 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-background">
-        <Header />
-        <Router />
-      </div>
+      <AuthProvider>
+        <div className="min-h-screen bg-background">
+          <Header />
+          <Router />
+          <Toaster />
+        </div>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
