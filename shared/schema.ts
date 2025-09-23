@@ -117,12 +117,41 @@ export const carSearchSchema = z.object({
     if (typeof val === 'string') return [val];
     return val;
   }),
-  transmission: z.string().optional(),
-  seats: z.coerce.number().optional(),
-  minPrice: z.coerce.number().optional(),
-  maxPrice: z.coerce.number().optional(),
-  page: z.coerce.number().default(1),
-  limit: z.coerce.number().default(12),
+  transmission: z.enum(['manual', 'automatic']).optional(),
+  seats: z.coerce.number().min(1).max(9).optional(),
+  minPrice: z.coerce.number().min(0).optional(),
+  maxPrice: z.coerce.number().min(0).optional(),
+  sortBy: z.enum(['price', 'date', 'rating']).default('date'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(50).default(12),
+});
+
+// Login schema
+export const loginSchema = z.object({
+  email: z.string().email('Email invalide'),
+  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
+});
+
+// Register schema  
+export const registerSchema = z.object({
+  email: z.string().email('Email invalide'),
+  password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre'),
+  firstName: z.string().min(2, 'Le prénom doit contenir au moins 2 caractères'),
+  lastName: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
+  phone: z.string().regex(/^\+212[0-9]{9}$/, 'Format: +212XXXXXXXXX').optional(),
+  userType: z.enum(['renter', 'owner', 'both']).default('renter'),
+});
+
+// Enhanced car schema with better validation
+export const enhancedInsertCarSchema = insertCarSchema.extend({
+  fuelType: z.enum(['essence', 'diesel', 'electric', 'hybrid']),
+  transmission: z.enum(['manual', 'automatic']),
+  year: z.number().min(1990).max(new Date().getFullYear() + 1),
+  seats: z.number().min(1).max(9),
+  pricePerDay: z.string().regex(/^\d+(\.\d{2})?$/, 'Prix invalide'),
+  images: z.array(z.string().url()).min(1, 'Au moins une image est requise'),
 });
 
 export type CarSearch = z.infer<typeof carSearchSchema>;

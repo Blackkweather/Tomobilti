@@ -2,17 +2,60 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { users, cars, bookings, reviews } from '@shared/schema';
 import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch } from '@shared/schema';
-import { eq, and, gte, lte, inArray, like, sql } from 'drizzle-orm';
+import { eq, and, gte, lte, inArray, like, sql as sqlOp, count, desc, asc } from 'drizzle-orm';
+import type { IStorage } from './storage';
+import bcrypt from 'bcrypt';
+import { randomUUID } from 'crypto';
 
-// Initialize database connection
-const connectionString = process.env.DATABASE_URL || 'postgresql://username:password@localhost:5432/tomobilti';
-const sql = postgres(connectionString);
+// Initialize database connection with proper error handling
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('DATABASE_URL environment variable is required');
+}
+
+const sql = postgres(connectionString, {
+  max: 20, // Connection pool size
+  idle_timeout: 20,
+  connect_timeout: 10,
+});
+
 export const db = drizzle(sql);
 
-export class DatabaseStorage {
+export class DatabaseStorage implements IStorage {
   // User operations
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
+    // Hash password before storing
+    const hashedPassword = await bcrypt.hash(insertUser.password, 12);
+    const userWithHashedPassword = {
+      ...insertUser,
+      password: hashedPassword,
+      id: randomUUID(),
+    };
+    
+    const [user] = await db.insert(users).values(userWithHashedPassword).returning();
+    return user;
+  }
+
+  async verifyPassword(email: string, password: string): Promise<User | null> {
+    const user = await this.getUserByEmail(email);
+    if (!user) return null;
+    
+    const isValid = await bcrypt.compare(password, user.password);
+    return isValid ? user : null;
+  }
+
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined> {
+    // Hash password if it's being updated
+    let updateData = { ...updates };
+    if (updates.password) {
+      updateData.password = await bcrypt.hash(updates.password, 12);
+    }
+    
+    const [user] = await db
+      .update(users)
+      .set({ ...updateData, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
     return user;
   }
 
@@ -37,8 +80,7 @@ export class DatabaseStorage {
   }
 
   async searchCars(filters: CarSearch): Promise<{ cars: Car[], total: number }> {
-    let query = db.select().from(cars);
-    const conditions = [];
+    const conditions = [eq(cars.isAvailable, true)];
 
     // Apply filters
     if (filters.city) {
@@ -69,38 +111,79 @@ export class DatabaseStorage {
       conditions.push(lte(cars.pricePerDay, filters.maxPrice.toString()));
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+    // Handle date-based availability filtering
+    if (filters.startDate && filters.endDate) {
+      // Subquery to find cars that don't have conflicting bookings
+      const conflictingBookingsQuery = db
+        .select({ carId: bookings.carId })
+        .from(bookings)
+        .where(
+          and(
+            eq(bookings.carId, cars.id),
+            sqlOp`${bookings.status} != 'cancelled'`,
+            sqlOp`(
+              (${bookings.startDate} <= ${filters.endDate} AND ${bookings.endDate} >= ${filters.startDate})
+            )`
+          )
+        );
+      
+      conditions.push(sqlOp`${cars.id} NOT IN (${conflictingBookingsQuery})`);
     }
+
+    const whereClause = and(...conditions);
 
     // Get total count
-    const totalQuery = db.select({ count: sql<number>`count(*)` }).from(cars);
-    if (conditions.length > 0) {
-      totalQuery = totalQuery.where(and(...conditions));
-    }
-    const [{ count: total }] = await totalQuery;
+    const [{ count: total }] = await db
+      .select({ count: count() })
+      .from(cars)
+      .where(whereClause);
 
-    // Apply pagination
+    // Apply sorting and pagination
+    const sortColumn = filters.sortBy === 'price' ? cars.pricePerDay : cars.createdAt;
+    const sortDirection = filters.sortOrder === 'desc' ? desc : asc;
+    
     const offset = (filters.page - 1) * filters.limit;
-    const results = await query.limit(filters.limit).offset(offset);
+    const results = await db
+      .select()
+      .from(cars)
+      .where(whereClause)
+      .orderBy(sortDirection(sortColumn))
+      .limit(filters.limit)
+      .offset(offset);
 
     return { cars: results, total };
   }
 
   async createCar(insertCar: InsertCar): Promise<Car> {
-    const [car] = await db.insert(cars).values(insertCar).returning();
+    const carData = {
+      ...insertCar,
+      id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    const [car] = await db.insert(cars).values(carData).returning();
     return car;
   }
 
   async updateCar(id: string, updates: Partial<InsertCar>): Promise<Car | undefined> {
-    const [car] = await db.update(cars).set(updates).where(eq(cars.id, id)).returning();
+    const updateData = {
+      ...updates,
+      updatedAt: new Date(),
+    };
+    
+    const [car] = await db
+      .update(cars)
+      .set(updateData)
+      .where(eq(cars.id, id))
+      .returning();
     return car;
   }
 
   async deleteCar(id: string): Promise<boolean> {
     try {
       const result = await db.delete(cars).where(eq(cars.id, id));
-      return result.changes > 0;
+      return result.count > 0;
     } catch (error) {
       console.error('Error deleting car:', error);
       return false;
@@ -119,7 +202,24 @@ export class DatabaseStorage {
 
   async getBookingsByOwner(ownerId: string): Promise<Booking[]> {
     return await db
-      .select()
+      .select({
+        id: bookings.id,
+        carId: bookings.carId,
+        renterId: bookings.renterId,
+        startDate: bookings.startDate,
+        endDate: bookings.endDate,
+        startTime: bookings.startTime,
+        endTime: bookings.endTime,
+        totalAmount: bookings.totalAmount,
+        serviceFee: bookings.serviceFee,
+        insurance: bookings.insurance,
+        status: bookings.status,
+        message: bookings.message,
+        paymentStatus: bookings.paymentStatus,
+        paymentIntentId: bookings.paymentIntentId,
+        createdAt: bookings.createdAt,
+        updatedAt: bookings.updatedAt,
+      })
       .from(bookings)
       .innerJoin(cars, eq(bookings.carId, cars.id))
       .where(eq(cars.ownerId, ownerId));

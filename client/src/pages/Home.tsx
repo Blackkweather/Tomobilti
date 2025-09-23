@@ -1,8 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import Hero from '../components/Hero';
+import { carApi } from '../lib/api';
+import CarCard from '../components/CarCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import type { Car } from '@shared/schema';
 
 export default function Home() {
+  // Fetch featured cars
+  const { data: carsData, isLoading: carsLoading } = useQuery({
+    queryKey: ['featuredCars'],
+    queryFn: () => carApi.searchCars({ 
+      page: 1, 
+      limit: 6,
+      sortBy: 'rating',
+      sortOrder: 'desc'
+    }),
+  });
+
   const features = [
     {
       title: 'Partout au Maroc',
@@ -26,8 +42,9 @@ export default function Home() {
     }
   ];
 
+  // Dynamic stats based on real data
   const stats = [
-    { value: '2,500+', label: 'Véhicules disponibles' },
+    { value: carsData?.total ? `${carsData.total}+` : '2,500+', label: 'Véhicules disponibles' },
     { value: '15,000+', label: 'Clients satisfaits' },
     { value: '8', label: 'Villes desservies' },
     { value: '4.8★', label: 'Note moyenne' }
@@ -85,28 +102,38 @@ export default function Home() {
             <p className="text-gray-600">Découvrez quelques-uns de nos véhicules les plus demandés</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                  <span className="text-gray-500 text-lg">🚗 Photo véhicule</span>
+          {carsLoading ? (
+            <div className="flex justify-center py-12">
+              <LoadingSpinner size="lg" text="Chargement des véhicules..." />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {carsData?.cars?.slice(0, 6).map((car: any) => (
+                <div key={car.id} className="transform hover:scale-105 transition-transform">
+                  <CarCard
+                    id={car.id}
+                    title={car.title}
+                    location={car.location}
+                    pricePerDay={parseFloat(car.pricePerDay)}
+                    currency={car.currency || 'MAD'}
+                    rating={car.rating || 0}
+                    reviewCount={car.reviewCount || 0}
+                    fuelType={car.fuelType}
+                    transmission={car.transmission}
+                    seats={car.seats}
+                    image={car.images?.[0] || 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format'}
+                    ownerName={car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Propriétaire'}
+                    ownerImage={car.owner?.profileImage}
+                    isAvailable={car.isAvailable}
+                  />
                 </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-2">Renault Clio {i}</h3>
-                  <p className="text-gray-600 text-sm mb-2">📍 Casablanca</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-green-600 font-bold">350 MAD/jour</span>
-                    <span className="text-yellow-500">⭐ 4.8 (12)</span>
-                  </div>
-                  <Link href={`/car/${i}`}>
-                    <button className="w-full mt-4 bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition-colors">
-                      Voir détails
-                    </button>
-                  </Link>
+              )) || (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-gray-500">Aucun véhicule disponible pour le moment.</p>
                 </div>
-              </div>
-            ))}
-          </div>
+              )}
+            </div>
+          )}
 
           <div className="text-center mt-8">
             <Link href="/cars">

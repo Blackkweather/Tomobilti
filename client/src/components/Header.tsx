@@ -7,29 +7,40 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from './ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Search, Menu, Car, User, Settings, LogOut, Plus } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function Header() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, logout, loading, isAuthenticated } = useAuth();
 
   const handleSearch = () => {
-    console.log('Search triggered:', searchQuery);
-  };
-
-  const handleLogin = () => {
-    console.log('Login triggered');
-    setIsLoggedIn(true);
+    if (searchQuery.trim()) {
+      const params = new URLSearchParams({ location: searchQuery.trim() });
+      setLocation(`/cars?${params.toString()}`);
+    }
   };
 
   const handleLogout = () => {
-    console.log('Logout triggered');
-    setIsLoggedIn(false);
+    logout();
+    setLocation('/');
   };
+
+  if (loading) {
+    return (
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center justify-center px-4">
+          <LoadingSpinner size="sm" />
+        </div>
+      </header>
+    );
+  }
 
   const navItems = [
     { href: '/', label: 'Accueil' },
@@ -82,7 +93,7 @@ export default function Header() {
 
         {/* User Actions */}
         <div className="flex items-center gap-2">
-          {isLoggedIn ? (
+          {isAuthenticated && user ? (
             <>
               <Button variant="outline" size="sm" data-testid="button-add-car" className="hidden md:flex hover-elevate active-elevate-2">
                 <Plus className="h-4 w-4 mr-2" />
@@ -92,24 +103,39 @@ export default function Header() {
                 <DropdownMenuTrigger asChild data-testid="button-user-menu">
                   <Button variant="ghost" size="icon" className="hover-elevate active-elevate-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="" alt="User" />
+                      <AvatarImage src={user.profileImage || ''} alt={`${user.firstName} ${user.lastName}`} />
                       <AvatarFallback className="bg-primary/10 text-primary">
-                        AM
+                        {user.firstName.charAt(0)}{user.lastName.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5 text-sm font-medium">
+                    {user.firstName} {user.lastName}
+                  </div>
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                    {user.email}
+                  </div>
+                  <DropdownMenuSeparator />
                   <Link href="/profile">
                     <DropdownMenuItem data-testid="menu-profile">
                       <User className="mr-2 h-4 w-4" />
                       Mon profil
                     </DropdownMenuItem>
                   </Link>
-                  <Link href="/owner-dashboard">
-                    <DropdownMenuItem data-testid="menu-my-cars">
-                      <Car className="mr-2 h-4 w-4" />
-                      Mes véhicules
+                  {(user.userType === 'owner' || user.userType === 'both') && (
+                    <Link href="/dashboard/owner">
+                      <DropdownMenuItem data-testid="menu-owner-dashboard">
+                        <Car className="mr-2 h-4 w-4" />
+                        Tableau de bord propriétaire
+                      </DropdownMenuItem>
+                    </Link>
+                  )}
+                  <Link href="/dashboard/renter">
+                    <DropdownMenuItem data-testid="menu-renter-dashboard">
+                      <User className="mr-2 h-4 w-4" />
+                      Mes réservations
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/settings">
@@ -118,6 +144,7 @@ export default function Header() {
                       Paramètres
                     </DropdownMenuItem>
                   </Link>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} data-testid="menu-logout">
                     <LogOut className="mr-2 h-4 w-4" />
                     Déconnexion

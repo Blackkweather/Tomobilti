@@ -1,39 +1,157 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { carSearchSchema, insertCarSchema, insertBookingSchema, insertReviewSchema } from "@shared/schema";
+import { 
+  carSearchSchema, 
+  insertCarSchema, 
+  insertBookingSchema, 
+  insertReviewSchema,
+  loginSchema,
+  registerSchema,
+  enhancedInsertCarSchema
+} from "@shared/schema";
 import { z } from "zod";
 import { csrfProtection } from "./middleware/csrf";
 import { sanitizeMiddleware } from "./middleware/sanitize";
+import { 
+  authMiddleware, 
+  optionalAuthMiddleware,
+  requireAuth, 
+  requireOwner,
+  requireCarOwnership,
+  generateToken,
+  sanitizeUser
+} from "./middleware/auth";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
-// Simple auth middleware (for demo purposes)
-const authMiddleware = (req: any, res: any, next: any) => {
-  // For demo: mock user ID - in real app, verify JWT token
-  req.userId = req.headers['x-user-id'] || 'demo-user-1';
-  next();
-};
+// Rate limiting configurations
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: 'Trop de requêtes, veuillez réessayer plus tard' }
+});
 
-const requireAuth = (req: any, res: any, next: any) => {
-  if (!req.userId) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  next();
-};
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 auth requests per windowMs
+  message: { error: 'Trop de tentatives de connexion, veuillez réessayer plus tard' }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply security middleware to all routes
+  app.use(helmet());
+  app.use('/api', generalLimiter);
   app.use('/api', sanitizeMiddleware);
-  app.use('/api', authMiddleware);
-  app.use('/api', csrfProtection);
+  
+  // Authentication routes (no auth required)
+  app.post('/api/auth/login', authLimiter, async (req, res) => {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+      
+      const user = await storage.verifyPassword(email, password);
+      if (!user) {
+        return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+      }
+      
+      const token = generateToken(user.id);
+      const sanitizedUser = sanitizeUser(user);
+      
+      res.json({ 
+        message: 'Connexion réussie',
+        token,
+        user: sanitizedUser
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: 'Données invalides', details: error.errors });
+      }
+      console.error('Login error:', error);
+      res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+  });
+  
+  app.post('/api/auth/register', authLimiter, async (req, res) => {
+    try {
+      const userData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ error: 'Un compte avec cet email existe déjà' });
+      }
+      
+      const user = await storage.createUser(userData);
+      const token = generateToken(user.id);
+      const sanitizedUser = sanitizeUser(user);
+      
+      res.status(201).json({
+        message: 'Compte créé avec succès',
+        token,
+        user: sanitizedUser
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: 'Données invalides', details: error.errors });
+      }
+      console.error('Register error:', error);
+      res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+  });
+  
+  app.get('/api/auth/me', authMiddleware, (req, res) => {
+    const sanitizedUser = sanitizeUser(req.user!);
+    res.json({ user: sanitizedUser });
+  });
+  
+  // Apply optional auth to public routes, required auth to protected routes
+  app.use('/api/cars', optionalAuthMiddleware);
+  app.use('/api/bookings', authMiddleware);
+  app.use('/api/reviews', optionalAuthMiddleware);
   
   // Car routes
   app.get("/api/cars", async (req, res) => {
     try {
       const filters = carSearchSchema.parse(req.query);
       const result = await storage.searchCars(filters);
-      res.json(result);
+      
+      // Enrich cars with owner info and reviews
+      const enrichedCars = await Promise.all(
+        result.cars.map(async (car) => {
+          const owner = await storage.getUser(car.ownerId);
+          const reviews = await storage.getReviewsByCar(car.id);
+          
+          const averageRating = reviews.length > 0 
+            ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+            : 0;
+
+          return {
+            ...car,
+            owner: owner ? {
+              id: owner.id,
+              firstName: owner.firstName,
+              lastName: owner.lastName,
+              profileImage: owner.profileImage
+            } : null,
+            rating: Number(averageRating.toFixed(1)),
+            reviewCount: reviews.length
+          };
+        })
+      );
+      
+      res.json({
+        cars: enrichedCars,
+        total: result.total,
+        page: filters.page,
+        limit: filters.limit,
+        totalPages: Math.ceil(result.total / filters.limit)
+      });
     } catch (error) {
-      res.status(400).json({ error: "Invalid search parameters" });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Paramètres de recherche invalides", details: error.errors });
+      }
+      console.error('Car search error:', error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
     }
   });
 
@@ -41,7 +159,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const car = await storage.getCar(req.params.id);
       if (!car) {
-        return res.status(404).json({ error: "Car not found" });
+        return res.status(404).json({ error: "Véhicule non trouvé" });
       }
 
       // Get owner info and reviews
@@ -52,62 +170,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
         : 0;
 
+      // Get enriched reviews with reviewer info
+      const enrichedReviews = await Promise.all(
+        reviews.map(async (review) => {
+          const reviewer = await storage.getUser(review.reviewerId);
+          return {
+            ...review,
+            reviewer: reviewer ? {
+              id: reviewer.id,
+              firstName: reviewer.firstName,
+              lastName: reviewer.lastName,
+              profileImage: reviewer.profileImage
+            } : null
+          };
+        })
+      );
+
       res.json({
         ...car,
-        owner: owner ? {
-          id: owner.id,
-          firstName: owner.firstName,
-          lastName: owner.lastName,
-          profileImage: owner.profileImage
-        } : null,
-        rating: averageRating,
-        reviewCount: reviews.length
+        owner: owner ? sanitizeUser(owner) : null,
+        rating: Number(averageRating.toFixed(1)),
+        reviewCount: reviews.length,
+        reviews: enrichedReviews
       });
     } catch (error) {
-      res.status(500).json({ error: "Internal server error" });
+      console.error('Get car error:', error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
     }
   });
 
-  app.post("/api/cars", requireAuth, async (req, res) => {
+  app.post("/api/cars", authMiddleware, requireOwner, async (req, res) => {
     try {
-      const carData = insertCarSchema.parse(req.body);
+      const carData = enhancedInsertCarSchema.parse({
+        ...req.body,
+        ownerId: req.user!.id
+      });
+      
       const car = await storage.createCar(carData);
-      res.status(201).json(car);
+      res.status(201).json({
+        message: "Véhicule créé avec succès",
+        car
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Invalid car data", details: error.errors });
+        return res.status(400).json({ error: "Données de véhicule invalides", details: error.errors });
       }
-      res.status(500).json({ error: "Internal server error" });
+      console.error('Create car error:', error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
     }
   });
 
-  app.put("/api/cars/:id", requireAuth, async (req, res) => {
+  app.put("/api/cars/:id", authMiddleware, requireCarOwnership, async (req, res) => {
     try {
-      const updates = insertCarSchema.partial().parse(req.body);
+      const updates = enhancedInsertCarSchema.partial().parse(req.body);
       const car = await storage.updateCar(req.params.id, updates);
       
       if (!car) {
-        return res.status(404).json({ error: "Car not found" });
+        return res.status(404).json({ error: "Véhicule non trouvé" });
       }
       
-      res.json(car);
+      res.json({
+        message: "Véhicule mis à jour avec succès",
+        car
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Invalid car data", details: error.errors });
+        return res.status(400).json({ error: "Données de véhicule invalides", details: error.errors });
       }
-      res.status(500).json({ error: "Internal server error" });
+      console.error('Update car error:', error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
     }
   });
 
-  app.delete("/api/cars/:id", requireAuth, async (req, res) => {
+  app.delete("/api/cars/:id", authMiddleware, requireCarOwnership, async (req, res) => {
     try {
       const success = await storage.deleteCar(req.params.id);
       if (!success) {
-        return res.status(404).json({ error: "Car not found" });
+        return res.status(404).json({ error: "Véhicule non trouvé" });
       }
-      res.status(204).send();
+      res.json({ message: "Véhicule supprimé avec succès" });
     } catch (error) {
-      res.status(500).json({ error: "Internal server error" });
+      console.error('Delete car error:', error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
     }
   });
 
