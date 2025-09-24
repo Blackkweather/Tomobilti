@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator
 } from './ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -142,6 +142,12 @@ export default function Header() {
                     <DropdownMenuItem data-testid="menu-settings">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link href="/security">
+                    <DropdownMenuItem data-testid="menu-security">
+                      <Shield className="mr-2 h-4 w-4" />
+                      Security
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />

@@ -14,6 +14,7 @@ import OwnerDashboard from "./pages/OwnerDashboard";
 import RenterDashboard from "./pages/RenterDashboard";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import Security from "./pages/Security";
 import Cars from "./pages/Cars";
 import CarDetails from "./pages/CarDetails";
 import AddCar from "./pages/AddCar";
@@ -42,6 +43,7 @@ function App() {
             <Route path="/dashboard/renter" component={RenterDashboard} />
             <Route path="/profile" component={Profile} />
             <Route path="/settings" component={Settings} />
+            <Route path="/security" component={Security} />
             <Route path="/cars" component={Cars} />
             <Route path="/cars/:id" component={CarDetails} />
             <Route path="/add-car" component={AddCar} />

@@ -13,6 +13,29 @@ export const users = pgTable("users", {
   phone: text("phone"),
   profileImage: text("profile_image"),
   userType: text("user_type").notNull().default("renter"), // "owner", "renter", "both"
+  
+  // Security & Verification Fields
+  isEmailVerified: boolean("is_email_verified").notNull().default(false),
+  isPhoneVerified: boolean("is_phone_verified").notNull().default(false),
+  isIdVerified: boolean("is_id_verified").notNull().default(false),
+  isLicenseVerified: boolean("is_license_verified").notNull().default(false),
+  isBackgroundChecked: boolean("is_background_checked").notNull().default(false),
+  
+  // Verification Documents
+  idDocumentUrl: text("id_document_url"),
+  licenseDocumentUrl: text("license_document_url"),
+  insuranceDocumentUrl: text("insurance_document_url"),
+  
+  // Emergency Contact
+  emergencyContactName: text("emergency_contact_name"),
+  emergencyContactPhone: text("emergency_contact_phone"),
+  emergencyContactRelation: text("emergency_contact_relation"),
+  
+  // Security Status
+  securityScore: integer("security_score").default(0), // 0-100
+  isBlocked: boolean("is_blocked").notNull().default(false),
+  blockReason: text("block_reason"),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -37,6 +60,35 @@ export const cars = pgTable("cars", {
   longitude: decimal("longitude", { precision: 11, scale: 8 }),
   images: text("images").array().default([]),
   isAvailable: boolean("is_available").notNull().default(true),
+  
+  // Vehicle Security & Safety
+  vin: text("vin"), // Vehicle Identification Number
+  registrationNumber: text("registration_number"),
+  motExpiry: timestamp("mot_expiry"), // UK MOT test expiry
+  insuranceExpiry: timestamp("insurance_expiry"),
+  isInsured: boolean("is_insured").notNull().default(false),
+  insuranceProvider: text("insurance_provider"),
+  insurancePolicyNumber: text("insurance_policy_number"),
+  
+  // Safety Features
+  hasAirbags: boolean("has_airbags").default(true),
+  hasAbs: boolean("has_abs").default(true),
+  hasEsp: boolean("has_esp").default(false),
+  hasBluetooth: boolean("has_bluetooth").default(false),
+  hasGps: boolean("has_gps").default(false),
+  hasParkingSensors: boolean("has_parking_sensors").default(false),
+  
+  // Security Features
+  hasAlarm: boolean("has_alarm").default(false),
+  hasImmobilizer: boolean("has_immobilizer").default(false),
+  hasTrackingDevice: boolean("has_tracking_device").default(false),
+  
+  // Vehicle Condition
+  mileage: integer("mileage"),
+  lastServiceDate: timestamp("last_service_date"),
+  nextServiceDue: timestamp("next_service_due"),
+  condition: text("condition").default("good"), // "excellent", "good", "fair", "poor"
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
