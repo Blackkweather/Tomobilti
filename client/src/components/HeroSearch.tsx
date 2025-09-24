@@ -22,8 +22,9 @@ export default function HeroSearch() {
 
   const handleDateSelect = (start: Date | null, end: Date | null) => {
     setSelectedDates({ start, end });
+    // Only close calendar when both dates are selected
     if (start && end) {
-      setShowCalendar(false);
+      setTimeout(() => setShowCalendar(false), 100);
     }
   };
 
@@ -154,10 +155,14 @@ export default function HeroSearch() {
               onClick={() => setShowCalendar(false)}
             />
             {/* Calendar */}
-            <div className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div 
+              className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Calendar
                 selectedDates={selectedDates}
                 onDateSelect={handleDateSelect}
+                onClose={() => setShowCalendar(false)}
                 className="shadow-2xl"
               />
             </div>
