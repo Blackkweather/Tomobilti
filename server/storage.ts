@@ -63,8 +63,7 @@ export class MemStorage implements IStorage {
     this.bookings = new Map();
     this.reviews = new Map();
     
-    // Initialize with some sample data
-    this.initializeSampleData();
+    // Sample data initialization removed
   }
 
   // User operations
@@ -333,184 +332,7 @@ export class MemStorage implements IStorage {
     };
   }
 
-  // Initialize with sample data
-  private async initializeSampleData() {
-    const defaultPassword = process.env.DEMO_USER_PASSWORD || crypto.randomUUID();
-    
-    // Create sample users
-    const owner1 = await this.createUser({
-      email: "james.smith@example.com",
-      password: defaultPassword,
-      firstName: "James",
-      lastName: "Smith",
-      phone: "+44 7700 900123",
-      userType: "owner"
-    });
-
-    const owner2 = await this.createUser({
-      email: "sarah.johnson@example.com", 
-      password: defaultPassword,
-      firstName: "Sarah",
-      lastName: "Johnson",
-      phone: "+44 7700 900456",
-      userType: "owner"
-    });
-
-    const owner3 = await this.createUser({
-      email: "michael.brown@example.com", 
-      password: defaultPassword,
-      firstName: "Michael",
-      lastName: "Brown",
-      phone: "+44 7700 900789",
-      userType: "owner"
-    });
-
-    const renter1 = await this.createUser({
-      email: "emma.davis@example.com",
-      password: defaultPassword, 
-      firstName: "Emma",
-      lastName: "Davis",
-      phone: "+44 7700 900012",
-      userType: "renter"
-    });
-
-    // Create realistic cars with UK context
-    await this.createCar({
-      ownerId: owner1.id,
-      title: "Ford Focus - Family Hatchback",
-      description: "Spacious and economical family car perfect for UK roads. Air conditioning, built-in GPS.",
-      make: "Ford",
-      model: "Focus",
-      year: 2021,
-      fuelType: "petrol",
-      transmission: "manual",
-      seats: 5,
-      pricePerDay: "45.00",
-      location: "London, Westminster",
-      city: "London",
-      images: ["https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner2.id,
-      title: "Vauxhall Corsa - Modern City Car",
-      description: "Modern city car with all amenities. Perfect for urban driving, fuel efficient.",
-      make: "Vauxhall",
-      model: "Corsa",
-      year: 2022,
-      fuelType: "petrol",
-      transmission: "automatic", 
-      seats: 5,
-      pricePerDay: "55.00",
-      location: "Manchester, City Centre",
-      city: "Manchester",
-      images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner1.id,
-      title: "BMW 1 Series - Elegant Compact",
-      description: "Elegant compact car with refined finishes. Perfect for city commuting.",
-      make: "BMW",
-      model: "1 Series",
-      year: 2020,
-      fuelType: "diesel",
-      transmission: "manual",
-      seats: 4,
-      pricePerDay: "75.00",
-      location: "Birmingham, City Centre",
-      city: "Birmingham",
-      images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner3.id,
-      title: "Range Rover Evoque - Comfortable SUV",
-      description: "Spacious and comfortable SUV for your journeys. 4WD, automatic climate control.",
-      make: "Land Rover",
-      model: "Range Rover Evoque",
-      year: 2021,
-      fuelType: "diesel",
-      transmission: "automatic",
-      seats: 7,
-      pricePerDay: "120.00",
-      location: "Edinburgh, City Centre",
-      city: "Edinburgh",
-      images: ["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner2.id,
-      title: "Audi A3 - Premium Compact",
-      description: "Premium compact with high-end finishes. Sporty and comfortable driving.",
-      make: "Audi",
-      model: "A3",
-      year: 2021,
-      fuelType: "petrol",
-      transmission: "automatic",
-      seats: 5,
-      pricePerDay: "85.00",
-      location: "Liverpool, City Centre",
-      city: "Liverpool",
-      images: ["https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner3.id,
-      title: "Volkswagen Golf - Sporty Hatchback",
-      description: "Sporty hatchback with excellent value for money. Dynamic driving guaranteed.",
-      make: "Volkswagen",
-      model: "Golf",
-      year: 2020,
-      fuelType: "petrol",
-      transmission: "manual",
-      seats: 5,
-      pricePerDay: "65.00",
-      location: "Bristol, City Centre",
-      city: "Bristol",
-      images: ["https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner1.id,
-      title: "Nissan Qashqai - Family Crossover",
-      description: "Family crossover combining comfort and practicality. Elevated driving position.",
-      make: "Nissan",
-      model: "Qashqai",
-      year: 2022,
-      fuelType: "hybrid",
-      transmission: "automatic",
-      seats: 5,
-      pricePerDay: "70.00",
-      location: "Leeds, City Centre",
-      city: "Leeds",
-      images: ["https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner2.id,
-      title: "Mini Cooper - Compact City Car",
-      description: "Compact city car perfect for navigating UK streets. Economical and easy to park.",
-      make: "Mini",
-      model: "Cooper",
-      year: 2021,
-      fuelType: "petrol",
-      transmission: "manual",
-      seats: 4,
-      pricePerDay: "60.00",
-      location: "Glasgow, City Centre",
-      city: "Glasgow",
-      images: ["https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-  }
+  // Sample data initialization removed
 }
 
 import { DatabaseStorage } from './db_sqlite_simple';
@@ -518,8 +340,4 @@ import { DatabaseStorage } from './db_sqlite_simple';
 // Use SQLite storage instead of PostgreSQL for simplicity
 export const storage = new DatabaseStorage();
 
-// Initialize sample data on startup (non-blocking)
-storage.initializeSampleData().catch((error) => {
-  console.log('Sample data initialization skipped:', error.message);
-  // Continue without sample data - this is not critical
-});
+// Sample data initialization removed
