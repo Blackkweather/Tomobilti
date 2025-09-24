@@ -47,12 +47,12 @@ export default function Register() {
 
     // Validation
     if (form.password !== form.confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError('Passwords do not match');
       return;
     }
 
     if (form.password.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères');
+      setError('Password must contain at least 8 characters');
       return;
     }
 
@@ -70,7 +70,7 @@ export default function Register() {
       // Smart redirection based on user type
       redirectBasedOnUserType(response.user.userType, setLocation);
     } catch (err: any) {
-      setError(err.message || 'Erreur lors de l\'inscription. Veuillez réessayer.');
+      setError(err.message || 'Registration error. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -89,15 +89,15 @@ export default function Register() {
             <img src="/assets/logo clean jdid 7nin.png" alt="Tomobilto" className="h-12 w-12" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Créez votre compte
+            Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Ou{' '}
+            Or{' '}
             <Link
               href="/login"
               className="font-medium text-green-600 hover:text-green-500"
             >
-              connectez-vous à votre compte existant
+              sign in to your existing account
             </Link>
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function Register() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                  Prénom
+                  First Name
                 </label>
                 <input
                   id="firstName"
@@ -118,12 +118,12 @@ export default function Register() {
                   value={form.firstName}
                   onChange={handleChange('firstName')}
                   className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="Votre prénom"
+                  placeholder="Your first name"
                 />
               </div>
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                  Nom
+                  Last Name
                 </label>
                 <input
                   id="lastName"
@@ -135,14 +135,14 @@ export default function Register() {
                   value={form.lastName}
                   onChange={handleChange('lastName')}
                   className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                  placeholder="Votre nom"
+                  placeholder="Your last name"
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Adresse email
+                Email Address
               </label>
               <input
                 id="email"
@@ -160,7 +160,7 @@ export default function Register() {
 
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                Téléphone (optionnel)
+                Phone (optional)
               </label>
               <input
                 id="phone"
