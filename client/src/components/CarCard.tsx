@@ -171,9 +171,9 @@ export default function CarCard({ car }: CarCardProps) {
         <div className="flex items-center justify-between pt-2">
           <div>
             <span className="text-2xl font-bold text-primary" data-testid={`text-car-price-${id}`}>
-              {pricePerDay} {currency}
+              {currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency} {pricePerDay}
             </span>
-            <span className="text-sm text-muted-foreground">/jour</span>
+            <span className="text-sm text-muted-foreground">/day</span>
           </div>
           
           {isAvailable ? (

@@ -40,9 +40,9 @@ export default function Settings() {
     emailNotifications: true,
     smsNotifications: false,
     marketingEmails: false,
-    language: 'fr',
-    currency: 'MAD',
-    timezone: 'Africa/Casablanca'
+    language: 'en',
+    currency: 'GBP',
+    timezone: 'Europe/London'
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -288,8 +288,8 @@ export default function Settings() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="fr">Français</SelectItem>
                       <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="fr">Français</SelectItem>
                       <SelectItem value="ar">العربية</SelectItem>
                     </SelectContent>
                   </Select>
@@ -304,9 +304,9 @@ export default function Settings() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="MAD">MAD (Dirham marocain)</SelectItem>
+                      <SelectItem value="GBP">GBP (British Pound)</SelectItem>
                       <SelectItem value="EUR">EUR (Euro)</SelectItem>
-                      <SelectItem value="USD">USD (Dollar américain)</SelectItem>
+                      <SelectItem value="USD">USD (US Dollar)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

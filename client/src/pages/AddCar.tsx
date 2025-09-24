@@ -179,7 +179,7 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Price per Day ($)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Price per Day (£)</label>
                 <input
                   type="number"
                   value={form.pricePerDay}
@@ -242,13 +242,13 @@ export default function AddCar() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-              <input
-                type="text"
-                value={form.location}
-                onChange={handleChange("location")}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="City, State"
-              />
+                <input
+                  type="text"
+                  value={form.location}
+                  onChange={handleChange("location")}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="City, County"
+                />
               {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
             </div>
 

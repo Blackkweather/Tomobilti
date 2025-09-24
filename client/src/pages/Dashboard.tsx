@@ -184,7 +184,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-green-600">Revenus Totaux</p>
-                      <p className="text-3xl font-bold text-green-700">{totalEarnings.toFixed(2)} MAD</p>
+                      <p className="text-3xl font-bold text-green-700">£{totalEarnings.toFixed(2)}</p>
                     </div>
                     <div className="p-3 bg-green-200 rounded-full">
                       <DollarSign className="h-6 w-6 text-green-600" />
@@ -339,7 +339,7 @@ export default function Dashboard() {
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-green-600 text-lg">
-                            {car.pricePerDay} MAD/jour
+                            £{car.pricePerDay}/day
                           </span>
                           <div className="flex items-center">
                             <Star className="w-4 h-4 text-yellow-400 mr-1" />
@@ -416,7 +416,7 @@ export default function Dashboard() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold text-green-600">
-                            {booking.totalAmount} MAD
+                            £{booking.totalAmount}
                           </div>
                           <div className="mt-2">
                             {getBookingStatusBadge(booking.status)}

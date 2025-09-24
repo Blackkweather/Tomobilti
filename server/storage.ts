@@ -339,174 +339,174 @@ export class MemStorage implements IStorage {
     
     // Create sample users
     const owner1 = await this.createUser({
-      email: "ahmed.bennani@example.com",
+      email: "james.smith@example.com",
       password: defaultPassword,
-      firstName: "Ahmed",
-      lastName: "Bennani",
-      phone: "+212 6 12 34 56 78",
+      firstName: "James",
+      lastName: "Smith",
+      phone: "+44 7700 900123",
       userType: "owner"
     });
 
     const owner2 = await this.createUser({
-      email: "youssef.alami@example.com", 
+      email: "sarah.johnson@example.com", 
       password: defaultPassword,
-      firstName: "Youssef",
-      lastName: "Alami",
-      phone: "+212 6 23 45 67 89",
+      firstName: "Sarah",
+      lastName: "Johnson",
+      phone: "+44 7700 900456",
       userType: "owner"
     });
 
     const owner3 = await this.createUser({
-      email: "sara.idrissi@example.com", 
+      email: "michael.brown@example.com", 
       password: defaultPassword,
-      firstName: "Sara",
-      lastName: "Idrissi",
-      phone: "+212 6 45 67 89 01",
+      firstName: "Michael",
+      lastName: "Brown",
+      phone: "+44 7700 900789",
       userType: "owner"
     });
 
     const renter1 = await this.createUser({
-      email: "fatima.zahra@example.com",
+      email: "emma.davis@example.com",
       password: defaultPassword, 
-      firstName: "Fatima",
-      lastName: "Zahra",
-      phone: "+212 6 34 56 78 90",
+      firstName: "Emma",
+      lastName: "Davis",
+      phone: "+44 7700 900012",
       userType: "renter"
     });
 
-    // Create realistic cars with specific model images
+    // Create realistic cars with UK context
     await this.createCar({
       ownerId: owner1.id,
-      title: "Dacia Logan - Berline Familiale",
-      description: "Berline spacieuse et économique, parfaite pour les familles. Climatisation, GPS intégré.",
-      make: "Dacia",
-      model: "Logan",
+      title: "Ford Focus - Family Hatchback",
+      description: "Spacious and economical family car perfect for UK roads. Air conditioning, built-in GPS.",
+      make: "Ford",
+      model: "Focus",
       year: 2021,
-      fuelType: "essence",
+      fuelType: "petrol",
       transmission: "manual",
       seats: 5,
-      pricePerDay: "250.00",
-      location: "Casablanca, Maarif",
-      city: "Casablanca",
+      pricePerDay: "45.00",
+      location: "London, Westminster",
+      city: "London",
       images: ["https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner2.id,
-      title: "Renault Clio - Citadine Moderne",
-      description: "Citadine moderne avec toutes les commodités. Idéale pour la ville, consommation réduite.",
-      make: "Renault",
-      model: "Clio",
+      title: "Vauxhall Corsa - Modern City Car",
+      description: "Modern city car with all amenities. Perfect for urban driving, fuel efficient.",
+      make: "Vauxhall",
+      model: "Corsa",
       year: 2022,
-      fuelType: "essence",
+      fuelType: "petrol",
       transmission: "automatic", 
       seats: 5,
-      pricePerDay: "320.00",
-      location: "Rabat, Agdal",
-      city: "Rabat",
+      pricePerDay: "55.00",
+      location: "Manchester, City Centre",
+      city: "Manchester",
       images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner1.id,
-      title: "Peugeot 208 - Compacte Élégante",
-      description: "Compacte élégante avec finitions soignées. Parfaite pour les déplacements urbains.",
-      make: "Peugeot",
-      model: "208",
+      title: "BMW 1 Series - Elegant Compact",
+      description: "Elegant compact car with refined finishes. Perfect for city commuting.",
+      make: "BMW",
+      model: "1 Series",
       year: 2020,
       fuelType: "diesel",
       transmission: "manual",
       seats: 4,
-      pricePerDay: "280.00",
-      location: "Marrakech, Guéliz",
-      city: "Marrakech",
+      pricePerDay: "75.00",
+      location: "Birmingham, City Centre",
+      city: "Birmingham",
       images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner3.id,
-      title: "Hyundai Tucson - SUV Confortable",
-      description: "SUV spacieux et confortable pour vos voyages. 4x4, climatisation automatique.",
-      make: "Hyundai",
-      model: "Tucson",
+      title: "Range Rover Evoque - Comfortable SUV",
+      description: "Spacious and comfortable SUV for your journeys. 4WD, automatic climate control.",
+      make: "Land Rover",
+      model: "Range Rover Evoque",
       year: 2021,
       fuelType: "diesel",
       transmission: "automatic",
       seats: 7,
-      pricePerDay: "480.00",
-      location: "Fès, Centre-ville",
-      city: "Fès",
+      pricePerDay: "120.00",
+      location: "Edinburgh, City Centre",
+      city: "Edinburgh",
       images: ["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner2.id,
-      title: "Volkswagen Golf - Compacte Premium",
-      description: "Compacte premium avec finitions haut de gamme. Conduite sportive et confortable.",
-      make: "Volkswagen",
-      model: "Golf",
+      title: "Audi A3 - Premium Compact",
+      description: "Premium compact with high-end finishes. Sporty and comfortable driving.",
+      make: "Audi",
+      model: "A3",
       year: 2021,
-      fuelType: "essence",
+      fuelType: "petrol",
       transmission: "automatic",
       seats: 5,
-      pricePerDay: "380.00",
-      location: "Tanger, Centre",
-      city: "Tanger",
+      pricePerDay: "85.00",
+      location: "Liverpool, City Centre",
+      city: "Liverpool",
       images: ["https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner3.id,
-      title: "Ford Focus - Berline Sportive",
-      description: "Berline sportive avec excellent rapport qualité-prix. Conduite dynamique assurée.",
-      make: "Ford",
-      model: "Focus",
+      title: "Volkswagen Golf - Sporty Hatchback",
+      description: "Sporty hatchback with excellent value for money. Dynamic driving guaranteed.",
+      make: "Volkswagen",
+      model: "Golf",
       year: 2020,
-      fuelType: "essence",
+      fuelType: "petrol",
       transmission: "manual",
       seats: 5,
-      pricePerDay: "300.00",
-      location: "Agadir, Secteur Touristique",
-      city: "Agadir",
+      pricePerDay: "65.00",
+      location: "Bristol, City Centre",
+      city: "Bristol",
       images: ["https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner1.id,
-      title: "Nissan Qashqai - Crossover Familial",
-      description: "Crossover familial alliant confort et praticité. Position de conduite surélevée.",
+      title: "Nissan Qashqai - Family Crossover",
+      description: "Family crossover combining comfort and practicality. Elevated driving position.",
       make: "Nissan",
       model: "Qashqai",
       year: 2022,
       fuelType: "hybrid",
       transmission: "automatic",
       seats: 5,
-      pricePerDay: "420.00",
-      location: "Casablanca, Ain Diab",
-      city: "Casablanca",
+      pricePerDay: "70.00",
+      location: "Leeds, City Centre",
+      city: "Leeds",
       images: ["https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner2.id,
-      title: "Kia Picanto - Mini Citadine",
-      description: "Mini citadine parfaite pour se faufiler en ville. Économique et facile à garer.",
-      make: "Kia",
-      model: "Picanto",
+      title: "Mini Cooper - Compact City Car",
+      description: "Compact city car perfect for navigating UK streets. Economical and easy to park.",
+      make: "Mini",
+      model: "Cooper",
       year: 2021,
-      fuelType: "essence",
+      fuelType: "petrol",
       transmission: "manual",
       seats: 4,
-      pricePerDay: "220.00",
-      location: "Rabat, Hassan",
-      city: "Rabat",
+      pricePerDay: "60.00",
+      location: "Glasgow, City Centre",
+      city: "Glasgow",
       images: ["https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800&h=600&fit=crop&auto=format"],
       isAvailable: true
     });
