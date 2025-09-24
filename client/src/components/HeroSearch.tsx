@@ -63,8 +63,8 @@ export default function HeroSearch() {
   };
 
   return (
-    <div className="relative">
-      <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl max-w-4xl mx-auto p-4 md:p-6">
+    <div className="relative z-10">
+      <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl max-w-4xl mx-auto p-4 md:p-6 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           {/* Location */}
           <div className="space-y-2">
@@ -147,13 +147,21 @@ export default function HeroSearch() {
 
         {/* Calendar Popup */}
         {showCalendar && (
-          <div className="absolute z-50 mt-2 left-1/2 transform -translate-x-1/2">
-            <Calendar
-              selectedDates={selectedDates}
-              onDateSelect={handleDateSelect}
-              className="shadow-2xl"
+          <>
+            {/* Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black/20 z-[9998]"
+              onClick={() => setShowCalendar(false)}
             />
-          </div>
+            {/* Calendar */}
+            <div className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <Calendar
+                selectedDates={selectedDates}
+                onDateSelect={handleDateSelect}
+                className="shadow-2xl"
+              />
+            </div>
+          </>
         )}
 
         {/* Quick Info */}
