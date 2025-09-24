@@ -7,7 +7,9 @@ import { Separator } from '@/components/ui/separator';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Fuel, Users, Star, Shield, Clock } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Calendar, MapPin, Fuel, Users, Star, Shield, Clock, CreditCard, Smartphone, Building2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 import type { Car } from '@shared/schema';
 
@@ -26,6 +28,7 @@ interface BookingModalProps {
 }
 
 export default function BookingModal({ car, onClose }: BookingModalProps) {
+  const { user } = useAuth();
   const [bookingData, setBookingData] = useState({
     startDate: '',
     endDate: '',
@@ -33,12 +36,34 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
     endTime: '18:00',
     message: ''
   });
+  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [paymentData, setPaymentData] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardholderName: '',
+    email: '',
+    phone: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (!car) return null;
 
   const handleInputChange = (field: string, value: string) => {
     setBookingData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handlePaymentDataChange = (field: string, value: string) => {
+    setPaymentData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
   };
 
   const validateDates = () => {
@@ -49,10 +74,10 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
     today.setHours(0, 0, 0, 0);
     
     if (start < today) {
-      return { isValid: false, error: 'La date de début ne peut pas être dans le passé' };
+      return { isValid: false, error: 'Start date cannot be in the past' };
     }
     if (end <= start) {
-      return { isValid: false, error: 'La date de fin doit être après la date de début' };
+      return { isValid: false, error: 'End date must be after start date' };
     }
     return { isValid: true, error: '' };
   };
@@ -84,22 +109,108 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
 
   const handleConfirmBooking = async () => {
     setIsLoading(true);
-    console.log('Booking confirmed:', { car: car.id, ...bookingData, total });
     
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      // Validate form
+      const newErrors: Record<string, string> = {};
+      
+      // Validate dates
+      if (!bookingData.startDate) {
+        newErrors.startDate = 'Start date is required';
+      }
+      if (!bookingData.endDate) {
+        newErrors.endDate = 'End date is required';
+      }
+      if (bookingData.startDate && bookingData.endDate) {
+        const start = new Date(bookingData.startDate);
+        const end = new Date(bookingData.endDate);
+        if (start >= end) {
+          newErrors.endDate = 'End date must be after start date';
+        }
+      }
+      
+      // Validate payment data
+      if (paymentMethod === 'card') {
+        if (!paymentData.cardNumber) {
+          newErrors.cardNumber = 'Card number is required';
+        } else if (paymentData.cardNumber.replace(/\s/g, '').length < 13) {
+          newErrors.cardNumber = 'Card number must be at least 13 digits';
+        }
+        if (!paymentData.expiryDate) {
+          newErrors.expiryDate = 'Expiry date is required';
+        }
+        if (!paymentData.cvv) {
+          newErrors.cvv = 'CVV is required';
+        }
+        if (!paymentData.cardholderName) {
+          newErrors.cardholderName = 'Cardholder name is required';
+        }
+      }
+      
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Create booking data for API
+      const bookingPayload = {
+        carId: car.id,
+        renterId: user?.id,
+        startDate: new Date(`${bookingData.startDate}T${bookingData.startTime}:00`).toISOString(),
+        endDate: new Date(`${bookingData.endDate}T${bookingData.endTime}:00`).toISOString(),
+        startTime: bookingData.startTime,
+        endTime: bookingData.endTime,
+        totalAmount: total.toString(),
+        serviceFee: (total * 0.05).toString(),
+        insurance: (total * 0.03).toString(),
+        message: bookingData.message || null,
+        status: 'pending',
+        paymentStatus: 'pending'
+      };
+      
+      console.log('Creating booking:', bookingPayload);
+      
+      // Call the booking API
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(bookingPayload)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Booking failed');
+      }
+      
+      const booking = await response.json();
+      console.log('Booking created:', booking);
+      
+      // Simulate payment processing for demo
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Show success message
+      alert(`Booking confirmed! Total: ${total} ${car.currency}\n\nBooking ID: ${booking.id}\n\nYou will receive a confirmation email shortly.`);
+      
       setIsLoading(false);
       onClose();
-      // Show success message
-    }, 2000);
+      
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert(`Booking failed: ${error.message}`);
+      setIsLoading(false);
+    }
   };
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="booking-description">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] md:w-full mx-4 md:mx-0" aria-describedby="booking-description">
         <DialogHeader>
-          <DialogTitle>Réserver ce véhicule</DialogTitle>
-          <p id="booking-description" className="sr-only">Formulaire de réservation pour le véhicule sélectionné avec calcul automatique des prix et dates de location.</p>
+          <DialogTitle>Book This Vehicle</DialogTitle>
+          <p id="booking-description" className="sr-only">Booking form for the selected vehicle with automatic price calculation and rental dates. Complete your booking by selecting dates, times, and payment method.</p>
         </DialogHeader>
 
         <div className="space-y-6">
@@ -124,10 +235,10 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
                     <div className="flex items-center gap-1">
                       <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                       <span>{car.rating}</span>
-                      <span className="text-muted-foreground">({car.reviewCount} avis)</span>
+                      <span className="text-muted-foreground">({car.reviewCount} reviews)</span>
                     </div>
                     <Badge variant="outline">{car.fuelType}</Badge>
-                    <span className="text-muted-foreground">{car.seats} places</span>
+                    <span className="text-muted-foreground">{car.seats} seats</span>
                   </div>
                   
                   <div className="flex items-center gap-2">
@@ -138,7 +249,7 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
                       </AvatarFallback>
                     </Avatar>
                     <span className="text-sm text-muted-foreground">
-                      {car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Propriétaire'}
+                      {car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Owner'}
                     </span>
                   </div>
                 </div>
@@ -147,31 +258,35 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
           </Card>
 
           {/* Booking Form */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <h3 className="font-semibold flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
-                Dates et horaires
+                Dates and Times
               </h3>
               
               {dateError && (
                 <div className="text-red-600 text-sm">{dateError}</div>
               )}
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Date de début</Label>
+                  <Label>Start Date</Label>
                   <Input
                     type="date"
                     value={bookingData.startDate}
                     onChange={(e) => handleInputChange('startDate', e.target.value)}
                     data-testid="input-booking-start-date"
                     min={new Date().toISOString().split('T')[0]}
+                    className={errors.startDate ? 'border-red-500 focus:border-red-500' : ''}
                   />
+                  {errors.startDate && (
+                    <p className="text-red-500 text-sm mt-1">{errors.startDate}</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>Heure de début</Label>
+                  <Label>Start Time</Label>
                   <Input
                     type="time"
                     value={bookingData.startTime}
@@ -183,18 +298,22 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Date de fin</Label>
+                  <Label>End Date</Label>
                   <Input
                     type="date"
                     value={bookingData.endDate}
                     onChange={(e) => handleInputChange('endDate', e.target.value)}
                     data-testid="input-booking-end-date"
                     min={bookingData.startDate || new Date().toISOString().split('T')[0]}
+                    className={errors.endDate ? 'border-red-500 focus:border-red-500' : ''}
                   />
+                  {errors.endDate && (
+                    <p className="text-red-500 text-sm mt-1">{errors.endDate}</p>
+                  )}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>Heure de fin</Label>
+                  <Label>End Time</Label>
                   <Input
                     type="time"
                     value={bookingData.endTime}
@@ -205,10 +324,10 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
               </div>
               
               <div className="space-y-2">
-                <Label>Message au propriétaire (optionnel)</Label>
+                <Label>Message to Owner (optional)</Label>
                 <textarea
                   className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Présentez-vous et expliquez l'utilisation prévue du véhicule..."
+                  placeholder="Introduce yourself and explain the intended use of the vehicle..."
                   value={bookingData.message}
                   onChange={(e) => handleInputChange('message', e.target.value)}
                   data-testid="input-booking-message"
@@ -216,25 +335,146 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
               </div>
             </div>
 
+            {/* Payment Method Selection */}
+            <div className="space-y-4">
+              <h3 className="font-semibold flex items-center gap-2">
+                <CreditCard className="h-4 w-4" />
+                Payment Method
+              </h3>
+              
+              <RadioGroup 
+                value={paymentMethod} 
+                onValueChange={setPaymentMethod}
+                aria-label="Select payment method"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="card" id="card" />
+                  <Label htmlFor="card" className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    Credit/Debit Card
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="paypal" id="paypal" />
+                  <Label htmlFor="paypal" className="flex items-center gap-2">
+                    <Building2 className="h-4 w-4" />
+                    PayPal
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="apple" id="apple" />
+                  <Label htmlFor="apple" className="flex items-center gap-2">
+                    <Smartphone className="h-4 w-4" />
+                    Apple Pay
+                  </Label>
+                </div>
+              </RadioGroup>
+
+              {/* Payment Form */}
+              {paymentMethod === 'card' && (
+                <Card>
+                  <CardContent className="p-4 space-y-4">
+                    <div className="space-y-2">
+                      <Label>Card Number</Label>
+                      <Input
+                        placeholder="1234 5678 9012 3456"
+                        value={paymentData.cardNumber}
+                        onChange={(e) => handlePaymentDataChange('cardNumber', e.target.value)}
+                        maxLength={19}
+                        className={errors.cardNumber ? 'border-red-500 focus:border-red-500' : ''}
+                      />
+                      {errors.cardNumber && (
+                        <p className="text-red-500 text-sm mt-1">{errors.cardNumber}</p>
+                      )}
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Expiry Date</Label>
+                        <Input
+                          placeholder="MM/YY"
+                          value={paymentData.expiryDate}
+                          onChange={(e) => handlePaymentDataChange('expiryDate', e.target.value)}
+                          maxLength={5}
+                          className={errors.expiryDate ? 'border-red-500 focus:border-red-500' : ''}
+                        />
+                        {errors.expiryDate && (
+                          <p className="text-red-500 text-sm mt-1">{errors.expiryDate}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label>CVV</Label>
+                        <Input
+                          placeholder="123"
+                          value={paymentData.cvv}
+                          onChange={(e) => handlePaymentDataChange('cvv', e.target.value)}
+                          maxLength={4}
+                          className={errors.cvv ? 'border-red-500 focus:border-red-500' : ''}
+                        />
+                        {errors.cvv && (
+                          <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Cardholder Name</Label>
+                      <Input
+                        placeholder="John Smith"
+                        value={paymentData.cardholderName}
+                        onChange={(e) => handlePaymentDataChange('cardholderName', e.target.value)}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {paymentMethod === 'paypal' && (
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-center space-y-2">
+                      <Building2 className="h-8 w-8 mx-auto text-blue-600" />
+                      <p className="text-sm text-muted-foreground">
+                        You will be redirected to PayPal to complete your payment securely.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {paymentMethod === 'apple' && (
+                <Card>
+                  <CardContent className="p-4">
+                    <div className="text-center space-y-2">
+                      <Smartphone className="h-8 w-8 mx-auto text-gray-900" />
+                      <p className="text-sm text-muted-foreground">
+                        Complete your payment securely with Apple Pay.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
             {/* Price Breakdown */}
             <div className="space-y-4">
-              <h3 className="font-semibold">Récapitulatif de la réservation</h3>
+              <h3 className="font-semibold">Booking Summary</h3>
               
               {days > 0 && (
                 <Card>
                   <CardContent className="p-4 space-y-3">
                     <div className="flex justify-between items-center">
-                      <span>{car.pricePerDay} {car.currency} x {days} jour{days > 1 ? 's' : ''}</span>
+                      <span>{car.pricePerDay} {car.currency} x {days} day{days > 1 ? 's' : ''}</span>
                       <span data-testid="text-subtotal">{subtotal} {car.currency}</span>
                     </div>
                     
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>Frais de service</span>
+                      <span>Service Fee</span>
                       <span data-testid="text-service-fee">{serviceFee} {car.currency}</span>
                     </div>
                     
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>Assurance</span>
+                      <span>Insurance</span>
                       <span data-testid="text-insurance">{insurance} {car.currency}</span>
                     </div>
                     
@@ -254,15 +494,15 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm">
                   <Shield className="h-4 w-4 text-primary" />
-                  <span>Protection incluse</span>
+                  <span>Protection included</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="h-4 w-4 text-primary" />
-                  <span>Confirmation instantanée</span>
+                  <span>Instant confirmation</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Users className="h-4 w-4 text-primary" />
-                  <span>Support 24/7</span>
+                  <span>24/7 Support</span>
                 </div>
               </div>
             </div>
@@ -271,7 +511,7 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
           {/* Action Buttons */}
           <div className="flex gap-3 justify-end">
             <Button variant="outline" onClick={onClose} data-testid="button-cancel-booking">
-              Annuler
+              Cancel
             </Button>
             <Button 
               onClick={handleConfirmBooking} 
@@ -279,7 +519,7 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
               data-testid="button-confirm-booking"
               className="hover-elevate active-elevate-2"
             >
-              {isLoading ? 'Confirmation...' : `Confirmer - ${total} ${car.currency}`}
+              {isLoading ? 'Processing...' : `Confirm Booking - ${total} ${car.currency}`}
             </Button>
           </div>
         </div>

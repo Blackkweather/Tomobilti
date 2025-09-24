@@ -7,50 +7,41 @@ export default function Hero() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Horizontal hero images for better visual appeal
-  const heroImages = [
-    'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1920&h=600&fit=crop&auto=format', // Mercedes-Benz
-    'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1920&h=600&fit=crop&auto=format', // Mercedes-Benz alternative
-    'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&h=600&fit=crop&auto=format'  // Generic car
-  ];
+  // Single high-quality hero image for better visual impact
+  const heroImage = 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1920&h=800&fit=crop&auto=format&q=80';
 
   return (
-    <div className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
-      {/* Horizontal Background Images Carousel */}
+    <div className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+      {/* Single Hero Background Image */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-green-600/85 to-green-800/85" />
-        <div className="flex h-full">
-          {heroImages.map((image, index) => (
-            <div key={index} className="flex-1 relative">
-              <img 
-                src={image} 
-                alt={index === 0 ? 'Luxury car rental UK' : index === 1 ? 'Premium car rental UK' : `UK car rental ${index + 1}`}
-                className="w-full h-full object-cover"
-                loading="eager"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&h=600&fit=crop&auto=format';
-                }}
-              />
-              <div className="absolute inset-0 bg-black/20" />
-            </div>
-          ))}
-        </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+        <img 
+          src={heroImage} 
+          alt="Premium car rental in the UK - Luxury vehicles for your next journey"
+          className="w-full h-full object-cover"
+          loading="eager"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&h=800&fit=crop&auto=format&q=80';
+          }}
+        />
+        {/* Subtle overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/20 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20" />
       </div>
       
       <div className="relative z-10 container px-4 text-center text-white">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Car Rental
-              <span className="block text-white bg-green-500/30 backdrop-blur-sm rounded-lg px-4 py-2 mt-2 inline-block">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight drop-shadow-2xl">
+              <span className="block text-white">Car Rental</span>
+              <span className="block text-white bg-blue-600/90 backdrop-blur-md rounded-2xl px-6 py-3 mt-4 inline-block border border-blue-500/30 shadow-2xl">
                 Peer-to-Peer in the UK
               </span>
             </h1>
-            <p className="text-lg md:text-xl text-gray-100 max-w-xl mx-auto font-medium">
-              Discover the UK with our peer-to-peer car rental platform.
-              <span className="block text-yellow-300 font-bold mt-2">
+            <p className="text-xl md:text-2xl text-white/95 max-w-3xl mx-auto leading-relaxed drop-shadow-lg font-medium">
+              Discover the UK with premium vehicles from local owners. 
+              From luxury sedans to eco-friendly electric cars, find your perfect ride.
+              <span className="block text-blue-200 font-bold mt-3 text-2xl md:text-3xl">
                 Find the perfect car for your journey!
               </span>
             </p>

@@ -45,8 +45,12 @@ export default function Header() {
   const navItems = [
     { href: '/', label: 'Home' },
     { href: '/cars', label: 'Vehicles' },
-    { href: '/become-host', label: 'Become Host' },
     { href: '/about', label: 'About' },
+  ];
+
+  const secondaryNavItems = [
+    { href: '/become-host', label: 'Become Host', icon: Plus },
+    { href: '/security', label: 'Security', icon: Shield },
   ];
 
   return (
@@ -73,20 +77,20 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Search Bar */}
-        <div className="hidden md:flex items-center gap-2 flex-1 max-w-md">
+        {/* Enhanced Search Bar */}
+        <div className="hidden md:flex items-center gap-2 flex-1 max-w-lg">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               data-testid="input-search"
-              placeholder="Search in London, Manchester..."
+              placeholder="Search cars, locations, or brands..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-10"
+              className="pl-10 bg-white/80 backdrop-blur-sm border-gray-200 focus:bg-white transition-all duration-200"
             />
           </div>
-          <Button onClick={handleSearch} data-testid="button-search" className="hover-elevate active-elevate-2">
+          <Button onClick={handleSearch} data-testid="button-search" className="hover-elevate active-elevate-2 bg-blue-600 hover:bg-blue-700 text-white">
             <Search className="h-4 w-4" />
           </Button>
         </div>
@@ -95,10 +99,20 @@ export default function Header() {
         <div className="flex items-center gap-2">
           {isAuthenticated && user ? (
             <>
-              <Button variant="outline" size="sm" data-testid="button-add-car" className="hidden md:flex hover-elevate active-elevate-2">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Vehicle
-              </Button>
+              <div className="hidden md:flex items-center gap-2">
+                <Link href="/become-host">
+                  <Button variant="outline" size="sm" className="hover-elevate active-elevate-2 border-blue-200 text-blue-700 hover:bg-blue-50">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Become Host
+                  </Button>
+                </Link>
+                <Link href="/security">
+                  <Button variant="outline" size="sm" className="hover-elevate active-elevate-2 border-blue-200 text-blue-700 hover:bg-blue-50">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Security
+                  </Button>
+                </Link>
+              </div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild data-testid="button-user-menu">
                   <Button variant="ghost" size="icon" className="hover-elevate active-elevate-2">

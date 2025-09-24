@@ -11,56 +11,57 @@
   --opaque-button-border-intensity: -8; /* In terms of percentages */
 
   /* Backgrounds applied on top of other backgrounds when hovered/active */
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+  --elevate-1: rgba(0,0,0, .05);
+  --elevate-2: rgba(0,0,0, .12);
+  --elevate-3: rgba(0,0,0, .18);
 
-  --background: 220 10% 97%;
+  --background: 0 0% 100%;
 
   --foreground: 220 15% 15%;
 
   --border: 220 12% 90%;
 
-  --card: 220 10% 95%;
+  --card: 0 0% 100%;
 
   --card-foreground: 220 15% 15%;
 
   --card-border: 220 12% 88%;
 
-  --sidebar: 220 10% 93%;
+  --sidebar: 220 10% 98%;
 
   --sidebar-foreground: 220 15% 15%;
 
-  --sidebar-border: 220 12% 86%;
+  --sidebar-border: 220 12% 90%;
 
-  --sidebar-primary: 150 60% 35%;
+  --sidebar-primary: 220 60% 35%;
 
-  --sidebar-primary-foreground: 150 60% 95%;
+  --sidebar-primary-foreground: 0 0% 100%;
 
-  --sidebar-accent: 220 8% 88%;
+  --sidebar-accent: 220 8% 95%;
 
   --sidebar-accent-foreground: 220 15% 15%;
 
-  --sidebar-ring: 150 60% 35%;
+  --sidebar-ring: 220 60% 35%;
 
-  --popover: 220 10% 90%;
+  --popover: 0 0% 100%;
 
   --popover-foreground: 220 15% 15%;
 
-  --popover-border: 220 12% 83%;
+  --popover-border: 220 12% 90%;
 
-  --primary: 150 60% 35%;
+  --primary: 220 60% 35%;
 
-  --primary-foreground: 150 60% 95%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 220 8% 85%;
+  --secondary: 220 8% 95%;
 
   --secondary-foreground: 220 15% 15%;
 
-  --muted: 220 6% 88%;
+  --muted: 220 8% 95%;
 
   --muted-foreground: 220 15% 45%;
 
-  --accent: 220 8% 86%;
+  --accent: 220 8% 95%;
 
   --accent-foreground: 220 15% 15%;
 
@@ -68,9 +69,9 @@
 
   --destructive-foreground: 0 70% 95%;
 
-  --input: 220 15% 75%;
-  --ring: 150 60% 35%;
-  --chart-1: 150 60% 35%;
+  --input: 220 15% 95%;
+  --ring: 220 60% 35%;
+  --chart-1: 220 60% 35%;
   --chart-2: 0 70% 45%;
   --chart-3: 180 50% 40%;
   --chart-4: 38 92% 45%;
@@ -132,63 +133,63 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --background: 220 15% 10%;
+  --background: 220 15% 8%;
 
-  --foreground: 220 10% 90%;
+  --foreground: 0 0% 95%;
 
-  --border: 220 12% 15%;
+  --border: 220 15% 20%;
 
-  --card: 220 15% 12%;
+  --card: 220 15% 10%;
 
-  --card-foreground: 220 10% 90%;
+  --card-foreground: 0 0% 95%;
 
-  --card-border: 220 12% 18%;
+  --card-border: 220 15% 15%;
 
-  --sidebar: 220 15% 8%;
+  --sidebar: 220 15% 10%;
 
-  --sidebar-foreground: 220 10% 90%;
+  --sidebar-foreground: 0 0% 95%;
 
-  --sidebar-border: 220 12% 12%;
+  --sidebar-border: 220 15% 15%;
 
-  --sidebar-primary: 150 60% 35%;
+  --sidebar-primary: 220 60% 35%;
 
-  --sidebar-primary-foreground: 150 60% 95%;
+  --sidebar-primary-foreground: 0 0% 100%;
 
-  --sidebar-accent: 220 12% 15%;
+  --sidebar-accent: 220 15% 15%;
 
-  --sidebar-accent-foreground: 220 10% 90%;
+  --sidebar-accent-foreground: 0 0% 95%;
 
-  --sidebar-ring: 150 60% 35%;
+  --sidebar-ring: 220 60% 35%;
 
-  --popover: 220 15% 14%;
+  --popover: 220 15% 10%;
 
-  --popover-foreground: 220 10% 90%;
+  --popover-foreground: 0 0% 95%;
 
-  --popover-border: 220 12% 20%;
+  --popover-border: 220 15% 15%;
 
-  --primary: 150 60% 35%;
+  --primary: 220 60% 35%;
 
-  --primary-foreground: 150 60% 95%;
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 220 12% 18%;
+  --secondary: 220 15% 15%;
 
-  --secondary-foreground: 220 10% 90%;
+  --secondary-foreground: 0 0% 95%;
 
-  --muted: 220 10% 16%;
+  --muted: 220 15% 15%;
 
-  --muted-foreground: 220 10% 55%;
+  --muted-foreground: 220 15% 70%;
 
-  --accent: 220 12% 16%;
+  --accent: 220 15% 15%;
 
-  --accent-foreground: 220 10% 90%;
+  --accent-foreground: 0 0% 95%;
 
   --destructive: 0 70% 45%;
 
   --destructive-foreground: 0 70% 95%;
 
-  --input: 220 15% 25%;
-  --ring: 150 60% 35%;
-  --chart-1: 150 60% 65%;
+  --input: 220 15% 20%;
+  --ring: 220 60% 35%;
+  --chart-1: 220 60% 65%;
   --chart-2: 0 70% 65%;
   --chart-3: 180 50% 60%;
   --chart-4: 38 92% 70%;
@@ -325,4 +326,121 @@
   .border.hover-elevate:not(.no-hover-interaction-elevate)::after {
     inset: -1px;
   }
+}
+
+/* Enhanced Interactive Elements */
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease-in-out;
+}
+
+.button-enhanced {
+  transition: all 0.2s ease-in-out;
+}
+
+.button-enhanced:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button-enhanced:active {
+  transform: translateY(0);
+}
+
+.input-enhanced:focus {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+}
+
+/* Scroll Animation Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Scroll-triggered animations */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-animate.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-animate-left {
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-animate-left.animate {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-animate-right {
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-animate-right.animate {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-animate-scale {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.8s ease-out;
+}
+
+.scroll-animate-scale.animate {
+  opacity: 1;
+  transform: scale(1);
 }

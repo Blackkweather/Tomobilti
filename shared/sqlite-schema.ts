@@ -146,3 +146,42 @@ export const carSearchSchema = z.object({
 });
 
 export type CarSearch = z.infer<typeof carSearchSchema>;
+
+// Additional schemas for authentication and enhanced car creation
+export const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+});
+
+export const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(6),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  phone: z.string().optional(),
+  userType: z.enum(["owner", "renter", "both"]).default("renter"),
+});
+
+export const enhancedInsertCarSchema = insertCarSchema.extend({
+  // Add any additional fields for enhanced car creation
+  vin: z.string().optional(),
+  registrationNumber: z.string().optional(),
+  motExpiry: z.string().optional(),
+  insuranceExpiry: z.string().optional(),
+  isInsured: z.boolean().optional(),
+  insuranceProvider: z.string().optional(),
+  insurancePolicyNumber: z.string().optional(),
+  hasAirbags: z.boolean().optional(),
+  hasAbs: z.boolean().optional(),
+  hasEsp: z.boolean().optional(),
+  hasBluetooth: z.boolean().optional(),
+  hasGps: z.boolean().optional(),
+  hasParkingSensors: z.boolean().optional(),
+  hasAlarm: z.boolean().optional(),
+  hasImmobilizer: z.boolean().optional(),
+  hasTrackingDevice: z.boolean().optional(),
+  mileage: z.number().optional(),
+  lastServiceDate: z.string().optional(),
+  nextServiceDue: z.string().optional(),
+  condition: z.string().optional(),
+});
