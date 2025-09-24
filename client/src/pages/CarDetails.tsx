@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, MapPin, Users, Fuel, Settings, Calendar, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import BookingModal from "@/components/BookingModal";
+import ReservationBar from "@/components/ReservationBar";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import { useAuth } from "../contexts/AuthContext";
 import { carApi } from "@/lib/api";
@@ -197,53 +198,35 @@ export default function CarDetails() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Booking Card */}
-            <Card className="sticky top-4">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-3xl font-bold text-green-600">
-                      {car.pricePerDay} {car.currency}
-                    </div>
-                    <div className="text-gray-600">per day</div>
-                  </div>
-                  <Badge variant={car.isAvailable ? "default" : "secondary"}>
-                    {car.isAvailable ? "Available" : "Unavailable"}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {car.isAvailable ? (
-                  isAuthenticated ? (
-                    <Button 
-                      className="w-full" 
-                      size="lg"
-                      onClick={() => setShowBookingModal(true)}
-                    >
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Book Now
-                    </Button>
-                  ) : (
-                    <Link href="/login">
-                      <Button className="w-full" size="lg">
-                        <Calendar className="w-4 h-4 mr-2" />
-                        Login to Book
-                      </Button>
-                    </Link>
-                  )
-                ) : (
-                  <Button className="w-full" size="lg" disabled>
-                    Not Available
-                  </Button>
-                )}
-                
-                <div className="text-center text-sm text-gray-600">
-                  ✓ Insurance included<br />
-                  ✓ Free cancellation<br />
-                  ✓ 24/7 Support
-                </div>
-              </CardContent>
-            </Card>
+            {/* Reservation Bar */}
+            <div className="sticky top-4">
+              <ReservationBar
+                car={{
+                  id: car.id,
+                  title: car.title,
+                  pricePerDay: car.pricePerDay,
+                  currency: car.currency,
+                  location: car.location,
+                  owner: {
+                    name: car.owner?.firstName + ' ' + car.owner?.lastName || 'Owner',
+                    rating: 4.8,
+                    verified: true
+                  },
+                  images: car.images || [],
+                  features: [
+                    car.fuelType,
+                    car.transmission,
+                    `${car.seats} seats`,
+                    car.year.toString()
+                  ]
+                }}
+                onBook={(bookingData) => {
+                  console.log('Booking data:', bookingData);
+                  // Handle booking logic here
+                  setShowBookingModal(true);
+                }}
+              />
+            </div>
 
             {/* Owner Info */}
             <Card>
