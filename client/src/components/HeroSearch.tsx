@@ -21,7 +21,6 @@ export default function HeroSearch() {
   const [showCalendar, setShowCalendar] = useState(false);
 
   const handleDateSelect = (start: Date | null, end: Date | null) => {
-    console.log('Date selected:', { start, end });
     setSelectedDates({ start, end });
     if (start && end) {
       setShowCalendar(false);
@@ -89,10 +88,7 @@ export default function HeroSearch() {
             </label>
             <Button
               variant="outline"
-              onClick={() => {
-                console.log('Calendar button clicked, current state:', showCalendar);
-                setShowCalendar(!showCalendar);
-              }}
+              onClick={() => setShowCalendar(!showCalendar)}
               className="w-full justify-start h-10 text-left"
             >
               <CalendarIcon className="h-4 w-4 mr-2" />
