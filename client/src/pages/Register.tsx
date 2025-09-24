@@ -4,6 +4,19 @@ import { useAuth } from '../contexts/AuthContext';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+// Helper function for smart redirection based on user type
+const redirectBasedOnUserType = (userType: string, setLocation: (path: string) => void) => {
+  if (userType === 'owner') {
+    setLocation('/dashboard/owner');
+  } else if (userType === 'renter') {
+    setLocation('/cars');
+  } else if (userType === 'both') {
+    setLocation('/dashboard');
+  } else {
+    setLocation('/dashboard');
+  }
+};
+
 export default function Register() {
   const [, setLocation] = useLocation();
   const { register, isAuthenticated, loading } = useAuth();
@@ -22,7 +35,9 @@ export default function Register() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !loading) {
-      setLocation('/dashboard');
+      // Smart redirection based on user type
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      redirectBasedOnUserType(user.userType, setLocation);
     }
   }, [isAuthenticated, loading, setLocation]);
 
@@ -44,7 +59,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await register({
+      const response = await register({
         email: form.email,
         password: form.password,
         firstName: form.firstName,
@@ -52,7 +67,8 @@ export default function Register() {
         phone: form.phone || undefined,
         userType: form.userType
       });
-      setLocation('/dashboard');
+      // Smart redirection based on user type
+      redirectBasedOnUserType(response.user.userType, setLocation);
     } catch (err: any) {
       setError(err.message || 'Erreur lors de l\'inscription. Veuillez réessayer.');
     } finally {

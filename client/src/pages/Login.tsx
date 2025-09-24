@@ -4,6 +4,19 @@ import { useAuth } from '../contexts/AuthContext';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+// Helper function for smart redirection based on user type
+const redirectBasedOnUserType = (userType: string, setLocation: (path: string) => void) => {
+  if (userType === 'owner') {
+    setLocation('/dashboard/owner');
+  } else if (userType === 'renter') {
+    setLocation('/cars');
+  } else if (userType === 'both') {
+    setLocation('/dashboard');
+  } else {
+    setLocation('/dashboard');
+  }
+};
+
 export default function Login() {
   const [, setLocation] = useLocation();
   const { login, isAuthenticated, loading } = useAuth();
@@ -17,7 +30,9 @@ export default function Login() {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !loading) {
-      setLocation('/dashboard');
+      // Smart redirection based on user type
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      redirectBasedOnUserType(user.userType, setLocation);
     }
   }, [isAuthenticated, loading, setLocation]);
 
@@ -27,8 +42,9 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await login(form.email, form.password);
-      setLocation('/dashboard');
+      const response = await login(form.email, form.password);
+      // Smart redirection based on user type
+      redirectBasedOnUserType(response.user.userType, setLocation);
     } catch (err: any) {
       setError(err.message || 'Erreur de connexion. Veuillez réessayer.');
     } finally {

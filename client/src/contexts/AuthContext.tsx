@@ -5,8 +5,8 @@ import type { User } from '@shared/schema';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ user: User; token: string; message: string }>;
+  register: (userData: any) => Promise<{ user: User; token: string; message: string }>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -48,6 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await authApi.login({ email, password });
       setUser(response.user);
+      return response; // Return response for redirection logic
     } catch (error) {
       throw error;
     }
@@ -57,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await authApi.register(userData);
       setUser(response.user);
+      return response; // Return response for redirection logic
     } catch (error) {
       throw error;
     }
