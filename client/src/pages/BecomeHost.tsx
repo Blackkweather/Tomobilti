@@ -16,62 +16,62 @@ export default function BecomeHost() {
   const benefits = [
     {
       icon: DollarSign,
-      title: "Gagnez jusqu'à 3000 MAD/mois",
-      description: "Rentabilisez votre véhicule quand vous ne l'utilisez pas"
+      title: "Earn up to £300/month",
+      description: "Monetize your vehicle when you're not using it"
     },
     {
       icon: Shield,
-      title: "Protection complète",
-      description: "Assurance tous risques incluse pour chaque location"
+      title: "Complete Protection",
+      description: "Comprehensive insurance included for every rental"
     },
     {
       icon: Clock,
-      title: "Flexibilité totale",
-      description: "Vous décidez quand et à qui louer votre véhicule"
+      title: "Total Flexibility",
+      description: "You decide when and to whom to rent your vehicle"
     },
     {
       icon: Users,
-      title: "Communauté vérifiée",
-      description: "Tous les locataires sont vérifiés et évalués"
+      title: "Verified Community",
+      description: "All renters are verified and rated"
     }
   ];
 
   const steps = [
     {
       step: "1",
-      title: "Inscrivez-vous",
-      description: "Créez votre compte propriétaire en quelques minutes"
+      title: "Sign Up",
+      description: "Create your owner account in a few minutes"
     },
     {
       step: "2", 
-      title: "Ajoutez votre véhicule",
-      description: "Photos, description et tarifs de votre voiture"
+      title: "Add Your Vehicle",
+      description: "Photos, description and pricing for your car"
     },
     {
       step: "3",
-      title: "Recevez des demandes",
-      description: "Les locataires vous contactent pour réserver"
+      title: "Receive Requests",
+      description: "Renters contact you to make bookings"
     },
     {
       step: "4",
-      title: "Gagnez de l'argent",
-      description: "Recevez vos paiements automatiquement"
+      title: "Earn Money",
+      description: "Receive your payments automatically"
     }
   ];
 
   const testimonials = [
     {
-      name: "Ahmed B.",
-      location: "Casablanca",
-      earning: "2800 MAD/mois",
-      comment: "Excellent moyen de rentabiliser ma voiture. Service client très réactif.",
+      name: "James B.",
+      location: "London",
+      earning: "£280/month",
+      comment: "Excellent way to monetize my car. Very responsive customer service.",
       rating: 5
     },
     {
-      name: "Sara I.",
-      location: "Rabat", 
-      earning: "2200 MAD/mois",
-      comment: "Plateforme sécurisée, locataires respectueux. Je recommande !",
+      name: "Sarah I.",
+      location: "Manchester", 
+      earning: "£220/month",
+      comment: "Secure platform, respectful renters. I recommend it!",
       rating: 5
     }
   ];
@@ -82,15 +82,15 @@ export default function BecomeHost() {
       <section className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Gagnez de l'argent avec votre voiture
+            Earn Money with Your Car
           </h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Transformez votre véhicule en source de revenus. Rejoignez des milliers de propriétaires qui gagnent jusqu'à 3000 MAD par mois.
+            Transform your vehicle into a source of income. Join thousands of owners who earn up to £300 per month.
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/login">
               <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                Commencer maintenant
+                Start Now
               </Button>
             </Link>
             <Button 
@@ -99,7 +99,7 @@ export default function BecomeHost() {
               className="border-white text-white hover:bg-white hover:text-blue-600"
               onClick={handleCalculateEarnings}
             >
-              Calculer mes gains
+              Calculate My Earnings
             </Button>
           </div>
         </div>
@@ -108,7 +108,7 @@ export default function BecomeHost() {
       {/* Benefits Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Pourquoi devenir hôte ?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">Why Become a Host?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
               <Card key={benefit.title} className="text-center">
@@ -126,7 +126,7 @@ export default function BecomeHost() {
       {/* How it Works */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Comment ça marche ?</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">How Does It Work?</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {steps.map((step, index) => (
               <div key={step.step} className="text-center">
@@ -144,7 +144,7 @@ export default function BecomeHost() {
       {/* Testimonials */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Ce que disent nos hôtes</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">What Our Hosts Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {testimonials.map((testimonial, index) => (
               <Card key={testimonial.name}>
@@ -177,21 +177,21 @@ export default function BecomeHost() {
       {showCalculator && (
         <section id="earnings-calculator" className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Calculateur de gains</h2>
+            <h2 className="text-3xl font-bold text-center mb-12">Earnings Calculator</h2>
             <Card className="max-w-2xl mx-auto">
               <CardContent className="p-8">
                 <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-4">Estimation de vos gains mensuels</h3>
+                  <h3 className="text-2xl font-semibold mb-4">Estimated Monthly Earnings</h3>
                   <div className="bg-blue-100 p-6 rounded-lg mb-6">
-                    <div className="text-4xl font-bold text-blue-600 mb-2">2,400 MAD</div>
-                    <p className="text-gray-600">Gain mensuel estimé</p>
+                    <div className="text-4xl font-bold text-blue-600 mb-2">£240</div>
+                    <p className="text-gray-600">Estimated Monthly Earnings</p>
                   </div>
                   <p className="text-sm text-gray-600 mb-4">
-                    *Estimation basée sur une location moyenne de 15 jours par mois à 160 MAD/jour
+                    *Estimation based on average rental of 15 days per month at £16/day
                   </p>
                   <Link href="/login">
                     <Button size="lg">
-                      Commencer maintenant
+                      Start Now
                     </Button>
                   </Link>
                 </div>
@@ -204,14 +204,14 @@ export default function BecomeHost() {
       {/* CTA Section */}
       <section className="py-16 bg-blue-600 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Prêt à commencer ?</h2>
+          <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Rejoignez notre communauté d'hôtes et commencez à gagner de l'argent dès aujourd'hui.
+            Join our host community and start earning money today.
           </p>
           <Link href="/login">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
               <Car className="h-5 w-5 mr-2" />
-              Devenir hôte maintenant
+              Become a Host Now
             </Button>
           </Link>
         </div>
