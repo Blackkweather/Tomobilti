@@ -14,6 +14,7 @@ import {
 interface CalendarProps {
   selectedDates: { start: Date | null; end: Date | null };
   onDateSelect: (start: Date | null, end: Date | null) => void;
+  onClose?: () => void;
   unavailableDates?: Date[];
   minDate?: Date;
   maxDate?: Date;
@@ -23,6 +24,7 @@ interface CalendarProps {
 export default function Calendar({ 
   selectedDates, 
   onDateSelect, 
+  onClose,
   unavailableDates = [], 
   minDate,
   maxDate,
@@ -225,14 +227,26 @@ export default function Calendar({
           <CalendarIcon className="h-4 w-4 text-blue-600" />
           <h3 className="text-sm font-semibold text-gray-900">Select Dates</h3>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={goToToday}
-          className="text-xs px-2 py-1"
-        >
-          Today
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToToday}
+            className="text-xs px-2 py-1"
+          >
+            Today
+          </Button>
+          {onClose && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onClose}
+              className="text-xs px-2 py-1"
+            >
+              <XCircle className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Selected Date Range */}
