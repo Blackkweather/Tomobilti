@@ -183,7 +183,7 @@ export default function Dashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-600">Revenus Totaux</p>
+                      <p className="text-sm font-medium text-green-600">Total Earnings</p>
                       <p className="text-3xl font-bold text-green-700">£{totalEarnings.toFixed(2)}</p>
                     </div>
                     <div className="p-3 bg-green-200 rounded-full">
@@ -197,7 +197,7 @@ export default function Dashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-600">Véhicules</p>
+                      <p className="text-sm font-medium text-blue-600">Vehicles</p>
                       <p className="text-3xl font-bold text-blue-700">{cars.length}</p>
                     </div>
                     <div className="p-3 bg-blue-200 rounded-full">
@@ -211,7 +211,7 @@ export default function Dashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-purple-600">Réservations</p>
+                      <p className="text-sm font-medium text-purple-600">Bookings</p>
                       <p className="text-3xl font-bold text-purple-700">{bookings.length}</p>
                     </div>
                     <div className="p-3 bg-purple-200 rounded-full">
@@ -225,7 +225,7 @@ export default function Dashboard() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-yellow-600">Note Moyenne</p>
+                      <p className="text-sm font-medium text-yellow-600">Average Rating</p>
                       <p className="text-3xl font-bold text-yellow-700">4.8</p>
                     </div>
                     <div className="p-3 bg-yellow-200 rounded-full">
@@ -241,7 +241,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Plus className="w-5 h-5 mr-2 text-green-600" />
-                  Actions Rapides
+                  Quick Actions
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -250,20 +250,20 @@ export default function Dashboard() {
                     <Link href="/add-car">
                       <Button className="w-full h-20 bg-green-600 hover:bg-green-700 text-white flex flex-col items-center justify-center space-y-2">
                         <Plus className="w-6 h-6" />
-                        <span>Ajouter un Véhicule</span>
+                        <span>Add Vehicle</span>
                       </Button>
                     </Link>
                   )}
                   <Link href="/cars">
                     <Button variant="outline" className="w-full h-20 border-blue-200 text-blue-600 hover:bg-blue-50 flex flex-col items-center justify-center space-y-2">
                       <Eye className="w-6 h-6" />
-                      <span>Explorer les Véhicules</span>
+                      <span>Explore Vehicles</span>
                     </Button>
                   </Link>
                   <Link href="/profile">
                     <Button variant="outline" className="w-full h-20 border-purple-200 text-purple-600 hover:bg-purple-50 flex flex-col items-center justify-center space-y-2">
                       <Users className="w-6 h-6" />
-                      <span>Mon Profil</span>
+                      <span>My Profile</span>
                     </Button>
                   </Link>
                 </div>
@@ -277,13 +277,13 @@ export default function Dashboard() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900">Mes Véhicules</h2>
-                <p className="text-gray-600 mt-1">Gérez votre flotte de véhicules</p>
+                <h2 className="text-3xl font-bold text-gray-900">My Vehicles</h2>
+                <p className="text-gray-600 mt-1">Manage your vehicle fleet</p>
               </div>
               <Link href="/add-car">
                 <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-6 py-3">
                   <Plus className="w-5 h-5 mr-2" />
-                  Ajouter un Véhicule
+                  Add Vehicle
                 </Button>
               </Link>
             </div>
@@ -298,15 +298,15 @@ export default function Dashboard() {
                   <div className="w-24 h-24 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Car className="w-12 h-12 text-green-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">Aucun véhicule</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">No Vehicles</h3>
                   <p className="text-gray-600 mb-8 text-lg">
-                    Vous n'avez pas encore de véhicules dans votre flotte.<br />
-                    Commencez par ajouter votre premier véhicule !
+                    You don't have any vehicles in your fleet yet.<br />
+                    Start by adding your first vehicle!
                   </p>
                   <Link href="/add-car">
                     <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-3">
                       <Plus className="w-5 h-5 mr-2" />
-                      Ajouter mon premier véhicule
+                      Add My First Vehicle
                     </Button>
                   </Link>
                 </div>
@@ -378,12 +378,12 @@ export default function Dashboard() {
               <Card>
                 <CardContent className="p-12 text-center">
                   <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-600 mb-2">Aucune réservation</h3>
-                  <p className="text-gray-500 mb-6">Vous n'avez pas encore de réservations</p>
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">No Bookings</h3>
+                  <p className="text-gray-500 mb-6">You don't have any bookings yet</p>
                   <Link href="/cars">
                     <Button className="bg-green-600 hover:bg-green-700">
                       <Car className="w-4 h-4 mr-2" />
-                      Explorer les Véhicules
+                      Explore Vehicles
                     </Button>
                   </Link>
                 </CardContent>
@@ -404,9 +404,9 @@ export default function Dashboard() {
                           <div>
                             <h3 className="font-semibold text-lg">{booking.car?.title}</h3>
                             <div className="flex items-center text-sm text-gray-600 space-x-4">
-                              <span>{new Date(booking.startDate).toLocaleDateString('fr-FR')}</span>
+                              <span>{new Date(booking.startDate).toLocaleDateString('en-GB')}</span>
                               <span>→</span>
-                              <span>{new Date(booking.endDate).toLocaleDateString('fr-FR')}</span>
+                              <span>{new Date(booking.endDate).toLocaleDateString('en-GB')}</span>
                             </div>
                             <div className="flex items-center text-sm text-gray-600 mt-1">
                               <MapPin className="w-4 h-4 mr-1" />

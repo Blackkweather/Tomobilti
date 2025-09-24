@@ -55,8 +55,8 @@ export default function Settings() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
         <div className="text-center bg-white p-8 rounded-2xl shadow-xl">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900">Accès non autorisé</h1>
-          <p className="text-gray-600 mb-6">Vous devez être connecté pour accéder à cette page.</p>
+          <h1 className="text-3xl font-bold mb-4 text-gray-900">Access Denied</h1>
+          <p className="text-gray-600 mb-6">You must be logged in to access this page.</p>
         </div>
       </div>
     );
@@ -69,13 +69,13 @@ export default function Settings() {
 
     try {
       const response = await authApi.updateProfile(profileData);
-      setMessage(response.message || 'Profil mis à jour avec succès');
+      setMessage(response.message || 'Profile updated successfully');
       setIsEditing(false);
       
       // Update the user context with new data
       // The user will be refreshed on next page load
     } catch (err: any) {
-      setError(err.message || 'Erreur lors de la mise à jour du profil');
+      setError(err.message || 'Error updating profile');
     } finally {
       setIsLoading(false);
     }
@@ -85,26 +85,26 @@ export default function Settings() {
     setIsLoading(true);
     setError('');
     setMessage('');
-
+    
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setError('Les nouveaux mots de passe ne correspondent pas');
+      setError('New passwords do not match');
       setIsLoading(false);
       return;
     }
-
+    
     if (passwordData.newPassword.length < 8) {
-      setError('Le nouveau mot de passe doit contenir au moins 8 caractères');
+      setError('New password must contain at least 8 characters');
       setIsLoading(false);
       return;
     }
-
+    
     try {
       // TODO: Implement password change API call
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      setMessage('Mot de passe modifié avec succès');
+      setMessage('Password changed successfully');
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err: any) {
-      setError(err.message || 'Erreur lors du changement de mot de passe');
+      setError(err.message || 'Error changing password');
     } finally {
       setIsLoading(false);
     }
@@ -112,17 +112,17 @@ export default function Settings() {
 
   const handleDeleteAccount = () => {
     // TODO: Implement account deletion
-    alert('Fonctionnalité de suppression de compte à implémenter');
+    alert('Account deletion functionality to be implemented');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Paramètres du compte</h1>
-            <p className="text-lg text-gray-600">Gérez vos préférences et informations personnelles</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Account Settings</h1>
+            <p className="text-lg text-gray-600">Manage your preferences and personal information</p>
           </div>
         </div>
 
@@ -145,13 +145,13 @@ export default function Settings() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <User className="w-5 h-5 mr-2 text-green-600" />
-                Informations personnelles
+                Personal Information
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">Prénom</Label>
+                  <Label htmlFor="firstName">First Name</Label>
                   <Input
                     id="firstName"
                     value={profileData.firstName}
@@ -160,7 +160,7 @@ export default function Settings() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Nom</Label>
+                  <Label htmlFor="lastName">Last Name</Label>
                   <Input
                     id="lastName"
                     value={profileData.lastName}
@@ -182,7 +182,7 @@ export default function Settings() {
               </div>
 
               <div>
-                <Label htmlFor="phone">Téléphone</Label>
+                <Label htmlFor="phone">Phone</Label>
                 <Input
                   id="phone"
                   value={profileData.phone}
@@ -194,7 +194,7 @@ export default function Settings() {
               <div className="flex space-x-2 pt-4">
                 {!isEditing ? (
                   <Button onClick={() => setIsEditing(true)} className="bg-green-600 hover:bg-green-700">
-                    Modifier
+                    Edit
                   </Button>
                 ) : (
                   <>
@@ -204,7 +204,7 @@ export default function Settings() {
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Save className="w-4 h-4 mr-2" />
-                      {isLoading ? 'Sauvegarde...' : 'Sauvegarder'}
+                      {isLoading ? 'Saving...' : 'Save'}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -218,7 +218,7 @@ export default function Settings() {
                         });
                       }}
                     >
-                      Annuler
+                      Cancel
                     </Button>
                   </>
                 )}
@@ -263,7 +263,7 @@ export default function Settings() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div>
+              <div>
                     <Label>Emails marketing</Label>
                     <p className="text-sm text-gray-500">Recevoir des offres et promotions</p>
                   </div>
@@ -343,21 +343,21 @@ export default function Settings() {
                 </div>
                 <div>
                   <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                  <Input
+                <Input 
                     id="newPassword"
-                    type="password"
+                  type="password" 
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                  />
-                </div>
-                <div>
+                />
+              </div>
+              <div>
                   <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-                  <Input
+                <Input 
                     id="confirmPassword"
-                    type="password"
+                  type="password" 
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                  />
+                />
                 </div>
               </div>
 
@@ -395,8 +395,8 @@ export default function Settings() {
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
       </div>
     </div>
   );

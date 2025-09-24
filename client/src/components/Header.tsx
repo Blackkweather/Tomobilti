@@ -121,33 +121,33 @@ export default function Header() {
                   <Link href="/profile">
                     <DropdownMenuItem data-testid="menu-profile">
                       <User className="mr-2 h-4 w-4" />
-                      Mon profil
+                      My Profile
                     </DropdownMenuItem>
                   </Link>
                   {(user.userType === 'owner' || user.userType === 'both') && (
                     <Link href="/dashboard/owner">
                       <DropdownMenuItem data-testid="menu-owner-dashboard">
                         <Car className="mr-2 h-4 w-4" />
-                        Tableau de bord propriétaire
+                        Owner Dashboard
                       </DropdownMenuItem>
                     </Link>
                   )}
                   <Link href="/dashboard/renter">
                     <DropdownMenuItem data-testid="menu-renter-dashboard">
                       <User className="mr-2 h-4 w-4" />
-                      Mes réservations
+                      My Bookings
                     </DropdownMenuItem>
                   </Link>
                   <Link href="/settings">
                     <DropdownMenuItem data-testid="menu-settings">
                       <Settings className="mr-2 h-4 w-4" />
-                      Paramètres
+                      Settings
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} data-testid="menu-logout">
                     <LogOut className="mr-2 h-4 w-4" />
-                    Déconnexion
+                    Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -156,12 +156,12 @@ export default function Header() {
             <div className="flex items-center gap-2">
               <Link href="/login">
                 <Button variant="ghost" data-testid="button-login" className="hover-elevate active-elevate-2">
-                  Se connecter
+                  Login
                 </Button>
               </Link>
               <Link href="/register">
                 <Button data-testid="button-signup" className="hover-elevate active-elevate-2">
-                  S'inscrire
+                  Sign Up
                 </Button>
               </Link>
             </div>

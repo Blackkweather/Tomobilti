@@ -204,14 +204,14 @@ export default function CarCard({ car }: CarCardProps) {
                     data-testid={`button-login-to-book-${id}`}
                     className="hover-elevate active-elevate-2"
                   >
-                    Se connecter pour réserver
+                    Login to Book
                   </Button>
                 </Link>
               )}
             </div>
           ) : (
             <Button variant="secondary" size="sm" disabled>
-              Indisponible
+              Unavailable
             </Button>
           )}
         </div>
