@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Star, Fuel, Settings, Users, RotateCcw } from 'lucide-react';
 import CarCard from '../components/CarCard';
+import CarsSearchBar from '../components/CarsSearchBar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { carApi } from '../lib/api';
 
@@ -120,101 +121,13 @@ export default function Cars() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Filters */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 items-end">
-              <div className="space-y-2">
-                <Label htmlFor="location">📍 Location</Label>
-                <Input
-                  id="location"
-                  placeholder="London, Manchester..."
-                  value={filters.location}
-                  onChange={(e) => handleFilterChange('location', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="minPrice">💰 Min Price (£)</Label>
-                <Input
-                  id="minPrice"
-                  type="number"
-                  placeholder="20"
-                  value={filters.minPrice}
-                  onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="maxPrice">💰 Max Price (£)</Label>
-                <Input
-                  id="maxPrice"
-                  type="number"
-                  placeholder="600"
-                  value={filters.maxPrice}
-                  onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="fuelType">⛽ Fuel Type</Label>
-                <Select value={filters.fuelType || 'all'} onValueChange={(value) => handleFilterChange('fuelType', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="essence">Petrol</SelectItem>
-                    <SelectItem value="diesel">Diesel</SelectItem>
-                    <SelectItem value="electric">Electric</SelectItem>
-                    <SelectItem value="hybrid">Hybrid</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="transmission">⚙️ Transmission</Label>
-                <Select value={filters.transmission || 'all'} onValueChange={(value) => handleFilterChange('transmission', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="All" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="manual">Manual</SelectItem>
-                    <SelectItem value="automatic">Automatic</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="startDate">📅 Start Date</Label>
-                <Input
-                  id="startDate"
-                  type="date"
-                  value={filters.startDate}
-                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="endDate">📅 End Date</Label>
-                <Input
-                  id="endDate"
-                  type="date"
-                  value={filters.endDate}
-                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Button variant="outline" onClick={clearFilters} className="w-full">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Clear
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Professional Search Bar */}
+        <CarsSearchBar
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          onSearch={() => {}} // Search happens automatically when filters change
+        />
 
         {/* Results Header */}
         <div className="flex justify-between items-center mb-6">
