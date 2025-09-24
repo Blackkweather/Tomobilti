@@ -35,7 +35,7 @@ const generalLimiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // limit each IP to 5 auth requests per windowMs
-  message: { error: 'Trop de tentatives de connexion, veuillez réessayer plus tard' }
+  message: { error: 'Too many login attempts, please try again later' }
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -72,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sanitizedUser = sanitizeUser(user);
       
       res.json({ 
-        message: 'Connexion réussie',
+        message: 'Login successful',
         token,
         user: sanitizedUser
       });
@@ -81,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Données invalides', details: error.errors });
       }
       console.error('Login error:', error);
-      res.status(500).json({ error: 'Erreur interne du serveur' });
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
   
@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Données invalides', details: error.errors });
       }
       console.error('Register error:', error);
-      res.status(500).json({ error: 'Erreur interne du serveur' });
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
   
@@ -129,28 +129,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Validate required fields
       if (!updates.firstName || !updates.lastName || !updates.email) {
-        return res.status(400).json({ error: 'Prénom, nom et email sont requis' });
+        return res.status(400).json({ error: 'First name, last name and email are required' });
       }
 
       // Check if email is already taken by another user
       const existingUser = await storage.getUserByEmail(updates.email);
       if (existingUser && existingUser.id !== req.user!.id) {
-        return res.status(400).json({ error: 'Cet email est déjà utilisé par un autre compte' });
+        return res.status(400).json({ error: 'This email is already used by another account' });
       }
 
       const updatedUser = await storage.updateUser(req.user!.id, updates);
       if (!updatedUser) {
-        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+        return res.status(404).json({ error: 'User not found' });
       }
 
       const sanitizedUser = sanitizeUser(updatedUser);
       res.json({ 
-        message: 'Profil mis à jour avec succès',
+        message: 'Profile updated successfully',
         user: sanitizedUser 
       });
     } catch (error) {
       console.error('Profile update error:', error);
-      res.status(500).json({ error: 'Erreur interne du serveur' });
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
   
@@ -198,10 +198,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Paramètres de recherche invalides", details: error.errors });
+        return res.status(400).json({ error: "Invalid search parameters", details: error.errors });
       }
       console.error('Car search error:', error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
@@ -209,7 +209,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const car = await storage.getCar(req.params.id);
       if (!car) {
-        return res.status(404).json({ error: "Véhicule non trouvé" });
+        return res.status(404).json({ error: "Vehicle not found" });
       }
 
       // Get owner info and reviews
@@ -245,7 +245,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Get car error:', error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
@@ -256,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ cars });
     } catch (error) {
       console.error('Get owner cars error:', error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
@@ -307,7 +307,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Données de véhicule invalides", details: error.errors });
       }
       console.error('Create car error:', error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
@@ -317,7 +317,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const car = await storage.updateCar(req.params.id, updates);
       
       if (!car) {
-        return res.status(404).json({ error: "Véhicule non trouvé" });
+        return res.status(404).json({ error: "Vehicle not found" });
       }
       
       res.json({
@@ -329,7 +329,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Données de véhicule invalides", details: error.errors });
       }
       console.error('Update car error:', error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
@@ -337,12 +337,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const success = await storage.deleteCar(req.params.id);
       if (!success) {
-        return res.status(404).json({ error: "Véhicule non trouvé" });
+        return res.status(404).json({ error: "Vehicle not found" });
       }
       res.json({ message: "Véhicule supprimé avec succès" });
     } catch (error) {
       console.error('Delete car error:', error);
-      res.status(500).json({ error: "Erreur interne du serveur" });
+      res.status(500).json({ error: "Internal server error" });
     }
   });
 
