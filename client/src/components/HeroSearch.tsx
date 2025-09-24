@@ -24,18 +24,22 @@ export default function HeroSearch() {
     setSelectedDates({ start, end });
     // Only close calendar when both dates are selected
     if (start && end) {
-      setTimeout(() => setShowCalendar(false), 100);
+      setTimeout(() => setShowCalendar(false), 300);
     }
   };
 
   const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (searchLocation) params.set('location', searchLocation);
-    if (selectedDates.start) params.set('startDate', selectedDates.start.toISOString());
-    if (selectedDates.end) params.set('endDate', selectedDates.end.toISOString());
-    if (guests > 1) params.set('guests', guests.toString());
-    
-    window.location.href = `/cars?${params.toString()}`;
+    try {
+      const params = new URLSearchParams();
+      if (searchLocation) params.set('location', searchLocation);
+      if (selectedDates.start) params.set('startDate', selectedDates.start.toISOString());
+      if (selectedDates.end) params.set('endDate', selectedDates.end.toISOString());
+      if (guests > 1) params.set('guests', guests.toString());
+      
+      window.location.href = `/cars?${params.toString()}`;
+    } catch (error) {
+      console.error('Search error:', error);
+    }
   };
 
   const getDateRangeText = () => {
@@ -152,7 +156,10 @@ export default function HeroSearch() {
             {/* Backdrop */}
             <div 
               className="fixed inset-0 bg-black/20 z-[9998]"
-              onClick={() => setShowCalendar(false)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowCalendar(false);
+              }}
             />
             {/* Calendar */}
             <div 

@@ -46,7 +46,7 @@ export default function CarsSearchBar({
     if (end) onFilterChange('endDate', end.toISOString());
     // Only close calendar when both dates are selected
     if (start && end) {
-      setTimeout(() => setShowCalendar(false), 100);
+      setTimeout(() => setShowCalendar(false), 300);
     }
   };
 
@@ -139,7 +139,10 @@ export default function CarsSearchBar({
                 {/* Backdrop */}
                 <div 
                   className="fixed inset-0 bg-black/20 z-[9998]"
-                  onClick={() => setShowCalendar(false)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowCalendar(false);
+                  }}
                 />
                 {/* Calendar */}
                 <div 
