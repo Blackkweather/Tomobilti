@@ -42,10 +42,10 @@ export default function CarDetails() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Voiture non trouvée</h2>
-          <p className="text-gray-600 mb-4">Cette voiture n'existe pas ou a été supprimée.</p>
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Car Not Found</h2>
+          <p className="text-gray-600 mb-4">This car does not exist or has been deleted.</p>
           <Link href="/cars">
-            <Button variant="outline">Retour aux voitures</Button>
+            <Button variant="outline">Back to Cars</Button>
           </Link>
         </div>
       </div>
@@ -53,15 +53,15 @@ export default function CarDetails() {
   }
 
   const fuelTypeLabels = {
-    essence: 'Essence',
+    essence: 'Petrol',
     diesel: 'Diesel',
-    electric: 'Électrique',
-    hybrid: 'Hybride'
+    electric: 'Electric',
+    hybrid: 'Hybrid'
   };
 
   const transmissionLabels = {
-    manual: 'Manuelle',
-    automatic: 'Automatique'
+    manual: 'Manual',
+    automatic: 'Automatic'
   };
 
   return (
@@ -73,7 +73,7 @@ export default function CarDetails() {
             <Link href="/cars">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Retour
+                Back
               </Button>
             </Link>
             <div>
@@ -130,17 +130,17 @@ export default function CarDetails() {
             {/* Car Specifications */}
             <Card>
               <CardHeader>
-                <CardTitle>Spécifications</CardTitle>
+                <CardTitle>Specifications</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">{car.year}</div>
-                    <div className="text-sm text-gray-600">Année</div>
+                    <div className="text-sm text-gray-600">Year</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <div className="text-2xl font-bold text-green-600">{car.seats}</div>
-                    <div className="text-sm text-gray-600">Sièges</div>
+                    <div className="text-sm text-gray-600">Seats</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Fuel className="w-8 h-8 mx-auto text-green-600 mb-2" />
@@ -159,13 +159,13 @@ export default function CarDetails() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Star className="w-5 h-5 text-yellow-500" />
-                  Avis ({car.reviewCount || 0})
+                  Reviews ({car.reviewCount || 0})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {car.reviewCount === 0 ? (
                   <p className="text-gray-600 text-center py-8">
-                    Aucun avis pour le moment. Soyez le premier à laisser un commentaire !
+                    No reviews yet. Be the first to leave a comment!
                   </p>
                 ) : (
                   <div className="space-y-4">
@@ -185,9 +185,9 @@ export default function CarDetails() {
                         </div>
                       </div>
                       <p className="text-gray-700">
-                        Excellente voiture, très propre et confortable. Le propriétaire est très professionnel.
+                        Excellent car, very clean and comfortable. The owner is very professional.
                       </p>
-                      <div className="text-sm text-gray-500 mt-2">Il y a 2 semaines</div>
+                      <div className="text-sm text-gray-500 mt-2">2 weeks ago</div>
                     </div>
                   </div>
                 )}
@@ -205,10 +205,10 @@ export default function CarDetails() {
                     <div className="text-3xl font-bold text-green-600">
                       {car.pricePerDay} {car.currency}
                     </div>
-                    <div className="text-gray-600">par jour</div>
+                    <div className="text-gray-600">per day</div>
                   </div>
                   <Badge variant={car.isAvailable ? "default" : "secondary"}>
-                    {car.isAvailable ? "Disponible" : "Indisponible"}
+                    {car.isAvailable ? "Available" : "Unavailable"}
                   </Badge>
                 </div>
               </CardHeader>
@@ -221,26 +221,26 @@ export default function CarDetails() {
                       onClick={() => setShowBookingModal(true)}
                     >
                       <Calendar className="w-4 h-4 mr-2" />
-                      Réserver maintenant
+                      Book Now
                     </Button>
                   ) : (
                     <Link href="/login">
                       <Button className="w-full" size="lg">
                         <Calendar className="w-4 h-4 mr-2" />
-                        Se connecter pour réserver
+                        Login to Book
                       </Button>
                     </Link>
                   )
                 ) : (
                   <Button className="w-full" size="lg" disabled>
-                    Non disponible
+                    Not Available
                   </Button>
                 )}
                 
                 <div className="text-center text-sm text-gray-600">
-                  ✓ Assurance incluse<br />
-                  ✓ Annulation gratuite<br />
-                  ✓ Support 24/7
+                  ✓ Insurance included<br />
+                  ✓ Free cancellation<br />
+                  ✓ 24/7 Support
                 </div>
               </CardContent>
             </Card>
@@ -248,7 +248,7 @@ export default function CarDetails() {
             {/* Owner Info */}
             <Card>
               <CardHeader>
-                <CardTitle>Propriétaire</CardTitle>
+                <CardTitle>Owner</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-3">
@@ -260,12 +260,12 @@ export default function CarDetails() {
                   </Avatar>
                   <div>
                     <div className="font-medium">
-                      {car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Propriétaire'}
+                      {car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Owner'}
                     </div>
                     <div className="flex items-center gap-1 text-sm text-gray-600">
                       <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span>{car.rating?.toFixed(1) || 'Nouveau'}</span>
-                      <span>({car.reviewCount || 0} avis)</span>
+                      <span>{car.rating?.toFixed(1) || 'New'}</span>
+                      <span>({car.reviewCount || 0} reviews)</span>
                     </div>
                   </div>
                 </div>
