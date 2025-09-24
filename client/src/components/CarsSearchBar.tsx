@@ -134,7 +134,7 @@ export default function CarsSearchBar({
 
             {/* Calendar Popup */}
             {showCalendar && (
-              <div className="relative z-50 mt-4">
+              <div className="relative z-50 mt-2">
                 <Calendar
                   selectedDates={selectedDates}
                   onDateSelect={handleDateSelect}

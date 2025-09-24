@@ -151,7 +151,7 @@ export default function HeroSearch() {
 
         {/* Calendar Popup */}
         {showCalendar && (
-          <div className="absolute z-50 mt-4 left-1/2 transform -translate-x-1/2">
+          <div className="absolute z-50 mt-2 left-1/2 transform -translate-x-1/2">
             <Calendar
               selectedDates={selectedDates}
               onDateSelect={handleDateSelect}

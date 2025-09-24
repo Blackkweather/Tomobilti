@@ -135,7 +135,7 @@ export default function Calendar({
       const isEnd = isEndDate(date);
       const isHovered = hoveredDate && date.toDateString() === hoveredDate.toDateString();
 
-      let className = 'relative w-10 h-10 flex items-center justify-center text-sm rounded-lg transition-all duration-200 cursor-pointer ';
+      let className = 'relative w-8 h-8 flex items-center justify-center text-xs rounded-md transition-all duration-200 cursor-pointer ';
       
       if (!isCurrentMonth) {
         className += 'text-gray-300 ';
@@ -218,32 +218,32 @@ export default function Calendar({
   };
 
   return (
-    <div className={`bg-white rounded-xl shadow-lg border border-gray-200 p-6 ${className}`}>
+    <div className={`bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="h-5 w-5 text-blue-600" />
-          <h3 className="text-lg font-semibold text-gray-900">Select Dates</h3>
+          <CalendarIcon className="h-4 w-4 text-blue-600" />
+          <h3 className="text-sm font-semibold text-gray-900">Select Dates</h3>
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={goToToday}
-          className="text-xs"
+          className="text-xs px-2 py-1"
         >
           Today
         </Button>
       </div>
 
       {/* Selected Date Range */}
-      <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+      <div className="mb-3 p-2 bg-blue-50 rounded-md border border-blue-200">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-blue-900">Selected Period</p>
-            <p className="text-blue-700">{getDateRangeText()}</p>
+            <p className="text-xs font-medium text-blue-900">Selected Period</p>
+            <p className="text-xs text-blue-700">{getDateRangeText()}</p>
           </div>
           {getDuration() && (
-            <Badge variant="default" className="bg-blue-600">
+            <Badge variant="default" className="bg-blue-600 text-xs">
               {getDuration()} day{getDuration() !== 1 ? 's' : ''}
             </Badge>
           )}
@@ -251,17 +251,17 @@ export default function Calendar({
       </div>
 
       {/* Month Navigation */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigateMonth('prev')}
-          className="p-2"
+          className="p-1 h-6 w-6"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3 w-3" />
         </Button>
         
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-sm font-semibold text-gray-900">
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </h2>
         
@@ -269,18 +269,18 @@ export default function Calendar({
           variant="outline"
           size="sm"
           onClick={() => navigateMonth('next')}
-          className="p-2"
+          className="p-1 h-6 w-6"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3 w-3" />
         </Button>
       </div>
 
       {/* Calendar Grid */}
-      <div className="space-y-2">
+      <div className="space-y-1">
         {/* Day Headers */}
-        <div className="grid grid-cols-7 gap-1 mb-2">
+        <div className="grid grid-cols-7 gap-1 mb-1">
           {dayNames.map(day => (
-            <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+            <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
               {day}
             </div>
           ))}
