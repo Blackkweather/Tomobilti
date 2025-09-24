@@ -81,6 +81,13 @@ export const authApi = {
 
   getCurrentUser: async () => {
     return apiRequest(`${API_BASE}/auth/me`);
+  },
+
+  updateProfile: async (profileData: any) => {
+    return apiRequest(`${API_BASE}/auth/profile`, {
+      method: 'PUT',
+      body: JSON.stringify(profileData)
+    });
   }
 };
 
