@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'wouter';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,261 +9,257 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { MapPin, Star, Fuel, Settings, Users, RotateCcw } from 'lucide-react';
 import CarCard from '../components/CarCard';
+import LoadingSpinner from '../components/LoadingSpinner';
+import { carApi } from '../lib/api';
 
 export default function Cars() {
+  const [location] = useLocation();
   const [filters, setFilters] = useState({
     location: '',
     minPrice: '',
     maxPrice: '',
     fuelType: '',
-    transmission: ''
+    transmission: '',
+    startDate: '',
+    endDate: ''
   });
 
-  const sampleCars = [
-    {
-      id: '1',
-      title: 'Renault Clio 2020',
-      location: 'Casablanca',
-      pricePerDay: 350,
-      currency: 'MAD',
-      rating: 4.8,
-      reviewCount: 12,
-      fuelType: 'essence' as const,
-      transmission: 'manual' as const,
-      seats: 5,
-      image: '/attached_assets/generated_images/Car_rental_listing_photo_bdcce465.png',
-      ownerName: 'Ahmed M.',
-      ownerImage: '/attached_assets/generated_images/Moroccan_car_owner_profile_7a556a9c.png',
-      isAvailable: true
-    },
-    {
-      id: '2',
-      title: 'Peugeot 208 2021',
-      location: 'Rabat',
-      pricePerDay: 400,
-      currency: 'MAD',
-      rating: 4.6,
-      reviewCount: 8,
-      fuelType: 'essence' as const,
-      transmission: 'automatic' as const,
-      seats: 5,
-      image: '/attached_assets/generated_images/Electric_car_in_Morocco_b06b165b.png',
-      ownerName: 'Fatima K.',
-      ownerImage: '/attached_assets/generated_images/Moroccan_car_owner_profile_7a556a9c.png',
-      isAvailable: true
-    },
-    {
-      id: '3',
-      title: 'Dacia Logan 2019',
-      location: 'Marrakech',
-      pricePerDay: 280,
-      currency: 'MAD',
-      rating: 4.5,
-      reviewCount: 15,
-      fuelType: 'diesel' as const,
-      transmission: 'manual' as const,
-      seats: 5,
-      image: '/attached_assets/generated_images/Car_rental_listing_photo_bdcce465.png',
-      ownerName: 'Youssef A.',
-      ownerImage: '/attached_assets/generated_images/Moroccan_car_owner_profile_7a556a9c.png',
-      isAvailable: true
-    },
-    {
-      id: '4',
-      title: 'Toyota Yaris 2022',
-      location: 'Casablanca',
-      pricePerDay: 450,
-      currency: 'MAD',
-      rating: 4.9,
-      reviewCount: 20,
-      fuelType: 'hybrid' as const,
-      transmission: 'automatic' as const,
-      seats: 5,
-      image: '/attached_assets/generated_images/Electric_car_in_Morocco_b06b165b.png',
-      ownerName: 'Amina B.',
-      ownerImage: '/attached_assets/generated_images/Moroccan_car_owner_profile_7a556a9c.png',
-      isAvailable: false
-    },
-    {
-      id: '5',
-      title: 'Hyundai i20 2021',
-      location: 'Fès',
-      pricePerDay: 380,
-      currency: 'MAD',
-      rating: 4.7,
-      reviewCount: 10,
-      fuelType: 'essence' as const,
-      transmission: 'manual' as const,
-      seats: 5,
-      image: '/attached_assets/generated_images/Car_rental_listing_photo_bdcce465.png',
-      ownerName: 'Hassan R.',
-      ownerImage: '/attached_assets/generated_images/Moroccan_car_owner_profile_7a556a9c.png',
-      isAvailable: true
-    },
-    {
-      id: '6',
-      title: 'Nissan Micra 2020',
-      location: 'Agadir',
-      pricePerDay: 320,
-      currency: 'MAD',
-      rating: 4.4,
-      reviewCount: 6,
-      fuelType: 'essence' as const,
-      transmission: 'automatic' as const,
-      seats: 5,
-      image: '/attached_assets/generated_images/Electric_car_in_Morocco_b06b165b.png',
-      ownerName: 'Khadija L.',
-      ownerImage: '/attached_assets/generated_images/Moroccan_car_owner_profile_7a556a9c.png',
-      isAvailable: true
+  // Parse URL parameters on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.split('?')[1] || '');
+    const locationParam = urlParams.get('location') || '';
+    const startDateParam = urlParams.get('startDate') || '';
+    const endDateParam = urlParams.get('endDate') || '';
+    
+    if (locationParam || startDateParam || endDateParam) {
+      setFilters(prev => ({
+        ...prev,
+        location: locationParam,
+        startDate: startDateParam,
+        endDate: endDateParam
+      }));
     }
-  ];
+  }, [location]);
 
-  const filteredCars = sampleCars.filter(car => {
-    if (filters.location && !car.location.toLowerCase().includes(filters.location.toLowerCase())) {
-      return false;
-    }
-    if (filters.minPrice && car.pricePerDay < parseInt(filters.minPrice)) {
-      return false;
-    }
-    if (filters.maxPrice && car.pricePerDay > parseInt(filters.maxPrice)) {
-      return false;
-    }
-    if (filters.fuelType && car.fuelType !== filters.fuelType) {
-      return false;
-    }
-    if (filters.transmission && car.transmission !== filters.transmission) {
-      return false;
-    }
-    return true;
+  // Fetch cars from API
+  const { data: carsData, isLoading, error } = useQuery({
+    queryKey: ['cars', filters],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      
+      if (filters.location) params.set('location', filters.location);
+      if (filters.startDate) params.set('startDate', filters.startDate);
+      if (filters.endDate) params.set('endDate', filters.endDate);
+      if (filters.minPrice) params.set('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+      if (filters.fuelType) params.set('fuelType', filters.fuelType);
+      if (filters.transmission) params.set('transmission', filters.transmission);
+      
+      params.set('page', '1');
+      params.set('limit', '20');
+      
+      const response = await fetch(`/api/cars?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch cars');
+      }
+      return response.json();
+    },
   });
+
+  const cars = carsData?.cars || [];
+
+  const handleFilterChange = (key: string, value: string) => {
+    // Convert "all" to empty string for API calls
+    const apiValue = value === 'all' ? '' : value;
+    setFilters(prev => ({ ...prev, [key]: apiValue }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      location: '',
+      minPrice: '',
+      maxPrice: '',
+      fuelType: 'all',
+      transmission: 'all',
+      startDate: '',
+      endDate: ''
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Erreur de chargement</h2>
+          <p className="text-gray-600">Impossible de charger les voitures. Veuillez réessayer.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Trouvez votre voiture idéale
+          </h1>
+          <p className="text-xl text-green-100 max-w-2xl mx-auto">
+            Découvrez notre sélection de voitures disponibles dans tout le Maroc
+          </p>
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:w-80 flex-shrink-0">
-            <Card className="sticky top-24 border-card-border">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold mb-4 text-card-foreground">Filtres</h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="location" className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      Ville
-                    </Label>
-                    <Input
-                      id="location"
-                      type="text"
-                      placeholder="Casablanca, Rabat..."
-                      value={filters.location}
-                      onChange={(e) => setFilters({...filters, location: e.target.value})}
-                    />
-                  </div>
+        {/* Filters */}
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 items-end">
+              <div className="space-y-2">
+                <Label htmlFor="location">📍 Lieu</Label>
+                <Input
+                  id="location"
+                  placeholder="Casablanca, Rabat..."
+                  value={filters.location}
+                  onChange={(e) => handleFilterChange('location', e.target.value)}
+                />
+              </div>
 
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <Label htmlFor="minPrice" className="text-sm font-medium text-foreground mb-2">
-                        Prix min
-                      </Label>
-                      <Input
-                        id="minPrice"
-                        type="number"
-                        placeholder="200"
-                        value={filters.minPrice}
-                        onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="maxPrice" className="text-sm font-medium text-foreground mb-2">
-                        Prix max
-                      </Label>
-                      <Input
-                        id="maxPrice"
-                        type="number"
-                        placeholder="500"
-                        value={filters.maxPrice}
-                        onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
-                      />
-                    </div>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="minPrice">💰 Prix min (MAD)</Label>
+                <Input
+                  id="minPrice"
+                  type="number"
+                  placeholder="200"
+                  value={filters.minPrice}
+                  onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                />
+              </div>
 
-                  <div>
-                    <Label htmlFor="fuelType" className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                      <Fuel className="h-4 w-4" />
-                      Carburant
-                    </Label>
-                    <Select value={filters.fuelType} onValueChange={(value) => setFilters({...filters, fuelType: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Tous" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">Tous</SelectItem>
-                        <SelectItem value="essence">Essence</SelectItem>
-                        <SelectItem value="diesel">Diesel</SelectItem>
-                        <SelectItem value="hybrid">Hybride</SelectItem>
-                        <SelectItem value="electric">Électrique</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="maxPrice">💰 Prix max (MAD)</Label>
+                <Input
+                  id="maxPrice"
+                  type="number"
+                  placeholder="600"
+                  value={filters.maxPrice}
+                  onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                />
+              </div>
 
-                  <div>
-                    <Label htmlFor="transmission" className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                      <Settings className="h-4 w-4" />
-                      Transmission
-                    </Label>
-                    <Select value={filters.transmission} onValueChange={(value) => setFilters({...filters, transmission: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Toutes" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">Toutes</SelectItem>
-                        <SelectItem value="manual">Manuelle</SelectItem>
-                        <SelectItem value="automatic">Automatique</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+              <div className="space-y-2">
+                <Label htmlFor="fuelType">⛽ Carburant</Label>
+                <Select value={filters.fuelType || 'all'} onValueChange={(value) => handleFilterChange('fuelType', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tous" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous</SelectItem>
+                    <SelectItem value="essence">Essence</SelectItem>
+                    <SelectItem value="diesel">Diesel</SelectItem>
+                    <SelectItem value="electric">Électrique</SelectItem>
+                    <SelectItem value="hybrid">Hybride</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  <Button
-                    variant="outline"
-                    onClick={() => setFilters({location: '', minPrice: '', maxPrice: '', fuelType: '', transmission: ''})}
-                    className="w-full hover-elevate active-elevate-2"
-                  >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Réinitialiser
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="transmission">⚙️ Transmission</Label>
+                <Select value={filters.transmission || 'all'} onValueChange={(value) => handleFilterChange('transmission', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Tous" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tous</SelectItem>
+                    <SelectItem value="manual">Manuelle</SelectItem>
+                    <SelectItem value="automatic">Automatique</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {/* Cars Grid */}
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">Véhicules disponibles</h1>
-                <p className="text-muted-foreground">
-                  {filteredCars.length} véhicules trouvés
-                </p>
+              <div className="space-y-2">
+                <Label htmlFor="startDate">📅 Début</Label>
+                <Input
+                  id="startDate"
+                  type="date"
+                  value={filters.startDate}
+                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="endDate">📅 Fin</Label>
+                <Input
+                  id="endDate"
+                  type="date"
+                  value={filters.endDate}
+                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Button variant="outline" onClick={clearFilters} className="w-full">
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Effacer
+                </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {filteredCars.map((car) => (
-                <CarCard key={car.id} {...car} />
-              ))}
-            </div>
-
-            {filteredCars.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-muted-foreground text-6xl mb-4">🚗</div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Aucun véhicule trouvé</h3>
-                <p className="text-muted-foreground">Essayez de modifier vos critères de recherche</p>
-              </div>
+        {/* Results Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {cars.length} voiture{cars.length > 1 ? 's' : ''} disponible{cars.length > 1 ? 's' : ''}
+            </h2>
+            {carsData && (
+              <p className="text-gray-600">
+                Page {carsData.page} sur {carsData.totalPages} • {carsData.total} résultat{carsData.total > 1 ? 's' : ''} au total
+              </p>
             )}
           </div>
         </div>
+
+        {/* Cars Grid */}
+        {cars.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-gray-400 mb-4">
+              <MapPin className="w-16 h-16 mx-auto" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucune voiture trouvée</h3>
+            <p className="text-gray-600 mb-4">
+              Essayez de modifier vos critères de recherche
+            </p>
+            <Button onClick={clearFilters} variant="outline">
+              Effacer les filtres
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {cars.map((car) => (
+              <CarCard key={car.id} car={car} />
+            ))}
+          </div>
+        )}
+
+        {/* Load More Button */}
+        {carsData && carsData.page < carsData.totalPages && (
+          <div className="text-center mt-8">
+            <Button variant="outline" size="lg">
+              Charger plus de voitures
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -11,12 +11,17 @@ export default function Home() {
   // Fetch featured cars
   const { data: carsData, isLoading: carsLoading } = useQuery({
     queryKey: ['featuredCars'],
-    queryFn: () => carApi.searchCars({ 
-      page: 1, 
-      limit: 6,
-      sortBy: 'rating',
-      sortOrder: 'desc'
-    }),
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.set('page', '1');
+      params.set('limit', '6');
+      
+      const response = await fetch(`/api/cars?${params}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch cars');
+      }
+      return response.json();
+    },
   });
 
   const features = [
@@ -94,6 +99,66 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Booking Process Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Comment ça marche ?</h2>
+            <p className="text-gray-600">Réservez votre voiture en 3 étapes simples</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center space-y-4">
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop&auto=format"
+                  alt="Rechercher une voiture"
+                  className="w-full h-48 object-cover rounded-lg shadow-md"
+                  loading="lazy"
+                />
+                <div className="absolute -top-4 -left-4 bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                  1
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold">Recherchez</h3>
+              <p className="text-gray-600">Trouvez la voiture parfaite pour votre voyage au Maroc</p>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=400&h=300&fit=crop&auto=format"
+                  alt="Réserver en ligne"
+                  className="w-full h-48 object-cover rounded-lg shadow-md"
+                  loading="lazy"
+                />
+                <div className="absolute -top-4 -left-4 bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                  2
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold">Réservez</h3>
+              <p className="text-gray-600">Choisissez vos dates et réservez en quelques clics</p>
+            </div>
+            
+            <div className="text-center space-y-4">
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=300&fit=crop&auto=format"
+                  alt="Profiter du voyage"
+                  className="w-full h-48 object-cover rounded-lg shadow-md"
+                  loading="lazy"
+                />
+                <div className="absolute -top-4 -left-4 bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold">
+                  3
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold">Profitez</h3>
+              <p className="text-gray-600">Récupérez votre voiture et explorez le Maroc</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Sample Cars Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
@@ -111,20 +176,11 @@ export default function Home() {
               {carsData?.cars?.slice(0, 6).map((car: any) => (
                 <div key={car.id} className="transform hover:scale-105 transition-transform">
                   <CarCard
-                    id={car.id}
-                    title={car.title}
-                    location={car.location}
-                    pricePerDay={parseFloat(car.pricePerDay)}
-                    currency={car.currency || 'MAD'}
-                    rating={car.rating || 0}
-                    reviewCount={car.reviewCount || 0}
-                    fuelType={car.fuelType}
-                    transmission={car.transmission}
-                    seats={car.seats}
-                    image={car.images?.[0] || 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format'}
-                    ownerName={car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Propriétaire'}
-                    ownerImage={car.owner?.profileImage}
-                    isAvailable={car.isAvailable}
+                    car={{
+                      ...car,
+                      pricePerDay: car.pricePerDay.toString(),
+                      images: car.images || ['https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format']
+                    }}
                   />
                 </div>
               )) || (

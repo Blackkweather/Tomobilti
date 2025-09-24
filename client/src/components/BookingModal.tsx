@@ -9,27 +9,23 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Fuel, Users, Star, Shield, Clock } from 'lucide-react';
 
+import type { Car } from '@shared/schema';
+
 interface BookingModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  car?: {
-    id: string;
-    title: string;
-    location: string;
-    pricePerDay: number;
-    currency: string;
-    rating: number;
-    reviewCount: number;
-    fuelType: string;
-    transmission: string;
-    seats: number;
-    image: string;
-    ownerName: string;
-    ownerImage?: string;
+  car: Car & {
+    owner?: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      profileImage?: string;
+    };
+    rating?: number;
+    reviewCount?: number;
   };
+  onClose: () => void;
 }
 
-export default function BookingModal({ isOpen, onClose, car }: BookingModalProps) {
+export default function BookingModal({ car, onClose }: BookingModalProps) {
   const [bookingData, setBookingData] = useState({
     startDate: '',
     endDate: '',
@@ -71,7 +67,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
     const end = new Date(bookingData.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const calculatedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const calculatedSubtotal = calculatedDays * car.pricePerDay;
+    const calculatedSubtotal = calculatedDays * parseFloat(car.pricePerDay);
     const calculatedServiceFee = Math.round(calculatedSubtotal * 0.05);
     const calculatedInsurance = Math.round(calculatedSubtotal * 0.03);
     const calculatedTotal = calculatedSubtotal + calculatedServiceFee + calculatedInsurance;
@@ -99,7 +95,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" aria-describedby="booking-description">
         <DialogHeader>
           <DialogTitle>Réserver ce véhicule</DialogTitle>
@@ -112,7 +108,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
             <CardContent className="p-4">
               <div className="flex gap-4">
                 <img 
-                  src={car.image} 
+                  src={car.images && car.images.length > 0 ? car.images[0] : 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format'} 
                   alt={car.title}
                   className="w-20 h-16 rounded-lg object-cover"
                 />
@@ -121,7 +117,7 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
                   <h3 className="font-semibold">{car.title}</h3>
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <MapPin className="h-3 w-3" />
-                    {car.location}
+                    {car.city}
                   </div>
                   
                   <div className="flex items-center gap-4 text-sm">
@@ -136,10 +132,14 @@ export default function BookingModal({ isOpen, onClose, car }: BookingModalProps
                   
                   <div className="flex items-center gap-2">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={car.ownerImage} alt={car.ownerName} />
-                      <AvatarFallback className="text-xs">{car.ownerName.charAt(0)}</AvatarFallback>
+                      <AvatarImage src={car.owner?.profileImage} />
+                      <AvatarFallback className="text-xs">
+                        {car.owner ? `${car.owner.firstName[0]}${car.owner.lastName[0]}` : 'P'}
+                      </AvatarFallback>
                     </Avatar>
-                    <span className="text-sm text-muted-foreground">{car.ownerName}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Propriétaire'}
+                    </span>
                   </div>
                 </div>
               </div>

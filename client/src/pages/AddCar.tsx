@@ -49,12 +49,18 @@ export default function AddCar() {
         method: "POST",
         body: data,
         credentials: "include",
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
       });
-      if (!response.ok) throw new Error("Failed to add car");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to add car' }));
+        throw new Error(errorData.error || 'Failed to add car');
+      }
       return response.json();
     },
     onSuccess: () => {
-      setLocation("/car-management");
+      setLocation("/dashboard");
     },
     onError: (error: Error) => {
       setErrors({ make: error.message });

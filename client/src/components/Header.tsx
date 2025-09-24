@@ -74,7 +74,7 @@ export default function Header() {
         </nav>
 
         {/* Search Bar */}
-        <div className="hidden sm:flex items-center gap-2 flex-1 max-w-md">
+        <div className="hidden md:flex items-center gap-2 flex-1 max-w-md">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -159,7 +159,7 @@ export default function Header() {
                   Se connecter
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href="/register">
                 <Button data-testid="button-signup" className="hover-elevate active-elevate-2">
                   S'inscrire
                 </Button>

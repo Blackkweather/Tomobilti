@@ -15,7 +15,10 @@ export const users = sqliteTable("users", {
   userType: text("user_type").notNull().default("renter"), // "owner", "renter", "both"
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => ({
+  emailIdx: sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`,
+  userTypeIdx: sql`CREATE INDEX IF NOT EXISTS idx_users_user_type ON users(user_type)`,
+}));
 
 // Cars table
 export const cars = sqliteTable("cars", {
@@ -39,7 +42,13 @@ export const cars = sqliteTable("cars", {
   isAvailable: integer("is_available", { mode: 'boolean' }).notNull().default(true),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => ({
+  ownerIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_cars_owner_id ON cars(owner_id)`,
+  cityIdx: sql`CREATE INDEX IF NOT EXISTS idx_cars_city ON cars(city)`,
+  availableIdx: sql`CREATE INDEX IF NOT EXISTS idx_cars_available ON cars(is_available)`,
+  priceIdx: sql`CREATE INDEX IF NOT EXISTS idx_cars_price ON cars(price_per_day)`,
+  fuelTypeIdx: sql`CREATE INDEX IF NOT EXISTS idx_cars_fuel_type ON cars(fuel_type)`,
+}));
 
 // Bookings table
 export const bookings = sqliteTable("bookings", {
@@ -59,7 +68,12 @@ export const bookings = sqliteTable("bookings", {
   paymentIntentId: text("payment_intent_id"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => ({
+  carIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_bookings_car_id ON bookings(car_id)`,
+  renterIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_bookings_renter_id ON bookings(renter_id)`,
+  statusIdx: sql`CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status)`,
+  startDateIdx: sql`CREATE INDEX IF NOT EXISTS idx_bookings_start_date ON bookings(start_date)`,
+}));
 
 // Reviews table
 export const reviews = sqliteTable("reviews", {
@@ -71,7 +85,12 @@ export const reviews = sqliteTable("reviews", {
   rating: integer("rating").notNull(), // 1-5
   comment: text("comment"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
-});
+}, (table) => ({
+  carIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_reviews_car_id ON reviews(car_id)`,
+  reviewerIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_reviews_reviewer_id ON reviews(reviewer_id)`,
+  revieweeIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_reviews_reviewee_id ON reviews(reviewee_id)`,
+  ratingIdx: sql`CREATE INDEX IF NOT EXISTS idx_reviews_rating ON reviews(rating)`,
+}));
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
@@ -121,6 +140,7 @@ export const carSearchSchema = z.object({
   seats: z.coerce.number().optional(),
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
+  ownerId: z.string().optional(),
   page: z.coerce.number().default(1),
   limit: z.coerce.number().default(12),
 });

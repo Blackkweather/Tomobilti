@@ -7,6 +7,18 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Add multer for handling multipart/form-data (file uploads)
+import multer from 'multer';
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  }
+});
+
+// Apply multer middleware to car routes
+app.use('/api/cars', upload.array('images', 5));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;

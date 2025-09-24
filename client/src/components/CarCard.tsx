@@ -1,25 +1,24 @@
 import { useState } from 'react';
+import { Link } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Star, MapPin, Fuel, Zap, Heart } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import type { Car } from '@shared/schema';
 
 interface CarCardProps {
-  id: string;
-  title: string;
-  location: string;
-  pricePerDay: number;
-  currency: string;
-  rating: number;
-  reviewCount: number;
-  fuelType: 'essence' | 'diesel' | 'electric' | 'hybrid';
-  transmission: 'manual' | 'automatic';
-  seats: number;
-  image: string;
-  ownerName: string;
-  ownerImage?: string;
-  isAvailable: boolean;
+  car: Car & {
+    owner?: {
+      id: string;
+      firstName: string;
+      lastName: string;
+      profileImage?: string;
+    };
+    rating?: number;
+    reviewCount?: number;
+  };
 }
 
 const fuelTypeLabels = {
@@ -36,23 +35,25 @@ const fuelTypeIcons = {
   hybrid: Zap
 };
 
-export default function CarCard({
-  id,
-  title,
-  location,
-  pricePerDay,
-  currency,
-  rating,
-  reviewCount,
-  fuelType,
-  transmission,
-  seats,
-  image,
-  ownerName,
-  ownerImage,
-  isAvailable
-}: CarCardProps) {
+export default function CarCard({ car }: CarCardProps) {
+  const {
+    id,
+    title,
+    location,
+    city,
+    pricePerDay,
+    currency,
+    fuelType,
+    transmission,
+    seats,
+    images,
+    owner,
+    rating = 0,
+    reviewCount = 0,
+    isAvailable
+  } = car;
   const [isFavorited, setIsFavorited] = useState(false);
+  const { isAuthenticated } = useAuth();
   
   const FuelIcon = fuelTypeIcons[fuelType];
 
@@ -68,14 +69,23 @@ export default function CarCard({
     // Handle view details logic
   };
 
+  const carImage = images && images.length > 0 ? images[0] : 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format';
+  const ownerName = owner ? `${owner.firstName} ${owner.lastName}` : 'Propriétaire';
+  const ownerImage = owner?.profileImage;
+
   return (
     <Card className="group overflow-hidden hover-elevate border-card-border" data-testid={`card-car-${id}`}>
       <div className="relative">
         <img 
-          src={image} 
+          src={carImage} 
           alt={title}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           data-testid={`img-car-${id}`}
+          loading="lazy"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format';
+          }}
         />
         
         {/* Favorite Button */}
@@ -117,7 +127,7 @@ export default function CarCard({
           </h3>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-3 w-3" />
-            <span data-testid={`text-car-location-${id}`}>{location}</span>
+            <span data-testid={`text-car-location-${id}`}>{city}</span>
           </div>
         </div>
 
@@ -168,23 +178,36 @@ export default function CarCard({
           
           {isAvailable ? (
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleViewDetails}
-                data-testid={`button-details-${id}`}
-                className="hover-elevate active-elevate-2"
-              >
-                Détails
-              </Button>
-              <Button 
-                onClick={handleBook}
-                size="sm"
-                data-testid={`button-book-${id}`}
-                className="hover-elevate active-elevate-2"
-              >
-                Réserver
-              </Button>
+              <Link href={`/cars/${id}`}>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  data-testid={`button-details-${id}`}
+                  className="hover-elevate active-elevate-2"
+                >
+                  Détails
+                </Button>
+              </Link>
+              {isAuthenticated ? (
+                <Button 
+                  onClick={handleBook}
+                  size="sm"
+                  data-testid={`button-book-${id}`}
+                  className="hover-elevate active-elevate-2"
+                >
+                  Réserver
+                </Button>
+              ) : (
+                <Link href="/login">
+                  <Button 
+                    size="sm"
+                    data-testid={`button-login-to-book-${id}`}
+                    className="hover-elevate active-elevate-2"
+                  >
+                    Se connecter pour réserver
+                  </Button>
+                </Link>
+              )}
             </div>
           ) : (
             <Button variant="secondary" size="sm" disabled>
