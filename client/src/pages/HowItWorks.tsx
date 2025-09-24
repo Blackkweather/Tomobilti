@@ -5,41 +5,41 @@ import { Car, Users, Shield, CreditCard, MapPin, Star } from 'lucide-react';
 const steps = [
   {
     icon: Car,
-    title: "Inscrivez votre voiture",
-    description: "Ajoutez votre véhicule avec photos et détails. Fixez vos prix et disponibilités."
+    title: "List Your Car",
+    description: "Add your vehicle with photos and details. Set your prices and availability."
   },
   {
     icon: Users,
-    title: "Rencontrez les locataires",
-    description: "Recevez des demandes de location. Échangez avec les locataires avant validation."
+    title: "Meet Renters",
+    description: "Receive rental requests. Exchange with renters before validation."
   },
   {
     icon: Shield,
-    title: "Location sécurisée",
-    description: "Assurance incluse, paiement sécurisé. Remise des clés en toute confiance."
+    title: "Secure Rental",
+    description: "Insurance included, secure payment. Key handover with confidence."
   },
   {
     icon: CreditCard,
-    title: "Recevez vos gains",
-    description: "Vos revenus sont versés automatiquement après chaque location réussie."
+    title: "Receive Your Earnings",
+    description: "Your income is automatically transferred after each successful rental."
   }
 ];
 
 const benefits = [
   {
     icon: MapPin,
-    title: "Partout au Maroc",
-    description: "Casablanca, Rabat, Marrakech, Fès... Votre voiture peut générer des revenus dans toutes les grandes villes."
+    title: "All Across the UK",
+    description: "London, Manchester, Birmingham, Edinburgh... Your car can generate income in all major cities."
   },
   {
     icon: Star,
-    title: "Communauté de confiance",
-    description: "Système d'évaluations et vérifications pour des échanges en toute sécurité."
+    title: "Trusted Community",
+    description: "Rating and verification system for secure exchanges."
   },
   {
     icon: Shield,
-    title: "Protection complète",
-    description: "Assurance tous risques incluse. Votre véhicule est protégé pendant chaque location."
+    title: "Complete Protection",
+    description: "Comprehensive insurance included. Your vehicle is protected during every rental."
   }
 ];
 
@@ -50,11 +50,11 @@ export default function HowItWorks() {
       <section className="py-16 bg-gradient-to-br from-primary/10 to-primary/5">
         <div className="container px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">
-            Comment ça marche ?
+            How Does It Work?
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Transformez votre voiture en source de revenus en 4 étapes simples. 
-            Rejoignez des milliers de propriétaires qui gagnent de l'argent avec leur véhicule.
+            Transform your car into a source of income in 4 simple steps. 
+            Join thousands of owners who earn money with their vehicle.
           </p>
         </div>
       </section>
@@ -63,7 +63,7 @@ export default function HowItWorks() {
       <section className="py-16">
         <div className="container px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
-            4 étapes pour commencer à gagner
+            4 Steps to Start Earning
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -92,7 +92,7 @@ export default function HowItWorks() {
       <section className="py-16 bg-muted/30">
         <div className="container px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
-            Pourquoi choisir Tomobilto ?
+            Why Choose Tomobilto?
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -120,13 +120,13 @@ export default function HowItWorks() {
           <Card className="bg-primary text-primary-foreground max-w-4xl mx-auto">
             <CardContent className="p-12">
               <h2 className="text-3xl font-bold mb-4">
-                Prêt à faire travailler votre voiture ?
+                Ready to Put Your Car to Work?
               </h2>
               <p className="text-primary-foreground/90 mb-8 text-lg">
-                Inscrivez-vous gratuitement et commencez à générer des revenus dès aujourd'hui.
+                Sign up for free and start generating income today.
               </p>
               <Button variant="secondary" size="lg" className="hover-elevate">
-                Inscrire ma voiture
+                List My Car
               </Button>
             </CardContent>
           </Card>
