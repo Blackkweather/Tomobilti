@@ -71,7 +71,7 @@ export default function Hero() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  📅 Début
+                  📅 Start Date
                 </label>
                 <input
                   type="date"
@@ -83,7 +83,7 @@ export default function Hero() {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  📅 Fin
+                  📅 End Date
                 </label>
                 <input
                   type="date"
@@ -99,7 +99,7 @@ export default function Hero() {
                 </label>
                 <Link href={`/cars?location=${encodeURIComponent(searchLocation)}&startDate=${startDate}&endDate=${endDate}`}>
                   <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors">
-                    🔍 Voir les Voitures
+                    🔍 View Cars
                   </button>
                 </Link>
               </div>
@@ -108,16 +108,16 @@ export default function Hero() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-200 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="font-semibold text-green-300">✓ Réservation facile</div>
-              <div>En quelques clics</div>
+              <div className="font-semibold text-green-300">✓ Easy Booking</div>
+              <div>In just a few clicks</div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-green-300">✓ Prix compétitifs</div>
-              <div>Jusqu'à 50% moins cher</div>
+              <div className="font-semibold text-green-300">✓ Competitive Prices</div>
+              <div>Up to 50% cheaper</div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-green-300">✓ Assurance incluse</div>
-              <div>Voyagez en toute sécurité</div>
+              <div className="font-semibold text-green-300">✓ Insurance Included</div>
+              <div>Travel safely</div>
             </div>
           </div>
         </div>

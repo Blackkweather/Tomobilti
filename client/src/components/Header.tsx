@@ -43,10 +43,10 @@ export default function Header() {
   }
 
   const navItems = [
-    { href: '/', label: 'Accueil' },
-    { href: '/cars', label: 'Véhicules' },
-    { href: '/become-host', label: 'Devenir hôte' },
-    { href: '/about', label: 'À propos' },
+    { href: '/', label: 'Home' },
+    { href: '/cars', label: 'Vehicles' },
+    { href: '/become-host', label: 'Become Host' },
+    { href: '/about', label: 'About' },
   ];
 
   return (
@@ -79,7 +79,7 @@ export default function Header() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               data-testid="input-search"
-              placeholder="Rechercher à Casablanca, Rabat..."
+              placeholder="Search in London, Manchester..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -97,7 +97,7 @@ export default function Header() {
             <>
               <Button variant="outline" size="sm" data-testid="button-add-car" className="hidden md:flex hover-elevate active-elevate-2">
                 <Plus className="h-4 w-4 mr-2" />
-                Ajouter véhicule
+                Add Vehicle
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild data-testid="button-user-menu">
@@ -180,7 +180,7 @@ export default function Header() {
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     data-testid="input-mobile-search"
-                    placeholder="Rechercher..."
+                    placeholder="Search..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
