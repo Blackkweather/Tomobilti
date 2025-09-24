@@ -134,13 +134,21 @@ export default function CarsSearchBar({
 
             {/* Calendar Popup */}
             {showCalendar && (
-              <div className="relative z-50 mt-2">
-                <Calendar
-                  selectedDates={selectedDates}
-                  onDateSelect={handleDateSelect}
-                  className="shadow-2xl"
+              <>
+                {/* Backdrop */}
+                <div 
+                  className="fixed inset-0 bg-black/20 z-[9998]"
+                  onClick={() => setShowCalendar(false)}
                 />
-              </div>
+                {/* Calendar */}
+                <div className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                  <Calendar
+                    selectedDates={selectedDates}
+                    onDateSelect={handleDateSelect}
+                    className="shadow-2xl"
+                  />
+                </div>
+              </>
             )}
 
             {/* Action Buttons */}

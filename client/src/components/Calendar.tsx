@@ -218,7 +218,7 @@ export default function Calendar({
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm ${className}`}>
+    <div className={`bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm relative z-[9999] ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
