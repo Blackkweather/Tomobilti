@@ -20,21 +20,21 @@ interface SearchFiltersProps {
 }
 
 const cities = [
-  'Casablanca',
-  'Rabat', 
-  'Marrakech',
-  'Fès',
-  'Tangier',
-  'Agadir',
-  'Meknès',
-  'Salé'
+  'London',
+  'Manchester', 
+  'Birmingham',
+  'Liverpool',
+  'Leeds',
+  'Sheffield',
+  'Edinburgh',
+  'Glasgow'
 ];
 
 const fuelTypes = [
-  { value: 'essence', label: 'Essence', icon: Fuel },
+  { value: 'essence', label: 'Petrol', icon: Fuel },
   { value: 'diesel', label: 'Diesel', icon: Fuel },
-  { value: 'electric', label: 'Électrique', icon: Zap },
-  { value: 'hybrid', label: 'Hybride', icon: Zap }
+  { value: 'electric', label: 'Electric', icon: Zap },
+  { value: 'hybrid', label: 'Hybrid', icon: Zap }
 ];
 
 export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
@@ -42,7 +42,7 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
     location: '',
     startDate: '',
     endDate: '',
-    priceRange: [200, 800],
+    priceRange: [20, 80],
     fuelTypes: [] as string[],
     transmission: '',
     seats: '',
@@ -61,7 +61,7 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
       location: '',
       startDate: '',
       endDate: '',
-      priceRange: [200, 800],
+      priceRange: [20, 80],
       fuelTypes: [],
       transmission: '',
       seats: '',
@@ -85,7 +85,7 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Filtres
+            Filters
           </CardTitle>
           <Button 
             variant="ghost" 
@@ -104,14 +104,14 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
         <div className="space-y-2">
           <Label className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
-            Lieu
+            Location
           </Label>
           <Select 
             value={filters.location} 
             onValueChange={(value) => updateFilters('location', value)}
           >
             <SelectTrigger data-testid="select-location">
-              <SelectValue placeholder="Choisir une ville" />
+              <SelectValue placeholder="Choose a city" />
             </SelectTrigger>
             <SelectContent>
               {cities.map(city => (
@@ -128,7 +128,7 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
         {/* Date Range */}
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Date de début</Label>
+            <Label>Start Date</Label>
             <Input
               type="date"
               value={filters.startDate}
@@ -138,7 +138,7 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
           </div>
           
           <div className="space-y-2">
-            <Label>Date de fin</Label>
+            <Label>End Date</Label>
             <Input
               type="date"
               value={filters.endDate}
@@ -152,21 +152,21 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
 
         {/* Price Range */}
         <div className="space-y-3">
-          <Label>Prix par jour (MAD)</Label>
+          <Label>Price per day (£)</Label>
           <div className="px-2">
             <Slider
               value={filters.priceRange}
               onValueChange={(value) => updateFilters('priceRange', value)}
-              max={1000}
-              min={100}
-              step={50}
+              max={100}
+              min={10}
+              step={5}
               className="w-full"
               data-testid="slider-price-range"
             />
           </div>
           <div className="flex justify-between text-sm text-muted-foreground">
-            <span>{filters.priceRange[0]} MAD</span>
-            <span>{filters.priceRange[1]} MAD</span>
+            <span>£{filters.priceRange[0]}</span>
+            <span>£{filters.priceRange[1]}</span>
           </div>
         </div>
 
@@ -174,7 +174,7 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
 
         {/* Fuel Type */}
         <div className="space-y-3">
-          <Label>Type de carburant</Label>
+          <Label>Fuel Type</Label>
           <div className="flex flex-wrap gap-2">
             {fuelTypes.map(({ value, label, icon: Icon }) => {
               const isSelected = filters.fuelTypes.includes(value);
@@ -206,30 +206,30 @@ export default function SearchFilters({ onFiltersChange }: SearchFiltersProps) {
             onValueChange={(value) => updateFilters('transmission', value)}
           >
             <SelectTrigger data-testid="select-transmission">
-              <SelectValue placeholder="Tout" />
+              <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="automatic">Automatique</SelectItem>
-              <SelectItem value="manual">Manuelle</SelectItem>
+              <SelectItem value="automatic">Automatic</SelectItem>
+              <SelectItem value="manual">Manual</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {/* Number of Seats */}
         <div className="space-y-2">
-          <Label>Nombre de places</Label>
+          <Label>Number of Seats</Label>
           <Select 
             value={filters.seats} 
             onValueChange={(value) => updateFilters('seats', value)}
           >
             <SelectTrigger data-testid="select-seats">
-              <SelectValue placeholder="Tout" />
+              <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="2">2 places</SelectItem>
-              <SelectItem value="4">4 places</SelectItem>
-              <SelectItem value="5">5 places</SelectItem>
-              <SelectItem value="7">7+ places</SelectItem>
+              <SelectItem value="2">2 seats</SelectItem>
+              <SelectItem value="4">4 seats</SelectItem>
+              <SelectItem value="5">5 seats</SelectItem>
+              <SelectItem value="7">7+ seats</SelectItem>
             </SelectContent>
           </Select>
         </div>
