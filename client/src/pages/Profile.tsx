@@ -21,8 +21,8 @@ export default function Profile() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Accès non autorisé</h1>
-          <p className="text-gray-600">Vous devez être connecté pour accéder à cette page.</p>
+          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+          <p className="text-gray-600">You must be logged in to access this page.</p>
         </div>
       </div>
     );
@@ -49,15 +49,15 @@ export default function Profile() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Mon Profil</h1>
-            <p className="text-gray-600">Gérez vos informations personnelles</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+            <p className="text-gray-600">Manage your personal information</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Profile Card */}
             <Card>
               <CardHeader>
-                <CardTitle>Photo de profil</CardTitle>
+                <CardTitle>Profile Photo</CardTitle>
               </CardHeader>
               <CardContent className="text-center">
                 <Avatar className="h-24 w-24 mx-auto mb-4">
@@ -67,7 +67,7 @@ export default function Profile() {
                   </AvatarFallback>
                 </Avatar>
                 <Button variant="outline" size="sm">
-                  Changer la photo
+                  Change Photo
                 </Button>
               </CardContent>
             </Card>
@@ -77,18 +77,18 @@ export default function Profile() {
               <Card>
                 <CardHeader>
                   <div className="flex justify-between items-center">
-                    <CardTitle>Informations personnelles</CardTitle>
+                    <CardTitle>Personal Information</CardTitle>
                     {!isEditing ? (
                       <Button onClick={() => setIsEditing(true)}>
-                        Modifier
+                        Edit
                       </Button>
                     ) : (
                       <div className="flex gap-2">
                         <Button onClick={handleSave}>
-                          Sauvegarder
+                          Save
                         </Button>
                         <Button variant="outline" onClick={handleCancel}>
-                          Annuler
+                          Cancel
                         </Button>
                       </div>
                     )}
@@ -97,7 +97,7 @@ export default function Profile() {
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">Prénom</Label>
+                      <Label htmlFor="firstName">First Name</Label>
                       {isEditing ? (
                         <Input
                           id="firstName"
@@ -113,7 +113,7 @@ export default function Profile() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Nom</Label>
+                      <Label htmlFor="lastName">Last Name</Label>
                       {isEditing ? (
                         <Input
                           id="lastName"
@@ -147,7 +147,7 @@ export default function Profile() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="phone">Téléphone</Label>
+                    <Label htmlFor="phone">Phone</Label>
                     {isEditing ? (
                       <Input
                         id="phone"
@@ -159,18 +159,18 @@ export default function Profile() {
                     ) : (
                       <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                         <Phone className="h-4 w-4 text-gray-500" />
-                        <span>{user.phone || 'Non renseigné'}</span>
+                        <span>{user.phone || 'Not provided'}</span>
                       </div>
                     )}
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Type de compte</Label>
+                    <Label>Account Type</Label>
                     <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                       <Calendar className="h-4 w-4 text-gray-500" />
                       <span className="capitalize">
-                        {user.userType === 'renter' ? 'Locataire' : 
-                         user.userType === 'owner' ? 'Propriétaire' : 'Les deux'}
+                        {user.userType === 'renter' ? 'Renter' : 
+                         user.userType === 'owner' ? 'Owner' : 'Both'}
                       </span>
                     </div>
                   </div>
@@ -182,36 +182,36 @@ export default function Profile() {
           {/* Account Settings */}
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle>Paramètres du compte</CardTitle>
+              <CardTitle>Account Settings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center p-4 border rounded-lg">
                 <div>
-                  <h3 className="font-medium">Changer le mot de passe</h3>
-                  <p className="text-sm text-gray-600">Mettez à jour votre mot de passe pour plus de sécurité</p>
+                  <h3 className="font-medium">Change Password</h3>
+                  <p className="text-sm text-gray-600">Update your password for better security</p>
                 </div>
                 <Button variant="outline">
-                  Modifier
+                  Edit
                 </Button>
               </div>
 
               <div className="flex justify-between items-center p-4 border rounded-lg">
                 <div>
                   <h3 className="font-medium">Notifications</h3>
-                  <p className="text-sm text-gray-600">Gérez vos préférences de notification</p>
+                  <p className="text-sm text-gray-600">Manage your notification preferences</p>
                 </div>
                 <Button variant="outline">
-                  Paramètres
+                  Settings
                 </Button>
               </div>
 
               <div className="flex justify-between items-center p-4 border rounded-lg">
                 <div>
-                  <h3 className="font-medium">Supprimer le compte</h3>
-                  <p className="text-sm text-gray-600">Supprimez définitivement votre compte</p>
+                  <h3 className="font-medium">Delete Account</h3>
+                  <p className="text-sm text-gray-600">Permanently delete your account</p>
                 </div>
                 <Button variant="destructive">
-                  Supprimer
+                  Delete
                 </Button>
               </div>
             </CardContent>
