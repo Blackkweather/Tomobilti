@@ -10,6 +10,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import OwnerDashboard from "./pages/OwnerDashboard";
+import RenterDashboard from "./pages/RenterDashboard";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Cars from "./pages/Cars";
@@ -36,8 +38,8 @@ function App() {
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
             <Route path="/dashboard" component={Dashboard} />
-            <Route path="/dashboard/owner" component={Dashboard} />
-            <Route path="/dashboard/renter" component={Dashboard} />
+            <Route path="/dashboard/owner" component={OwnerDashboard} />
+            <Route path="/dashboard/renter" component={RenterDashboard} />
             <Route path="/profile" component={Profile} />
             <Route path="/settings" component={Settings} />
             <Route path="/cars" component={Cars} />
