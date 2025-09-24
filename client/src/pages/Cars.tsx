@@ -68,6 +68,12 @@ export default function Cars() {
   });
 
   const cars = carsData?.cars || [];
+  
+  // Debug logging
+  console.log('Cars data:', carsData);
+  console.log('Cars array:', cars);
+  console.log('Is loading:', isLoading);
+  console.log('Error:', error);
 
   const handleFilterChange = (key: string, value: string) => {
     // Convert "all" to empty string for API calls
@@ -169,7 +175,7 @@ export default function Cars() {
         {carsData && carsData.page < carsData.totalPages && (
           <div className="text-center mt-8">
             <Button variant="outline" size="lg">
-              Charger plus de voitures
+              Load More Cars
             </Button>
           </div>
         )}
