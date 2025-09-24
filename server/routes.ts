@@ -268,7 +268,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.headers['content-type']?.includes('multipart/form-data')) {
         carData = {};
         
-        // Parse form fields
+        console.log('FormData received:', req.body);
+        
+        // Parse form fields with proper type conversion
         Object.keys(req.body).forEach(key => {
           if (key === 'features') {
             try {
@@ -276,6 +278,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
             } catch {
               carData[key] = req.body[key];
             }
+          } else if (key === 'images') {
+            try {
+              carData[key] = JSON.parse(req.body[key]);
+            } catch {
+              // If parsing fails, treat as single image URL
+              carData[key] = [req.body[key]];
+            }
+          } else if (key === 'year' || key === 'seats') {
+            carData[key] = parseInt(req.body[key]);
+          } else if (key === 'isAvailable') {
+            carData[key] = req.body[key] === 'true';
           } else {
             carData[key] = req.body[key];
           }
