@@ -30,7 +30,7 @@ export const cars = pgTable("cars", {
   transmission: text("transmission").notNull(), // "manual", "automatic"
   seats: integer("seats").notNull(),
   pricePerDay: decimal("price_per_day", { precision: 10, scale: 2 }).notNull(),
-  currency: text("currency").notNull().default("MAD"),
+  currency: text("currency").notNull().default("GBP"),
   location: text("location").notNull(),
   city: text("city").notNull(),
   latitude: decimal("latitude", { precision: 10, scale: 8 }),
