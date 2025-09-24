@@ -177,7 +177,7 @@ export default function Register() {
 
             <div>
               <label htmlFor="userType" className="block text-sm font-medium text-gray-700">
-                Type de compte
+                Account Type
               </label>
               <select
                 id="userType"
@@ -187,15 +187,18 @@ export default function Register() {
                 onChange={handleChange('userType')}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="renter">Locataire</option>
-                <option value="owner">Propriétaire</option>
-                <option value="both">Les deux</option>
+                <option value="renter">Renter - I want to rent cars</option>
+                <option value="owner">Owner - I want to rent out my car</option>
+                <option value="both">Both - I want to rent and rent out cars</option>
               </select>
+              <p className="mt-2 text-sm text-gray-600">
+                Choose your primary role on the platform. You can change this later in your profile settings.
+              </p>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Mot de passe
+                Password
               </label>
               <input
                 id="password"
@@ -213,7 +216,7 @@ export default function Register() {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirmer le mot de passe
+                Confirm Password
               </label>
               <input
                 id="confirmPassword"
@@ -247,10 +250,10 @@ export default function Register() {
               {isLoading ? (
                 <div className="flex items-center gap-2">
                   <LoadingSpinner size="sm" />
-                  Inscription...
+                  Signing Up...
                 </div>
               ) : (
-                'Créer mon compte'
+                'Create Account'
               )}
             </button>
           </div>

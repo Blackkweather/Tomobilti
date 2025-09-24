@@ -9,7 +9,7 @@ import {
   loginSchema,
   registerSchema,
   enhancedInsertCarSchema
-} from "@shared/schema";
+} from "@shared/sqlite-schema";
 import { z } from "zod";
 import { csrfProtection } from "./middleware/csrf";
 import { sanitizeMiddleware } from "./middleware/sanitize";
@@ -92,7 +92,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(userData.email);
       if (existingUser) {
-        return res.status(400).json({ error: 'Un compte avec cet email existe déjà' });
+        return res.status(400).json({ error: 'An account with this email already exists' });
       }
       
       const user = await storage.createUser(userData);
@@ -100,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sanitizedUser = sanitizeUser(user);
       
       res.status(201).json({
-        message: 'Compte créé avec succès',
+        message: 'Account created successfully',
         token,
         user: sanitizedUser
       });
@@ -312,12 +312,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const car = await storage.createCar(validatedCarData);
       res.status(201).json({
-        message: "Véhicule créé avec succès",
+        message: "Vehicle created successfully",
         car
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Données de véhicule invalides", details: error.errors });
+        return res.status(400).json({ error: "Invalid vehicle data", details: error.errors });
       }
       console.error('Create car error:', error);
       res.status(500).json({ error: "Internal server error" });
@@ -339,7 +339,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: "Données de véhicule invalides", details: error.errors });
+        return res.status(400).json({ error: "Invalid vehicle data", details: error.errors });
       }
       console.error('Update car error:', error);
       res.status(500).json({ error: "Internal server error" });
@@ -434,6 +434,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/bookings", requireAuth, async (req, res) => {
     try {
+      // For SQLite, dates are stored as text strings
       const bookingData = insertBookingSchema.parse(req.body);
       
       // Check if car is available for the requested dates

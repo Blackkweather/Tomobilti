@@ -69,7 +69,7 @@ export default function HeroSearch() {
 
   return (
     <div className="relative z-10">
-      <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl max-w-4xl mx-auto p-4 md:p-6 relative z-10">
+      <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl max-w-4xl mx-auto p-4 md:p-6 relative z-10 touch-manipulation">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
           {/* Location */}
           <div className="space-y-2">
@@ -94,7 +94,7 @@ export default function HeroSearch() {
             <Button
               variant="outline"
               onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full justify-start h-10 text-left"
+              className="w-full justify-start h-10 text-left touch-manipulation min-h-[44px]"
             >
               <CalendarIcon className="h-4 w-4 mr-2" />
               {selectedDates.start ? (
