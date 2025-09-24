@@ -117,6 +117,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const sanitizedUser = sanitizeUser(req.user!);
     res.json({ user: sanitizedUser });
   });
+
+  app.put('/api/auth/profile', authMiddleware, async (req, res) => {
+    try {
+      const updates = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        phone: req.body.phone,
+      };
+
+      // Validate required fields
+      if (!updates.firstName || !updates.lastName || !updates.email) {
+        return res.status(400).json({ error: 'Prénom, nom et email sont requis' });
+      }
+
+      // Check if email is already taken by another user
+      const existingUser = await storage.getUserByEmail(updates.email);
+      if (existingUser && existingUser.id !== req.user!.id) {
+        return res.status(400).json({ error: 'Cet email est déjà utilisé par un autre compte' });
+      }
+
+      const updatedUser = await storage.updateUser(req.user!.id, updates);
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+      }
+
+      const sanitizedUser = sanitizeUser(updatedUser);
+      res.json({ 
+        message: 'Profil mis à jour avec succès',
+        user: sanitizedUser 
+      });
+    } catch (error) {
+      console.error('Profile update error:', error);
+      res.status(500).json({ error: 'Erreur interne du serveur' });
+    }
+  });
   
   // Apply optional auth to public routes, required auth to protected routes
   app.use('/api/cars', optionalAuthMiddleware);

@@ -67,7 +67,11 @@ export default function Dashboard() {
   const { data: bookingsData, isLoading: bookingsLoading } = useQuery({
     queryKey: ['userBookings', user.id],
     queryFn: async () => {
-      const response = await fetch(`/api/bookings/renter/${user.id}`);
+      const response = await fetch(`/api/bookings/renter/${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
       if (!response.ok) throw new Error('Failed to fetch bookings');
       return response.json();
     },

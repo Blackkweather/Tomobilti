@@ -11,6 +11,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import Cars from "./pages/Cars";
 import CarDetails from "./pages/CarDetails";
 import AddCar from "./pages/AddCar";
@@ -38,6 +39,7 @@ function App() {
             <Route path="/dashboard/owner" component={Dashboard} />
             <Route path="/dashboard/renter" component={Dashboard} />
             <Route path="/profile" component={Profile} />
+            <Route path="/settings" component={Settings} />
             <Route path="/cars" component={Cars} />
             <Route path="/cars/:id" component={CarDetails} />
             <Route path="/add-car" component={AddCar} />
