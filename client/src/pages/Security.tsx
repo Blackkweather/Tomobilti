@@ -18,10 +18,14 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  Settings
+  Settings,
+  Star,
+  Eye
 } from 'lucide-react';
 import SecurityVerification from '../components/SecurityVerification';
 import VehicleSafety from '../components/VehicleSafety';
+import SecurityReviews from '../components/SecurityReviews';
+import FraudDetection from '../components/FraudDetection';
 
 export default function Security() {
   const { user } = useAuth();
@@ -66,7 +70,7 @@ export default function Security() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="verification" className="flex items-center gap-2">
                 <Shield className="h-4 w-4" />
                 Verification
@@ -78,6 +82,14 @@ export default function Security() {
               <TabsTrigger value="emergency" className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
                 Emergency
+              </TabsTrigger>
+              <TabsTrigger value="reviews" className="flex items-center gap-2">
+                <Star className="h-4 w-4" />
+                Reviews
+              </TabsTrigger>
+              <TabsTrigger value="fraud" className="flex items-center gap-2">
+                <Eye className="h-4 w-4" />
+                Fraud Detection
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
@@ -281,6 +293,54 @@ export default function Security() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="reviews" className="space-y-6">
+              <SecurityReviews 
+                reviews={[
+                  {
+                    id: '1',
+                    reviewerName: 'Sarah Johnson',
+                    reviewerType: 'renter',
+                    rating: 5,
+                    securityRating: 5,
+                    title: 'Excellent security and service',
+                    comment: 'The car was in perfect condition and the security measures were top-notch. Felt completely safe throughout the rental.',
+                    date: '2024-01-15',
+                    verified: true,
+                    helpful: 12,
+                    reported: false,
+                    carTitle: 'BMW 3 Series',
+                    bookingDate: '2024-01-10'
+                  },
+                  {
+                    id: '2',
+                    reviewerName: 'Michael Brown',
+                    reviewerType: 'owner',
+                    rating: 4,
+                    securityRating: 4,
+                    title: 'Good experience overall',
+                    comment: 'Professional renter, returned the car in excellent condition. Security verification process was smooth.',
+                    date: '2024-01-12',
+                    verified: true,
+                    helpful: 8,
+                    reported: false,
+                    carTitle: 'Ford Focus',
+                    bookingDate: '2024-01-08'
+                  }
+                ]}
+                userType={user.userType || 'renter'}
+                onAddReview={(review) => console.log('Adding review:', review)}
+                onReportReview={(reviewId) => console.log('Reporting review:', reviewId)}
+                onHelpfulReview={(reviewId) => console.log('Marking helpful:', reviewId)}
+              />
+            </TabsContent>
+
+            <TabsContent value="fraud" className="space-y-6">
+              <FraudDetection 
+                userId={user.id}
+                onSecurityAlert={(alert) => console.log('Security alert:', alert)}
+              />
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">
