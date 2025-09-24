@@ -21,9 +21,9 @@ import {
 const mockCars = [
   {
     id: '1',
-    title: 'BMW Série 3',
-    location: 'Casablanca',
-    pricePerDay: 450,
+    title: 'BMW 3 Series',
+    location: 'London',
+    pricePerDay: 45,
     status: 'available',
     totalEarnings: 13500,
     bookingsCount: 15,
@@ -32,9 +32,9 @@ const mockCars = [
   },
   {
     id: '2', 
-    title: 'Peugeot 208',
-    location: 'Rabat',
-    pricePerDay: 280,
+    title: 'Ford Focus',
+    location: 'Manchester',
+    pricePerDay: 28,
     status: 'rented',
     totalEarnings: 8400,
     bookingsCount: 12,
@@ -46,8 +46,8 @@ const mockCars = [
 const mockBookings = [
   {
     id: 'b1',
-    carTitle: 'BMW Série 3',
-    renterName: 'Karim Alaoui',
+    carTitle: 'BMW 3 Series',
+    renterName: 'James Smith',
     startDate: '2024-12-20',
     endDate: '2024-12-23',
     totalAmount: 1350,
@@ -56,8 +56,8 @@ const mockBookings = [
   },
   {
     id: 'b2',
-    carTitle: 'Peugeot 208', 
-    renterName: 'Sarah Bennani',
+    carTitle: 'Ford Focus', 
+    renterName: 'Sarah Johnson',
     startDate: '2024-12-15',
     endDate: '2024-12-17',
     totalAmount: 560,
@@ -67,15 +67,15 @@ const mockBookings = [
 ];
 
 const statusConfig = {
-  available: { label: 'Disponible', variant: 'default' as const, icon: CheckCircle },
-  rented: { label: 'Loué', variant: 'secondary' as const, icon: Clock },
+  available: { label: 'Available', variant: 'default' as const, icon: CheckCircle },
+  rented: { label: 'Rented', variant: 'secondary' as const, icon: Clock },
   maintenance: { label: 'Maintenance', variant: 'destructive' as const, icon: XCircle }
 };
 
 const bookingStatusConfig = {
-  upcoming: { label: 'À venir', variant: 'default' as const },
-  active: { label: 'En cours', variant: 'secondary' as const },
-  completed: { label: 'Terminé', variant: 'outline' as const }
+  upcoming: { label: 'Upcoming', variant: 'default' as const },
+  active: { label: 'Active', variant: 'secondary' as const },
+  completed: { label: 'Completed', variant: 'outline' as const }
 };
 
 export default function OwnerDashboard() {
@@ -102,12 +102,12 @@ export default function OwnerDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Tableau de bord propriétaire</h1>
-          <p className="text-muted-foreground">Gérez vos véhicules et réservations</p>
+          <h1 className="text-3xl font-bold">Owner Dashboard</h1>
+          <p className="text-muted-foreground">Manage your vehicles and bookings</p>
         </div>
         <Button onClick={handleAddCar} data-testid="button-add-car" className="hover-elevate active-elevate-2">
           <Plus className="h-4 w-4 mr-2" />
-          Ajouter un véhicule
+          Add Vehicle
         </Button>
       </div>
 
@@ -118,9 +118,9 @@ export default function OwnerDashboard() {
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Gains totaux</p>
+                <p className="text-sm text-muted-foreground">Total Earnings</p>
                 <p className="text-2xl font-bold" data-testid="text-total-earnings">
-                  {totalEarnings.toLocaleString()} MAD
+                  £{totalEarnings.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function OwnerDashboard() {
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Réservations</p>
+                <p className="text-sm text-muted-foreground">Bookings</p>
                 <p className="text-2xl font-bold" data-testid="text-total-bookings">
                   {totalBookings}
                 </p>
@@ -146,7 +146,7 @@ export default function OwnerDashboard() {
             <div className="flex items-center gap-2">
               <Car className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Véhicules</p>
+                <p className="text-sm text-muted-foreground">Vehicles</p>
                 <p className="text-2xl font-bold" data-testid="text-total-cars">
                   {mockCars.length}
                 </p>
@@ -160,7 +160,7 @@ export default function OwnerDashboard() {
             <div className="flex items-center gap-2">
               <Star className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Note moyenne</p>
+                <p className="text-sm text-muted-foreground">Average Rating</p>
                 <p className="text-2xl font-bold" data-testid="text-average-rating">
                   {averageRating.toFixed(1)}
                 </p>
@@ -173,9 +173,9 @@ export default function OwnerDashboard() {
       {/* Main Content */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList>
-          <TabsTrigger value="overview" data-testid="tab-overview">Vue d'ensemble</TabsTrigger>
-          <TabsTrigger value="cars" data-testid="tab-cars">Mes véhicules</TabsTrigger>
-          <TabsTrigger value="bookings" data-testid="tab-bookings">Réservations</TabsTrigger>
+          <TabsTrigger value="overview" data-testid="tab-overview">Overview</TabsTrigger>
+          <TabsTrigger value="cars" data-testid="tab-cars">My Vehicles</TabsTrigger>
+          <TabsTrigger value="bookings" data-testid="tab-bookings">Bookings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -183,7 +183,7 @@ export default function OwnerDashboard() {
             {/* Recent Bookings */}
             <Card>
               <CardHeader>
-                <CardTitle>Réservations récentes</CardTitle>
+                <CardTitle>Recent Bookings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {mockBookings.slice(0, 3).map((booking) => (
@@ -217,15 +217,15 @@ export default function OwnerDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span>Taux d'occupation</span>
+                    <span>Occupancy Rate</span>
                     <span className="font-semibold">78%</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span>Gains ce mois</span>
-                    <span className="font-semibold text-primary">4,200 MAD</span>
+                    <span>This Month Earnings</span>
+                    <span className="font-semibold text-primary">£420</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span>Réservations ce mois</span>
+                    <span>This Month Bookings</span>
                     <span className="font-semibold">8</span>
                   </div>
                 </div>
@@ -277,12 +277,12 @@ export default function OwnerDashboard() {
                         
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <p className="text-muted-foreground">Prix/jour</p>
-                            <p className="font-semibold">{car.pricePerDay} MAD</p>
+                            <p className="text-muted-foreground">Price/day</p>
+                            <p className="font-semibold">£{car.pricePerDay}</p>
                           </div>
                           <div>
-                            <p className="text-muted-foreground">Gains totaux</p>
-                            <p className="font-semibold text-primary">{car.totalEarnings.toLocaleString()} MAD</p>
+                            <p className="text-muted-foreground">Total Earnings</p>
+                            <p className="font-semibold text-primary">£{car.totalEarnings.toLocaleString()}</p>
                           </div>
                         </div>
                       </div>
@@ -309,7 +309,7 @@ export default function OwnerDashboard() {
                         <h3 className="font-semibold">{booking.renterName}</h3>
                         <p className="text-sm text-muted-foreground">{booking.carTitle}</p>
                         <p className="text-sm text-muted-foreground">
-                          {booking.startDate} au {booking.endDate}
+                          {booking.startDate} to {booking.endDate}
                         </p>
                       </div>
                     </div>
@@ -319,7 +319,7 @@ export default function OwnerDashboard() {
                         {bookingStatusConfig[booking.status as keyof typeof bookingStatusConfig].label}
                       </Badge>
                       <p className="text-lg font-semibold text-primary mt-2">
-                        {booking.totalAmount} MAD
+                        £{booking.totalAmount}
                       </p>
                     </div>
                   </div>

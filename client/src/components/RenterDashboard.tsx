@@ -19,11 +19,11 @@ import {
 const mockBookings = [
   {
     id: 'b1',
-    carTitle: 'BMW Série 3 - Berline Premium',
+    carTitle: 'BMW 3 Series - Premium Sedan',
     carImage: '/api/placeholder/100/75',
-    ownerName: 'Ahmed Bennani',
+    ownerName: 'James Smith',
     ownerImage: '/api/placeholder/40/40',
-    location: 'Casablanca, Maarif',
+    location: 'London, Westminster',
     startDate: '2024-12-20',
     endDate: '2024-12-23',
     totalAmount: 1350,
@@ -32,11 +32,11 @@ const mockBookings = [
   },
   {
     id: 'b2',
-    carTitle: 'Peugeot 208 - Citadine',
+    carTitle: 'Ford Focus - City Car',
     carImage: '/api/placeholder/100/75',
-    ownerName: 'Fatima Zahra',
+    ownerName: 'Sarah Johnson',
     ownerImage: '/api/placeholder/40/40',
-    location: 'Marrakech, Guéliz',
+    location: 'Manchester, Centre',
     startDate: '2024-12-10',
     endDate: '2024-12-13',
     totalAmount: 840,
@@ -48,29 +48,29 @@ const mockBookings = [
 const mockFavorites = [
   {
     id: 'f1',
-    title: 'Tesla Model 3 - Électrique',
+    title: 'Tesla Model 3 - Electric',
     image: '/api/placeholder/100/75',
-    location: 'Rabat, Agdal',
-    pricePerDay: 650,
+    location: 'Edinburgh, New Town',
+    pricePerDay: 65,
     rating: 4.9,
-    ownerName: 'Youssef Alami'
+    ownerName: 'Michael Brown'
   },
   {
     id: 'f2',
-    title: 'Mercedes Classe A',
+    title: 'Mercedes A-Class',
     image: '/api/placeholder/100/75', 
-    location: 'Casablanca, CIL',
-    pricePerDay: 500,
+    location: 'Glasgow, City Centre',
+    pricePerDay: 50,
     rating: 4.7,
-    ownerName: 'Laila Benjelloun'
+    ownerName: 'Emma Wilson'
   }
 ];
 
 const bookingStatusConfig = {
-  upcoming: { label: 'À venir', variant: 'default' as const, icon: Clock },
-  active: { label: 'En cours', variant: 'secondary' as const, icon: CheckCircle },
-  completed: { label: 'Terminé', variant: 'outline' as const, icon: CheckCircle },
-  cancelled: { label: 'Annulé', variant: 'destructive' as const, icon: XCircle }
+  upcoming: { label: 'Upcoming', variant: 'default' as const, icon: Clock },
+  active: { label: 'Active', variant: 'secondary' as const, icon: CheckCircle },
+  completed: { label: 'Completed', variant: 'outline' as const, icon: CheckCircle },
+  cancelled: { label: 'Cancelled', variant: 'destructive' as const, icon: XCircle }
 };
 
 interface BookingCardProps {
@@ -118,17 +118,17 @@ function BookingCard({ booking, onCancel, onReview }: BookingCardProps) {
                 <AvatarFallback className="text-xs">{booking.ownerName.charAt(0)}</AvatarFallback>
               </Avatar>
               <span className="text-sm text-muted-foreground">
-                Propriétaire: <span>{booking.ownerName}</span>
+                Owner: <span>{booking.ownerName}</span>
               </span>
             </div>
             
             <div className="flex items-center justify-between">
               <div className="text-sm">
                 <p className="text-muted-foreground">
-                  Du {booking.startDate} au {booking.endDate}
+                  From {booking.startDate} to {booking.endDate}
                 </p>
                 <p className="font-semibold text-primary text-lg">
-                  {booking.totalAmount} MAD
+                  £{booking.totalAmount}
                 </p>
               </div>
               
@@ -140,7 +140,7 @@ function BookingCard({ booking, onCancel, onReview }: BookingCardProps) {
                     onClick={() => onCancel(booking.id)}
                     data-testid={`button-cancel-${booking.id}`}
                   >
-                    Annuler
+                    Cancel
                   </Button>
                 )}
                 {booking.canReview && (
@@ -149,7 +149,7 @@ function BookingCard({ booking, onCancel, onReview }: BookingCardProps) {
                     onClick={() => onReview(booking.id)}
                     data-testid={`button-review-${booking.id}`}
                   >
-                    Laisser un avis
+                    Leave Review
                   </Button>
                 )}
               </div>
@@ -199,8 +199,8 @@ export default function RenterDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Mon espace locataire</h1>
-          <p className="text-muted-foreground">Gérez vos réservations et favoris</p>
+          <h1 className="text-3xl font-bold">My Renter Space</h1>
+          <p className="text-muted-foreground">Manage your bookings and favorites</p>
         </div>
       </div>
 
@@ -211,7 +211,7 @@ export default function RenterDashboard() {
             <div className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Réservations totales</p>
+                <p className="text-sm text-muted-foreground">Total Bookings</p>
                 <p className="text-2xl font-bold" data-testid="text-total-bookings">
                   {totalBookings}
                 </p>
@@ -225,7 +225,7 @@ export default function RenterDashboard() {
             <div className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Voyages terminés</p>
+                <p className="text-sm text-muted-foreground">Completed Trips</p>
                 <p className="text-2xl font-bold" data-testid="text-completed-bookings">
                   {completedBookings}
                 </p>
@@ -239,9 +239,9 @@ export default function RenterDashboard() {
             <div className="flex items-center gap-2">
               <Car className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Total dépensé</p>
+                <p className="text-sm text-muted-foreground">Total Spent</p>
                 <p className="text-2xl font-bold" data-testid="text-total-spent">
-                  {totalSpent.toLocaleString()} MAD
+                  £{totalSpent.toLocaleString()}
                 </p>
               </div>
             </div>
@@ -252,9 +252,9 @@ export default function RenterDashboard() {
       {/* Main Content */}
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList>
-          <TabsTrigger value="bookings" data-testid="tab-bookings">Mes réservations</TabsTrigger>
-          <TabsTrigger value="favorites" data-testid="tab-favorites">Favoris</TabsTrigger>
-          <TabsTrigger value="reviews" data-testid="tab-reviews">Mes avis</TabsTrigger>
+          <TabsTrigger value="bookings" data-testid="tab-bookings">My Bookings</TabsTrigger>
+          <TabsTrigger value="favorites" data-testid="tab-favorites">Favorites</TabsTrigger>
+          <TabsTrigger value="reviews" data-testid="tab-reviews">My Reviews</TabsTrigger>
         </TabsList>
 
         <TabsContent value="bookings" className="space-y-4">
@@ -262,8 +262,8 @@ export default function RenterDashboard() {
             <Card>
               <CardContent className="p-8 text-center">
                 <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Aucune réservation</h3>
-                <p className="text-muted-foreground">Vous n'avez pas encore de réservations.</p>
+                <h3 className="font-semibold mb-2">No Bookings</h3>
+                <p className="text-muted-foreground">You don't have any bookings yet.</p>
               </CardContent>
             </Card>
           ) : (
@@ -285,8 +285,8 @@ export default function RenterDashboard() {
             <Card>
               <CardContent className="p-8 text-center">
                 <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-semibold mb-2">Aucun favori</h3>
-                <p className="text-muted-foreground">Ajoutez des véhicules à vos favoris pour les retrouver facilement.</p>
+                <h3 className="font-semibold mb-2">No Favorites</h3>
+                <p className="text-muted-foreground">Add vehicles to your favorites to find them easily.</p>
               </CardContent>
             </Card>
           ) : (
@@ -329,8 +329,8 @@ export default function RenterDashboard() {
                         
                         <div className="flex items-center justify-between">
                           <div>
-                            <span className="font-semibold text-primary">{favorite.pricePerDay} MAD</span>
-                            <span className="text-sm text-muted-foreground">/jour</span>
+                            <span className="font-semibold text-primary">£{favorite.pricePerDay}</span>
+                            <span className="text-sm text-muted-foreground">/day</span>
                           </div>
                           <Button 
                             size="sm"
@@ -338,7 +338,7 @@ export default function RenterDashboard() {
                             data-testid={`button-book-favorite-${favorite.id}`}
                             className="hover-elevate active-elevate-2"
                           >
-                            Réserver
+                            Book
                           </Button>
                         </div>
                       </div>
@@ -354,8 +354,8 @@ export default function RenterDashboard() {
           <Card>
             <CardContent className="p-8 text-center">
               <Star className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-semibold mb-2">Aucun avis</h3>
-              <p className="text-muted-foreground">Vos évaluations de véhicules apparaîtront ici après vos voyages.</p>
+              <h3 className="font-semibold mb-2">No Reviews</h3>
+              <p className="text-muted-foreground">Your vehicle ratings will appear here after your trips.</p>
             </CardContent>
           </Card>
         </TabsContent>

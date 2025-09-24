@@ -98,8 +98,8 @@ export default function Cars() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Erreur de chargement</h2>
-          <p className="text-gray-600">Impossible de charger les voitures. Veuillez réessayer.</p>
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Loading Error</h2>
+          <p className="text-gray-600">Unable to load cars. Please try again.</p>
         </div>
       </div>
     );
@@ -111,10 +111,10 @@ export default function Cars() {
       <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Trouvez votre voiture idéale
+            Find Your Ideal Car
           </h1>
           <p className="text-xl text-green-100 max-w-2xl mx-auto">
-            Découvrez notre sélection de voitures disponibles dans tout le Maroc
+            Discover our selection of cars available across the UK
           </p>
         </div>
       </div>
@@ -125,28 +125,28 @@ export default function Cars() {
           <CardContent className="p-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4 items-end">
               <div className="space-y-2">
-                <Label htmlFor="location">📍 Lieu</Label>
+                <Label htmlFor="location">📍 Location</Label>
                 <Input
                   id="location"
-                  placeholder="Casablanca, Rabat..."
+                  placeholder="London, Manchester..."
                   value={filters.location}
                   onChange={(e) => handleFilterChange('location', e.target.value)}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="minPrice">💰 Prix min (MAD)</Label>
+                <Label htmlFor="minPrice">💰 Min Price (£)</Label>
                 <Input
                   id="minPrice"
                   type="number"
-                  placeholder="200"
+                  placeholder="20"
                   value={filters.minPrice}
                   onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="maxPrice">💰 Prix max (MAD)</Label>
+                <Label htmlFor="maxPrice">💰 Max Price (£)</Label>
                 <Input
                   id="maxPrice"
                   type="number"
@@ -157,17 +157,17 @@ export default function Cars() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="fuelType">⛽ Carburant</Label>
+                <Label htmlFor="fuelType">⛽ Fuel Type</Label>
                 <Select value={filters.fuelType || 'all'} onValueChange={(value) => handleFilterChange('fuelType', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tous" />
+                    <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous</SelectItem>
-                    <SelectItem value="essence">Essence</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="essence">Petrol</SelectItem>
                     <SelectItem value="diesel">Diesel</SelectItem>
-                    <SelectItem value="electric">Électrique</SelectItem>
-                    <SelectItem value="hybrid">Hybride</SelectItem>
+                    <SelectItem value="electric">Electric</SelectItem>
+                    <SelectItem value="hybrid">Hybrid</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -176,18 +176,18 @@ export default function Cars() {
                 <Label htmlFor="transmission">⚙️ Transmission</Label>
                 <Select value={filters.transmission || 'all'} onValueChange={(value) => handleFilterChange('transmission', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Tous" />
+                    <SelectValue placeholder="All" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Tous</SelectItem>
-                    <SelectItem value="manual">Manuelle</SelectItem>
-                    <SelectItem value="automatic">Automatique</SelectItem>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="manual">Manual</SelectItem>
+                    <SelectItem value="automatic">Automatic</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="startDate">📅 Début</Label>
+                <Label htmlFor="startDate">📅 Start Date</Label>
                 <Input
                   id="startDate"
                   type="date"
@@ -197,7 +197,7 @@ export default function Cars() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="endDate">📅 Fin</Label>
+                <Label htmlFor="endDate">📅 End Date</Label>
                 <Input
                   id="endDate"
                   type="date"
@@ -209,7 +209,7 @@ export default function Cars() {
               <div className="space-y-2">
                 <Button variant="outline" onClick={clearFilters} className="w-full">
                   <RotateCcw className="w-4 h-4 mr-2" />
-                  Effacer
+                  Clear
                 </Button>
               </div>
             </div>
@@ -220,11 +220,11 @@ export default function Cars() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {cars.length} voiture{cars.length > 1 ? 's' : ''} disponible{cars.length > 1 ? 's' : ''}
+              {cars.length} car{cars.length > 1 ? 's' : ''} available
             </h2>
             {carsData && (
               <p className="text-gray-600">
-                Page {carsData.page} sur {carsData.totalPages} • {carsData.total} résultat{carsData.total > 1 ? 's' : ''} au total
+                Page {carsData.page} of {carsData.totalPages} • {carsData.total} result{carsData.total > 1 ? 's' : ''} total
               </p>
             )}
           </div>
@@ -236,12 +236,12 @@ export default function Cars() {
             <div className="text-gray-400 mb-4">
               <MapPin className="w-16 h-16 mx-auto" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Aucune voiture trouvée</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No cars found</h3>
             <p className="text-gray-600 mb-4">
-              Essayez de modifier vos critères de recherche
+              Try modifying your search criteria
             </p>
             <Button onClick={clearFilters} variant="outline">
-              Effacer les filtres
+              Clear filters
             </Button>
           </div>
         ) : (
