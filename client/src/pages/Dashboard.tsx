@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -26,17 +26,32 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<'overview' | 'cars' | 'bookings'>('overview');
+
+  // Redirect based on user type
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      if (user.userType === 'owner') {
+        setLocation('/dashboard/owner');
+      } else if (user.userType === 'renter') {
+        setLocation('/dashboard/renter');
+      } else if (user.userType === 'both') {
+        // For users who can both rent and own, redirect to owner dashboard by default
+        setLocation('/dashboard/owner');
+      }
+    }
+  }, [isAuthenticated, user, setLocation]);
 
   if (!isAuthenticated || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-blue-50">
         <div className="text-center bg-white p-8 rounded-2xl shadow-xl">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900">Accès non autorisé</h1>
-          <p className="text-gray-600 mb-6">Vous devez être connecté pour accéder à cette page.</p>
+          <h1 className="text-3xl font-bold mb-4 text-gray-900">Access Denied</h1>
+          <p className="text-gray-600 mb-6">You must be logged in to access this page.</p>
           <Link href="/login">
             <Button size="lg" className="bg-green-600 hover:bg-green-700">
-              Se connecter
+              Login
             </Button>
           </Link>
         </div>
