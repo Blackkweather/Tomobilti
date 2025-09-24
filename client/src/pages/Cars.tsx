@@ -79,8 +79,8 @@ export default function Cars() {
       location: '',
       minPrice: '',
       maxPrice: '',
-      fuelType: 'all',
-      transmission: 'all',
+      fuelType: '',
+      transmission: '',
       startDate: '',
       endDate: ''
     });
