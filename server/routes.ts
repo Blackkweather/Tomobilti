@@ -40,7 +40,21 @@ const authLimiter = rateLimit({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply security middleware to all routes
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'", "https:", "data:"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+  }));
   app.use('/api', generalLimiter);
   app.use('/api', sanitizeMiddleware);
   
@@ -199,14 +213,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get cars by owner
+  app.get("/api/cars/owner/:ownerId", async (req, res) => {
+    try {
+      const cars = await storage.getCarsByOwner(req.params.ownerId);
+      res.json({ cars });
+    } catch (error) {
+      console.error('Get owner cars error:', error);
+      res.status(500).json({ error: "Erreur interne du serveur" });
+    }
+  });
+
   app.post("/api/cars", authMiddleware, requireOwner, async (req, res) => {
     try {
-      const carData = enhancedInsertCarSchema.parse({
-        ...req.body,
+      let carData: any = req.body;
+      
+      // Handle FormData with file uploads
+      if (req.headers['content-type']?.includes('multipart/form-data')) {
+        carData = {};
+        
+        // Parse form fields
+        Object.keys(req.body).forEach(key => {
+          if (key === 'features') {
+            try {
+              carData[key] = JSON.parse(req.body[key]);
+            } catch {
+              carData[key] = req.body[key];
+            }
+          } else {
+            carData[key] = req.body[key];
+          }
+        });
+        
+        // Handle uploaded files
+        const files = req.files as Express.Multer.File[];
+        if (files && files.length > 0) {
+          // For now, we'll store file URLs as placeholder URLs
+          // In a real app, you'd upload these to a cloud storage service
+          carData.images = files.map(file => 
+            `https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format`
+          );
+        }
+      }
+      
+      const validatedCarData = enhancedInsertCarSchema.parse({
+        ...carData,
         ownerId: req.user!.id
       });
       
-      const car = await storage.createCar(carData);
+      const car = await storage.createCar(validatedCarData);
       res.status(201).json({
         message: "Véhicule créé avec succès",
         car

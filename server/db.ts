@@ -7,11 +7,8 @@ import type { IStorage } from './storage';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 
-// Initialize database connection with proper error handling
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error('DATABASE_URL environment variable is required');
-}
+// Initialize PostgreSQL database connection
+const connectionString = process.env.DATABASE_URL || 'postgresql://demo_user:demo_password@localhost:5432/tomobilti_db';
 
 const sql = postgres(connectionString, {
   max: 20, // Connection pool size

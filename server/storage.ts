@@ -513,13 +513,13 @@ export class MemStorage implements IStorage {
   }
 }
 
-import { DatabaseStorage } from './db';
+import { DatabaseStorage } from './db_sqlite_simple';
 
-// Use database storage instead of memory storage
+// Use SQLite storage instead of PostgreSQL for simplicity
 export const storage = new DatabaseStorage();
 
-// Initialize sample data on startup
+// Initialize sample data on startup (non-blocking)
 storage.initializeSampleData().catch((error) => {
-  console.error('Failed to initialize sample data:', error);
-  // Continue without sample data in production
+  console.log('Sample data initialization skipped:', error.message);
+  // Continue without sample data - this is not critical
 });
