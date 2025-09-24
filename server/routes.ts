@@ -65,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const user = await storage.verifyPassword(email, password);
       if (!user) {
-        return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+        return res.status(401).json({ error: 'Invalid email or password' });
       }
       
       const token = generateToken(user.id);
@@ -78,7 +78,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: 'Données invalides', details: error.errors });
+        return res.status(400).json({ error: 'Invalid data', details: error.errors });
       }
       console.error('Login error:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -106,7 +106,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: 'Données invalides', details: error.errors });
+        return res.status(400).json({ error: 'Invalid data', details: error.errors });
       }
       console.error('Register error:', error);
       res.status(500).json({ error: 'Internal server error' });
