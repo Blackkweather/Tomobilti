@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { 
   Calendar, 
   Heart, 
@@ -12,8 +12,10 @@ import {
   CheckCircle,
   XCircle,
   MapPin,
-  Car
+  Car,
+  User
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 // todo: remove mock functionality
 const mockBookings = [
@@ -163,6 +165,7 @@ function BookingCard({ booking, onCancel, onReview }: BookingCardProps) {
 
 export default function RenterDashboard() {
   const [selectedTab, setSelectedTab] = useState('bookings');
+  const { user } = useAuth();
 
   const sanitizeForLog = (input: string): string => {
     return input.replace(/[\r\n\t\x00-\x1f\x7f-\x9f]/g, '').slice(0, 100);
@@ -201,6 +204,16 @@ export default function RenterDashboard() {
         <div>
           <h1 className="text-3xl font-bold">My Renter Space</h1>
           <p className="text-muted-foreground">Manage your bookings and favorites</p>
+          {user && (
+            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+              <User className="h-4 w-4" />
+              <span>Member since {new Date(user.createdAt).toLocaleDateString('en-GB', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</span>
+            </div>
+          )}
         </div>
       </div>
 

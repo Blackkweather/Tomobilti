@@ -9,7 +9,7 @@ import { Toaster } from "./components/ui/toaster";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
+import DashboardSelector from "./components/DashboardSelector";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import RenterDashboard from "./pages/RenterDashboard";
 import Profile from "./pages/Profile";
@@ -18,10 +18,13 @@ import Security from "./pages/Security";
 import Cars from "./pages/Cars";
 import CarDetails from "./pages/CarDetails";
 import AddCar from "./pages/AddCar";
+import EditCar from "./pages/EditCar";
 import BecomeHost from "./pages/BecomeHost";
 import About from "./pages/About";
 import HowItWorks from "./pages/HowItWorks";
 import Support from "./pages/Support";
+import Payment from "./pages/Payment";
+import BookingConfirmation from "./pages/BookingConfirmation";
 import NotFound from "./pages/not-found";
 
 // Import components
@@ -38,15 +41,18 @@ function App() {
             <Route path="/" component={Home} />
             <Route path="/login" component={Login} />
             <Route path="/register" component={Register} />
-            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/dashboard" component={DashboardSelector} />
             <Route path="/dashboard/owner" component={OwnerDashboard} />
             <Route path="/dashboard/renter" component={RenterDashboard} />
             <Route path="/profile" component={Profile} />
             <Route path="/settings" component={Settings} />
             <Route path="/security" component={Security} />
+            <Route path="/payment/:bookingId" component={Payment} />
+            <Route path="/booking-confirmation/:bookingId" component={BookingConfirmation} />
             <Route path="/cars" component={Cars} />
             <Route path="/cars/:id" component={CarDetails} />
             <Route path="/add-car" component={AddCar} />
+            <Route path="/edit-car/:id" component={EditCar} />
             <Route path="/become-host" component={BecomeHost} />
             <Route path="/about" component={About} />
             <Route path="/how-it-works" component={HowItWorks} />

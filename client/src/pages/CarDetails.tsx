@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { useRoute } from "wouter";
 import { useQuery } from '@tanstack/react-query';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Star, MapPin, Users, Fuel, Settings, Calendar, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import BookingModal from "@/components/BookingModal";
-import ReservationBar from "@/components/ReservationBar";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import BookingModal from "../components/BookingModal";
+import ReservationBar from "../components/ReservationBar";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { useAuth } from "../contexts/AuthContext";
-import { carApi } from "@/lib/api";
+import { carApi } from "../lib/api";
 
 export default function CarDetails() {
   const [, params] = useRoute("/cars/:id");
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [bookingData, setBookingData] = useState<any>(null);
   const { isAuthenticated } = useAuth();
   
   // Fetch car data from API
@@ -97,7 +98,7 @@ export default function CarDetails() {
               <CardContent className="p-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {car.images && car.images.length > 0 ? (
-                    car.images.map((image, index) => (
+                    car.images.map((image: string, index: number) => (
                       <img
                         key={index}
                         src={image}
@@ -145,11 +146,11 @@ export default function CarDetails() {
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Fuel className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                    <div className="text-sm text-gray-600">{fuelTypeLabels[car.fuelType]}</div>
+                    <div className="text-sm text-gray-600">{fuelTypeLabels[car.fuelType as keyof typeof fuelTypeLabels]}</div>
                   </div>
                   <div className="text-center p-4 bg-gray-50 rounded-lg">
                     <Settings className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                    <div className="text-sm text-gray-600">{transmissionLabels[car.transmission]}</div>
+                    <div className="text-sm text-gray-600">{transmissionLabels[car.transmission as keyof typeof transmissionLabels]}</div>
                   </div>
                 </div>
               </CardContent>
@@ -220,9 +221,8 @@ export default function CarDetails() {
                     car.year.toString()
                   ]
                 }}
-                onBook={(bookingData) => {
-                  console.log('Booking data:', bookingData);
-                  // Handle booking logic here
+                onBook={(data) => {
+                  setBookingData(data);
                   setShowBookingModal(true);
                 }}
               />
@@ -262,6 +262,7 @@ export default function CarDetails() {
       {showBookingModal && isAuthenticated && (
         <BookingModal
           car={car}
+          bookingData={bookingData}
           onClose={() => setShowBookingModal(false)}
         />
       )}

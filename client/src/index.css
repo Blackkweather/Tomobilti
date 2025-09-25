@@ -49,21 +49,18 @@
 
   --popover-border: 220 12% 90%;
 
-  --primary: 220 60% 35%;
-
+  /* Tomobilti Green, White & Blue Palette */
+  --primary: 142 76% 36%;         /* Sophisticated green */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 220 8% 95%;
-
-  --secondary-foreground: 220 15% 15%;
+  --secondary: 217 91% 60%;       /* Premium blue accent */
+  --secondary-foreground: 0 0% 100%;
 
   --muted: 220 8% 95%;
-
   --muted-foreground: 220 15% 45%;
 
-  --accent: 220 8% 95%;
-
-  --accent-foreground: 220 15% 15%;
+  --accent: 142 76% 36%;          /* Green for CTAs */
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 70% 45%;
 
@@ -77,9 +74,10 @@
   --chart-4: 38 92% 45%;
   --chart-5: 260 60% 50%;
 
-  --font-sans: Inter, Open Sans, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
+  /* Premium Typography System */
+  --font-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Playfair Display', 'Georgia', serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
   --radius: .5rem; /* 8px */
   --shadow-2xs: 0px 2px 0px 0px hsl(220 15% 0% / 0.02);
   --shadow-xs: 0px 2px 0px 0px hsl(220 15% 0% / 0.03);
@@ -167,21 +165,18 @@
 
   --popover-border: 220 15% 15%;
 
-  --primary: 220 60% 35%;
-
+  /* Tomobilti Green, White & Blue Palette - Dark Mode */
+  --primary: 142 76% 36%;         /* Sophisticated green */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 220 15% 15%;
-
-  --secondary-foreground: 0 0% 95%;
+  --secondary: 217 91% 60%;       /* Premium blue accent */
+  --secondary-foreground: 0 0% 100%;
 
   --muted: 220 15% 15%;
-
   --muted-foreground: 220 15% 70%;
 
-  --accent: 220 15% 15%;
-
-  --accent-foreground: 0 0% 95%;
+  --accent: 142 76% 36%;          /* Green for CTAs */
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 70% 45%;
 
@@ -208,7 +203,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    /* @apply border-border; */
   }
 
   body {
@@ -443,4 +438,88 @@
 .scroll-animate-scale.animate {
   opacity: 1;
   transform: scale(1);
+}
+
+/* Premium Green, White & Blue Design System */
+.automotive-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+}
+
+.automotive-shadow {
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15), 0 8px 16px -8px rgba(0, 0, 0, 0.1);
+}
+
+.automotive-glow {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.premium-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.urgency-pulse {
+  animation: urgencyPulse 2s infinite;
+}
+
+@keyframes urgencyPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.social-proof-badge {
+  background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)));
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.trust-indicator {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.8));
+  color: white;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.price-highlight {
+  background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary) / 0.8));
+  color: white;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.conversion-cta {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.9));
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+}
+
+.conversion-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+}
+
+.automotive-border {
+  border: 2px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary))) border-box;
+}
+
+.premium-text-gradient {
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
 }

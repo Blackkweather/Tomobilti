@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useLocation } from 'wouter';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Separator } from './ui/separator';
+import { Card, CardContent } from './ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Badge } from './ui/badge';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Calendar, MapPin, Fuel, Users, Star, Shield, Clock, CreditCard, Smartphone, Building2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -24,34 +25,65 @@ interface BookingModalProps {
     rating?: number;
     reviewCount?: number;
   };
+  bookingData?: {
+    startDate: Date;
+    endDate: Date;
+    guests: number;
+    pricing: any;
+    totalAmount: number;
+  };
   onClose: () => void;
 }
 
-export default function BookingModal({ car, onClose }: BookingModalProps) {
-  const { user } = useAuth();
-  const [bookingData, setBookingData] = useState({
-    startDate: '',
-    endDate: '',
+export default function BookingModal({ car, bookingData: initialBookingData, onClose }: BookingModalProps) {
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  
+  const [formData, setFormData] = useState({
+    startDate: initialBookingData?.startDate ? initialBookingData.startDate.toISOString().split('T')[0] : '',
+    endDate: initialBookingData?.endDate ? initialBookingData.endDate.toISOString().split('T')[0] : '',
     startTime: '10:00',
     endTime: '18:00',
     message: ''
   });
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [paymentData, setPaymentData] = useState({
-    cardNumber: '',
-    expiryDate: '',
-    cvv: '',
-    cardholderName: '',
-    email: '',
-    phone: ''
-  });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated || !user) {
+    return (
+      <Dialog open={true} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Authentication Required</DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-6">
+            <Shield className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Please Login to Continue</h3>
+            <p className="text-muted-foreground mb-4">
+              You need to be logged in to book a car. Please sign in or create an account.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={onClose} variant="outline">
+                Cancel
+              </Button>
+              <Button onClick={() => {
+                onClose();
+                window.location.href = '/login';
+              }}>
+                Go to Login
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   if (!car) return null;
 
   const handleInputChange = (field: string, value: string) => {
-    setBookingData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -67,9 +99,9 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
   };
 
   const validateDates = () => {
-    if (!bookingData.startDate || !bookingData.endDate) return { isValid: false, error: '' };
-    const start = new Date(bookingData.startDate);
-    const end = new Date(bookingData.endDate);
+    if (!formData.startDate || !formData.endDate) return { isValid: false, error: '' };
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
@@ -88,8 +120,8 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
       return { days: 0, subtotal: 0, serviceFee: 0, insurance: 0, total: 0, dateError: validation.error };
     }
     
-    const start = new Date(bookingData.startDate);
-    const end = new Date(bookingData.endDate);
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const calculatedDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const calculatedSubtotal = calculatedDays * parseFloat(car.pricePerDay);
@@ -105,7 +137,7 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
       total: calculatedTotal,
       dateError: ''
     };
-  }, [bookingData.startDate, bookingData.endDate, car.pricePerDay]);
+  }, [formData.startDate, formData.endDate, car.pricePerDay]);
 
   const handleConfirmBooking = async () => {
     setIsLoading(true);
@@ -115,15 +147,15 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
       const newErrors: Record<string, string> = {};
       
       // Validate dates
-      if (!bookingData.startDate) {
+      if (!formData.startDate) {
         newErrors.startDate = 'Start date is required';
       }
-      if (!bookingData.endDate) {
+      if (!formData.endDate) {
         newErrors.endDate = 'End date is required';
       }
-      if (bookingData.startDate && bookingData.endDate) {
-        const start = new Date(bookingData.startDate);
-        const end = new Date(bookingData.endDate);
+      if (formData.startDate && formData.endDate) {
+        const start = new Date(formData.startDate);
+        const end = new Date(formData.endDate);
         if (start >= end) {
           newErrors.endDate = 'End date must be after start date';
         }
@@ -153,18 +185,18 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
         return;
       }
       
-      // Create booking data for API
+      // Create booking data for API (using camelCase field names as expected by schema)
       const bookingPayload = {
         carId: car.id,
         renterId: user?.id,
-        startDate: new Date(`${bookingData.startDate}T${bookingData.startTime}:00`).toISOString(),
-        endDate: new Date(`${bookingData.endDate}T${bookingData.endTime}:00`).toISOString(),
-        startTime: bookingData.startTime,
-        endTime: bookingData.endTime,
+        startDate: `${formData.startDate}T${formData.startTime}:00`,
+        endDate: `${formData.endDate}T${formData.endTime}:00`,
+        startTime: formData.startTime,
+        endTime: formData.endTime,
         totalAmount: total.toString(),
         serviceFee: (total * 0.05).toString(),
         insurance: (total * 0.03).toString(),
-        message: bookingData.message || null,
+        message: formData.message || null,
         status: 'pending',
         paymentStatus: 'pending'
       };
@@ -172,11 +204,15 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
       console.log('Creating booking:', bookingPayload);
       
       // Call the booking API
+      const token = localStorage.getItem('auth_token');
+      console.log('Booking token:', token ? `${token.substring(0, 20)}...` : 'No token');
+      console.log('Booking payload:', bookingPayload);
+      
       const response = await fetch('/api/bookings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(bookingPayload)
       });
@@ -189,14 +225,10 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
       const booking = await response.json();
       console.log('Booking created:', booking);
       
-      // Simulate payment processing for demo
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Show success message
-      alert(`Booking confirmed! Total: ${total} ${car.currency}\n\nBooking ID: ${booking.id}\n\nYou will receive a confirmation email shortly.`);
-      
+      // Redirect to payment page instead of processing payment here
       setIsLoading(false);
       onClose();
+      setLocation(`/payment/${booking.id}`);
       
     } catch (error) {
       console.error('Booking error:', error);
@@ -274,8 +306,8 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
                   <Label>Start Date</Label>
                   <Input
                     type="date"
-                    value={bookingData.startDate}
-                    onChange={(e) => handleInputChange('startDate', e.target.value)}
+                value={formData.startDate}
+                onChange={(e) => handleInputChange('startDate', e.target.value)}
                     data-testid="input-booking-start-date"
                     min={new Date().toISOString().split('T')[0]}
                     className={errors.startDate ? 'border-red-500 focus:border-red-500' : ''}
@@ -289,8 +321,8 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
                   <Label>Start Time</Label>
                   <Input
                     type="time"
-                    value={bookingData.startTime}
-                    onChange={(e) => handleInputChange('startTime', e.target.value)}
+                value={formData.startTime}
+                onChange={(e) => handleInputChange('startTime', e.target.value)}
                     data-testid="input-booking-start-time"
                   />
                 </div>
@@ -301,10 +333,10 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
                   <Label>End Date</Label>
                   <Input
                     type="date"
-                    value={bookingData.endDate}
-                    onChange={(e) => handleInputChange('endDate', e.target.value)}
+                value={formData.endDate}
+                onChange={(e) => handleInputChange('endDate', e.target.value)}
                     data-testid="input-booking-end-date"
-                    min={bookingData.startDate || new Date().toISOString().split('T')[0]}
+                    min={formData.startDate || new Date().toISOString().split('T')[0]}
                     className={errors.endDate ? 'border-red-500 focus:border-red-500' : ''}
                   />
                   {errors.endDate && (
@@ -316,8 +348,8 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
                   <Label>End Time</Label>
                   <Input
                     type="time"
-                    value={bookingData.endTime}
-                    onChange={(e) => handleInputChange('endTime', e.target.value)}
+                value={formData.endTime}
+                onChange={(e) => handleInputChange('endTime', e.target.value)}
                     data-testid="input-booking-end-time"
                   />
                 </div>
@@ -328,8 +360,8 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
                 <textarea
                   className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Introduce yourself and explain the intended use of the vehicle..."
-                  value={bookingData.message}
-                  onChange={(e) => handleInputChange('message', e.target.value)}
+                value={formData.message}
+                onChange={(e) => handleInputChange('message', e.target.value)}
                   data-testid="input-booking-message"
                 />
               </div>
@@ -515,7 +547,7 @@ export default function BookingModal({ car, onClose }: BookingModalProps) {
             </Button>
             <Button 
               onClick={handleConfirmBooking} 
-              disabled={!bookingData.startDate || !bookingData.endDate || isLoading}
+              disabled={!formData.startDate || !formData.endDate || isLoading}
               data-testid="button-confirm-booking"
               className="hover-elevate active-elevate-2"
             >

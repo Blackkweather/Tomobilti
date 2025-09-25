@@ -136,6 +136,10 @@ export const carApi = {
 
 // Booking API functions
 export const bookingApi = {
+  getBooking: async (bookingId: string) => {
+    return apiRequest(`${API_BASE}/bookings/${bookingId}`);
+  },
+
   getRenterBookings: async (renterId: string) => {
     return apiRequest(`${API_BASE}/bookings/renter/${renterId}`);
   },
@@ -175,6 +179,35 @@ export const reviewApi = {
     return apiRequest(`${API_BASE}/reviews`, {
       method: 'POST',
       body: JSON.stringify(reviewData)
+    });
+  }
+};
+
+// Payment API functions
+export const paymentApi = {
+  createPaymentIntent: async (amount: number, currency: string, bookingId: string, customerEmail?: string, customerName?: string, carTitle?: string, mockPayment?: boolean) => {
+    return apiRequest(`${API_BASE}/payments/create-intent`, {
+      method: 'POST',
+      body: JSON.stringify({ 
+        amount, 
+        currency, 
+        bookingId,
+        customerEmail,
+        customerName,
+        carTitle,
+        mockPayment
+      })
+    });
+  },
+
+  confirmPayment: async (paymentIntentId: string) => {
+    return apiRequest(`${API_BASE}/payments/status/${paymentIntentId}`);
+  },
+
+  refundPayment: async (paymentIntentId: string, amount?: number) => {
+    return apiRequest(`${API_BASE}/payments/refund`, {
+      method: 'POST',
+      body: JSON.stringify({ paymentIntentId, amount })
     });
   }
 };

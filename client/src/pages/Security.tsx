@@ -48,14 +48,152 @@ export default function Security() {
   }
 
   const handleVerification = async (type: string) => {
-    // Simulate verification process
+    try {
+      switch (type) {
+        case 'email':
+          // Send verification email
+          const emailResponse = await fetch('/api/auth/send-verification-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
+          });
+          
+          if (emailResponse.ok) {
+            alert('Verification email sent! Please check your inbox.');
+          } else {
+            alert('Failed to send verification email. Please try again.');
+          }
+          break;
+          
+        case 'phone':
+          // Request phone verification
+          const phone = prompt('Please enter your phone number for verification:');
+          if (phone) {
+            const phoneResponse = await fetch('/api/auth/verify-phone', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+              },
+              body: JSON.stringify({ phone })
+            });
+            
+            if (phoneResponse.ok) {
+              alert('SMS verification code sent! Please check your phone.');
+            } else {
+              alert('Failed to send verification SMS. Please try again.');
+            }
+          }
+          break;
+          
+        case 'id':
+          // Handle ID document upload
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.accept = 'image/*,.pdf';
+          fileInput.onchange = async (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+              const formData = new FormData();
+              formData.append('document', file);
+              formData.append('type', 'id');
+              
+              const idResponse = await fetch('/api/auth/upload-document', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                },
+                body: formData
+              });
+              
+              if (idResponse.ok) {
+                alert('ID document uploaded successfully! It will be reviewed within 24 hours.');
+              } else {
+                alert('Failed to upload ID document. Please try again.');
+              }
+            }
+          };
+          fileInput.click();
+          break;
+          
+        case 'license':
+          // Handle driving license upload
+          const licenseInput = document.createElement('input');
+          licenseInput.type = 'file';
+          licenseInput.accept = 'image/*,.pdf';
+          licenseInput.onchange = async (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+              const formData = new FormData();
+              formData.append('document', file);
+              formData.append('type', 'license');
+              
+              const licenseResponse = await fetch('/api/auth/upload-document', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                },
+                body: formData
+              });
+              
+              if (licenseResponse.ok) {
+                alert('Driving license uploaded successfully! It will be reviewed within 24 hours.');
+              } else {
+                alert('Failed to upload driving license. Please try again.');
+              }
+            }
+          };
+          licenseInput.click();
+          break;
+          
+        case 'background':
+          // Start background check
+          const backgroundResponse = await fetch('/api/auth/start-background-check', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            }
+          });
+          
+          if (backgroundResponse.ok) {
+            alert('Background check initiated! You will be notified when it\'s complete (usually within 3-5 business days).');
+          } else {
+            alert('Failed to start background check. Please try again.');
+          }
+          break;
+          
+        default:
     console.log(`Starting ${type} verification...`);
-    // In a real app, this would trigger the actual verification process
+      }
+    } catch (error) {
+      console.error('Verification error:', error);
+      alert('An error occurred during verification. Please try again.');
+    }
   };
 
   const handleEmergencyContactUpdate = async () => {
-    // Update emergency contact information
-    console.log('Updating emergency contact:', emergencyContact);
+    try {
+      const response = await fetch('/api/auth/update-emergency-contact', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        },
+        body: JSON.stringify(emergencyContact)
+      });
+      
+      if (response.ok) {
+        alert('Emergency contact updated successfully!');
+      } else {
+        alert('Failed to update emergency contact. Please try again.');
+      }
+    } catch (error) {
+      console.error('Emergency contact update error:', error);
+      alert('An error occurred while updating emergency contact. Please try again.');
+    }
   };
 
   return (
@@ -358,7 +496,13 @@ export default function Security() {
                         <p className="font-medium">Two-Factor Authentication</p>
                         <p className="text-sm text-gray-600">Add an extra layer of security</p>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          alert('Two-Factor Authentication setup will be available soon! This feature is currently under development.');
+                        }}
+                      >
                         Enable
                       </Button>
                     </div>
@@ -367,7 +511,13 @@ export default function Security() {
                         <p className="font-medium">Login Notifications</p>
                         <p className="text-sm text-gray-600">Get notified of new logins</p>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          alert('Login notification settings will be available soon! You can configure email and SMS alerts for new logins.');
+                        }}
+                      >
                         Configure
                       </Button>
                     </div>
@@ -376,7 +526,13 @@ export default function Security() {
                         <p className="font-medium">Data Privacy</p>
                         <p className="text-sm text-gray-600">Manage your data and privacy</p>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          alert('Data privacy settings will be available soon! You can manage your data preferences, download your data, or request account deletion.');
+                        }}
+                      >
                         View Settings
                       </Button>
                     </div>

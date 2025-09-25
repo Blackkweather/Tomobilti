@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { 
   Car, 
   Plus, 
@@ -14,8 +14,11 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  Edit
+  Edit,
+  User
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useLocation } from 'wouter';
 
 // todo: remove mock functionality
 const mockCars = [
@@ -80,17 +83,15 @@ const bookingStatusConfig = {
 
 export default function OwnerDashboard() {
   const [selectedTab, setSelectedTab] = useState('overview');
-
-  const sanitizeForLog = (input: string): string => {
-    return input.replace(/[\r\n\t\x00-\x1f\x7f-\x9f]/g, '').slice(0, 100);
-  };
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
 
   const handleAddCar = () => {
-    console.log('Add new car clicked');
+    setLocation('/add-car');
   };
 
   const handleEditCar = (carId: string) => {
-    console.log('Edit car clicked:', sanitizeForLog(carId));
+    setLocation(`/edit-car/${carId}`);
   };
 
   const totalEarnings = mockCars.reduce((sum, car) => sum + car.totalEarnings, 0);
@@ -104,6 +105,16 @@ export default function OwnerDashboard() {
         <div>
           <h1 className="text-3xl font-bold">Owner Dashboard</h1>
           <p className="text-muted-foreground">Manage your vehicles and bookings</p>
+          {user && (
+            <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+              <User className="h-4 w-4" />
+              <span>Member since {new Date(user.createdAt).toLocaleDateString('en-GB', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</span>
+            </div>
+          )}
         </div>
         <Button onClick={handleAddCar} data-testid="button-add-car" className="hover-elevate active-elevate-2">
           <Plus className="h-4 w-4 mr-2" />

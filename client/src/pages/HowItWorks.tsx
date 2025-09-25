@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '../components/ui/card';
+import { Button } from '../components/ui/button';
 import { Car, Users, Shield, CreditCard, MapPin, Star } from 'lucide-react';
 
 const steps = [
