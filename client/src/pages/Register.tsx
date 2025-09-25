@@ -9,11 +9,11 @@ const redirectBasedOnUserType = (userType: string, setLocation: (path: string) =
   if (userType === 'owner') {
     setLocation('/dashboard/owner');
   } else if (userType === 'renter') {
-    setLocation('/cars');
+    setLocation('/dashboard/renter');
   } else if (userType === 'both') {
-    setLocation('/dashboard');
+    setLocation('/dashboard'); // Show dashboard selector for users with both capabilities
   } else {
-    setLocation('/dashboard');
+    setLocation('/dashboard/renter'); // Fallback to renter dashboard
   }
 };
 

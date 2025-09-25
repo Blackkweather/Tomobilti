@@ -111,7 +111,7 @@ export default function SecurityReviews({
   };
 
   const getSecurityBadge = (rating: number) => {
-    if (rating >= 4.5) return { text: 'Excellent Security', variant: 'default' as const, color: 'text-green-600' };
+    if (rating >= 4.5) return { text: 'Excellent Security', variant: 'default' as const, color: 'text-white' };
     if (rating >= 3.5) return { text: 'Good Security', variant: 'secondary' as const, color: 'text-blue-600' };
     if (rating >= 2.5) return { text: 'Fair Security', variant: 'outline' as const, color: 'text-yellow-600' };
     return { text: 'Poor Security', variant: 'destructive' as const, color: 'text-red-600' };

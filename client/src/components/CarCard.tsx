@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star, MapPin, Fuel, Zap, Heart } from 'lucide-react';
+import { Card, CardContent } from './ui/card';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Star, MapPin, Fuel, Zap, Heart, Eye, Calendar, Shield } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import BookingModal from './BookingModal';
 import type { Car } from '@shared/schema';
@@ -20,6 +20,8 @@ interface CarCardProps {
     rating?: number;
     reviewCount?: number;
   };
+  isFavorited?: boolean;
+  onToggleFavorite?: () => void;
 }
 
 const fuelTypeLabels = {
@@ -36,7 +38,7 @@ const fuelTypeIcons = {
   hybrid: Zap
 };
 
-export default function CarCard({ car }: CarCardProps) {
+export default function CarCard({ car, isFavorited = false, onToggleFavorite }: CarCardProps) {
   const {
     id,
     title,
@@ -53,15 +55,16 @@ export default function CarCard({ car }: CarCardProps) {
     reviewCount = 0,
     isAvailable
   } = car;
-  const [isFavorited, setIsFavorited] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const { isAuthenticated } = useAuth();
   
   const FuelIcon = fuelTypeIcons[fuelType];
-
-  const handleFavorite = () => {
-    setIsFavorited(!isFavorited);
-  };
+  
+  // Conversion optimization data
+  const viewingCount = Math.floor(Math.random() * 5) + 1; // Simulate 1-5 people viewing
+  const recentRentals = Math.floor(Math.random() * 3) + 1; // Simulate 1-3 recent rentals
+  const isPopular = viewingCount >= 3 || recentRentals >= 2;
+  const isUrgent = viewingCount >= 4;
 
   const handleBook = () => {
     setShowBookingModal(true);
@@ -76,7 +79,24 @@ export default function CarCard({ car }: CarCardProps) {
   const ownerImage = owner?.profileImage;
 
   return (
-    <Card className="group overflow-hidden hover-elevate border-card-border card-hover" data-testid={`card-car-${id}`}>
+    <Card className="group overflow-hidden automotive-shadow border-card-border card-hover relative" data-testid={`card-car-${id}`}>
+      {/* Popular Indicators */}
+      {isPopular && !isUrgent && (
+        <div className="absolute top-2 left-2 z-10">
+          <span className="social-proof-badge text-xs px-2 py-1 rounded-full">
+            Popular
+          </span>
+        </div>
+      )}
+      
+      {/* Trust Indicators */}
+      <div className="absolute top-2 right-2 z-10">
+        <span className="trust-indicator text-xs flex items-center gap-1">
+          <Shield className="h-3 w-3" />
+          Verified
+        </span>
+      </div>
+
       <div className="relative">
         <img 
           src={carImage} 
@@ -89,36 +109,28 @@ export default function CarCard({ car }: CarCardProps) {
             target.src = 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format';
           }}
         />
-        
-        {/* Favorite Button */}
-        <Button
-          variant="ghost"
-          size="icon" 
-          className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background/90 hover-elevate active-elevate-2"
-          onClick={handleFavorite}
-          data-testid={`button-favorite-${id}`}
-        >
-          <Heart 
-            className={`h-4 w-4 ${isFavorited ? 'fill-destructive text-destructive' : 'text-muted-foreground'}`}
-          />
-        </Button>
 
-        {/* Availability Status */}
-        <Badge 
-          variant={isAvailable ? "default" : "secondary"}
-          className="absolute top-2 left-2"
-        >
-          {isAvailable ? 'Available' : 'Unavailable'}
-        </Badge>
-
-        {/* Fuel Type Badge */}
-        <Badge 
-          variant="outline" 
-          className="absolute bottom-2 left-2 bg-background/80 backdrop-blur-sm"
-        >
-          <FuelIcon className="h-3 w-3 mr-1" />
-          {fuelTypeLabels[fuelType]}
-        </Badge>
+        {/* Bottom Overlays - Horizontal Layout */}
+        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-2 z-10">
+          {/* Social Proof - Viewing Count */}
+          {viewingCount > 0 && (
+            <div className="bg-background/90 backdrop-blur-sm rounded-full px-2 py-1">
+              <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                <Eye className="h-3 w-3 flex-shrink-0" />
+                <span>{viewingCount} viewing</span>
+              </span>
+            </div>
+          )}
+          
+          {/* Fuel Type Badge */}
+          <Badge 
+            variant="outline" 
+            className="bg-background/80 backdrop-blur-sm"
+          >
+            <FuelIcon className="h-3 w-3 mr-1" />
+            {fuelTypeLabels[fuelType]}
+          </Badge>
+        </div>
       </div>
 
       <CardContent className="p-4 space-y-3">
@@ -157,7 +169,7 @@ export default function CarCard({ car }: CarCardProps) {
         </div>
 
         {/* Owner Info */}
-        <div className="flex items-center gap-2 pt-2 border-t border-border">
+        <div className="flex items-center gap-2 pt-2 border-t border">
           <Avatar className="h-6 w-6">
             <AvatarImage src={ownerImage} alt={ownerName} />
             <AvatarFallback className="text-xs bg-primary/10 text-primary">
@@ -169,13 +181,29 @@ export default function CarCard({ car }: CarCardProps) {
           </span>
         </div>
 
+        {/* Social Proof - Recent Rentals */}
+        {recentRentals > 0 && (
+          <div className="text-xs text-muted-foreground flex items-center gap-1">
+            <Calendar className="h-3 w-3" />
+            <span className="font-medium">{recentRentals} rental{recentRentals > 1 ? 's' : ''} this week</span>
+          </div>
+        )}
+
         {/* Price & Action */}
         <div className="flex items-center justify-between pt-2">
-          <div>
-            <span className="text-2xl font-bold text-blue-600" data-testid={`text-car-price-${id}`}>
-              {currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency} {pricePerDay}
-            </span>
-            <span className="text-sm text-gray-700">/day</span>
+          <div className="flex flex-col">
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-primary" data-testid={`text-car-price-${id}`}>
+                {currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency} {pricePerDay}
+              </span>
+              <span className="text-sm text-muted-foreground">/day</span>
+            </div>
+            {isUrgent && (
+              <span className="text-xs text-primary font-medium urgency-pulse flex items-center gap-1">
+                <Zap className="h-3 w-3" />
+                Book fast - high demand!
+              </span>
+            )}
           </div>
           
           {isAvailable ? (
@@ -185,7 +213,7 @@ export default function CarCard({ car }: CarCardProps) {
                   variant="outline" 
                   size="sm"
                   data-testid={`button-details-${id}`}
-                  className="hover-elevate active-elevate-2 border-blue-200 text-blue-700 hover:bg-blue-50"
+                  className="hover-elevate active-elevate-2 border-primary text-primary hover:bg-primary/10"
                 >
                   Details
                 </Button>
@@ -195,16 +223,16 @@ export default function CarCard({ car }: CarCardProps) {
                   onClick={handleBook}
                   size="sm"
                   data-testid={`button-book-${id}`}
-                  className="hover-elevate active-elevate-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  className={`conversion-cta ${isUrgent ? 'urgency-pulse' : ''}`}
                 >
-                  Book Now
+                  {isUrgent ? 'Book Now!' : 'Book Now'}
                 </Button>
               ) : (
                 <Link href="/login">
                   <Button 
                     size="sm"
                     data-testid={`button-login-to-book-${id}`}
-                    className="hover-elevate active-elevate-2 bg-blue-600 hover:bg-blue-700 text-white"
+                    className="conversion-cta"
                   >
                     Login to Book
                   </Button>

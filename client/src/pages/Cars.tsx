@@ -7,11 +7,12 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { MapPin, Star, Fuel, Settings, Users, RotateCcw } from 'lucide-react';
+import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart } from 'lucide-react';
 import CarCard from '../components/CarCard';
 import CarsSearchBar from '../components/CarsSearchBar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { carApi } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Cars() {
   const [location] = useLocation();
@@ -24,6 +25,8 @@ export default function Cars() {
     startDate: '',
     endDate: ''
   });
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const { isAuthenticated } = useAuth();
 
   // Parse URL parameters on component mount
   useEffect(() => {
@@ -87,6 +90,14 @@ export default function Cars() {
     });
   };
 
+  const toggleFavorite = (carId: string) => {
+    setFavorites(prev => 
+      prev.includes(carId) 
+        ? prev.filter(id => id !== carId)
+        : [...prev, carId]
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -108,15 +119,42 @@ export default function Cars() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Floating Favorite Button */}
+      {isAuthenticated && (
+        <Button
+          variant="outline"
+          size="icon"
+          className="fixed top-4 right-4 z-50 bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg border-primary/20 hover:border-primary/40"
+          onClick={() => {/* Navigate to favorites */}}
+        >
+          <Heart className="h-4 w-4 text-primary" />
+        </Button>
+      )}
+
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-green-600 to-green-800 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+      <div className="automotive-gradient text-white py-16 relative overflow-hidden">
+        {/* Background Car Image */}
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1920&h=1080&fit=crop&auto=format"
+            alt="Premium cars"
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-black/40"></div>
+        </div>
+        
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 premium-text-gradient">
             Find Your Ideal Car
           </h1>
-          <p className="text-xl text-green-100 max-w-2xl mx-auto">
-            Discover our selection of cars available across the UK
+          <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            Discover premium cars available across the UK with verified owners
           </p>
+          <div className="mt-6 flex justify-center gap-4 text-sm">
+            <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">✓ Verified Owners</span>
+            <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">✓ 24/7 Support</span>
+            <span className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">✓ Full Insurance</span>
+          </div>
         </div>
       </div>
 
@@ -159,8 +197,13 @@ export default function Cars() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {cars.map((car) => (
-              <CarCard key={car.id} car={car} />
+            {cars.map((car: any) => (
+              <CarCard 
+                key={car.id} 
+                car={car} 
+                isFavorited={favorites.includes(car.id)}
+                onToggleFavorite={() => toggleFavorite(car.id)}
+              />
             ))}
           </div>
         )}

@@ -131,7 +131,7 @@ export default function Dashboard() {
                   </Badge>
                   <span className="text-sm text-gray-500 flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    Membre depuis {new Date(user.createdAt).toLocaleDateString('fr-FR')}
+                    Membre depuis {user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'Unknown'}
                   </span>
                 </div>
               </div>

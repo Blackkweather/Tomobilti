@@ -13,6 +13,7 @@ import {
 import { z } from "zod";
 import { csrfProtection } from "./middleware/csrf";
 import { sanitizeMiddleware } from "./middleware/sanitize";
+import { EmailService } from "./services/email";
 import { 
   authMiddleware, 
   optionalAuthMiddleware,
@@ -98,6 +99,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.createUser(userData);
       const token = generateToken(user.id);
       const sanitizedUser = sanitizeUser(user);
+      
+      // Send email verification
+      try {
+        const verificationToken = generateToken(user.id); // You might want to create a separate verification token
+        await EmailService.sendVerificationEmail({
+          to: user.email,
+          firstName: user.firstName,
+          verificationToken: verificationToken
+        });
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError);
+        // Don't fail registration if email fails
+      }
       
       res.status(201).json({
         message: 'Account created successfully',
@@ -360,6 +374,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Booking routes
+  app.get("/api/bookings/:id", async (req, res) => {
+    try {
+      const booking = await storage.getBooking(req.params.id);
+      
+      if (!booking) {
+        return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      // Enrich booking with car and renter information
+      const car = await storage.getCar(booking.carId);
+      const renter = await storage.getUser(booking.renterId);
+      
+      const enrichedBooking = {
+        ...booking,
+        car: car || null,
+        renter: renter || null
+      };
+      
+      res.json(enrichedBooking);
+    } catch (error) {
+      console.error('Get booking error:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.get("/api/bookings/renter/:renterId", async (req, res) => {
     try {
       const bookings = await storage.getBookingsByRenter(req.params.renterId);
@@ -461,6 +500,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const booking = await storage.createBooking(bookingData);
+      
+      // Send booking confirmation email to renter
+      try {
+        const renter = await storage.getUser(bookingData.renterId);
+        const car = await storage.getCar(bookingData.carId);
+        if (renter && car) {
+          await EmailService.sendBookingConfirmation({
+            to: renter.email,
+            firstName: renter.firstName,
+            carTitle: car.title,
+            startDate: bookingData.startDate,
+            endDate: bookingData.endDate,
+            totalAmount: bookingData.totalAmount,
+            currency: car.currency,
+            bookingId: booking.id
+          });
+        }
+      } catch (emailError) {
+        console.error('Failed to send booking confirmation email:', emailError);
+        // Don't fail the booking if email fails
+      }
+      
       res.status(201).json(booking);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -477,6 +538,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (!booking) {
         return res.status(404).json({ error: "Booking not found" });
+      }
+      
+      // Send confirmation email if booking status changed to confirmed
+      if (updates.status === 'confirmed') {
+        try {
+          const renter = await storage.getUser(booking.renterId);
+          const car = await storage.getCar(booking.carId);
+          if (renter && car) {
+            await EmailService.sendBookingConfirmation({
+              to: renter.email,
+              firstName: renter.firstName,
+              carTitle: car.title,
+              startDate: booking.startDate,
+              endDate: booking.endDate,
+              totalAmount: booking.totalAmount,
+              currency: car.currency,
+              bookingId: booking.id
+            });
+          }
+        } catch (emailError) {
+          console.error('Failed to send booking confirmation email:', emailError);
+          // Don't fail the booking update if email fails
+        }
       }
       
       res.json(booking);
@@ -554,6 +638,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(stats);
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  // Payment routes (only if Stripe is configured)
+  if (process.env.STRIPE_SECRET_KEY) {
+    app.post("/api/payments/create-intent", authMiddleware, async (req, res) => {
+      try {
+        const { amount, currency, bookingId, customerEmail, customerName, carTitle, mockPayment } = req.body;
+        
+        if (!amount || !currency || !bookingId || !customerEmail || !customerName || !carTitle) {
+          return res.status(400).json({ error: "Missing required payment data" });
+        }
+
+        // Use mock payment if requested or if in development mode
+        if (mockPayment || process.env.NODE_ENV === 'development') {
+          // Simulate successful payment for development
+          res.json({
+            clientSecret: "pi_mock_" + Date.now(),
+            paymentIntentId: "pi_mock_" + Date.now(),
+          });
+          return;
+        }
+
+        const PaymentService = (await import("./services/payment")).default;
+        const result = await PaymentService.createPaymentIntent({
+          amount,
+          currency,
+          bookingId,
+          customerEmail,
+          customerName,
+          carTitle,
+        });
+
+        if (!result.success) {
+          return res.status(400).json({ error: result.error });
+        }
+
+        res.json({
+          clientSecret: result.clientSecret,
+          paymentIntentId: result.paymentIntentId,
+        });
+      } catch (error) {
+        console.error("Payment intent creation failed:", error);
+        res.status(500).json({ error: "Payment processing failed" });
+      }
+    });
+  } else {
+    // Mock payment endpoint for development
+    app.post("/api/payments/create-intent", authMiddleware, async (req, res) => {
+      try {
+        const { amount, currency, bookingId } = req.body;
+        
+        if (!amount || !currency || !bookingId) {
+          return res.status(400).json({ error: "Missing required payment data" });
+        }
+
+        // Simulate successful payment for development
+        res.json({
+          clientSecret: "pi_mock_" + Date.now(),
+          paymentIntentId: "pi_mock_" + Date.now(),
+        });
+      } catch (error) {
+        console.error("Mock payment creation failed:", error);
+        res.status(500).json({ error: "Payment processing failed" });
+      }
+    });
+  }
+
+  app.get("/api/payments/status/:paymentIntentId", authMiddleware, async (req, res) => {
+    try {
+      // Check if this is a mock payment
+      if (req.params.paymentIntentId.startsWith('pi_mock_')) {
+        // Mock payment status for development
+        res.json({ status: "succeeded", paymentIntentId: req.params.paymentIntentId });
+        return;
+      }
+
+      if (process.env.STRIPE_SECRET_KEY) {
+        const PaymentService = (await import("./services/payment")).default;
+        const result = await PaymentService.confirmPaymentIntent(req.params.paymentIntentId);
+
+        if (!result.success) {
+          return res.status(400).json({ error: result.error });
+        }
+
+        res.json({ status: "succeeded", paymentIntentId: result.paymentIntentId });
+      } else {
+        // Mock payment status for development
+        res.json({ status: "succeeded", paymentIntentId: req.params.paymentIntentId });
+      }
+    } catch (error) {
+      console.error("Payment status check failed:", error);
+      res.status(500).json({ error: "Failed to check payment status" });
+    }
+  });
+
+  app.post("/api/payments/refund", authMiddleware, async (req, res) => {
+    try {
+      const { paymentIntentId, amount } = req.body;
+      
+      if (!paymentIntentId) {
+        return res.status(400).json({ error: "Payment intent ID is required" });
+      }
+
+      if (process.env.STRIPE_SECRET_KEY) {
+        const PaymentService = (await import("./services/payment")).default;
+        const result = await PaymentService.refundPayment(paymentIntentId, amount);
+
+        if (!result.success) {
+          return res.status(400).json({ error: result.error });
+        }
+
+        res.json({ success: true, paymentIntentId: result.paymentIntentId });
+      } else {
+        // Mock refund for development
+        res.json({ success: true, paymentIntentId });
+      }
+    } catch (error) {
+      console.error("Refund failed:", error);
+      res.status(500).json({ error: "Refund processing failed" });
     }
   });
 

@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "../lib/queryClient";
+import { useAuth } from "../contexts/AuthContext";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Shield } from "lucide-react";
 
 interface CarForm {
   make: string;
@@ -26,6 +30,41 @@ const FEATURES = [
 
 export default function AddCar() {
   const [, setLocation] = useLocation();
+  const { isAuthenticated, user } = useAuth();
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12">
+        <Card className="max-w-md w-full mx-4">
+          <CardHeader className="text-center">
+            <CardTitle className="flex items-center justify-center gap-2">
+              <Shield className="h-6 w-6 text-primary" />
+              Authentication Required
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              You need to be logged in to add a car. Please sign in or create an account to become a host.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button 
+                variant="outline" 
+                onClick={() => setLocation('/')}
+              >
+                Go Home
+              </Button>
+              <Button 
+                onClick={() => setLocation('/login')}
+              >
+                Login
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   const [form, setForm] = useState<CarForm>({
     make: "",
     model: "",
