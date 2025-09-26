@@ -135,7 +135,7 @@ export default function Refund() {
                 To request a refund:
               </p>
               <ol className="list-decimal pl-6 text-gray-700 space-y-2">
-                <li>Log into your Tomobilti account</li>
+                <li>Log into your ShareWheelz account</li>
                 <li>Go to "My Bookings" and select the trip</li>
                 <li>Click "Cancel Booking" or "Request Refund"</li>
                 <li>Follow the prompts and provide reason</li>
@@ -150,7 +150,7 @@ export default function Refund() {
                 For refund-related questions or assistance:
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-700">Email: refunds@tomobilti.com</p>
+                <p className="text-gray-700">Email: refunds@sharewheelz.uk</p>
                 <p className="text-gray-700">Phone: 1-800-TOMOBIL</p>
                 <p className="text-gray-700">Live Chat: Available 24/7 in your account</p>
                 <p className="text-gray-700">Response Time: Within 24 hours</p>

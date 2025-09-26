@@ -8,7 +8,10 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertTriangle
+  AlertTriangle,
+  X,
+  ArrowLeft,
+  ArrowRight
 } from 'lucide-react';
 
 interface CalendarProps {
@@ -52,57 +55,58 @@ export default function Calendar({
     );
   };
 
-  const isDateDisabled = (date: Date) => {
-    if (minDate && date < minDate) return true;
-    if (maxDate && date > maxDate) return true;
-    if (date < today) return true;
-    return false;
+  const isDateInRange = (date: Date) => {
+    if (!selectedDates.start || !selectedDates.end) return false;
+    return date >= selectedDates.start && date <= selectedDates.end;
   };
 
   const isDateSelected = (date: Date) => {
     if (!selectedDates.start) return false;
-    if (selectedDates.end) {
-      return date >= selectedDates.start && date <= selectedDates.end;
-    }
-    return date.toDateString() === selectedDates.start.toDateString();
+    return date.toDateString() === selectedDates.start.toDateString() ||
+           (selectedDates.end && date.toDateString() === selectedDates.end.toDateString());
   };
 
-  const isDateInRange = (date: Date) => {
-    if (!selectedDates.start || !selectedDates.end) return false;
-    return date > selectedDates.start && date < selectedDates.end;
-  };
-
-  const isStartDate = (date: Date) => {
-    return selectedDates.start && date.toDateString() === selectedDates.start.toDateString();
-  };
-
-  const isEndDate = (date: Date) => {
-    return selectedDates.end && date.toDateString() === selectedDates.end.toDateString();
+  const isDateDisabled = (date: Date) => {
+    const effectiveMinDate = minDate || today;
+    const effectiveMaxDate = maxDate || new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+    
+    return date < effectiveMinDate || 
+           date > effectiveMaxDate || 
+           isDateUnavailable(date);
   };
 
   const handleDateClick = (date: Date) => {
-    if (isDateDisabled(date) || isDateUnavailable(date)) return;
+    if (isDateDisabled(date)) return;
 
-    if (!selectedDates.start) {
+    if (!selectedDates.start || (selectedDates.start && selectedDates.end)) {
+      // Start new selection
       onDateSelect(date, null);
-    } else if (!selectedDates.end) {
+    } else if (selectedDates.start && !selectedDates.end) {
+      // Complete selection
       if (date < selectedDates.start) {
         onDateSelect(date, selectedDates.start);
       } else {
         onDateSelect(selectedDates.start, date);
       }
-    } else {
-      onDateSelect(date, null);
     }
   };
 
-  const handleMouseEnter = (date: Date) => {
-    if (isDateDisabled(date) || isDateUnavailable(date)) return;
-    setHoveredDate(date);
-  };
+  const getDateClassName = (date: Date) => {
+    let className = 'w-10 h-10 flex items-center justify-center text-sm rounded-lg transition-all duration-200 ';
+    
+    if (isDateDisabled(date)) {
+      className += 'text-gray-300 cursor-not-allowed bg-gray-50';
+    } else if (isDateSelected(date)) {
+      className += 'bg-blue-600 text-white font-semibold shadow-lg';
+    } else if (isDateInRange(date)) {
+      className += 'bg-blue-100 text-blue-700';
+    } else if (date.toDateString() === today.toDateString()) {
+      className += 'bg-gray-200 text-gray-900 font-semibold';
+    } else {
+      className += 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 cursor-pointer';
+    }
 
-  const handleMouseLeave = () => {
-    setHoveredDate(null);
+    return className;
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -117,84 +121,30 @@ export default function Calendar({
     });
   };
 
-  const goToToday = () => {
-    setCurrentMonth(new Date());
-  };
-
   const renderCalendarDays = () => {
     const days = [];
     const currentDate = new Date(startOfCalendar);
 
     for (let i = 0; i < 42; i++) {
-      const date = new Date(currentDate);
-      const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
-      const isToday = date.toDateString() === today.toDateString();
-      const isUnavailable = isDateUnavailable(date);
-      const isDisabled = isDateDisabled(date);
-      const isSelected = isDateSelected(date);
-      const isInRange = isDateInRange(date);
-      const isStart = isStartDate(date);
-      const isEnd = isEndDate(date);
-      const isHovered = hoveredDate && date.toDateString() === hoveredDate.toDateString();
-
-      let className = 'relative w-8 h-8 flex items-center justify-center text-xs rounded-md transition-all duration-200 cursor-pointer ';
-      
-      if (!isCurrentMonth) {
-        className += 'text-gray-300 ';
-      } else if (isDisabled) {
-        className += 'text-gray-400 cursor-not-allowed ';
-      } else if (isUnavailable) {
-        className += 'text-red-400 cursor-not-allowed bg-red-50 ';
-      } else if (isSelected) {
-        className += 'text-white bg-blue-600 font-semibold ';
-      } else if (isInRange) {
-        className += 'text-blue-600 bg-blue-100 ';
-      } else if (isToday) {
-        className += 'text-blue-600 bg-blue-50 font-semibold ';
-      } else {
-        className += 'text-gray-700 hover:bg-gray-100 ';
-      }
-
-      if (isHovered && !isSelected && !isDisabled && !isUnavailable) {
-        className += 'bg-gray-200 ';
-      }
-
       days.push(
         <button
           key={i}
-          className={className}
-          onClick={() => handleDateClick(date)}
-          onMouseEnter={() => handleMouseEnter(date)}
-          onMouseLeave={handleMouseLeave}
-          disabled={isDisabled || isUnavailable}
+          className={getDateClassName(currentDate)}
+          onClick={() => handleDateClick(currentDate)}
+          onMouseEnter={() => setHoveredDate(currentDate)}
+          onMouseLeave={() => setHoveredDate(null)}
+          disabled={isDateDisabled(currentDate)}
         >
-          <span>{date.getDate()}</span>
-          
-          {/* Status indicators */}
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
-            {isUnavailable && (
-              <XCircle className="h-2 w-2 text-red-500" />
-            )}
-            {isToday && !isSelected && (
-              <div className="w-1 h-1 bg-blue-500 rounded-full" />
-            )}
-            {isStart && (
-              <CheckCircle className="h-2 w-2 text-white" />
-            )}
-            {isEnd && (
-              <CheckCircle className="h-2 w-2 text-white" />
-            )}
-          </div>
+          {currentDate.getDate()}
         </button>
       );
-
       currentDate.setDate(currentDate.getDate() + 1);
     }
 
     return days;
   };
 
-  const getDateRangeText = () => {
+  const getSelectedDateText = () => {
     if (!selectedDates.start) return 'Select start date';
     if (!selectedDates.end) return 'Select end date';
     
@@ -210,141 +160,137 @@ export default function Calendar({
     return `${start} - ${end}`;
   };
 
-  const getDuration = () => {
-    if (!selectedDates.start || !selectedDates.end) return null;
-    
-    const diffTime = Math.abs(selectedDates.end.getTime() - selectedDates.start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays;
+  const getDaysDifference = () => {
+    if (!selectedDates.start || !selectedDates.end) return 0;
+    return Math.ceil((selectedDates.end.getTime() - selectedDates.start.getTime()) / (1000 * 60 * 60 * 24));
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-w-sm relative z-[9999] ${className}`}>
+    <div className={`bg-white rounded-xl shadow-2xl border-0 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4 text-blue-600" />
-          <h3 className="text-sm font-semibold text-gray-900">Select Dates</h3>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={goToToday}
-            className="text-xs px-2 py-1"
-          >
-            Today
-          </Button>
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <CalendarIcon className="h-6 w-6 mr-2" />
+            <h3 className="text-xl font-semibold">Select Dates</h3>
+          </div>
           {onClose && (
             <Button
-              variant="outline"
-              size="sm"
+              variant="ghost"
+              size="icon"
               onClick={onClose}
-              className="text-xs px-2 py-1"
+              className="text-white hover:bg-white/20"
             >
-              <XCircle className="h-3 w-3" />
+              <X className="h-5 w-5" />
             </Button>
           )}
         </div>
-      </div>
-
-      {/* Selected Date Range */}
-      <div className="mb-3 p-2 bg-blue-50 rounded-md border border-blue-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-blue-900">Selected Period</p>
-            <p className="text-xs text-blue-700">{getDateRangeText()}</p>
-          </div>
-          {getDuration() && (
-            <Badge variant="default" className="bg-blue-600 text-xs">
-              {getDuration()} day{getDuration() !== 1 ? 's' : ''}
-            </Badge>
+        
+        {/* Selected Dates Display */}
+        <div className="bg-white/20 rounded-lg p-3">
+          <div className="text-sm text-blue-100 mb-1">Selected Period</div>
+          <div className="font-semibold text-lg">{getSelectedDateText()}</div>
+          {getDaysDifference() > 0 && (
+            <div className="text-sm text-blue-100 mt-1">
+              {getDaysDifference()} {getDaysDifference() === 1 ? 'day' : 'days'}
+            </div>
           )}
         </div>
       </div>
 
-      {/* Month Navigation */}
-      <div className="flex items-center justify-between mb-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigateMonth('prev')}
-          className="p-1 h-6 w-6"
-        >
-          <ChevronLeft className="h-3 w-3" />
-        </Button>
-        
-        <h2 className="text-sm font-semibold text-gray-900">
-          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-        </h2>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigateMonth('next')}
-          className="p-1 h-6 w-6"
-        >
-          <ChevronRight className="h-3 w-3" />
-        </Button>
-      </div>
+      {/* Calendar Navigation */}
+      <div className="p-6 pb-4">
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigateMonth('prev')}
+            className="hover:bg-gray-100"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          
+          <h2 className="text-xl font-semibold text-gray-900">
+            {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+          </h2>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigateMonth('next')}
+            className="hover:bg-gray-100"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
 
-      {/* Calendar Grid */}
-      <div className="space-y-1">
         {/* Day Headers */}
-        <div className="grid grid-cols-7 gap-1 mb-1">
+        <div className="grid grid-cols-7 gap-1 mb-2">
           {dayNames.map(day => (
-            <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
+            <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
               {day}
             </div>
           ))}
         </div>
 
-        {/* Calendar Days */}
+        {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1">
           {renderCalendarDays()}
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <div className="flex items-center justify-center gap-6 text-xs text-gray-600">
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-600 rounded"></div>
-            <span>Selected</span>
+      {/* Footer Actions */}
+      <div className="border-t bg-gray-50 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <CheckCircle className="h-4 w-4 text-green-600" />
+            <span>Free cancellation up to 24 hours before</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-100 rounded"></div>
-            <span>In Range</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-red-50 border border-red-200 rounded"></div>
-            <span>Unavailable</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 bg-blue-50 rounded"></div>
-            <span>Today</span>
+          
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => onDateSelect(null, null)}
+              className="text-gray-600"
+            >
+              Clear
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectedDates.start && selectedDates.end && onClose) {
+                  onClose();
+                }
+              }}
+              disabled={!selectedDates.start || !selectedDates.end}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Confirm Dates
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="mt-6 flex gap-3">
-        <Button
-          variant="outline"
-          onClick={() => onDateSelect(null, null)}
-          className="flex-1"
-          disabled={!selectedDates.start}
-        >
-          Clear Selection
-        </Button>
-        <Button
-          className="flex-1 bg-blue-600 hover:bg-blue-700"
-          disabled={!selectedDates.start || !selectedDates.end}
-        >
-          <Clock className="h-4 w-4 mr-2" />
-          Confirm Dates
-        </Button>
+      {/* Legend */}
+      <div className="px-6 pb-6">
+        <div className="flex items-center justify-center gap-6 text-xs text-gray-500">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-blue-600 rounded mr-2"></div>
+            <span>Selected</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-blue-100 rounded mr-2"></div>
+            <span>In Range</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-gray-200 rounded mr-2"></div>
+            <span>Today</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-gray-50 rounded mr-2"></div>
+            <span>Unavailable</span>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -62,7 +62,7 @@ export default function Referrals() {
     if (!referralData) return;
     
     const link = `${window.location.origin}/register?ref=${referralData.referralCode}`;
-    const text = `Join Tomobilti and get $${referralData.program.refereeBonus} off your first booking!`;
+    const text = `Join ShareWheelz and get $${referralData.program.refereeBonus} off your first booking!`;
     
     let shareUrl = "";
     switch (platform) {
@@ -107,7 +107,7 @@ export default function Referrals() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Refer Friends & Earn</h1>
           <p className="mt-2 text-gray-600">
-            Share Tomobilti with friends and earn {formatCurrency(referralData.program.referrerBonus)} for each successful referral
+            Share ShareWheelz with friends and earn {formatCurrency(referralData.program.referrerBonus)} for each successful referral
           </p>
         </div>
 

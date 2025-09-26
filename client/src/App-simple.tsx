@@ -4,7 +4,7 @@ function App() {
   return (
     <div style={{ padding: '20px', backgroundColor: '#f0f0f0', minHeight: '100vh' }}>
       <h1 style={{ color: '#2d5a27', fontSize: '2rem', marginBottom: '20px' }}>
-        🚗 Tomobilti - Location de Voitures au Maroc
+        🚗 ShareWheelz - Location de Voitures au Maroc
       </h1>
       <p style={{ fontSize: '1.2rem', color: '#333' }}>
         Bienvenue sur la plateforme de location de voitures entre particuliers au Maroc !
@@ -37,6 +37,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
