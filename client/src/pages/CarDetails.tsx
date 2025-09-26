@@ -5,30 +5,252 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Star, MapPin, Users, Fuel, Settings, Calendar, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
-import BookingModal from "../components/BookingModal";
+import { 
+  Star, 
+  MapPin, 
+  Users, 
+  Fuel, 
+  Settings, 
+  Calendar, 
+  ArrowLeft, 
+  Heart, 
+  Share2, 
+  Shield, 
+  Clock, 
+  Zap, 
+  Car as CarIcon, 
+  CheckCircle,
+  AlertCircle,
+  Phone,
+  Mail,
+  MessageCircle,
+  Camera,
+  ChevronLeft,
+  ChevronRight,
+  Maximize2,
+  User
+} from "lucide-react";
+import { Link, useLocation } from "wouter";
 import ReservationBar from "../components/ReservationBar";
 import LoadingSpinner from "../components/LoadingSpinner";
+import Footer from "../components/Footer";
 import { useAuth } from "../contexts/AuthContext";
 import { carApi } from "../lib/api";
+import type { Car } from '@shared/schema';
+
+// Mapping des images par type de voiture
+const carTypeImages: Record<string, string> = {
+  'SUV': '/assets/SUV.png',
+  'Sport': '/assets/Sport car.png',
+  'Luxury': '/assets/luxury Sedam.png',
+  'Classic': '/assets/CLASSIC.png',
+  'Convertible': '/assets/CONVERTIBLES.png',
+  'Electric': '/assets/ELECTRIC.png',
+  'Sedan': '/assets/luxury Sedam.png',
+  'Hatchback': '/assets/CLASSIC.png',
+  'Coupe': '/assets/Sport car.png',
+  'Crossover': '/assets/SUV.png',
+  'Pickup': '/assets/SUV.png',
+  'Van': '/assets/SUV.png',
+  'Truck': '/assets/SUV.png',
+  'Minivan': '/assets/SUV.png',
+  'Wagon': '/assets/luxury Sedam.png',
+  'Roadster': '/assets/CONVERTIBLES.png',
+  'Cabriolet': '/assets/CONVERTIBLES.png',
+  'Hybrid': '/assets/ELECTRIC.png',
+  'EV': '/assets/ELECTRIC.png',
+  'Vintage': '/assets/CLASSIC.png',
+  'Premium': '/assets/luxury Sedam.png',
+  'Supercar': '/assets/Sport car.png',
+  'Hypercar': '/assets/Sport car.png'
+};
+
+// Fonction pour déterminer le type de voiture basé sur les propriétés existantes
+const determineCarType = (car: Car): string => {
+  const makeModel = `${car.make} ${car.model}`.toLowerCase();
+  const title = car.title?.toLowerCase() || '';
+  const description = car.description?.toLowerCase() || '';
+  
+  // Vérifier les mots-clés dans le titre et la description
+  if (title.includes('suv') || title.includes('crossover') || description.includes('suv') || 
+      makeModel.includes('range rover') || makeModel.includes('jeep') || makeModel.includes('land cruiser') ||
+      makeModel.includes('explorer') || makeModel.includes('tahoe') || makeModel.includes('suburban')) {
+    return 'SUV';
+  }
+  
+  if (title.includes('sport') || title.includes('coupe') || description.includes('sport') ||
+      makeModel.includes('mustang') || makeModel.includes('corvette') || makeModel.includes('ferrari') ||
+      makeModel.includes('lamborghini') || makeModel.includes('porsche') || makeModel.includes('bmw m')) {
+    return 'Sport';
+  }
+  
+  if (title.includes('luxury') || title.includes('premium') || description.includes('luxury') ||
+      makeModel.includes('bmw') || makeModel.includes('mercedes') || makeModel.includes('audi') ||
+      makeModel.includes('lexus') || makeModel.includes('infiniti') || makeModel.includes('acura')) {
+    return 'Luxury';
+  }
+  
+  if (title.includes('electric') || title.includes('hybrid') || description.includes('electric') ||
+      makeModel.includes('tesla') || makeModel.includes('nissan leaf') || makeModel.includes('prius') ||
+      makeModel.includes('bolt') || makeModel.includes('ioniq')) {
+    return 'Electric';
+  }
+  
+  if (title.includes('convertible') || title.includes('cabriolet') || description.includes('convertible') ||
+      makeModel.includes('convertible') || makeModel.includes('cabriolet') || makeModel.includes('roadster')) {
+    return 'Convertible';
+  }
+  
+  if (title.includes('classic') || title.includes('vintage') || description.includes('classic') ||
+      title.includes('oldtimer') || description.includes('vintage')) {
+    return 'Classic';
+  }
+  
+  // Par défaut, déterminer par la taille (nombre de sièges)
+  if (car.seats >= 7) {
+    return 'SUV'; // Probablement un SUV ou minivan
+  } else if (car.seats <= 2) {
+    return 'Sport'; // Probablement une voiture de sport
+  } else {
+    return 'Luxury'; // Probablement une berline
+  }
+};
+
+// Fonction pour obtenir l'image par défaut basée sur le type de voiture
+const getDefaultCarImage = (carType: string, make?: string, model?: string): string => {
+  // Essayer de matcher le type exact
+  if (carTypeImages[carType]) {
+    return carTypeImages[carType];
+  }
+  
+  // Essayer de matcher par mots-clés dans le type
+  const typeLower = carType.toLowerCase();
+  if (typeLower.includes('suv') || typeLower.includes('crossover') || typeLower.includes('pickup')) {
+    return carTypeImages['SUV'];
+  }
+  if (typeLower.includes('sport') || typeLower.includes('coupe') || typeLower.includes('racing')) {
+    return carTypeImages['Sport'];
+  }
+  if (typeLower.includes('luxury') || typeLower.includes('sedan') || typeLower.includes('premium')) {
+    return carTypeImages['Luxury'];
+  }
+  if (typeLower.includes('electric') || typeLower.includes('hybrid') || typeLower.includes('ev')) {
+    return carTypeImages['Electric'];
+  }
+  if (typeLower.includes('convertible') || typeLower.includes('cabriolet')) {
+    return carTypeImages['Convertible'];
+  }
+  if (typeLower.includes('classic') || typeLower.includes('vintage') || typeLower.includes('hatchback')) {
+    return carTypeImages['Classic'];
+  }
+  
+  // Essayer de matcher par marque/modèle
+  const makeModel = `${make || ''} ${model || ''}`.toLowerCase();
+  
+  // Marques de luxe
+  if (makeModel.includes('bmw') || makeModel.includes('mercedes') || makeModel.includes('audi') || 
+      makeModel.includes('lexus') || makeModel.includes('infiniti') || makeModel.includes('acura') ||
+      makeModel.includes('genesis') || makeModel.includes('cadillac') || makeModel.includes('lincoln')) {
+    return carTypeImages['Luxury'];
+  }
+  
+  // Véhicules électriques
+  if (makeModel.includes('tesla') || makeModel.includes('nissan leaf') || makeModel.includes('prius') ||
+      makeModel.includes('bolt') || makeModel.includes('ioniq') || makeModel.includes('kona electric') ||
+      makeModel.includes('id.') || makeModel.includes('eq') || makeModel.includes('etron')) {
+    return carTypeImages['Electric'];
+  }
+  
+  // Voitures de sport
+  if (makeModel.includes('mustang') || makeModel.includes('corvette') || makeModel.includes('ferrari') || 
+      makeModel.includes('lamborghini') || makeModel.includes('porsche') || makeModel.includes('mclaren') ||
+      makeModel.includes('bugatti') || makeModel.includes('koenigsegg') || makeModel.includes('pagani') ||
+      makeModel.includes('viper') || makeModel.includes('camaro') || makeModel.includes('challenger')) {
+    return carTypeImages['Sport'];
+  }
+  
+  // SUV et véhicules tout-terrain
+  if (makeModel.includes('range rover') || makeModel.includes('jeep') || makeModel.includes('land cruiser') ||
+      makeModel.includes('explorer') || makeModel.includes('tahoe') || makeModel.includes('suburban') ||
+      makeModel.includes('escalade') || makeModel.includes('navigator') || makeModel.includes('armada') ||
+      makeModel.includes('sequoia') || makeModel.includes('highlander') || makeModel.includes('pilot')) {
+    return carTypeImages['SUV'];
+  }
+  
+  // Voitures classiques/vintage
+  if (makeModel.includes('classic') || makeModel.includes('vintage') || makeModel.includes('antique') ||
+      makeModel.includes('oldtimer') || makeModel.includes('collector') || makeModel.includes('restoration')) {
+    return carTypeImages['Classic'];
+  }
+  
+  // Cabriolets et convertibles
+  if (makeModel.includes('convertible') || makeModel.includes('cabriolet') || makeModel.includes('roadster') ||
+      makeModel.includes('spider') || makeModel.includes('drophead') || makeModel.includes('soft top')) {
+    return carTypeImages['Convertible'];
+  }
+  
+  // Par défaut, utiliser l'image SUV
+  return carTypeImages['SUV'];
+};
 
 export default function CarDetails() {
   const [, params] = useRoute("/cars/:id");
-  const [showBookingModal, setShowBookingModal] = useState(false);
-  const [bookingData, setBookingData] = useState<any>(null);
-  const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  const { isAuthenticated, user } = useAuth();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  
+  // Handle booking and redirect to payment
+  const handleBookingAndPayment = async (bookingData: any) => {
+    try {
+      // Create booking via API
+      const bookingPayload = {
+        carId: car?.id,
+        renterId: user?.id,
+        startDate: bookingData.startDate.toISOString(),
+        endDate: bookingData.endDate.toISOString(),
+        startTime: '09:00', // Default start time
+        endTime: '17:00',   // Default end time
+        totalAmount: bookingData.totalAmount.toString(),
+        serviceFee: (bookingData.totalAmount * 0.1).toString(), // 10% service fee
+        insurance: (bookingData.totalAmount * 0.05).toString(), // 5% insurance
+        status: 'pending',
+        paymentStatus: 'pending'
+      };
+      
+      console.log('Creating booking:', bookingPayload);
+      
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(bookingPayload)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Booking failed');
+      }
+      
+      const booking = await response.json();
+      console.log('Booking created:', booking);
+      
+      // Redirect to payment page
+      setLocation(`/payment/${booking.id}`);
+      
+    } catch (error) {
+      console.error('Booking error:', error);
+      alert(`Booking failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
   
   // Fetch car data from API
-  const { data: car, isLoading, error } = useQuery({
-    queryKey: ['car', params?.id],
-    queryFn: async () => {
-      const response = await fetch(`/api/cars/${params?.id}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch car details');
-      }
-      return response.json();
-    },
+  const { data: car, isLoading, error } = useQuery<Car & { owner?: any }>({
+    queryKey: [`/api/cars/${params?.id}`],
     enabled: !!params?.id,
   });
 
@@ -46,6 +268,7 @@ export default function CarDetails() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Car Not Found</h2>
           <p className="text-gray-600 mb-4">This car does not exist or has been deleted.</p>
+          <p className="text-sm text-gray-500 mb-4">Error: {error?.toString()}</p>
           <Link href="/cars">
             <Button variant="outline">Back to Cars</Button>
           </Link>
@@ -54,36 +277,68 @@ export default function CarDetails() {
     );
   }
 
-  const fuelTypeLabels = {
+  const fuelTypeLabels: Record<string, string> = {
     essence: 'Petrol',
     diesel: 'Diesel',
     electric: 'Electric',
     hybrid: 'Hybrid'
   };
 
-  const transmissionLabels = {
+  const transmissionLabels: Record<string, string> = {
     manual: 'Manual',
     automatic: 'Automatic'
   };
-
+  
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Link href="/cars">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl font-bold">{car.title}</h1>
-              <div className="flex items-center gap-2 text-gray-600">
-                <MapPin className="w-4 h-4" />
-                <span>{car.city}</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Enhanced Header */}
+      <div className="bg-white/95 backdrop-blur-sm border-b shadow-sm">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/cars">
+                <Button variant="outline" size="sm" className="btn-outline hover-lift">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Cars
+                </Button>
+              </Link>
+              <div>
+                <h1 className="text-3xl font-bold gradient-text">{car.title}</h1>
+                <div className="flex items-center gap-4 mt-2">
+                  <div className="flex items-center text-gray-600">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span>{car.location}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                    <span className="ml-2 text-sm text-gray-600">4.8 (24 reviews)</span>
+                  </div>
+                </div>
               </div>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2">
+              {isAuthenticated && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsFavorited(!isFavorited)}
+                  className={`${isFavorited ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                >
+                  <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
+                </Button>
+              )}
+              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
+                <Share2 className="h-5 w-5" />
+              </Button>
             </div>
           </div>
         </div>
@@ -93,106 +348,298 @@ export default function CarDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Images */}
-            <Card>
+            {/* Car Images Gallery */}
+            <Card className="overflow-hidden">
               <CardContent className="p-0">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {car.images && car.images.length > 0 ? (
-                    car.images.map((image: string, index: number) => (
+                <div className="relative">
+                  {/* Main Image */}
+                  <div className="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                    {car.images && car.images.length > 0 ? (
                       <img
-                        key={index}
-                        src={image}
-                        alt={`${car.title} - Image ${index + 1}`}
-                        className="w-full h-64 object-cover rounded-lg"
+                        src={car.images[currentImageIndex]}
+                        alt={car.title}
+                        className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                        onClick={() => setShowImageModal(true)}
                       />
-                    ))
-                  ) : (
-                    <img
-                      src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format"
-                      alt={car.title}
-                      className="w-full h-64 object-cover rounded-lg"
-                    />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-blue-50 to-purple-50">
+                        <img
+                          src={getDefaultCarImage(determineCarType(car), car.make, car.model)}
+                          alt={`${car.make} ${car.model}`}
+                          className="w-32 h-32 object-contain mb-4 opacity-80"
+                          onError={(e) => {
+                            // Fallback si l'image ne charge pas
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <div className="hidden text-center">
+                          <Camera className="w-16 h-16 opacity-50 mx-auto mb-2" />
+                          <span className="text-lg font-medium">{car.make} {car.model}</span>
+                          <span className="block text-sm opacity-75">{determineCarType(car)}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Navigation Arrows */}
+                  {car.images && car.images.length > 1 && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg"
+                        onClick={() => setCurrentImageIndex((prev: number) => 
+                          prev === 0 ? (car.images?.length || 1) - 1 : prev - 1
+                        )}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white shadow-lg"
+                        onClick={() => setCurrentImageIndex((prev: number) => 
+                          prev === (car.images?.length || 1) - 1 ? 0 : prev + 1
+                        )}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
+
+                  {/* Image Counter */}
+                  {car.images && car.images.length > 1 && (
+                    <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                      {currentImageIndex + 1} / {car.images.length}
+                    </div>
+                  )}
+
+                  {/* Fullscreen Button */}
+                  {car.images && car.images.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-4 right-4 bg-white/90 hover:bg-white shadow-lg"
+                      onClick={() => setShowImageModal(true)}
+                    >
+                      <Maximize2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+
+                {/* Thumbnail Gallery */}
+                {car.images && car.images.length > 1 && (
+                  <div className="p-4 border-t">
+                    <div className="flex gap-2 overflow-x-auto">
+                      {car.images.map((image, index) => (
+                        <button
+                          key={index}
+                          className={`flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                            index === currentImageIndex 
+                              ? 'border-blue-500 ring-2 ring-blue-200' 
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                          onClick={() => setCurrentImageIndex(index)}
+                        >
+                          <img
+                            src={image}
+                            alt={`${car.title} ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Car Details */}
+            <Card>
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">Vehicle Information</CardTitle>
+                  <div className="flex items-center gap-2">
+                    {isAuthenticated && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setIsFavorited(!isFavorited)}
+                        className={`${isFavorited ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                      >
+                        <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
+                      </Button>
+                    )}
+                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
+                      <Share2 className="h-5 w-5" />
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Key Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                  {/* Vehicle Type avec image */}
+                  <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg">
+                    <div className="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mx-auto mb-2">
+                      <img
+                        src={getDefaultCarImage(determineCarType(car), car.make, car.model)}
+                        alt={determineCarType(car)}
+                        className="w-8 h-8 object-contain"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                      <CarIcon className="h-6 w-6 text-indigo-600 hidden" />
+                    </div>
+                    <div className="text-sm text-gray-600">Vehicle Type</div>
+                    <div className="font-semibold text-gray-900">{determineCarType(car)}</div>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-2">
+                      <Fuel className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div className="text-sm text-gray-600">Fuel Type</div>
+                    <div className="font-semibold text-gray-900">{fuelTypeLabels[car.fuelType] || car.fuelType}</div>
+                  </div>
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-2">
+                      <Settings className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div className="text-sm text-gray-600">Transmission</div>
+                    <div className="font-semibold text-gray-900">{transmissionLabels[car.transmission] || car.transmission}</div>
+                  </div>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-2">
+                      <Users className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div className="text-sm text-gray-600">Seats</div>
+                    <div className="font-semibold text-gray-900">{car.seats}</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-50 rounded-lg">
+                    <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full mx-auto mb-2">
+                      <Calendar className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <div className="text-sm text-gray-600">Year</div>
+                    <div className="font-semibold text-gray-900">{car.year}</div>
+                  </div>
+                </div>
+
+                {/* Detailed Information */}
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-sm font-medium text-gray-500 mb-1 block">Make & Model</label>
+                      <p className="text-lg font-semibold text-gray-900">{car.make} {car.model}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-500 mb-1 block">Location</label>
+                      <p className="text-lg font-semibold text-gray-900 flex items-center">
+                        <MapPin className="h-5 w-5 mr-2 text-blue-600" />
+                        {car.location}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {car.description && (
+                    <div>
+                      <label className="text-sm font-medium text-gray-500 mb-2 block">Description</label>
+                      <p className="text-gray-700 leading-relaxed">{car.description}</p>
+                    </div>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Description */}
+            {/* Features & Amenities */}
             <Card>
               <CardHeader>
-                <CardTitle>Description</CardTitle>
+                <CardTitle className="flex items-center">
+                  <CarIcon className="h-5 w-5 mr-2 text-blue-600" />
+                  Features & Amenities
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-700 leading-relaxed">
-                  {car.description}
-                </p>
-              </CardContent>
-            </Card>
-
-            {/* Car Specifications */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Specifications</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{car.year}</div>
-                    <div className="text-sm text-gray-600">Year</div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {/* Default features based on car type */}
+                  <div className="flex items-center p-3 bg-green-50 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+                    <span className="text-sm font-medium">Air Conditioning</span>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{car.seats}</div>
-                    <div className="text-sm text-gray-600">Seats</div>
+                  <div className="flex items-center p-3 bg-blue-50 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-blue-600 mr-3" />
+                    <span className="text-sm font-medium">Bluetooth</span>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Fuel className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                    <div className="text-sm text-gray-600">{fuelTypeLabels[car.fuelType as keyof typeof fuelTypeLabels]}</div>
+                  <div className="flex items-center p-3 bg-purple-50 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-purple-600 mr-3" />
+                    <span className="text-sm font-medium">GPS Navigation</span>
                   </div>
-                  <div className="text-center p-4 bg-gray-50 rounded-lg">
-                    <Settings className="w-8 h-8 mx-auto text-green-600 mb-2" />
-                    <div className="text-sm text-gray-600">{transmissionLabels[car.transmission as keyof typeof transmissionLabels]}</div>
+                  <div className="flex items-center p-3 bg-orange-50 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-orange-600 mr-3" />
+                    <span className="text-sm font-medium">USB Charging</span>
                   </div>
+                  <div className="flex items-center p-3 bg-red-50 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-red-600 mr-3" />
+                    <span className="text-sm font-medium">Child Seat Available</span>
+                  </div>
+                  <div className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-gray-600 mr-3" />
+                    <span className="text-sm font-medium">Parking Assist</span>
+                  </div>
+                  
+                  {/* Dynamic features from car data */}
+                  {(car as any).features && (car as any).features.map((feature: string, index: number) => (
+                    <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
+                      <CheckCircle className="h-5 w-5 text-gray-600 mr-3" />
+                      <span className="text-sm font-medium">{feature}</span>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
 
-            {/* Reviews Section */}
+            {/* Safety & Security */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-500" />
-                  Reviews ({car.reviewCount || 0})
+                <CardTitle className="flex items-center">
+                  <Shield className="h-5 w-5 mr-2 text-green-600" />
+                  Safety & Security
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {car.reviewCount === 0 ? (
-                  <p className="text-gray-600 text-center py-8">
-                    No reviews yet. Be the first to leave a comment!
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Mock reviews - replace with real data */}
-                    <div className="border-b pb-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback>FZ</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">Fatima Z.</div>
-                          <div className="flex items-center gap-1">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star key={star} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-gray-700">
-                        Excellent car, very clean and comfortable. The owner is very professional.
-                      </p>
-                      <div className="text-sm text-gray-500 mt-2">2 weeks ago</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex items-center p-4 bg-green-50 rounded-lg">
+                    <Shield className="h-6 w-6 text-green-600 mr-3" />
+                    <div>
+                      <div className="font-semibold text-gray-900">Full Insurance Coverage</div>
+                      <div className="text-sm text-gray-600">Comprehensive protection included</div>
                     </div>
                   </div>
-                )}
+                  <div className="flex items-center p-4 bg-blue-50 rounded-lg">
+                    <CheckCircle className="h-6 w-6 text-blue-600 mr-3" />
+                    <div>
+                      <div className="font-semibold text-gray-900">24/7 Roadside Assistance</div>
+                      <div className="text-sm text-gray-600">Help available anytime</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 bg-purple-50 rounded-lg">
+                    <Star className="h-6 w-6 text-purple-600 mr-3" />
+                    <div>
+                      <div className="font-semibold text-gray-900">Verified Owner</div>
+                      <div className="text-sm text-gray-600">Identity and documents verified</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center p-4 bg-orange-50 rounded-lg">
+                    <Clock className="h-6 w-6 text-orange-600 mr-3" />
+                    <div>
+                      <div className="font-semibold text-gray-900">Instant Booking</div>
+                      <div className="text-sm text-gray-600">Confirm your rental immediately</div>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -205,7 +652,7 @@ export default function CarDetails() {
                 car={{
                   id: car.id,
                   title: car.title,
-                  pricePerDay: car.pricePerDay,
+                  pricePerDay: Number(car.pricePerDay),
                   currency: car.currency,
                   location: car.location,
                   owner: {
@@ -222,8 +669,8 @@ export default function CarDetails() {
                   ]
                 }}
                 onBook={(data) => {
-                  setBookingData(data);
-                  setShowBookingModal(true);
+                  // Create booking and redirect to payment
+                  handleBookingAndPayment(data);
                 }}
               />
             </div>
@@ -231,25 +678,70 @@ export default function CarDetails() {
             {/* Owner Info */}
             <Card>
               <CardHeader>
-                <CardTitle>Owner</CardTitle>
+                <CardTitle className="flex items-center">
+                  <User className="h-5 w-5 mr-2 text-blue-600" />
+                  Meet Your Host
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={car.owner?.profileImage} />
-                    <AvatarFallback>
-                      {car.owner ? `${car.owner.firstName[0]}${car.owner.lastName[0]}` : 'P'}
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={car.owner?.profileImage || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000) + 1500000000000}/150x150/?portrait`} />
+                    <AvatarFallback className="text-lg bg-blue-100 text-blue-600">
+                      {car.owner?.firstName?.[0]}{car.owner?.lastName?.[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <div className="font-medium">
-                      {car.owner ? `${car.owner.firstName} ${car.owner.lastName}` : 'Owner'}
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg text-gray-900">
+                      {car.owner?.firstName} {car.owner?.lastName}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${
+                              i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-sm text-gray-600">4.8 (24 reviews)</span>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span>{car.rating?.toFixed(1) || 'New'}</span>
-                      <span>({car.reviewCount || 0} reviews)</span>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-green-100 text-green-700 border-green-200">
+                        <Shield className="h-3 w-3 mr-1" />
+                        Verified Host
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        <Clock className="h-3 w-3 mr-1" />
+                        Responds within 1 hour
+                      </Badge>
                     </div>
+                  </div>
+                </div>
+
+                {/* Contact Options */}
+                <div className="space-y-2">
+                  <Button variant="outline" className="w-full justify-start">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Send Message
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Phone className="h-4 w-4 mr-2" />
+                    Call Host
+                  </Button>
+                </div>
+
+                {/* Host Stats */}
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                  <div className="text-center">
+                    <div className="text-lg font-semibold text-gray-900">24</div>
+                    <div className="text-xs text-gray-600">Total Rentals</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-semibold text-gray-900">98%</div>
+                    <div className="text-xs text-gray-600">Response Rate</div>
                   </div>
                 </div>
               </CardContent>
@@ -258,14 +750,8 @@ export default function CarDetails() {
         </div>
       </div>
 
-      {/* Booking Modal */}
-      {showBookingModal && isAuthenticated && (
-        <BookingModal
-          car={car}
-          bookingData={bookingData}
-          onClose={() => setShowBookingModal(false)}
-        />
-      )}
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

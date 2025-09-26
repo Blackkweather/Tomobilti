@@ -13,9 +13,19 @@ import {
   AlertTriangle,
   Star,
   Car,
-  LogIn
+  LogIn,
+  Zap,
+  Fuel,
+  Settings,
+  Heart,
+  Share2,
+  Info,
+  Calculator,
+  ArrowRight,
+  Lock,
+  Gift
 } from 'lucide-react';
-import Calendar from './Calendar';
+// import Calendar from './Calendar'; // Temporarily disabled
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'wouter';
 
@@ -45,166 +55,166 @@ export default function ReservationBar({ car, onBook, className = '' }: Reservat
     start: null,
     end: null
   });
-  const [showCalendar, setShowCalendar] = useState(false);
+  // const [showCalendar, setShowCalendar] = useState(false); // Removed
   const [guests, setGuests] = useState(1);
   const [isBooking, setIsBooking] = useState(false);
-
-  // Mock unavailable dates (in a real app, this would come from the API)
-  const unavailableDates = [
-    new Date(2024, 0, 15),
-    new Date(2024, 0, 16),
-    new Date(2024, 0, 20),
-    new Date(2024, 0, 21),
-    new Date(2024, 0, 25),
-  ];
-
-  const minDate = new Date();
-  minDate.setDate(minDate.getDate() + 1); // Can't book today
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const handleDateSelect = (start: Date | null, end: Date | null) => {
     setSelectedDates({ start, end });
+    if (start) setSelectedDates(prev => ({ ...prev, start }));
+    if (end) setSelectedDates(prev => ({ ...prev, end }));
+    // Auto-close calendar only when both dates are selected
     if (start && end) {
-      setShowCalendar(false);
+      setTimeout(() => setShowCalendar(false), 300);
     }
   };
 
+  // getDateRangeText function removed - no longer needed
+
   const calculateTotal = () => {
-    if (!selectedDates.start || !selectedDates.end) {
-      return {
-        days: 0,
-        basePrice: 0,
-        serviceFee: 0,
-        insuranceFee: 0,
-        taxes: 0,
-        total: 0
-      };
-    }
+    if (!selectedDates.start || !selectedDates.end) return 0;
     
-    const diffTime = Math.abs(selectedDates.end.getTime() - selectedDates.start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    const basePrice = diffDays * car.pricePerDay;
+    const days = Math.ceil((selectedDates.end.getTime() - selectedDates.start.getTime()) / (1000 * 60 * 60 * 24));
+    const basePrice = days * car.pricePerDay;
     const serviceFee = basePrice * 0.1; // 10% service fee
-    const insuranceFee = basePrice * 0.05; // 5% insurance fee
-    const taxes = (basePrice + serviceFee + insuranceFee) * 0.2; // 20% VAT
+    const insurance = basePrice * 0.05; // 5% insurance
+    const taxes = basePrice * 0.08; // 8% taxes
     
     return {
-      days: diffDays,
+      days,
       basePrice,
       serviceFee,
-      insuranceFee,
+      insurance,
       taxes,
-      total: basePrice + serviceFee + insuranceFee + taxes
+      total: basePrice + serviceFee + insurance + taxes
     };
   };
 
   const handleBook = async () => {
-    if (!selectedDates.start || !selectedDates.end) return;
-    
+    if (!isAuthenticated) {
+      setLocation('/login');
+      return;
+    }
+
+    if (!selectedDates.start || !selectedDates.end) {
+      alert('Please select both start and end dates');
+      return;
+    }
+
     setIsBooking(true);
     
-    // Simulate booking process
-    setTimeout(() => {
+    try {
       const pricing = calculateTotal();
-      onBook({
-        carId: car.id,
+      await onBook({
         startDate: selectedDates.start,
         endDate: selectedDates.end,
         guests,
-        pricing,
-        totalAmount: pricing.total
+        totalAmount: pricing.total,
+        pricing
       });
+    } catch (error) {
+      console.error('Booking error:', error);
+    } finally {
       setIsBooking(false);
-    }, 2000);
+    }
   };
 
   const pricing = calculateTotal();
-  const currencySymbol = car.currency === 'GBP' ? '£' : car.currency === 'EUR' ? '€' : car.currency === 'USD' ? '$' : car.currency;
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={`space-y-6 ${className}`}>
       {/* Main Reservation Card */}
-      <Card className="shadow-lg border-2 border-blue-100">
+      <Card className="shadow-xl border-0 bg-white">
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CalendarIcon className="h-5 w-5 text-blue-600" />
-            Book This Vehicle
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Price Display */}
-          <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="text-3xl font-bold text-blue-600 mb-1">
-              {currencySymbol}{car.pricePerDay}
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-bold text-gray-900">Book This Vehicle</CardTitle>
+            <div className="flex items-center gap-2">
+              {isAuthenticated && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsFavorited(!isFavorited)}
+                  className={`${isFavorited ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
+                >
+                  <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
+                </Button>
+              )}
+              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
+                <Share2 className="h-5 w-5" />
+              </Button>
             </div>
-            <div className="text-sm text-blue-700">per day</div>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          {/* Price Display */}
+          <div className="text-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+            <div className="text-3xl font-bold text-gray-900 mb-1">
+              {car.currency} {car.pricePerDay}
+            </div>
+            <div className="text-sm text-gray-600">per day</div>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <Star className="h-4 w-4 text-yellow-400 fill-current" />
+              <span className="text-sm font-medium text-gray-700">4.8 (24 reviews)</span>
+            </div>
           </div>
 
-          {/* Date Selection */}
+          {/* Date Selection - Simplified */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 flex items-center">
+              <CalendarIcon className="h-4 w-4 mr-2" />
               Select Dates
             </label>
-            <Button
-              variant="outline"
-              onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full justify-start h-12 text-left"
-            >
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              {selectedDates.start && selectedDates.end ? (
-                <span>
-                  {selectedDates.start.toLocaleDateString('en-GB', { 
-                    day: 'numeric', 
-                    month: 'short' 
-                  })} - {selectedDates.end.toLocaleDateString('en-GB', { 
-                    day: 'numeric', 
-                    month: 'short' 
-                  })}
-                </span>
-              ) : (
-                <span className="text-gray-500">Choose your dates</span>
-              )}
-            </Button>
-          </div>
-
-          {/* Calendar Popup */}
-          {showCalendar && (
-            <div className="relative">
-              <div className="absolute z-50 mt-2 left-0 right-0">
-                <Calendar
-                  selectedDates={selectedDates}
-                  onDateSelect={handleDateSelect}
-                  unavailableDates={unavailableDates}
-                  minDate={minDate}
-                  className="shadow-2xl"
+            <div className="space-y-2">
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Start Date</label>
+                <input
+                  type="date"
+                  value={selectedDates.start ? selectedDates.start.toISOString().split('T')[0] : ''}
+                  onChange={(e) => {
+                    const date = e.target.value ? new Date(e.target.value) : null;
+                    handleDateSelect(date, selectedDates.end);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">End Date</label>
+                <input
+                  type="date"
+                  value={selectedDates.end ? selectedDates.end.toISOString().split('T')[0] : ''}
+                  onChange={(e) => {
+                    const date = e.target.value ? new Date(e.target.value) : null;
+                    handleDateSelect(selectedDates.start, date);
+                  }}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                 />
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Guests Selection */}
+          {/* Guest Selection */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-gray-700 flex items-center">
+              <Users className="h-4 w-4 mr-2" />
               Number of Guests
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center border border-gray-200 rounded-lg">
               <Button
-                variant="outline"
-                size="sm"
+                variant="ghost"
+                size="icon"
                 onClick={() => setGuests(Math.max(1, guests - 1))}
-                disabled={guests <= 1}
+                className="rounded-r-none"
               >
                 -
               </Button>
-              <div className="flex-1 text-center py-2 px-4 border border-gray-300 rounded-md bg-gray-50">
-                <Users className="h-4 w-4 inline mr-2" />
-                {guests} guest{guests !== 1 ? 's' : ''}
-              </div>
+              <div className="flex-1 text-center py-3 font-medium">{guests}</div>
               <Button
-                variant="outline"
-                size="sm"
+                variant="ghost"
+                size="icon"
                 onClick={() => setGuests(Math.min(8, guests + 1))}
-                disabled={guests >= 8}
+                className="rounded-l-none"
               >
                 +
               </Button>
@@ -214,156 +224,142 @@ export default function ReservationBar({ car, onBook, className = '' }: Reservat
           {/* Pricing Breakdown */}
           {pricing.days > 0 && (
             <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-900">Price Breakdown</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>{currencySymbol}{car.pricePerDay} × {pricing.days} days</span>
-                  <span>{currencySymbol}{pricing.basePrice.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Service fee</span>
-                  <span>{currencySymbol}{pricing.serviceFee.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Insurance</span>
-                  <span>{currencySymbol}{pricing.insuranceFee.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Taxes</span>
-                  <span>{currencySymbol}{pricing.taxes.toFixed(2)}</span>
-                </div>
-                <div className="border-t border-gray-300 pt-2 flex justify-between font-semibold">
-                  <span>Total</span>
-                  <span>{currencySymbol}{pricing.total.toFixed(2)}</span>
-                </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">{car.currency} {car.pricePerDay} × {pricing.days} days</span>
+                <span className="font-medium">{car.currency} {pricing.basePrice.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Service fee</span>
+                <span className="font-medium">{car.currency} {pricing.serviceFee.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Insurance</span>
+                <span className="font-medium">{car.currency} {pricing.insurance.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Taxes</span>
+                <span className="font-medium">{car.currency} {pricing.taxes.toFixed(2)}</span>
+              </div>
+              <div className="border-t pt-2 flex items-center justify-between font-semibold">
+                <span>Total</span>
+                <span className="text-lg">{car.currency} {pricing.total.toFixed(2)}</span>
               </div>
             </div>
           )}
-
-          {/* Security Features */}
-          <div className="space-y-2">
-            <h4 className="font-medium text-gray-900 flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-600" />
-              Security Included
-            </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-1">
-                <CheckCircle className="h-3 w-3 text-green-600" />
-                <span>Insurance</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <CheckCircle className="h-3 w-3 text-green-600" />
-                <span>24/7 Support</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <CheckCircle className="h-3 w-3 text-green-600" />
-                <span>Verified Owner</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <CheckCircle className="h-3 w-3 text-green-600" />
-                <span>Secure Payment</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Owner Info */}
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-blue-600 font-semibold">
-                {car.owner.name.charAt(0)}
-              </span>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-sm">{car.owner.name}</span>
-                {car.owner.verified && (
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                )}
-              </div>
-              <div className="flex items-center gap-1">
-                <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                <span className="text-xs text-gray-600">{car.owner.rating}</span>
-              </div>
-            </div>
-          </div>
 
           {/* Book Button */}
-          {isAuthenticated && user ? (
-            <Button
-              onClick={handleBook}
-              disabled={!selectedDates.start || !selectedDates.end || isBooking}
-              className="w-full h-12 text-lg font-semibold bg-green-600 hover:bg-green-700"
-            >
-              {isBooking ? (
-                <>
-                  <Clock className="h-5 w-5 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <CreditCard className="h-5 w-5 mr-2" />
-                  Book Now
-                </>
-              )}
-            </Button>
-          ) : (
-            <div className="space-y-3">
-              <div className="text-center p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <Shield className="h-8 w-8 mx-auto text-amber-600 mb-2" />
-                <h3 className="font-semibold text-amber-800 mb-1">Login Required</h3>
-                <p className="text-sm text-amber-700">
-                  Please sign in to book this vehicle
-                </p>
+          <Button
+            onClick={handleBook}
+            disabled={!selectedDates.start || !selectedDates.end || isBooking}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-12 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            {isBooking ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Processing...
               </div>
-              <Button
-                onClick={() => setLocation('/login')}
-                className="w-full h-12 text-lg font-semibold bg-blue-600 hover:bg-blue-700"
-              >
+            ) : !isAuthenticated ? (
+              <div className="flex items-center">
                 <LogIn className="h-5 w-5 mr-2" />
                 Login to Book
-              </Button>
-            </div>
-          )}
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <CreditCard className="h-5 w-5 mr-2" />
+                Book Now
+                <ArrowRight className="h-5 w-5 ml-2" />
+              </div>
+            )}
+          </Button>
 
-          {/* Additional Info */}
-          <div className="text-xs text-gray-500 text-center space-y-1">
-            <p>Free cancellation up to 24 hours before pickup</p>
-            <p>Instant confirmation • Secure payment</p>
+          {/* Security Badges */}
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+            <div className="flex items-center">
+              <Shield className="h-4 w-4 mr-1 text-green-600" />
+              Secure Payment
+            </div>
+            <div className="flex items-center">
+              <Lock className="h-4 w-4 mr-1 text-blue-600" />
+              SSL Encrypted
+            </div>
+            <div className="flex items-center">
+              <Gift className="h-4 w-4 mr-1 text-purple-600" />
+              Free Cancellation
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Vehicle Features */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Car className="h-4 w-4" />
-            Vehicle Features
+      {/* Vehicle Quick Info */}
+      <Card className="shadow-lg border-0 bg-white">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center">
+            <Car className="h-5 w-5 mr-2 text-blue-600" />
+            Quick Info
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center p-2 bg-blue-50 rounded-lg">
+              <Fuel className="h-4 w-4 mr-2 text-blue-600" />
+              <span className="text-sm font-medium">Petrol</span>
+            </div>
+            <div className="flex items-center p-2 bg-green-50 rounded-lg">
+              <Settings className="h-4 w-4 mr-2 text-green-600" />
+              <span className="text-sm font-medium">Automatic</span>
+            </div>
+            <div className="flex items-center p-2 bg-purple-50 rounded-lg">
+              <Users className="h-4 w-4 mr-2 text-purple-600" />
+              <span className="text-sm font-medium">5 Seats</span>
+            </div>
+            <div className="flex items-center p-2 bg-orange-50 rounded-lg">
+              <MapPin className="h-4 w-4 mr-2 text-orange-600" />
+              <span className="text-sm font-medium">{car.location}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Owner Info */}
+      <Card className="shadow-lg border-0 bg-white">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center">
+            <Star className="h-5 w-5 mr-2 text-yellow-600" />
+            Hosted by {car.owner.name}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {car.features.map((feature, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {feature}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Location Info */}
-      <Card>
-        <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <MapPin className="h-5 w-5 text-gray-500" />
-            <div>
-              <p className="font-medium text-sm">{car.location}</p>
-              <p className="text-xs text-gray-500">Pickup location</p>
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+              {car.owner.name.charAt(0)}
+            </div>
+            <div className="flex-1">
+              <div className="font-semibold text-gray-900">{car.owner.name}</div>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="flex items-center">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-3 w-3 ${
+                        i < Math.floor(car.owner.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span>{car.owner.rating}</span>
+                {car.owner.verified && (
+                  <Badge className="bg-green-100 text-green-700 text-xs">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Verified
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Calendar Modal - Removed for simplicity */}
     </div>
   );
 }

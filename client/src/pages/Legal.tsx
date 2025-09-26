@@ -13,7 +13,7 @@ export default function Legal() {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                 <h2 className="text-xl font-semibold text-blue-900 mb-4">📋 Terms of Service</h2>
                 <p className="text-blue-700 mb-4">
-                  Our complete terms and conditions for using Tomobilti services.
+                  Our complete terms and conditions for using ShareWheelz services.
                 </p>
                 <a href="/terms" className="text-blue-600 hover:text-blue-500 font-medium">
                   Read Terms of Service →
@@ -58,7 +58,7 @@ export default function Legal() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <h3 className="font-medium text-gray-900 mb-2">Legal Entity</h3>
-                      <p className="text-gray-700">Tomobilti Inc.</p>
+                      <p className="text-gray-700">ShareWheelz Inc.</p>
                       
                       <h3 className="font-medium text-gray-900 mb-2 mt-4">Registration</h3>
                       <p className="text-gray-700">Delaware Corporation</p>
@@ -77,7 +77,7 @@ export default function Legal() {
                       </p>
                       
                       <h3 className="font-medium text-gray-900 mb-2 mt-4">Contact</h3>
-                      <p className="text-gray-700">legal@tomobilti.com</p>
+                      <p className="text-gray-700">legal@sharewheelz.uk</p>
                       <p className="text-gray-700">+1 (800) TOMOBIL</p>
                     </div>
                   </div>
@@ -108,11 +108,11 @@ export default function Legal() {
               <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Intellectual Property</h2>
                 <p className="text-gray-700 mb-4">
-                  All content, trademarks, and intellectual property on this platform are owned by Tomobilti Inc. or our licensors.
+                  All content, trademarks, and intellectual property on this platform are owned by ShareWheelz Inc. or our licensors.
                 </p>
                 <ul className="list-disc pl-6 text-gray-700 space-y-2">
-                  <li>Tomobilti® is a registered trademark</li>
-                  <li>All logos and brand elements are protected</li>
+                  <li>ShareWheelz® is a registered trademark</li>
+                  <li>All brand elements are protected</li>
                   <li>User-generated content is subject to our terms</li>
                   <li>API and software are proprietary</li>
                 </ul>
@@ -134,7 +134,7 @@ export default function Legal() {
               <section className="mb-8">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Regulatory Compliance</h2>
                 <p className="text-gray-700 mb-4">
-                  Tomobilti operates in compliance with applicable laws and regulations:
+                  ShareWheelz operates in compliance with applicable laws and regulations:
                 </p>
                 <ul className="list-disc pl-6 text-gray-700 space-y-2">
                   <li>Department of Transportation regulations</li>
@@ -172,9 +172,9 @@ export default function Legal() {
                   For legal inquiries, compliance questions, or document requests:
                 </p>
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-700"><strong>Email:</strong> legal@tomobilti.com</p>
-                  <p className="text-gray-700"><strong>Phone:</strong> +1 (800) TOMOBIL ext. 3</p>
-                  <p className="text-gray-700"><strong>Mail:</strong> Legal Department, Tomobilti Inc., 123 Main St, Suite 100, San Francisco, CA 94105</p>
+                  <p className="text-gray-700"><strong>Email:</strong> legal@sharewheelz.uk</p>
+                  <p className="text-gray-700"><strong>Phone:</strong> +44 20 7946 0958</p>
+                  <p className="text-gray-700"><strong>Mail:</strong> Legal Department, ShareWheelz Inc., 123 Main St, Suite 100, London, UK SW1A 1AA</p>
                   <p className="text-gray-700"><strong>Response Time:</strong> 3-5 business days</p>
                 </div>
               </section>

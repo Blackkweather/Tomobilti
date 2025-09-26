@@ -23,8 +23,14 @@ import BecomeHost from "./pages/BecomeHost";
 import About from "./pages/About";
 import HowItWorks from "./pages/HowItWorks";
 import Support from "./pages/Support";
+import Services from "./pages/Services";
+import TermsPolicies from "./pages/TermsPolicies";
 import Payment from "./pages/Payment";
 import BookingConfirmation from "./pages/BookingConfirmation";
+import TestCars from "./pages/TestCars";
+import CarsSimple from "./pages/CarsSimple";
+import CarsDebug from "./pages/CarsDebug";
+import CarsDebugSimple from "./pages/CarsDebugSimple";
 import NotFound from "./pages/not-found";
 
 // Import components
@@ -51,11 +57,17 @@ function App() {
             <Route path="/booking-confirmation/:bookingId" component={BookingConfirmation} />
             <Route path="/cars" component={Cars} />
             <Route path="/cars/:id" component={CarDetails} />
+            <Route path="/test-cars" component={TestCars} />
+            <Route path="/cars-simple" component={CarsSimple} />
+            <Route path="/cars-debug" component={CarsDebug} />
+            <Route path="/cars-debug-simple" component={CarsDebugSimple} />
             <Route path="/add-car" component={AddCar} />
             <Route path="/edit-car/:id" component={EditCar} />
             <Route path="/become-host" component={BecomeHost} />
             <Route path="/about" component={About} />
             <Route path="/how-it-works" component={HowItWorks} />
+            <Route path="/services" component={Services} />
+            <Route path="/terms-policies" component={TermsPolicies} />
             <Route path="/support" component={Support} />
             <Route component={NotFound} />
           </Switch>

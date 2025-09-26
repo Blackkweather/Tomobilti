@@ -4,9 +4,9 @@ import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Star, MapPin, Fuel, Zap, Heart, Eye, Calendar, Shield } from 'lucide-react';
+import { Star, MapPin, Fuel, Zap, Heart, Eye, Calendar, Shield, Users, Settings, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import BookingModal from './BookingModal';
+import { getCarImage } from '../utils/carImages';
 import type { Car } from '@shared/schema';
 
 interface CarCardProps {
@@ -49,211 +49,162 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
     fuelType,
     transmission,
     seats,
+    year,
+    make,
+    model,
     images,
     owner,
     rating = 0,
-    reviewCount = 0,
-    isAvailable
+    reviewCount = 0
   } = car;
-  const [showBookingModal, setShowBookingModal] = useState(false);
+
   const { isAuthenticated } = useAuth();
+  const [imageError, setImageError] = useState(false);
   
-  const FuelIcon = fuelTypeIcons[fuelType];
-  
-  // Conversion optimization data
-  const viewingCount = Math.floor(Math.random() * 5) + 1; // Simulate 1-5 people viewing
-  const recentRentals = Math.floor(Math.random() * 3) + 1; // Simulate 1-3 recent rentals
-  const isPopular = viewingCount >= 3 || recentRentals >= 2;
-  const isUrgent = viewingCount >= 4;
-
-  const handleBook = () => {
-    setShowBookingModal(true);
-  };
-
-  const handleViewDetails = () => {
-    // Handle view details logic
-  };
-
-  const carImage = images && images.length > 0 ? images[0] : 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format';
+  const FuelIcon = fuelTypeIcons[fuelType as keyof typeof fuelTypeIcons] || Fuel;
+  const carImage = getCarImage(car);
   const ownerName = owner ? `${owner.firstName} ${owner.lastName}` : 'Owner';
-  const ownerImage = owner?.profileImage;
+  const ownerImage = owner?.profileImage || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000) + 1500000000000}/150x150/?portrait`;
 
   return (
-    <Card className="group overflow-hidden automotive-shadow border-card-border card-hover relative" data-testid={`card-car-${id}`}>
-      {/* Popular Indicators */}
-      {isPopular && !isUrgent && (
-        <div className="absolute top-2 left-2 z-10">
-          <span className="social-proof-badge text-xs px-2 py-1 rounded-full">
-            Popular
-          </span>
-        </div>
-      )}
-      
-      {/* Trust Indicators */}
-      <div className="absolute top-2 right-2 z-10">
-        <span className="trust-indicator text-xs flex items-center gap-1">
-          <Shield className="h-3 w-3" />
-          Verified
-        </span>
-      </div>
-
+    <Card className="card-modern group hover:shadow-2xl transition-all duration-300 border-0 bg-white overflow-hidden hover-lift">
       <div className="relative">
-        <img 
-          src={carImage} 
-          alt={title}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-          data-testid={`img-car-${id}`}
-          loading="lazy"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format';
-          }}
-        />
-
-        {/* Bottom Overlays - Horizontal Layout */}
-        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between gap-2 z-10">
-          {/* Social Proof - Viewing Count */}
-          {viewingCount > 0 && (
-            <div className="bg-background/90 backdrop-blur-sm rounded-full px-2 py-1">
-              <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <Eye className="h-3 w-3 flex-shrink-0" />
-                <span>{viewingCount} viewing</span>
-              </span>
-            </div>
-          )}
+        {/* Car Image */}
+        <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+          <img
+            src={imageError ? carImage : (images?.[0] || carImage)}
+            alt={`${make} ${model}`}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={() => setImageError(true)}
+            loading="lazy"
+          />
           
-          {/* Fuel Type Badge */}
-          <Badge 
-            variant="outline" 
-            className="bg-background/80 backdrop-blur-sm"
-          >
-            <FuelIcon className="h-3 w-3 mr-1" />
-            {fuelTypeLabels[fuelType]}
-          </Badge>
-        </div>
-      </div>
-
-      <CardContent className="p-4 space-y-3">
-        {/* Title & Location */}
-        <div>
-          <h3 className="font-semibold text-lg line-clamp-1" data-testid={`text-car-title-${id}`}>
-            {title}
-          </h3>
-          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="h-3 w-3" />
-            <span data-testid={`text-car-location-${id}`}>{city}</span>
-          </div>
-        </div>
-
-        {/* Rating & Reviews */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-            <span className="font-medium" data-testid={`text-car-rating-${id}`}>
-              {rating.toFixed(1)}
-            </span>
-          </div>
-          <span className="text-sm text-muted-foreground" data-testid={`text-car-reviews-${id}`}>
-            ({reviewCount} reviews)
-          </span>
-        </div>
-
-        {/* Car Details */}
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <span data-testid={`text-car-transmission-${id}`}>
-            {transmission === 'automatic' ? 'Automatic' : 'Manual'}
-          </span>
-          <span data-testid={`text-car-seats-${id}`}>
-            {seats} seats
-          </span>
-        </div>
-
-        {/* Owner Info */}
-        <div className="flex items-center gap-2 pt-2 border-t border">
-          <Avatar className="h-6 w-6">
-            <AvatarImage src={ownerImage} alt={ownerName} />
-            <AvatarFallback className="text-xs bg-primary/10 text-primary">
-              {ownerName.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-sm text-muted-foreground" data-testid={`text-car-owner-${id}`}>
-            Owner: {ownerName}
-          </span>
-        </div>
-
-        {/* Social Proof - Recent Rentals */}
-        {recentRentals > 0 && (
-          <div className="text-xs text-muted-foreground flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            <span className="font-medium">{recentRentals} rental{recentRentals > 1 ? 's' : ''} this week</span>
-          </div>
-        )}
-
-        {/* Price & Action */}
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold text-primary" data-testid={`text-car-price-${id}`}>
-                {currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency} {pricePerDay}
-              </span>
-              <span className="text-sm text-muted-foreground">/day</span>
-            </div>
-            {isUrgent && (
-              <span className="text-xs text-primary font-medium urgency-pulse flex items-center gap-1">
-                <Zap className="h-3 w-3" />
-                Book fast - high demand!
-              </span>
+          {/* Overlay with badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-2">
+            {fuelType === 'electric' && (
+              <Badge className="badge-success shadow-lg">
+                <Zap className="w-3 h-3 mr-1" />
+                Electric
+              </Badge>
+            )}
+            {pricePerDay > 100 && (
+              <Badge className="badge-primary shadow-lg">
+                Premium
+              </Badge>
             )}
           </div>
-          
-          {isAvailable ? (
-            <div className="flex gap-2">
-              <Link href={`/cars/${id}`}>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  data-testid={`button-details-${id}`}
-                  className="hover-elevate active-elevate-2 border-primary text-primary hover:bg-primary/10"
-                >
-                  Details
-                </Button>
-              </Link>
-              {isAuthenticated ? (
-                <Button 
-                  onClick={handleBook}
-                  size="sm"
-                  data-testid={`button-book-${id}`}
-                  className={`conversion-cta ${isUrgent ? 'urgency-pulse' : ''}`}
-                >
-                  {isUrgent ? 'Book Now!' : 'Book Now'}
-                </Button>
-              ) : (
-                <Link href="/login">
-                  <Button 
-                    size="sm"
-                    data-testid={`button-login-to-book-${id}`}
-                    className="conversion-cta"
-                  >
-                    Login to Book
-                  </Button>
-                </Link>
-              )}
-            </div>
-          ) : (
-            <Button variant="secondary" size="sm" disabled>
-              Unavailable
+
+          {/* Favorite button */}
+          {isAuthenticated && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-3 right-3 bg-white/90 hover:bg-white text-gray-600 hover:text-red-500 transition-colors duration-200"
+              onClick={onToggleFavorite}
+            >
+              <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
           )}
+
+          {/* Quick view button */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <Link href={`/cars/${id}`}>
+              <Button className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg">
+                <Eye className="w-4 h-4 mr-2" />
+                Quick View
+              </Button>
+            </Link>
+          </div>
         </div>
-      </CardContent>
-      
-      {/* Booking Modal */}
-      {showBookingModal && (
-        <BookingModal 
-          car={car} 
-          onClose={() => setShowBookingModal(false)} 
-        />
-      )}
+
+        <CardContent className="p-6">
+          {/* Car Title and Location */}
+          <div className="mb-4">
+            <h3 className="font-semibold text-lg text-gray-900 mb-1 line-clamp-1">
+              {title || `${make} ${model}`}
+            </h3>
+            <div className="flex items-center text-gray-600 text-sm">
+              <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
+              <span className="truncate">{city || location}</span>
+            </div>
+          </div>
+
+          {/* Car Details */}
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="flex items-center text-sm text-gray-600">
+              <FuelIcon className="w-4 h-4 mr-2 text-blue-600" />
+              <span>{fuelTypeLabels[fuelType as keyof typeof fuelTypeLabels] || fuelType}</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <Settings className="w-4 h-4 mr-2 text-blue-600" />
+              <span className="capitalize">{transmission}</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <Users className="w-4 h-4 mr-2 text-blue-600" />
+              <span>{seats} seats</span>
+            </div>
+            <div className="flex items-center text-sm text-gray-600">
+              <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+              <span>{year}</span>
+            </div>
+          </div>
+
+          {/* Rating */}
+          {rating > 0 && (
+            <div className="flex items-center mb-4">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-4 h-4 ${
+                      i < Math.floor(rating)
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-sm text-gray-600 ml-2">
+                {rating.toFixed(1)} ({reviewCount} reviews)
+              </span>
+            </div>
+          )}
+
+          {/* Owner Info */}
+          <div className="flex items-center justify-between mb-4 pt-4 border-t border-gray-100">
+            <div className="flex items-center">
+              <Avatar className="h-8 w-8 mr-3">
+                <AvatarImage src={ownerImage} alt={ownerName} />
+                <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
+                  {ownerName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-sm font-medium text-gray-900">{ownerName}</p>
+                <div className="flex items-center text-xs text-gray-500">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Verified Owner
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Price and Action */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-2xl font-bold text-gray-900">
+                {currency} {pricePerDay}
+              </div>
+              <div className="text-sm text-gray-600">per day</div>
+            </div>
+            <Link href={`/cars/${id}`}>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                View Details
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </div>
     </Card>
   );
 }

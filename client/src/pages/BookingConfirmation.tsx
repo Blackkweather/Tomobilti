@@ -162,9 +162,9 @@ export default function BookingConfirmation() {
       pdf.setTextColor(0, 0, 0);
       pdf.setFontSize(10);
       pdf.setFont('helvetica', 'normal');
-      pdf.text('Thank you for choosing Tomobilti!', 105, yPosition, { align: 'center' });
+      pdf.text('Thank you for choosing ShareWheelz!', 105, yPosition, { align: 'center' });
       yPosition += 5;
-      pdf.text('For support, contact us at support@tomobilti.com', 105, yPosition, { align: 'center' });
+      pdf.text('For support, contact us at support@sharewheelz.uk', 105, yPosition, { align: 'center' });
       
       console.log('PDF content added successfully');
       

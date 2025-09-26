@@ -56,7 +56,7 @@ export default function About() {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              About Tomobilti
+              About Share Wheelz
             </h1>
             <p className="text-xl mb-8">
               The first UK peer-to-peer vehicle sharing platform. 
@@ -95,7 +95,7 @@ export default function About() {
               <div>
                 <h3 className="text-2xl font-semibold mb-4">Revolutionizing Mobility in the UK</h3>
                 <p className="text-gray-700 mb-6">
-                  At Tomobilti, we believe that every vehicle can be better utilized. 
+                  At Share Wheelz, we believe that every vehicle can be better utilized. 
                   Our platform allows UK residents to monetize their cars while 
                   offering an affordable and flexible alternative to traditional transport methods.
                 </p>
@@ -175,8 +175,8 @@ export default function About() {
                   <Mail className="h-8 w-8 text-blue-600 mx-auto mb-4" />
                   <h3 className="font-semibold mb-2">Email</h3>
                   <p className="text-gray-600">
-                    contact@tomobilti.co.uk<br />
-                    support@tomobilti.co.uk
+                    contact@sharewheelz.uk<br />
+                    support@sharewheelz.uk
                   </p>
                 </CardContent>
               </Card>
@@ -190,7 +190,7 @@ export default function About() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Join the Mobility Revolution</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Whether you're an owner or renter, Tomobilti offers you a new way to think about mobility.
+            Whether you're an owner or renter, Share Wheelz offers you a new way to think about mobility.
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/login">

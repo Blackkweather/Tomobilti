@@ -82,7 +82,7 @@ export default function NotificationSettings() {
           <div className="px-6 py-4 border-b border-gray-200">
             <h1 className="text-2xl font-bold text-gray-900">Notification Settings</h1>
             <p className="mt-1 text-sm text-gray-600">
-              Manage how you receive notifications from Tomobilti
+              Manage how you receive notifications from ShareWheelz
             </p>
           </div>
 

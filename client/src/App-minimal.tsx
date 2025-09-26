@@ -16,7 +16,7 @@ function App() {
         borderRadius: '8px'
       }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>
-          🚗 Tomobilti - Version Minimale
+          🚗 ShareWheelz - Version Minimale
         </h1>
       </nav>
       
@@ -56,6 +56,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

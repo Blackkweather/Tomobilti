@@ -12,14 +12,14 @@ export default function Terms() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">1. Acceptance of Terms</h2>
               <p className="text-gray-700 mb-4">
-                By accessing and using Tomobilti, you accept and agree to be bound by the terms and provision of this agreement.
+                By accessing and using ShareWheelz, you accept and agree to be bound by the terms and provision of this agreement.
               </p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">2. Use License</h2>
               <p className="text-gray-700 mb-4">
-                Permission is granted to temporarily use Tomobilti for personal, non-commercial transitory viewing only.
+                Permission is granted to temporarily use ShareWheelz for personal, non-commercial transitory viewing only.
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>Modify or copy the materials</li>
@@ -73,7 +73,7 @@ export default function Terms() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">6. Limitation of Liability</h2>
               <p className="text-gray-700 mb-4">
-                Tomobilti shall not be liable for any damages arising from the use of our service, including but not limited to direct, indirect, incidental, punitive, and consequential damages.
+                ShareWheelz shall not be liable for any damages arising from the use of our service, including but not limited to direct, indirect, incidental, punitive, and consequential damages.
               </p>
             </section>
 
@@ -87,7 +87,7 @@ export default function Terms() {
             <section className="mb-8">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">8. Modifications</h2>
               <p className="text-gray-700 mb-4">
-                Tomobilti may revise these terms at any time without notice. By using this service, you agree to be bound by the current version of these terms.
+                ShareWheelz may revise these terms at any time without notice. By using this service, you agree to be bound by the current version of these terms.
               </p>
             </section>
 
@@ -97,7 +97,7 @@ export default function Terms() {
                 If you have any questions about these Terms of Service, please contact us at:
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-700">Email: legal@tomobilti.com</p>
+                <p className="text-gray-700">Email: legal@sharewheelz.uk</p>
                 <p className="text-gray-700">Phone: 1-800-TOMOBIL</p>
                 <p className="text-gray-700">Address: 123 Main St, City, State 12345</p>
               </div>

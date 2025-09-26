@@ -16,7 +16,7 @@ function App() {
         borderRadius: '8px'
       }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>
-          🚗 Tomobilti - Test Simple
+          🚗 ShareWheelz - Test Simple
         </h1>
       </nav>
       
@@ -31,7 +31,7 @@ function App() {
             ✅ Site fonctionnel !
           </h2>
           <p style={{ fontSize: '1.1rem', lineHeight: '1.6' }}>
-            Si vous voyez ce message, votre plateforme Tomobilti fonctionne correctement.
+            Si vous voyez ce message, votre plateforme ShareWheelz fonctionne correctement.
           </p>
           
           <div style={{ 
@@ -76,6 +76,7 @@ function App() {
 }
 
 export default App;
+
 
 
 

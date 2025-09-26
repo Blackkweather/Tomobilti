@@ -142,7 +142,7 @@ export default function Privacy() {
                 If you have any questions about this Privacy Policy, please contact us:
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-700">Email: privacy@tomobilti.com</p>
+                <p className="text-gray-700">Email: privacy@sharewheelz.uk</p>
                 <p className="text-gray-700">Phone: 1-800-TOMOBIL</p>
                 <p className="text-gray-700">Address: 123 Main St, City, State 12345</p>
               </div>

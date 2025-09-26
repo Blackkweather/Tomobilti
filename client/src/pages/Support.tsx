@@ -29,7 +29,7 @@ const FAQ_ITEMS = [
   },
   {
     question: "How do I contact customer support?",
-    answer: "Use the contact form below, email support@tomobilti.com, or call our 24/7 helpline at 1-800-TOMOBIL."
+    answer: "Use the contact form below, email support@sharewheelz.uk, or call our 24/7 helpline at +44 20 7946 0958."
   }
 ];
 
@@ -177,7 +177,7 @@ export default function Support() {
                   <div className="text-center p-4 border border-gray-200 rounded-lg">
                     <div className="text-2xl mb-2">📧</div>
                     <h3 className="font-medium text-gray-900">Email</h3>
-                    <p className="text-sm text-gray-600">support@tomobilti.com</p>
+                    <p className="text-sm text-gray-600">support@sharewheelz.uk</p>
                   </div>
                   <div className="text-center p-4 border border-gray-200 rounded-lg">
                     <div className="text-2xl mb-2">📞</div>
