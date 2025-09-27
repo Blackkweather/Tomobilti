@@ -7,9 +7,8 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List } from 'lucide-react';
+import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List, Car, Shield, Clock, CheckCircle } from 'lucide-react';
 import CarCard from '../components/CarCard';
-import CarsSearchBar from '../components/CarsSearchBar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Footer from '../components/Footer';
 import { carApi } from '../lib/api';
@@ -48,68 +47,72 @@ export default function Cars() {
     }
   }, [location]);
 
-  // Fetch cars from API
+  // Fetch cars data
   const { data: carsData, isLoading, error } = useQuery({
     queryKey: ['cars', filters],
-    queryFn: async () => {
-      console.log('Fetching cars with filters:', filters);
-      const searchParams = {
-        location: filters.location || undefined,
-        minPrice: filters.minPrice ? parseInt(filters.minPrice) : undefined,
-        maxPrice: filters.maxPrice ? parseInt(filters.maxPrice) : undefined,
-        fuelType: filters.fuelType || undefined,
-        transmission: filters.transmission || undefined,
-        startDate: filters.startDate || undefined,
-        endDate: filters.endDate || undefined,
-        page: 1,
-        limit: 20
-      };
-      
-      console.log('Search params:', searchParams);
-      try {
-        const result = await carApi.searchCars(searchParams);
-        console.log('API result:', result);
-        return result;
-      } catch (err) {
-        console.error('API error:', err);
-        throw err;
-      }
-    },
-    staleTime: 30000, // Cache for 30 seconds to prevent excessive API calls
+    queryFn: () => carApi.getCars(filters),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  // Load favorites from localStorage
-  useEffect(() => {
-    const savedFavorites = localStorage.getItem('favorites');
-    if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
-    }
-  }, []);
-
-  // Sort cars based on selected criteria
-  const sortedCars = useMemo(() => {
+  // Filter and sort cars
+  const filteredCars = useMemo(() => {
     if (!carsData?.cars) return [];
     
-    const cars = [...carsData.cars];
+    let filtered = [...carsData.cars];
     
-    switch (sortBy) {
-      case 'price-low':
-        return cars.sort((a, b) => a.pricePerDay - b.pricePerDay);
-      case 'price-high':
-        return cars.sort((a, b) => b.pricePerDay - a.pricePerDay);
-      case 'rating':
-        return cars.sort((a, b) => (b.rating || 0) - (a.rating || 0));
-      case 'newest':
-        return cars.sort((a, b) => b.year - a.year);
-      case 'oldest':
-        return cars.sort((a, b) => a.year - b.year);
-      default:
-        return cars;
+    // Apply filters
+    if (filters.location) {
+      filtered = filtered.filter(car => 
+        car.location.toLowerCase().includes(filters.location.toLowerCase())
+      );
     }
-  }, [carsData?.cars, sortBy]);
+    
+    if (filters.minPrice) {
+      filtered = filtered.filter(car => car.pricePerDay >= parseFloat(filters.minPrice));
+    }
+    
+    if (filters.maxPrice) {
+      filtered = filtered.filter(car => car.pricePerDay <= parseFloat(filters.maxPrice));
+    }
+    
+    if (filters.fuelType) {
+      filtered = filtered.filter(car => car.fuelType === filters.fuelType);
+    }
+    
+    if (filters.transmission) {
+      filtered = filtered.filter(car => car.transmission === filters.transmission);
+    }
+    
+    // Sort cars
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'price':
+          return a.pricePerDay - b.pricePerDay;
+        case 'name':
+          return a.make.localeCompare(b.make);
+        case 'rating':
+          return (b.rating || 0) - (a.rating || 0);
+        default:
+          return 0;
+      }
+    });
+    
+    return filtered;
+  }, [carsData?.cars, filters, sortBy]);
 
-  const handleFilterChange = (key: string, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
+  const hasActiveFilters = Object.values(filters).some(value => value !== '');
+
+  const toggleFavorite = (carId: string) => {
+    if (!isAuthenticated) {
+      alert('Please log in to add favorites');
+      return;
+    }
+    
+    setFavorites(prev => 
+      prev.includes(carId) 
+        ? prev.filter(id => id !== carId)
+        : [...prev, carId]
+    );
   };
 
   const clearFilters = () => {
@@ -124,27 +127,6 @@ export default function Cars() {
     });
   };
 
-  const toggleFavorite = (carId: string) => {
-    const newFavorites = favorites.includes(carId)
-      ? favorites.filter(id => id !== carId)
-      : [...favorites, carId];
-    
-    setFavorites(newFavorites);
-    localStorage.setItem('favorites', JSON.stringify(newFavorites));
-  };
-
-  const hasActiveFilters = Object.values(filters).some(value => value !== '');
-
-  // Debug logging
-  console.log('Cars page state:', {
-    isLoading,
-    error,
-    carsData,
-    carsCount: carsData?.cars?.length,
-    sortedCarsCount: sortedCars.length,
-    hasActiveFilters
-  });
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section with Attractive Image */}
@@ -152,24 +134,20 @@ export default function Cars() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1920&h=800&fit=crop&auto=format&q=80"
-            alt="Premium car rental - Find your perfect vehicle"
-            className="w-full h-full object-cover transform scale-105 group-hover:scale-110 transition-transform duration-1000"
-            loading="eager"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.src = "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1920&h=800&fit=crop&auto=format&q=80";
-            }}
+            src="/assets/generated_images/Moroccan_scenic_car_journey_81c68231.png"
+            alt="Scenic car journey"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
-          {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
-          
-          {/* Floating Elements */}
+        </div>
+        
+        {/* Floating Elements */}
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-bounce-gentle"></div>
           <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '1s' }}></div>
           <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '2s' }}></div>
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 h-full flex items-center">
           <div className="container mx-auto px-4">
@@ -177,20 +155,16 @@ export default function Cars() {
               <div className="animate-fade-in">
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                   Find Your Perfect
-                  <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-pulse">
-                    Vehicle
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                    Ride
                   </span>
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed mb-8">
-                  Discover amazing cars from trusted owners across the UK. 
-                  From city cars to luxury vehicles, find your ideal ride.
-                </p>
                 
                 {/* Trust Indicators */}
                 <div className="flex flex-wrap justify-center items-center gap-6 mb-8 text-sm text-gray-300">
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-green-400" />
-                    <span>100% Secure</span>
+                    <span>Verified Owners</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-blue-400" />
@@ -198,7 +172,7 @@ export default function Cars() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-purple-400" />
-                    <span>Verified Owners</span>
+                    <span>Instant Booking</span>
                   </div>
                 </div>
               </div>
@@ -229,84 +203,85 @@ export default function Cars() {
               </div>
             </div>
             
-            {/* Search Bar - Modern */}
+            {/* Search Bar */}
             <div className="max-w-6xl mx-auto">
               <div className="card-modern bg-white/95 backdrop-blur-sm p-8 shadow-2xl">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-                {/* Location */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Location
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="London, Manchester..."
-                    value={filters.location}
-                    onChange={(e) => handleFilterChange('location', e.target.value)}
-                    className="input-modern"
-                  />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+                  {/* Location */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Where are you going?
+                    </label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <Input
+                        type="text"
+                        placeholder="Enter city or location"
+                        value={filters.location}
+                        onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
+                        className="input-modern pl-10"
+                      />
+                    </div>
+                  </div>
 
-                {/* Min Price */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Min Price (£)
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="20"
-                    value={filters.minPrice}
-                    onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                    className="input-modern"
-                  />
-                </div>
-
-                {/* Max Price */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Max Price (£)
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="600"
-                    value={filters.maxPrice}
-                    onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                    className="input-modern"
-                  />
-                </div>
-
-                {/* Date Range */}
-                <div>
-                  <label className="text-sm font-medium text-gray-700 mb-2 block">
-                    Date Range
-                  </label>
-                  <div className="space-y-2">
-                    <input
+                  {/* Start Date */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Pick-up Date
+                    </label>
+                    <Input
                       type="date"
-                      placeholder="Start Date"
                       value={filters.startDate}
-                      onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                      className="input-modern"
-                    />
-                    <input
-                      type="date"
-                      placeholder="End Date"
-                      value={filters.endDate}
-                      onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                      onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
                       className="input-modern"
                     />
                   </div>
-                </div>
 
-                {/* Search Button */}
-                <div className="flex items-end">
-                  <button
-                    onClick={() => {}} // No-op for now
-                    className="btn-primary w-full text-lg py-4 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300"
-                  >
-                    <Search className="w-5 h-5 mr-2" />
-                    Search Cars
-                  </button>
+                  {/* End Date */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Return Date
+                    </label>
+                    <Input
+                      type="date"
+                      value={filters.endDate}
+                      onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                      className="input-modern"
+                    />
+                  </div>
+
+                  {/* Price Range */}
+                  <div>
+                    <label className="text-sm font-medium text-gray-700 mb-2 block">
+                      Price Range
+                    </label>
+                    <div className="space-y-2">
+                      <Input
+                        type="number"
+                        placeholder="Min price"
+                        value={filters.minPrice}
+                        onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                        className="input-modern"
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Max price"
+                        value={filters.maxPrice}
+                        onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                        className="input-modern"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Search Button */}
+                  <div className="flex items-end">
+                    <button
+                      className="btn-primary w-full py-3 px-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                    >
+                      <Search className="w-5 h-5" />
+                      Search Cars
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -327,21 +302,15 @@ export default function Cars() {
                   <span className="font-semibold text-blue-600">{carsData.total}</span> vehicles found
                 </p>
                 {hasActiveFilters && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearFilters}
-                    className="btn-outline text-sm"
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    Clear Filters
-                  </Button>
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    <Filter className="w-3 h-3 mr-1" />
+                    Filtered
+                  </Badge>
                 )}
               </div>
             )}
           </div>
 
-          {/* View Controls */}
           <div className="flex items-center gap-4">
             {/* Sort Dropdown */}
             <Select value={sortBy} onValueChange={setSortBy}>
@@ -349,11 +318,9 @@ export default function Cars() {
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
+                <SelectItem value="price">Price</SelectItem>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="rating">Rating</SelectItem>
               </SelectContent>
             </Select>
 
@@ -376,6 +343,14 @@ export default function Cars() {
                 <List className="w-4 h-4" />
               </Button>
             </div>
+
+            {/* Clear Filters */}
+            {hasActiveFilters && (
+              <Button variant="outline" onClick={clearFilters} className="flex items-center gap-2">
+                <RotateCcw className="w-4 h-4" />
+                Clear
+              </Button>
+            )}
           </div>
         </div>
 
@@ -391,9 +366,9 @@ export default function Cars() {
           <div className="text-center py-12">
             <div className="text-red-600 mb-4">
               <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold">Unable to load vehicles</h3>
-              <p className="text-gray-600">Please try again later</p>
             </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h3>
+            <p className="text-gray-600 mb-6">We couldn't load the vehicles. Please try again.</p>
             <Button onClick={() => window.location.reload()}>
               Try Again
             </Button>
@@ -401,50 +376,51 @@ export default function Cars() {
         )}
 
         {/* No Results */}
-        {!isLoading && !error && (!carsData?.cars || carsData.cars.length === 0) && (
+        {!isLoading && !error && filteredCars.length === 0 && (
           <div className="text-center py-12">
             <div className="text-gray-400 mb-4">
               <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold text-gray-600">No vehicles found</h3>
-              <p className="text-gray-500">Try adjusting your search criteria</p>
             </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No vehicles found</h3>
+            <p className="text-gray-600 mb-6">
+              {hasActiveFilters 
+                ? "Try adjusting your filters to see more results."
+                : "No vehicles are currently available."
+              }
+            </p>
             {hasActiveFilters && (
-              <Button onClick={clearFilters} className="mt-4">
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Clear All Filters
+              <Button onClick={clearFilters} variant="outline">
+                Clear Filters
               </Button>
             )}
           </div>
         )}
 
         {/* Cars Grid */}
-        {!isLoading && !error && carsData?.cars && carsData.cars.length > 0 && (
+        {!isLoading && !error && filteredCars.length > 0 && (
           <div className={
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'
-              : 'space-y-6'
+              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "space-y-4"
           }>
-            {sortedCars.map((car, index) => {
-              console.log('Rendering car:', car.id, car.title);
-              return (
-                <div 
-                  key={car.id} 
-                  className="animate-fade-in hover-lift" 
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <CarCard
-                    car={car}
-                    isFavorited={favorites.includes(car.id)}
-                    onToggleFavorite={() => toggleFavorite(car.id)}
-                  />
-                </div>
-              );
-            })}
+            {filteredCars.map((car) => (
+              <div 
+                key={car.id} 
+                className={viewMode === 'list' ? "w-full" : ""}
+              >
+                <CarCard 
+                  car={car} 
+                  isFavorite={favorites.includes(car.id)}
+                  onToggleFavorite={() => toggleFavorite(car.id)}
+                  viewMode={viewMode}
+                />
+              </div>
+            ))}
           </div>
         )}
 
         {/* Load More Button */}
-        {!isLoading && !error && carsData?.cars && carsData.cars.length >= 20 && (
+        {!isLoading && !error && filteredCars.length > 0 && (
           <div className="text-center mt-12">
             <Button variant="outline" size="lg" className="px-8">
               Load More Vehicles
