@@ -7,7 +7,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List, Car, Shield, Clock, CheckCircle } from 'lucide-react';
+import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List, Car } from 'lucide-react';
 import CarCard from '../components/CarCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Footer from '../components/Footer';
@@ -50,7 +50,19 @@ export default function Cars() {
   // Fetch cars data
   const { data: carsData, isLoading, error } = useQuery({
     queryKey: ['cars', filters],
-    queryFn: () => carApi.getCars(filters),
+    queryFn: () => carApi.searchCars({
+      sortBy: 'date' as const,
+      sortOrder: 'desc' as const,
+      page: 1,
+      limit: 50,
+      location: filters.location || undefined,
+      minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
+      maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
+      fuelType: filters.fuelType ? [filters.fuelType] : undefined,
+      transmission: filters.transmission as 'manual' | 'automatic' | undefined,
+      startDate: filters.startDate || undefined,
+      endDate: filters.endDate || undefined
+    }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -134,8 +146,8 @@ export default function Cars() {
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="/assets/generated_images/Moroccan_scenic_car_journey_81c68231.png"
-            alt="Scenic car journey"
+            src="/assets/generated_images/Car_rental_listing_photo_bdcce465.png"
+            alt="Car rental platform"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
@@ -159,47 +171,6 @@ export default function Cars() {
                     Ride
                   </span>
                 </h1>
-                
-                {/* Trust Indicators */}
-                <div className="flex flex-wrap justify-center items-center gap-6 mb-8 text-sm text-gray-300">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-green-400" />
-                    <span>Verified Owners</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-blue-400" />
-                    <span>24/7 Support</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-purple-400" />
-                    <span>Instant Booking</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Quick Stats */}
-              <div className="flex flex-wrap justify-center gap-8 mb-12">
-                <div className="text-center group">
-                  <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <Car className="w-8 h-8 text-blue-400" />
-                  </div>
-                  <div className="text-3xl font-bold text-blue-400">2,500+</div>
-                  <div className="text-gray-300">Available Cars</div>
-                </div>
-                <div className="text-center group">
-                  <div className="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <MapPin className="w-8 h-8 text-purple-400" />
-                  </div>
-                  <div className="text-3xl font-bold text-purple-400">100+</div>
-                  <div className="text-gray-300">Cities</div>
-                </div>
-                <div className="text-center group">
-                  <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <Star className="w-8 h-8 text-green-400" />
-                  </div>
-                  <div className="text-3xl font-bold text-green-400">4.8★</div>
-                  <div className="text-gray-300">Rating</div>
-                </div>
               </div>
             </div>
             
@@ -298,7 +269,7 @@ export default function Cars() {
             </h2>
             {carsData && (
               <div className="flex items-center gap-4">
-                <p className="text-lg text-gray-600">
+                <p className="text-lg text-gray-700 font-medium">
                   <span className="font-semibold text-blue-600">{carsData.total}</span> vehicles found
                 </p>
                 {hasActiveFilters && (
@@ -368,7 +339,7 @@ export default function Cars() {
               <Filter className="w-12 h-12 mx-auto mb-4 opacity-50" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">Something went wrong</h3>
-            <p className="text-gray-600 mb-6">We couldn't load the vehicles. Please try again.</p>
+            <p className="text-gray-700 mb-6 font-medium">We couldn't load the vehicles. Please try again.</p>
             <Button onClick={() => window.location.reload()}>
               Try Again
             </Button>
@@ -382,7 +353,7 @@ export default function Cars() {
               <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
             </div>
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No vehicles found</h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-700 mb-6 font-medium">
               {hasActiveFilters 
                 ? "Try adjusting your filters to see more results."
                 : "No vehicles are currently available."
@@ -410,9 +381,8 @@ export default function Cars() {
               >
                 <CarCard 
                   car={car} 
-                  isFavorite={favorites.includes(car.id)}
+                  isFavorited={favorites.includes(car.id)}
                   onToggleFavorite={() => toggleFavorite(car.id)}
-                  viewMode={viewMode}
                 />
               </div>
             ))}
@@ -440,21 +410,21 @@ export default function Cars() {
                   <Star className="w-8 h-8 text-blue-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Verified Owners</h4>
-                <p className="text-gray-600 text-sm">All car owners are verified and trusted members of our community</p>
+                <p className="text-gray-700 text-sm font-medium">All car owners are verified and trusted members of our community</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Heart className="w-8 h-8 text-green-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Best Prices</h4>
-                <p className="text-gray-600 text-sm">Competitive rates with no hidden fees or surprise charges</p>
+                <p className="text-gray-700 text-sm font-medium">Competitive rates with no hidden fees or surprise charges</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="w-8 h-8 text-purple-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Wide Selection</h4>
-                <p className="text-gray-600 text-sm">From city cars to luxury vehicles across all major UK cities</p>
+                <p className="text-gray-700 text-sm font-medium">From city cars to luxury vehicles across all major UK cities</p>
               </div>
             </div>
           </div>

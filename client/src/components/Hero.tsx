@@ -9,20 +9,24 @@ import {
   Clock, 
   Star, 
   ArrowRight,
-  Play,
   CheckCircle
 } from 'lucide-react';
 
-export default function Hero() {
+interface HeroProps {
+  onDatesChange?: (dates: { start: Date | null; end: Date | null }) => void;
+  selectedDates?: { start: Date | null; end: Date | null };
+}
+
+export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
   const [searchLocation, setSearchLocation] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  // Premium hero images with fallbacks
+  // Premium hero images with fallbacks - using local assets for stability
   const heroImages = [
-    'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1920&h=800&fit=crop&auto=format&q=80',
-    'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1920&h=800&fit=crop&auto=format&q=80',
-    'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&h=800&fit=crop&auto=format&q=80'
+    '/assets/hero-car-1.jpg',
+    '/assets/hero-car-2.jpg', 
+    '/assets/hero-car-3.jpg'
   ];
 
   const quickStats = [
@@ -89,7 +93,10 @@ export default function Hero() {
 
           {/* Enhanced Search Component */}
           <div className="max-w-4xl mx-auto">
-            <HeroSearch />
+            <HeroSearch 
+              onDatesChange={onDatesChange}
+              initialDates={selectedDates}
+            />
           </div>
 
           {/* Quick Stats */}
@@ -109,7 +116,7 @@ export default function Hero() {
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex justify-center items-center">
             <Link href="/cars">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
                 <Car className="mr-2 h-5 w-5" />
@@ -117,10 +124,6 @@ export default function Hero() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 text-lg rounded-lg backdrop-blur-sm transition-all duration-300">
-              <Play className="mr-2 h-5 w-5" />
-              Watch Demo
-            </Button>
           </div>
 
           {/* Trust Indicators */}
@@ -145,12 +148,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white/60 animate-bounce">
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-          <div className="w-1 h-3 bg-white/60 rounded-full mt-2 animate-pulse"></div>
-        </div>
-      </div>
     </div>
   );
 }

@@ -17,7 +17,7 @@ import {
   Zap,
   Car
 } from 'lucide-react';
-import CalendarComponent from './Calendar';
+import Calendar from './Calendar';
 
 interface CarsSearchBarProps {
   filters: {
@@ -302,7 +302,7 @@ export default function CarsSearchBar({ filters, onFilterChange }: CarsSearchBar
             className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
             onClick={(e) => e.stopPropagation()}
           >
-            <CalendarComponent
+            <Calendar
               selectedDates={selectedDates}
               onDateSelect={handleDateSelect}
               onClose={() => setShowCalendar(false)}

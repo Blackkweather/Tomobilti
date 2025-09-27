@@ -89,6 +89,44 @@
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
+/* Tailwind Utility Classes */
+@layer utilities {
+  .bg-background {
+    background-color: hsl(var(--background));
+  }
+  .text-foreground {
+    color: hsl(var(--foreground));
+  }
+  .text-muted-foreground {
+    color: hsl(var(--muted-foreground));
+  }
+  .border-border {
+    border-color: hsl(var(--border));
+  }
+  .bg-card {
+    background-color: hsl(var(--card));
+  }
+  .text-card-foreground {
+    color: hsl(var(--card-foreground));
+  }
+  .bg-input {
+    background-color: hsl(var(--input));
+  }
+  .ring-ring {
+    --tw-ring-color: hsl(var(--ring));
+  }
+  .ring-offset-background {
+    --tw-ring-offset-color: hsl(var(--ring-offset));
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
 /* Dark Mode */
 .dark {
   --background: 220 15% 8%;

@@ -1,423 +1,267 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "wouter";
-import { apiRequest } from "../lib/queryClient";
-
-interface FleetCar {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  licensePlate: string;
-  status: "available" | "rented" | "maintenance" | "inactive";
-  location: string;
-  pricePerDay: number;
-  images: string[];
-  totalBookings: number;
-  totalEarnings: number;
-  utilizationRate: number;
-  rating: number;
-  lastBooking?: string;
-  nextMaintenance?: string;
-}
-
-interface FleetStats {
-  totalCars: number;
-  activeCars: number;
-  totalEarnings: number;
-  averageUtilization: number;
-  topPerformer: FleetCar;
-}
+import { useState } from 'react';
+import { Button } from '../components/ui/button';
+import { Card, CardContent } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { 
+  Car, 
+  Users, 
+  BarChart3, 
+  Settings, 
+  Shield, 
+  Clock, 
+  Star, 
+  CheckCircle,
+  ArrowRight,
+  TrendingUp,
+  DollarSign,
+  MapPin,
+  Calendar,
+  Wrench,
+  Phone,
+  Mail
+} from 'lucide-react';
+import Footer from '../components/Footer';
 
 export default function Fleet() {
-  const queryClient = useQueryClient();
-  const [view, setView] = useState<"grid" | "table">("grid");
-  const [filter, setFilter] = useState<"all" | FleetCar["status"]>("all");
-  const [sortBy, setSortBy] = useState<"earnings" | "utilization" | "bookings" | "rating">("earnings");
+  const [selectedPlan, setSelectedPlan] = useState('basic');
 
-  const { data: fleetStats } = useQuery<FleetStats>({
-    queryKey: ["/api/fleet/stats"],
-  });
-
-  const { data: cars = [], isLoading } = useQuery<FleetCar[]>({
-    queryKey: ["/api/fleet/cars"],
-  });
-
-  const updateCarStatusMutation = useMutation({
-    mutationFn: async ({ carId, status }: { carId: string; status: FleetCar["status"] }) => {
-      await apiRequest("PATCH", `/api/fleet/cars/${carId}/status`, { status });
+  const features = [
+    {
+      icon: Car,
+      title: 'Fleet Management',
+      description: 'Manage your entire fleet from one dashboard'
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/fleet/cars"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/fleet/stats"] });
+    {
+      icon: BarChart3,
+      title: 'Analytics & Reports',
+      description: 'Detailed insights into your fleet performance'
     },
-  });
-
-  const bulkUpdateMutation = useMutation({
-    mutationFn: async ({ carIds, action }: { carIds: string[]; action: string }) => {
-      await apiRequest("POST", "/api/fleet/bulk-update", { carIds, action });
+    {
+      icon: Users,
+      title: 'Driver Management',
+      description: 'Track and manage all your drivers'
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/fleet/cars"] });
-      setSelectedCars([]);
+    {
+      icon: Settings,
+      title: 'Maintenance Tracking',
+      description: 'Schedule and track vehicle maintenance'
     },
-  });
-
-  const [selectedCars, setSelectedCars] = useState<string[]>([]);
-
-  const filteredCars = cars.filter(car => filter === "all" || car.status === filter);
-  
-  const sortedCars = [...filteredCars].sort((a, b) => {
-    switch (sortBy) {
-      case "earnings": return b.totalEarnings - a.totalEarnings;
-      case "utilization": return b.utilizationRate - a.utilizationRate;
-      case "bookings": return b.totalBookings - a.totalBookings;
-      case "rating": return b.rating - a.rating;
-      default: return 0;
+    {
+      icon: Shield,
+      title: 'Insurance Management',
+      description: 'Comprehensive insurance coverage'
+    },
+    {
+      icon: Clock,
+      title: '24/7 Support',
+      description: 'Round-the-clock fleet support'
     }
-  });
+  ];
 
-  const handleSelectCar = (carId: string) => {
-    setSelectedCars(prev => 
-      prev.includes(carId) 
-        ? prev.filter(id => id !== carId)
-        : [...prev, carId]
-    );
-  };
-
-  const handleSelectAll = () => {
-    setSelectedCars(selectedCars.length === sortedCars.length ? [] : sortedCars.map(car => car.id));
-  };
-
-  const getStatusColor = (status: FleetCar["status"]) => {
-    switch (status) {
-      case "available": return "bg-green-100 text-green-800";
-      case "rented": return "bg-blue-100 text-blue-800";
-      case "maintenance": return "bg-yellow-100 text-yellow-800";
-      case "inactive": return "bg-gray-100 text-gray-800";
-      default: return "bg-gray-100 text-gray-800";
+  const plans = [
+    {
+      id: 'basic',
+      name: 'Basic Fleet',
+      price: '£99',
+      period: '/month',
+      description: 'Perfect for small fleets',
+      features: [
+        'Up to 10 vehicles',
+        'Basic analytics',
+        'Email support',
+        'Standard insurance'
+      ]
+    },
+    {
+      id: 'professional',
+      name: 'Professional Fleet',
+      price: '£299',
+      period: '/month',
+      description: 'Ideal for growing businesses',
+      features: [
+        'Up to 50 vehicles',
+        'Advanced analytics',
+        'Priority support',
+        'Enhanced insurance',
+        'Maintenance tracking'
+      ],
+      popular: true
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise Fleet',
+      price: 'Custom',
+      period: '',
+      description: 'For large organizations',
+      features: [
+        'Unlimited vehicles',
+        'Custom analytics',
+        'Dedicated support',
+        'Full insurance coverage',
+        'API access',
+        'Custom integrations'
+      ]
     }
-  };
+  ];
 
-  const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`;
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  const stats = [
+    { icon: Car, value: '2,500+', label: 'Fleet Vehicles' },
+    { icon: Users, value: '1,200+', label: 'Fleet Partners' },
+    { icon: TrendingUp, value: '35%', label: 'Cost Reduction' },
+    { icon: Star, value: '4.9★', label: 'Customer Rating' }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Fleet Management</h1>
-            <p className="mt-2 text-gray-600">Manage your entire car fleet from one dashboard</p>
-          </div>
-          <Link href="/add-car">
-            <a className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-              Add New Car
-            </a>
-          </Link>
-        </div>
-
-        {/* Fleet Stats */}
-        {fleetStats && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                      <span className="text-white text-sm">🚗</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Cars</dt>
-                      <dd className="text-lg font-medium text-gray-900">{fleetStats.totalCars}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                      <span className="text-white text-sm">✅</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Active Cars</dt>
-                      <dd className="text-lg font-medium text-gray-900">{fleetStats.activeCars}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                      <span className="text-white text-sm">💰</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Earnings</dt>
-                      <dd className="text-lg font-medium text-gray-900">{formatCurrency(fleetStats.totalEarnings)}</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                      <span className="text-white text-sm">📊</span>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Avg Utilization</dt>
-                      <dd className="text-lg font-medium text-gray-900">{fleetStats.averageUtilization}%</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Controls */}
-        <div className="bg-white shadow rounded-lg mb-6">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center space-x-4">
-                <select
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value as typeof filter)}
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-                >
-                  <option value="all">All Cars</option>
-                  <option value="available">Available</option>
-                  <option value="rented">Rented</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-                >
-                  <option value="earnings">Highest Earnings</option>
-                  <option value="utilization">Best Utilization</option>
-                  <option value="bookings">Most Bookings</option>
-                  <option value="rating">Highest Rated</option>
-                </select>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => setView("grid")}
-                    className={`p-2 rounded-md ${view === "grid" ? "bg-blue-100 text-blue-600" : "text-gray-400"}`}
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => setView("table")}
-                    className={`p-2 rounded-md ${view === "table" ? "bg-blue-100 text-blue-600" : "text-gray-400"}`}
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              {selectedCars.length > 0 && (
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-600">{selectedCars.length} selected</span>
-                  <button
-                    onClick={() => bulkUpdateMutation.mutate({ carIds: selectedCars, action: "activate" })}
-                    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-                  >
-                    Activate
-                  </button>
-                  <button
-                    onClick={() => bulkUpdateMutation.mutate({ carIds: selectedCars, action: "deactivate" })}
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded text-sm"
-                  >
-                    Deactivate
-                  </button>
-                </div>
-              )}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Hero Section */}
+      <div className="relative py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-5xl md:text-6xl font-bold mb-6">
+              Fleet Management
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-200 to-purple-200">
+                Solutions
+              </span>
+            </h1>
+            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+              Streamline your fleet operations with our comprehensive management platform. 
+              Track, maintain, and optimize your vehicles for maximum efficiency.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+                Start Free Trial
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+                Schedule Demo
+              </Button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Cars Display */}
-        {view === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedCars.map((car) => (
-              <div key={car.id} className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={selectedCars.includes(car.id)}
-                    onChange={() => handleSelectCar(car.id)}
-                    className="absolute top-2 left-2 h-4 w-4 text-blue-600 z-10"
-                  />
-                  <img
-                    src={car.images[0] || "/placeholder-car.jpg"}
-                    alt={`${car.make} ${car.model}`}
-                    className="w-full h-48 object-cover"
-                  />
-                  <span className={`absolute top-2 right-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(car.status)}`}>
-                    {car.status.toUpperCase()}
-                  </span>
+      {/* Stats Section */}
+      <div className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <stat.icon className="w-8 h-8 text-blue-600" />
                 </div>
-                
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {car.year} {car.make} {car.model}
-                    </h3>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">{formatCurrency(car.pricePerDay)}/day</p>
-                      <p className="text-xs text-gray-500">⭐ {car.rating.toFixed(1)}</p>
-                    </div>
-                  </div>
-                  
-                  <p className="text-sm text-gray-600 mb-4">{car.location} • {car.licensePlate}</p>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-4">
-                    <div>
-                      <p>Bookings: {car.totalBookings}</p>
-                      <p>Earnings: {formatCurrency(car.totalEarnings)}</p>
-                    </div>
-                    <div>
-                      <p>Utilization: {car.utilizationRate}%</p>
-                      {car.lastBooking && (
-                        <p>Last: {new Date(car.lastBooking).toLocaleDateString()}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex space-x-2">
-                    <Link href={`/edit-car/${car.id}`}>
-                      <a className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
-                        Edit
-                      </a>
-                    </Link>
-                    <select
-                      value={car.status}
-                      onChange={(e) => updateCarStatusMutation.mutate({ 
-                        carId: car.id, 
-                        status: e.target.value as FleetCar["status"] 
-                      })}
-                      className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
-                    >
-                      <option value="available">Available</option>
-                      <option value="rented">Rented</option>
-                      <option value="maintenance">Maintenance</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </div>
-                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                <div className="text-gray-600 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
-        ) : (
-          <div className="bg-white shadow rounded-lg overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left">
-                    <input
-                      type="checkbox"
-                      checked={selectedCars.length === sortedCars.length}
-                      onChange={handleSelectAll}
-                      className="h-4 w-4 text-blue-600"
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Car</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Earnings</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Utilization</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bookings</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {sortedCars.map((car) => (
-                  <tr key={car.id}>
-                    <td className="px-6 py-4">
-                      <input
-                        type="checkbox"
-                        checked={selectedCars.includes(car.id)}
-                        onChange={() => handleSelectCar(car.id)}
-                        className="h-4 w-4 text-blue-600"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <img
-                          src={car.images[0] || "/placeholder-car.jpg"}
-                          alt=""
-                          className="h-10 w-10 rounded object-cover"
-                        />
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {car.year} {car.make} {car.model}
-                          </div>
-                          <div className="text-sm text-gray-500">{car.licensePlate}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(car.status)}`}>
-                        {car.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(car.totalEarnings)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {car.utilizationRate}%
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {car.totalBookings}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Link href={`/edit-car/${car.id}`}>
-                        <a className="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
-                      </Link>
-                      <Link href={`/car/${car.id}`}>
-                        <a className="text-green-600 hover:text-green-900">View</a>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        </div>
       </div>
+
+      {/* Features Section */}
+      <div className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Everything You Need to Manage Your Fleet
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Our comprehensive platform provides all the tools you need to efficiently manage your vehicle fleet.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="p-8 hover:shadow-lg transition-shadow duration-300">
+                <CardContent className="p-0">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                    <feature.icon className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Pricing Section */}
+      <div className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Choose Your Fleet Plan
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Flexible pricing options to fit fleets of all sizes.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {plans.map((plan) => (
+              <Card 
+                key={plan.id} 
+                className={`p-8 relative ${plan.popular ? 'ring-2 ring-blue-500 shadow-xl' : ''}`}
+              >
+                {plan.popular && (
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
+                    Most Popular
+                  </Badge>
+                )}
+                <CardContent className="p-0 text-center">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                  <p className="text-gray-600 mb-6">{plan.description}</p>
+                  <div className="mb-8">
+                    <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
+                    <span className="text-gray-600">{plan.period}</span>
+                  </div>
+                  <ul className="space-y-4 mb-8 text-left">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center">
+                        <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
+                        <span className="text-gray-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button 
+                    className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'}`}
+                    onClick={() => setSelectedPlan(plan.id)}
+                  >
+                    {plan.id === 'enterprise' ? 'Contact Sales' : 'Get Started'}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="py-20 bg-blue-600 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-bold mb-6">
+            Ready to Optimize Your Fleet?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Join thousands of businesses already using our fleet management platform.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+              Start Free Trial
+            </Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Phone className="mr-2 h-5 w-5" />
+              Call +44 20 1234 5678
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <Footer />
     </div>
   );
 }

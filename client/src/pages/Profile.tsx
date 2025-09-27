@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { User, Mail, Phone, Calendar } from 'lucide-react';
+import { User, Mail, Phone, Calendar as CalendarIcon } from 'lucide-react';
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
@@ -167,7 +167,7 @@ export default function Profile() {
                   <div className="space-y-2">
                     <Label>Account Type</Label>
                     <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
-                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <CalendarIcon className="h-4 w-4 text-gray-500" />
                       <span className="capitalize">
                         {user.userType === 'renter' ? 'Renter' : 
                          user.userType === 'owner' ? 'Owner' : 'Both'}

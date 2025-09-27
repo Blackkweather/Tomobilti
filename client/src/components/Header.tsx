@@ -9,10 +9,11 @@ import {
   DropdownMenuContent, 
   DropdownMenuItem, 
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
+  DropdownMenuLabel
 } from './ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Heart } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -20,6 +21,32 @@ export default function Header() {
   const [location, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout, loading, isAuthenticated } = useAuth();
+
+  // Mock notification data
+  const notifications = [
+    {
+      id: 1,
+      title: 'Booking Confirmed',
+      message: 'Your BMW 3 Series rental has been confirmed for Dec 20-23',
+      time: '2 hours ago',
+      unread: true
+    },
+    {
+      id: 2,
+      title: 'Payment Received',
+      message: 'Payment of £1,350 has been processed successfully',
+      time: '1 day ago',
+      unread: true
+    },
+    {
+      id: 3,
+      title: 'Reminder',
+      message: 'Your rental starts tomorrow at 10:00 AM',
+      time: '2 days ago',
+      unread: false
+    }
+  ];
+
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -106,22 +133,59 @@ export default function Header() {
         <div className="flex items-center gap-2">
           {/* Notifications */}
           {isAuthenticated && (
-            <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                3
-              </span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                  <Bell className="h-5 w-5" />
+                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                    {notifications.filter(n => n.unread).length}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-80" align="end">
+                <div className="px-2 py-1.5">
+                  <DropdownMenuLabel className="flex items-center justify-between">
+                    <span>Notifications</span>
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                      Mark all read
+                    </Button>
+                  </DropdownMenuLabel>
+                </div>
+                <DropdownMenuSeparator />
+                <div className="max-h-80 overflow-y-auto">
+                  {notifications.length > 0 ? (
+                    notifications.map((notification) => (
+                      <DropdownMenuItem key={notification.id} className="flex flex-col items-start p-3 cursor-pointer hover:bg-gray-50">
+                        <div className="flex items-start w-full">
+                          <div className={`w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0 ${notification.unread ? 'bg-blue-500' : 'bg-gray-300'}`} />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm text-gray-900 truncate">
+                              {notification.title}
+                            </div>
+                            <div className="text-xs text-gray-600 mt-1 line-clamp-2">
+                              {notification.message}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {notification.time}
+                            </div>
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    ))
+                  ) : (
+                    <div className="p-4 text-center text-gray-500 text-sm">
+                      No notifications
+                    </div>
+                  )}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-center justify-center text-blue-600 hover:text-blue-700">
+                  View all notifications
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
 
-          {/* Favorites */}
-          {isAuthenticated && (
-            <Link href="/favorites">
-              <Button variant="ghost" size="icon" className="hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
-                <Heart className="h-5 w-5" />
-              </Button>
-            </Link>
-          )}
 
           {/* Secondary Navigation */}
           <div className="hidden lg:flex items-center gap-1">

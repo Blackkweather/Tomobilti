@@ -31,13 +31,27 @@ export default function Home() {
   // Initialize scroll animations
   useScrollAnimation();
 
+  // State for selected dates
+  const [selectedDates, setSelectedDates] = useState<{ start: Date | null; end: Date | null }>({
+    start: null,
+    end: null
+  });
+
   // Fetch featured cars
   const { data: carsData, isLoading: carsLoading } = useQuery({
-    queryKey: ['featuredCars'],
+    queryKey: ['featuredCars', selectedDates],
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set('page', '1');
       params.set('limit', '6');
+      
+      // Add date filters if dates are selected
+      if (selectedDates.start) {
+        params.set('startDate', selectedDates.start.toISOString());
+      }
+      if (selectedDates.end) {
+        params.set('endDate', selectedDates.end.toISOString());
+      }
       
       const response = await fetch(`/api/cars?${params}`);
       if (!response.ok) {
@@ -166,28 +180,31 @@ export default function Home() {
       location: 'London',
       rating: 5,
       text: 'ShareWheelz made my weekend trip so easy! The car was perfect and the owner was very helpful.',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&auto=format'
+      avatar: 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=4F46E5&color=fff&size=100'
     },
     {
       name: 'Michael Chen',
       location: 'Manchester',
       rating: 5,
       text: 'Great platform! I found an electric car for my business trip. Clean, efficient, and affordable.',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&auto=format'
+      avatar: 'https://ui-avatars.com/api/?name=Michael+Chen&background=10B981&color=fff&size=100'
     },
     {
       name: 'Emma Williams',
       location: 'Birmingham',
       rating: 5,
       text: 'As a car owner, ShareWheelz helped me earn extra income. The process is simple and secure.',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&auto=format'
+      avatar: 'https://ui-avatars.com/api/?name=Emma+Williams&background=EC4899&color=fff&size=100'
     }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
-      <Hero />
+      <Hero 
+        onDatesChange={setSelectedDates}
+        selectedDates={selectedDates}
+      />
 
       {/* Stats Section */}
       <section className="py-16 bg-white">
@@ -201,7 +218,7 @@ export default function Home() {
                     <Icon className="h-8 w-8 text-white" />
                   </div>
                   <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
-                  <div className="text-gray-600">{stat.label}</div>
+                  <div className="text-gray-700 font-medium">{stat.label}</div>
                 </div>
               );
             })}
@@ -216,7 +233,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Why Choose Share Wheelz?
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Experience the future of car sharing with our innovative platform designed for modern mobility needs.
             </p>
           </div>
@@ -231,7 +248,7 @@ export default function Home() {
                       <Icon className={`h-8 w-8 ${feature.color}`} />
                     </div>
                     <h3 className="text-xl font-semibold text-gray-900 mb-4">{feature.title}</h3>
-                    <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                    <p className="text-gray-700 leading-relaxed font-medium">{feature.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -245,10 +262,13 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Featured Vehicles
+              {selectedDates.start && selectedDates.end ? 'Available Vehicles' : 'Featured Vehicles'}
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover our most popular and highly-rated vehicles available for rent across the UK.
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+              {selectedDates.start && selectedDates.end 
+                ? `Cars available from ${selectedDates.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} to ${selectedDates.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                : 'Discover our most popular and highly-rated vehicles available for rent across the UK.'
+              }
             </p>
           </div>
 
@@ -282,7 +302,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               How It Works
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Getting started with Share Wheelz is simple. Follow these three easy steps to rent your perfect vehicle.
             </p>
           </div>
@@ -302,7 +322,7 @@ export default function Home() {
                     <Icon className="h-8 w-8 text-blue-600" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">{step.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{step.description}</p>
+                  <p className="text-gray-700 leading-relaxed font-medium">{step.description}</p>
                 </div>
               );
             })}
@@ -317,7 +337,7 @@ export default function Home() {
             <h2 className="text-5xl font-bold gradient-text mb-6 animate-fade-in">
               Explore Our Car Categories
             </h2>
-            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
               From sports cars to luxury vehicles, find the perfect car for every occasion
             </p>
           </div>
@@ -364,7 +384,7 @@ export default function Home() {
                           <h3 className="text-2xl font-bold text-gray-900">{category.name}</h3>
                         </div>
                         
-                        <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                        <p className="text-gray-700 mb-6 text-lg leading-relaxed font-medium">
                           {category.description}
                         </p>
                         
@@ -388,7 +408,7 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
                 Can't find what you're looking for?
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-700 mb-6 font-medium">
                 Browse our complete collection of vehicles or contact us for personalized recommendations.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -416,7 +436,7 @@ export default function Home() {
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               What Our Users Say
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Join thousands of satisfied customers who have discovered the convenience of Share Wheelz.
             </p>
           </div>
@@ -433,7 +453,7 @@ export default function Home() {
                     />
                     <div>
                       <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-500">{testimonial.location}</p>
+                      <p className="text-sm text-gray-600 font-medium">{testimonial.location}</p>
                     </div>
                   </div>
                   <div className="flex mb-4">
@@ -441,7 +461,7 @@ export default function Home() {
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <p className="text-gray-600 leading-relaxed italic">"{testimonial.text}"</p>
+                  <p className="text-gray-700 leading-relaxed italic font-medium">"{testimonial.text}"</p>
                 </CardContent>
               </Card>
             ))}
