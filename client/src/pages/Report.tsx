@@ -275,14 +275,16 @@ export default function Report() {
                     selectedType?.color === 'purple' ? 'bg-purple-100' :
                     'bg-gray-100'
                   }`}>
-                    <selectedType?.icon className={`w-6 h-6 ${
-                      selectedType?.color === 'red' ? 'text-red-600' :
-                      selectedType?.color === 'orange' ? 'text-orange-600' :
-                      selectedType?.color === 'yellow' ? 'text-yellow-600' :
-                      selectedType?.color === 'blue' ? 'text-blue-600' :
-                      selectedType?.color === 'purple' ? 'text-purple-600' :
-                      'text-gray-600'
-                    }`} />
+                    {selectedType?.icon && (
+                      <selectedType.icon className={`w-6 h-6 ${
+                        selectedType.color === 'red' ? 'text-red-600' :
+                        selectedType.color === 'orange' ? 'text-orange-600' :
+                        selectedType.color === 'yellow' ? 'text-yellow-600' :
+                        selectedType.color === 'blue' ? 'text-blue-600' :
+                        selectedType.color === 'purple' ? 'text-purple-600' :
+                        'text-gray-600'
+                      }`} />
+                    )}
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900">
