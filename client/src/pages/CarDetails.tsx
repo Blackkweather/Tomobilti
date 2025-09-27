@@ -36,6 +36,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import Footer from "../components/Footer";
 import { useAuth } from "../contexts/AuthContext";
 import { carApi } from "../lib/api";
+import { getSpecificCarImage } from "../utils/carImages";
 import type { Car } from '@shared/schema';
 
 // Mapping des images par type de voiture
@@ -117,80 +118,9 @@ const determineCarType = (car: Car): string => {
 };
 
 // Fonction pour obtenir l'image par défaut basée sur le type de voiture
-const getDefaultCarImage = (carType: string, make?: string, model?: string): string => {
-  // Essayer de matcher le type exact
-  if (carTypeImages[carType]) {
-    return carTypeImages[carType];
-  }
-  
-  // Essayer de matcher par mots-clés dans le type
-  const typeLower = carType.toLowerCase();
-  if (typeLower.includes('suv') || typeLower.includes('crossover') || typeLower.includes('pickup')) {
-    return carTypeImages['SUV'];
-  }
-  if (typeLower.includes('sport') || typeLower.includes('coupe') || typeLower.includes('racing')) {
-    return carTypeImages['Sport'];
-  }
-  if (typeLower.includes('luxury') || typeLower.includes('sedan') || typeLower.includes('premium')) {
-    return carTypeImages['Luxury'];
-  }
-  if (typeLower.includes('electric') || typeLower.includes('hybrid') || typeLower.includes('ev')) {
-    return carTypeImages['Electric'];
-  }
-  if (typeLower.includes('convertible') || typeLower.includes('cabriolet')) {
-    return carTypeImages['Convertible'];
-  }
-  if (typeLower.includes('classic') || typeLower.includes('vintage') || typeLower.includes('hatchback')) {
-    return carTypeImages['Classic'];
-  }
-  
-  // Essayer de matcher par marque/modèle
-  const makeModel = `${make || ''} ${model || ''}`.toLowerCase();
-  
-  // Marques de luxe
-  if (makeModel.includes('bmw') || makeModel.includes('mercedes') || makeModel.includes('audi') || 
-      makeModel.includes('lexus') || makeModel.includes('infiniti') || makeModel.includes('acura') ||
-      makeModel.includes('genesis') || makeModel.includes('cadillac') || makeModel.includes('lincoln')) {
-    return carTypeImages['Luxury'];
-  }
-  
-  // Véhicules électriques
-  if (makeModel.includes('tesla') || makeModel.includes('nissan leaf') || makeModel.includes('prius') ||
-      makeModel.includes('bolt') || makeModel.includes('ioniq') || makeModel.includes('kona electric') ||
-      makeModel.includes('id.') || makeModel.includes('eq') || makeModel.includes('etron')) {
-    return carTypeImages['Electric'];
-  }
-  
-  // Voitures de sport
-  if (makeModel.includes('mustang') || makeModel.includes('corvette') || makeModel.includes('ferrari') || 
-      makeModel.includes('lamborghini') || makeModel.includes('porsche') || makeModel.includes('mclaren') ||
-      makeModel.includes('bugatti') || makeModel.includes('koenigsegg') || makeModel.includes('pagani') ||
-      makeModel.includes('viper') || makeModel.includes('camaro') || makeModel.includes('challenger')) {
-    return carTypeImages['Sport'];
-  }
-  
-  // SUV et véhicules tout-terrain
-  if (makeModel.includes('range rover') || makeModel.includes('jeep') || makeModel.includes('land cruiser') ||
-      makeModel.includes('explorer') || makeModel.includes('tahoe') || makeModel.includes('suburban') ||
-      makeModel.includes('escalade') || makeModel.includes('navigator') || makeModel.includes('armada') ||
-      makeModel.includes('sequoia') || makeModel.includes('highlander') || makeModel.includes('pilot')) {
-    return carTypeImages['SUV'];
-  }
-  
-  // Voitures classiques/vintage
-  if (makeModel.includes('classic') || makeModel.includes('vintage') || makeModel.includes('antique') ||
-      makeModel.includes('oldtimer') || makeModel.includes('collector') || makeModel.includes('restoration')) {
-    return carTypeImages['Classic'];
-  }
-  
-  // Cabriolets et convertibles
-  if (makeModel.includes('convertible') || makeModel.includes('cabriolet') || makeModel.includes('roadster') ||
-      makeModel.includes('spider') || makeModel.includes('drophead') || makeModel.includes('soft top')) {
-    return carTypeImages['Convertible'];
-  }
-  
-  // Par défaut, utiliser l'image SUV
-  return carTypeImages['SUV'];
+const getDefaultCarImage = (car: Car): string => {
+  // Use the new specific car image function
+  return getSpecificCarImage(car);
 };
 
 export default function CarDetails() {
@@ -290,9 +220,9 @@ export default function CarDetails() {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 relative">
       {/* Enhanced Header */}
-      <div className="bg-white/95 backdrop-blur-sm border-b shadow-sm">
+      <div className="bg-white/95 backdrop-blur-sm border-b shadow-sm relative z-30">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -345,9 +275,9 @@ export default function CarDetails() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 relative">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-6 pb-8 relative z-10">
             {/* Car Images Gallery */}
             <Card className="overflow-hidden">
               <CardContent className="p-0">
@@ -364,7 +294,7 @@ export default function CarDetails() {
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-blue-50 to-purple-50">
                         <img
-                          src={getDefaultCarImage(determineCarType(car), car.make, car.model)}
+                          src={getDefaultCarImage(car)}
                           alt={`${car.make} ${car.model}`}
                           className="w-32 h-32 object-contain mb-4 opacity-80"
                           onError={(e) => {
@@ -484,7 +414,7 @@ export default function CarDetails() {
                   <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg">
                     <div className="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mx-auto mb-2">
                       <img
-                        src={getDefaultCarImage(determineCarType(car), car.make, car.model)}
+                        src={getDefaultCarImage(car)}
                         alt={determineCarType(car)}
                         className="w-8 h-8 object-contain"
                         onError={(e) => {
@@ -645,9 +575,9 @@ export default function CarDetails() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-6 relative z-20">
             {/* Reservation Bar */}
-            <div className="sticky top-4">
+            <div className="sticky top-24 z-20 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg">
               <ReservationBar
                 car={{
                   id: car.id,
@@ -708,12 +638,12 @@ export default function CarDetails() {
                       </div>
                       <span className="text-sm text-gray-600">4.8 (24 reviews)</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-green-100 text-green-700 border-green-200">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
                         <Shield className="h-3 w-3 mr-1" />
                         Verified Host
                       </Badge>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs whitespace-nowrap">
                         <Clock className="h-3 w-3 mr-1" />
                         Responds within 1 hour
                       </Badge>
@@ -751,7 +681,9 @@ export default function CarDetails() {
       </div>
 
       {/* Footer */}
-      <Footer />
+      <div className="relative z-0">
+        <Footer />
+      </div>
     </div>
   );
 }

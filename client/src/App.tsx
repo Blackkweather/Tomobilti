@@ -31,52 +31,86 @@ import TestCars from "./pages/TestCars";
 import CarsSimple from "./pages/CarsSimple";
 import CarsDebug from "./pages/CarsDebug";
 import CarsDebugSimple from "./pages/CarsDebugSimple";
+import Favorites from "./pages/Favorites";
+import Fleet from "./pages/Fleet";
+import Business from "./pages/Business";
+import Help from "./pages/Help";
+import Contact from "./pages/Contact";
+import Safety from "./pages/Safety";
+import Guidelines from "./pages/Guidelines";
+import Report from "./pages/Report";
+import Terms from "./pages/Terms";
+import Cookies from "./pages/Cookies";
+import Accessibility from "./pages/Accessibility";
 import NotFound from "./pages/not-found";
 
 // Import components
 import Header from "./components/Header";
 
 function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div className="min-h-screen bg-background">
-          <Header />
-          
-          <Switch>
-            <Route path="/" component={Home} />
-            <Route path="/login" component={Login} />
-            <Route path="/register" component={Register} />
-            <Route path="/dashboard" component={DashboardSelector} />
-            <Route path="/dashboard/owner" component={OwnerDashboard} />
-            <Route path="/dashboard/renter" component={RenterDashboard} />
-            <Route path="/profile" component={Profile} />
-            <Route path="/settings" component={Settings} />
-            <Route path="/security" component={Security} />
-            <Route path="/payment/:bookingId" component={Payment} />
-            <Route path="/booking-confirmation/:bookingId" component={BookingConfirmation} />
-            <Route path="/cars" component={Cars} />
-            <Route path="/cars/:id" component={CarDetails} />
-            <Route path="/test-cars" component={TestCars} />
-            <Route path="/cars-simple" component={CarsSimple} />
-            <Route path="/cars-debug" component={CarsDebug} />
-            <Route path="/cars-debug-simple" component={CarsDebugSimple} />
-            <Route path="/add-car" component={AddCar} />
-            <Route path="/edit-car/:id" component={EditCar} />
-            <Route path="/become-host" component={BecomeHost} />
-            <Route path="/about" component={About} />
-            <Route path="/how-it-works" component={HowItWorks} />
-            <Route path="/services" component={Services} />
-            <Route path="/terms-policies" component={TermsPolicies} />
-            <Route path="/support" component={Support} />
-            <Route component={NotFound} />
-          </Switch>
-          
-          <Toaster />
-        </div>
-      </AuthProvider>
-    </QueryClientProvider>
-  );
+  console.log('App component rendering...');
+  
+  try {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <div className="min-h-screen bg-background">
+            <Header />
+            
+            <Switch>
+              <Route path="/" component={Home} />
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+              <Route path="/dashboard" component={DashboardSelector} />
+              <Route path="/dashboard/owner" component={OwnerDashboard} />
+              <Route path="/dashboard/renter" component={RenterDashboard} />
+              <Route path="/profile" component={Profile} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/security" component={Security} />
+              <Route path="/payment/:bookingId" component={Payment} />
+              <Route path="/booking-confirmation/:bookingId" component={BookingConfirmation} />
+              <Route path="/cars" component={Cars} />
+              <Route path="/cars/:id" component={CarDetails} />
+              <Route path="/favorites" component={Favorites} />
+              <Route path="/test-cars" component={TestCars} />
+              <Route path="/cars-simple" component={CarsSimple} />
+              <Route path="/cars-debug" component={CarsDebug} />
+              <Route path="/cars-debug-simple" component={CarsDebugSimple} />
+              <Route path="/add-car" component={AddCar} />
+              <Route path="/edit-car/:id" component={EditCar} />
+              <Route path="/become-host" component={BecomeHost} />
+              <Route path="/fleet" component={Fleet} />
+              <Route path="/business" component={Business} />
+              <Route path="/help" component={Help} />
+              <Route path="/contact" component={Contact} />
+              <Route path="/safety" component={Safety} />
+              <Route path="/guidelines" component={Guidelines} />
+              <Route path="/report" component={Report} />
+              <Route path="/terms" component={Terms} />
+              <Route path="/cookies" component={Cookies} />
+              <Route path="/accessibility" component={Accessibility} />
+              <Route path="/about" component={About} />
+              <Route path="/how-it-works" component={HowItWorks} />
+              <Route path="/services" component={Services} />
+              <Route path="/terms-policies" component={TermsPolicies} />
+              <Route path="/support" component={Support} />
+              <Route component={NotFound} />
+            </Switch>
+            
+            <Toaster />
+          </div>
+        </AuthProvider>
+      </QueryClientProvider>
+    );
+  } catch (error) {
+    console.error('Error in App component:', error);
+    return (
+      <div style={{ padding: '20px', backgroundColor: '#ffebee', minHeight: '100vh' }}>
+        <h1 style={{ color: 'red' }}>❌ Error in App Component</h1>
+        <p>Error: {error instanceof Error ? error.message : 'Unknown error'}</p>
+      </div>
+    );
+  }
 }
 
 export default App;

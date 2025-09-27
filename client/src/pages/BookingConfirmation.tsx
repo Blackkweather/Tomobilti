@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { CheckCircle, Calendar, MapPin, Car, User, Phone, Mail, AlertCircle, Download } from "lucide-react";
+import { CheckCircle, Calendar as CalendarIcon, MapPin, Car, User, Phone, Mail, AlertCircle, Download } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { bookingApi } from "../lib/api";
 // Dynamic imports for PDF generation
@@ -265,7 +265,7 @@ export default function BookingConfirmation() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <h4 className="font-semibold mb-3 flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
+                  <CalendarIcon className="h-4 w-4" />
                   Dates and Times
                 </h4>
                 <div className="space-y-2 text-sm">

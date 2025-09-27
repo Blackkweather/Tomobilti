@@ -2,7 +2,7 @@ import { Link } from 'wouter';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Star, MapPin, Fuel, Users, Settings, Calendar, Heart, Eye } from 'lucide-react';
+import { Star, MapPin, Fuel, Users, Settings, Calendar as CalendarIcon, Heart, Eye } from 'lucide-react';
 import type { Car } from '@shared/schema';
 
 interface CarCardSimpleProps {
@@ -129,7 +129,7 @@ export default function CarCardSimple({ car, isFavorited = false, onToggleFavori
               <span>{seats} seats</span>
             </div>
             <div className="flex items-center text-sm text-gray-600">
-              <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+              <CalendarIcon className="w-4 h-4 mr-2 text-blue-600" />
               <span>{year}</span>
             </div>
           </div>

@@ -26,17 +26,13 @@ export default function Footer() {
   const footerLinks = {
     company: [
       { label: 'About Us', href: '/about' },
-      { label: 'How It Works', href: '/how-it-works' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Press', href: '/press' },
-      { label: 'Blog', href: '/blog' }
+      { label: 'How It Works', href: '/how-it-works' }
     ],
     services: [
       { label: 'Rent a Car', href: '/cars' },
       { label: 'Become a Host', href: '/become-host' },
       { label: 'Fleet Management', href: '/fleet' },
-      { label: 'Business Solutions', href: '/business' },
-      { label: 'API Access', href: '/api' }
+      { label: 'Business Solutions', href: '/business' }
     ],
     support: [
       { label: 'Help Center', href: '/help' },

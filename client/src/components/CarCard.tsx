@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'wouter';
 import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Star, MapPin, Fuel, Zap, Heart, Eye, Calendar, Shield, Users, Settings, Clock } from 'lucide-react';
+import { Star, MapPin, Fuel, Zap, Heart, Calendar as CalendarIcon, Shield, Users, Settings, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getCarImage } from '../utils/carImages';
+import { getCarImage, getSpecificCarImage } from '../utils/carImages';
+import Calendar from './Calendar';
 import type { Car } from '@shared/schema';
 
 interface CarCardProps {
@@ -39,6 +39,12 @@ const fuelTypeIcons = {
 };
 
 export default function CarCard({ car, isFavorited = false, onToggleFavorite }: CarCardProps) {
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [selectedDates, setSelectedDates] = useState<{ start: Date | null; end: Date | null }>({
+    start: null,
+    end: null
+  });
+
   const {
     id,
     title,
@@ -62,9 +68,25 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
   const [imageError, setImageError] = useState(false);
   
   const FuelIcon = fuelTypeIcons[fuelType as keyof typeof fuelTypeIcons] || Fuel;
-  const carImage = getCarImage(car);
+  const carImage = getSpecificCarImage(car);
   const ownerName = owner ? `${owner.firstName} ${owner.lastName}` : 'Owner';
-  const ownerImage = owner?.profileImage || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000) + 1500000000000}/150x150/?portrait`;
+  const ownerImage = owner?.profileImage || `https://ui-avatars.com/api/?name=${ownerName}&background=random`;
+
+  const handleDateSelect = (start: Date | null, end: Date | null) => {
+    setSelectedDates({ start, end });
+  };
+
+  const handleBookNow = () => {
+    if (selectedDates.start && selectedDates.end) {
+      // Navigate to booking page with selected dates
+      const params = new URLSearchParams();
+      params.set('startDate', selectedDates.start.toISOString());
+      params.set('endDate', selectedDates.end.toISOString());
+      window.location.href = `/cars/${id}?${params.toString()}`;
+    } else {
+      setShowCalendar(true);
+    }
+  };
 
   return (
     <Card className="card-modern group hover:shadow-2xl transition-all duration-300 border-0 bg-white overflow-hidden hover-lift">
@@ -106,15 +128,6 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             </Button>
           )}
 
-          {/* Quick view button */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-            <Link href={`/cars/${id}`}>
-              <Button className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg">
-                <Eye className="w-4 h-4 mr-2" />
-                Quick View
-              </Button>
-            </Link>
-          </div>
         </div>
 
         <CardContent className="p-6">
@@ -123,7 +136,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             <h3 className="font-semibold text-lg text-gray-900 mb-1 line-clamp-1">
               {title || `${make} ${model}`}
             </h3>
-            <div className="flex items-center text-gray-600 text-sm">
+            <div className="flex items-center text-gray-700 text-sm font-medium">
               <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
               <span className="truncate">{city || location}</span>
             </div>
@@ -131,19 +144,19 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
 
           {/* Car Details */}
           <div className="grid grid-cols-2 gap-3 mb-4">
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-gray-700 font-medium">
               <FuelIcon className="w-4 h-4 mr-2 text-blue-600" />
               <span>{fuelTypeLabels[fuelType as keyof typeof fuelTypeLabels] || fuelType}</span>
             </div>
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-gray-700 font-medium">
               <Settings className="w-4 h-4 mr-2 text-blue-600" />
               <span className="capitalize">{transmission}</span>
             </div>
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-gray-700 font-medium">
               <Users className="w-4 h-4 mr-2 text-blue-600" />
               <span>{seats} seats</span>
             </div>
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex items-center text-sm text-gray-700 font-medium">
               <Calendar className="w-4 h-4 mr-2 text-blue-600" />
               <span>{year}</span>
             </div>
@@ -164,7 +177,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-600 ml-2">
+              <span className="text-sm text-gray-700 ml-2 font-medium">
                 {rating.toFixed(1)} ({reviewCount} reviews)
               </span>
             </div>
@@ -181,7 +194,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
               </Avatar>
               <div>
                 <p className="text-sm font-medium text-gray-900">{ownerName}</p>
-                <div className="flex items-center text-xs text-gray-500">
+                <div className="flex items-center text-xs text-gray-600 font-medium">
                   <Shield className="w-3 h-3 mr-1" />
                   Verified Owner
                 </div>
@@ -195,16 +208,55 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
               <div className="text-2xl font-bold text-gray-900">
                 {currency} {pricePerDay}
               </div>
-              <div className="text-sm text-gray-600">per day</div>
+              <div className="text-sm text-gray-700 font-medium">per day</div>
+              {selectedDates.start && selectedDates.end && (
+                <div className="text-xs text-green-600 font-medium mt-1">
+                  {selectedDates.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {selectedDates.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                </div>
+              )}
             </div>
-            <Link href={`/cars/${id}`}>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
-                View Details
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setShowCalendar(true)}
+                variant="outline"
+                className="text-blue-600 border-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg"
+              >
+                <CalendarIcon className="w-4 h-4 mr-1" />
+                Dates
               </Button>
-            </Link>
+              <Button 
+                onClick={handleBookNow}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                {selectedDates.start && selectedDates.end ? 'Book Now' : 'Select Dates'}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </div>
+
+      {/* Calendar Modal */}
+      {showCalendar && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9998]"
+            onClick={() => setShowCalendar(false)}
+          />
+          {/* Calendar */}
+          <div 
+            className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-sm mx-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Calendar
+              selectedDates={selectedDates}
+              onDateSelect={handleDateSelect}
+              onClose={() => setShowCalendar(false)}
+              className="w-full"
+            />
+          </div>
+        </>
+      )}
     </Card>
   );
 }

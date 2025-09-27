@@ -11,21 +11,23 @@ import {
 } from 'lucide-react';
 import Calendar from './Calendar';
 
-export default function HeroSearch() {
+interface HeroSearchProps {
+  onDatesChange?: (dates: { start: Date | null; end: Date | null }) => void;
+  initialDates?: { start: Date | null; end: Date | null };
+}
+
+export default function HeroSearch({ onDatesChange, initialDates }: HeroSearchProps) {
   const [searchLocation, setSearchLocation] = useState('');
-  const [selectedDates, setSelectedDates] = useState<{ start: Date | null; end: Date | null }>({
-    start: null,
-    end: null
-  });
+  const [selectedDates, setSelectedDates] = useState<{ start: Date | null; end: Date | null }>(
+    initialDates || { start: null, end: null }
+  );
   const [guests, setGuests] = useState(1);
   const [showCalendar, setShowCalendar] = useState(false);
 
   const handleDateSelect = (start: Date | null, end: Date | null) => {
     setSelectedDates({ start, end });
-    // Only close calendar when both dates are selected
-    if (start && end) {
-      setTimeout(() => setShowCalendar(false), 300);
-    }
+    onDatesChange?.({ start, end });
+    // Don't auto-close - let user manually close or use the confirm button
   };
 
   const handleSearch = () => {
@@ -46,11 +48,11 @@ export default function HeroSearch() {
     if (!selectedDates.start) return 'Start Date';
     if (!selectedDates.end) return 'End Date';
     
-    const start = selectedDates.start.toLocaleDateString('en-GB', { 
+    const start = selectedDates.start.toLocaleDateString('en-US', { 
       day: 'numeric', 
       month: 'short' 
     });
-    const end = selectedDates.end.toLocaleDateString('en-GB', { 
+    const end = selectedDates.end.toLocaleDateString('en-US', { 
       day: 'numeric', 
       month: 'short' 
     });
@@ -70,7 +72,7 @@ export default function HeroSearch() {
   return (
     <div className="relative z-10">
       <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl max-w-4xl mx-auto p-4 md:p-6 relative z-10 touch-manipulation">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-end">
           {/* Location */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
@@ -94,18 +96,18 @@ export default function HeroSearch() {
             <Button
               variant="outline"
               onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full justify-start h-10 text-left touch-manipulation min-h-[44px]"
+              className="w-full justify-start h-10 sm:h-10 text-left touch-manipulation min-h-[44px] text-sm"
             >
               <CalendarIcon className="h-4 w-4 mr-2" />
               {selectedDates.start ? (
                 <span>
-                  {selectedDates.start.toLocaleDateString('en-GB', { 
+                  {selectedDates.start.toLocaleDateString('en-US', { 
                     day: 'numeric', 
                     month: 'short' 
                   })}
                 </span>
               ) : (
-                <span className="text-gray-500">Start Date</span>
+                <span className="text-gray-600">Start Date</span>
               )}
             </Button>
           </div>
@@ -119,18 +121,18 @@ export default function HeroSearch() {
             <Button
               variant="outline"
               onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full justify-start h-10 text-left"
+              className="w-full justify-start h-10 sm:h-10 text-left text-sm"
             >
               <CalendarIcon className="h-4 w-4 mr-2" />
               {selectedDates.end ? (
                 <span>
-                  {selectedDates.end.toLocaleDateString('en-GB', { 
+                  {selectedDates.end.toLocaleDateString('en-US', { 
                     day: 'numeric', 
                     month: 'short' 
                   })}
                 </span>
               ) : (
-                <span className="text-gray-500">End Date</span>
+                <span className="text-gray-600">End Date</span>
               )}
             </Button>
           </div>
@@ -142,7 +144,7 @@ export default function HeroSearch() {
             </label>
             <Button 
               onClick={handleSearch}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors h-10"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors h-10 sm:h-10 text-sm"
             >
               <Search className="h-4 w-4 mr-2" />
               Search Cars
@@ -155,7 +157,7 @@ export default function HeroSearch() {
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 bg-black/20 z-[9998]"
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9998]"
               onClick={(e) => {
                 e.stopPropagation();
                 setShowCalendar(false);
@@ -163,14 +165,14 @@ export default function HeroSearch() {
             />
             {/* Calendar */}
             <div 
-              className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+              className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-sm mx-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <Calendar
                 selectedDates={selectedDates}
                 onDateSelect={handleDateSelect}
                 onClose={() => setShowCalendar(false)}
-                className="shadow-2xl"
+                className="w-full"
               />
             </div>
           </>
