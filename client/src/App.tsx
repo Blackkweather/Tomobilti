@@ -20,6 +20,7 @@ import CarDetails from "./pages/CarDetails";
 import AddCar from "./pages/AddCar";
 import EditCar from "./pages/EditCar";
 import BecomeHost from "./pages/BecomeHost";
+import BecomeMember from "./pages/BecomeMember";
 import About from "./pages/About";
 import HowItWorks from "./pages/HowItWorks";
 import Support from "./pages/Support";
@@ -79,6 +80,7 @@ function App() {
               <Route path="/add-car" component={AddCar} />
               <Route path="/edit-car/:id" component={EditCar} />
               <Route path="/become-host" component={BecomeHost} />
+              <Route path="/become-member" component={BecomeMember} />
               <Route path="/fleet" component={Fleet} />
               <Route path="/business" component={Business} />
               <Route path="/help" component={Help} />

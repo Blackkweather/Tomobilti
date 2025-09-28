@@ -3,7 +3,6 @@ import { Link, useLocation } from 'wouter';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import Logo from './Logo';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -72,33 +71,38 @@ export default function Header() {
 
   const navItems = [
     { href: '/cars', label: 'Rent a car' },
-    { href: '/become-host', label: 'Make your car work for you' },
+    { href: '/become-member', label: 'Become a Member' },
     { href: '/services', label: 'Our Quality service' },
-    { href: '/about', label: 'About' },
-    { href: '/terms-policies', label: 'Legals' },
   ];
 
   const secondaryNavItems = [
-    { href: '/become-host', label: 'Become Host', icon: Plus },
     { href: '/security', label: 'Security', icon: Shield },
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
-      <div className="container flex h-16 items-center gap-4 px-4">
-        {/* Brand Logo */}
-        <Logo size="md" href="/" />
+      <div className="container flex h-16 items-center px-4">
+        {/* Brand Logo - Left Side */}
+        <div className="flex-shrink-0 mr-4">
+          <Link href="/" className="flex items-center">
+            <img 
+              src="/assets/MAIN LOGO.png" 
+              alt="ShareWheelz" 
+              className="h-20 w-auto hover:scale-105 transition-transform duration-200"
+            />
+          </Link>
+        </div>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1 flex-1">
+        {/* Desktop Navigation - Left */}
+        <nav className="hidden lg:flex items-center gap-2 mr-8">
           {navItems.map((item) => (
             <Link key={item.href} href={item.href} data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
               <Button 
                 variant={location === item.href ? 'default' : 'ghost'} 
                 className={`hover:scale-105 transition-all duration-200 ${
                   location === item.href 
-                    ? 'bg-blue-600 text-white shadow-md' 
-                    : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
+                    ? 'bg-mauve-600 text-white shadow-md' 
+                    : 'hover:bg-mauve-50 text-gray-700 hover:text-mauve-600'
                 }`}
               >
                 {item.label}
@@ -107,30 +111,30 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* Enhanced Search Bar */}
-        <div className="hidden md:flex items-center gap-2 flex-1 max-w-lg">
-          <div className="relative flex-1">
+        {/* Search Bar - CENTERED */}
+        <div className="hidden md:flex items-center gap-2 flex-1 justify-center">
+          <div className="relative w-full max-w-md">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
               data-testid="input-search"
-              placeholder="Search cars, locations, or brands..."
+              placeholder="Search cars, locations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-10 bg-white border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 rounded-lg"
+              className="pl-10 bg-white border-gray-200 focus:border-mauve-500 focus:ring-2 focus:ring-mauve-200 transition-all duration-200 rounded-lg"
             />
           </div>
           <Button 
             onClick={handleSearch} 
             data-testid="button-search" 
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-4"
+            className="bg-mauve-600 hover:bg-mauve-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-4"
           >
             <Search className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* User Actions */}
-        <div className="flex items-center gap-2">
+        {/* User Actions - Right Side */}
+        <div className="flex items-center gap-2 flex-shrink-0 ml-8">
           {/* Notifications */}
           {isAuthenticated && (
             <DropdownMenu>
@@ -189,7 +193,7 @@ export default function Header() {
 
           {/* Secondary Navigation */}
           <div className="hidden lg:flex items-center gap-1">
-            {secondaryNavItems.map((item) => {
+            {isAuthenticated && secondaryNavItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link key={item.href} href={item.href}>
@@ -258,8 +262,10 @@ export default function Header() {
               </Link>
             </div>
           )}
+        </div>
 
-          {/* Mobile Menu */}
+        {/* Mobile Menu */}
+        <div className="md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
@@ -269,13 +275,13 @@ export default function Header() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]">
               <div className="flex flex-col space-y-4">
                 {/* Mobile Brand Logo */}
-                <div className="flex items-center space-x-2 pb-4 border-b">
-                  <img 
-                    src="/assets/Share Wheelz.png" 
-                    alt="Share Wheelz" 
-                    className="h-8 w-auto"
-                  />
-                </div>
+            <div className="flex items-center justify-center pb-4 border-b">
+              <img 
+                src="/assets/MAIN LOGO.png" 
+                alt="ShareWheelz" 
+                className="h-16 w-auto hover:scale-105 transition-transform duration-200"
+              />
+            </div>
 
                 {/* Mobile Search */}
                 <div className="space-y-2">
@@ -314,19 +320,21 @@ export default function Header() {
                 </nav>
 
                 {/* Mobile Secondary Actions */}
-                <div className="space-y-2 pt-4 border-t">
-                  {secondaryNavItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <Link key={item.href} href={item.href}>
-                        <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
-                          <Icon className="h-4 w-4 mr-2" />
-                          {item.label}
-                        </Button>
-                      </Link>
-                    );
-                  })}
-                </div>
+                {isAuthenticated && (
+                  <div className="space-y-2 pt-4 border-t">
+                    {secondaryNavItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link key={item.href} href={item.href}>
+                          <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
+                            <Icon className="h-4 w-4 mr-2" />
+                            {item.label}
+                          </Button>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Mobile User Actions */}
                 {isAuthenticated ? (

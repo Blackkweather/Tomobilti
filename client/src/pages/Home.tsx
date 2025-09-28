@@ -22,14 +22,17 @@ import {
   TrendingUp,
   Heart,
   Award,
-  Zap
+  Zap,
+  Mountain
 } from 'lucide-react';
 import { getFeaturedCarImages } from '../utils/carImages';
+import { useAuth } from '../contexts/AuthContext';
 import type { Car } from '@shared/schema';
 
 export default function Home() {
   // Initialize scroll animations
   useScrollAnimation();
+  const { isAuthenticated } = useAuth();
 
   // State for selected dates
   const [selectedDates, setSelectedDates] = useState<{ start: Date | null; end: Date | null }>({
@@ -167,7 +170,7 @@ export default function Home() {
       name: 'SUVs & 4x4',
       description: 'Adventure-ready vehicles',
       image: '/assets/SUV.png',
-      icon: Shield,
+      icon: Mountain,
       count: '40+',
       color: 'from-gray-600 to-slate-600',
       gradient: 'bg-gradient-to-br from-gray-50 to-slate-50'
@@ -486,12 +489,14 @@ export default function Home() {
                 Find a Car
               </Button>
             </Link>
-            <Link href="/become-host">
-              <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg rounded-lg transition-all duration-300">
-                <TrendingUp className="mr-2 h-5 w-5" />
-                Become a Host
-              </Button>
-            </Link>
+            {!isAuthenticated && (
+              <Link href="/become-member">
+                <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg rounded-lg transition-all duration-300">
+                  <TrendingUp className="mr-2 h-5 w-5" />
+                  Become a Member
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>

@@ -16,8 +16,10 @@ import {
   Zap
 } from 'lucide-react';
 import { Link } from 'wouter';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Services() {
+  const { isAuthenticated } = useAuth();
   const insuranceFeatures = [
     {
       icon: Shield,
@@ -352,11 +354,13 @@ export default function Services() {
                 Browse Cars
               </Button>
             </Link>
-            <Link href="/become-host">
-              <Button className="glass-card text-white border border-white/20 hover:scale-105 transition-transform px-8 py-3 text-lg">
-                Become a Host
-              </Button>
-            </Link>
+            {!isAuthenticated && (
+              <Link href="/become-member">
+                <Button className="glass-card text-white border border-white/20 hover:scale-105 transition-transform px-8 py-3 text-lg">
+                  Become a Member
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>

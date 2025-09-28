@@ -1,7 +1,6 @@
 import { Link } from 'wouter';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import Logo from './Logo';
 import { 
   Car, 
   MapPin, 
@@ -30,7 +29,7 @@ export default function Footer() {
     ],
     services: [
       { label: 'Rent a Car', href: '/cars' },
-      { label: 'Become a Host', href: '/become-host' },
+      { label: 'Become a Member', href: '/become-member' },
       { label: 'Fleet Management', href: '/fleet' },
       { label: 'Business Solutions', href: '/business' }
     ],
@@ -68,40 +67,37 @@ export default function Footer() {
     <footer className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-          {/* Brand Section */}
-          <div className="lg:col-span-2">
-            <Logo size="xl" showText={true} href="/" className="mb-6" />
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              The UK's premier peer-to-peer car rental platform. Connect with trusted car owners 
-              and rent amazing vehicles for your next adventure.
-            </p>
-            
-            {/* Features */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <feature.icon className="w-4 h-4 text-blue-400" />
-                  <span className="text-sm text-gray-300">{feature.text}</span>
-                </div>
-              ))}
-            </div>
+        {/* Logo Section - Top Left */}
+        <div className="mb-8">
+          <Link href="/" className="flex items-center">
+            <img 
+              src="/assets/MAIN LOGO.png" 
+              alt="ShareWheelz" 
+              className="h-20 w-auto hover:scale-105 transition-transform duration-200"
+            />
+          </Link>
+        </div>
 
-            {/* Newsletter */}
-            <div className="mb-6">
-              <h4 className="text-lg font-semibold mb-3">Stay Updated</h4>
-              <div className="flex gap-2">
-                <Input 
-                  type="email" 
-                  placeholder="Enter your email" 
-                  className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-blue-400"
-                />
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
+        {/* Brand Description */}
+        <div className="mb-8">
+          <p className="text-gray-300 mb-6 leading-relaxed">
+            The UK's premier peer-to-peer car rental platform. Connect with trusted car owners 
+            and rent amazing vehicles for your next adventure.
+          </p>
+          
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            {features.map((feature, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <feature.icon className="w-4 h-4 text-blue-400" />
+                <span className="text-sm text-gray-300">{feature.text}</span>
               </div>
-            </div>
+            ))}
           </div>
+        </div>
+
+        {/* Three Main Sections Side by Side */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
 
           {/* Company Links */}
           <div>
@@ -152,6 +148,24 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+
+        {/* Newsletter Section - Bottom */}
+        <div className="border-t border-white/10 pt-8 mb-8">
+          <div className="text-center">
+            <h4 className="text-xl font-semibold mb-3">Stay Updated</h4>
+            <p className="text-gray-300 mb-6">Get the latest news and offers from ShareWheelz</p>
+            <div className="flex gap-2 max-w-md mx-auto">
+              <Input 
+                type="email" 
+                placeholder="Enter your email" 
+                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-blue-400"
+              />
+              <Button className="bg-blue-600 hover:bg-blue-700">
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
 

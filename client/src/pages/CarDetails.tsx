@@ -5,6 +5,12 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
 import { 
   Star, 
   MapPin, 
@@ -27,8 +33,13 @@ import {
   Camera,
   ChevronLeft,
   ChevronRight,
-  Maximize2,
-  User
+  User,
+  Info,
+  BookOpen,
+  Copy,
+  MessageSquare,
+  Award,
+  Mountain
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import ReservationBar from "../components/ReservationBar";
@@ -67,6 +78,60 @@ const carTypeImages: Record<string, string> = {
 };
 
 // Fonction pour déterminer le type de voiture basé sur les propriétés existantes
+// Function to determine vehicle category based on make/model
+const getVehicleCategory = (make: string, model: string): string => {
+  const makeLower = make.toLowerCase();
+  const modelLower = model.toLowerCase();
+  
+  // Electric vehicles
+  if (makeLower.includes('tesla') || modelLower.includes('electric') || modelLower.includes('ev')) {
+    return 'electric';
+  }
+  
+  // Sports cars
+  if (makeLower.includes('porsche') || makeLower.includes('ferrari') || makeLower.includes('lamborghini') || 
+      makeLower.includes('mclaren') || makeLower.includes('aston martin') || modelLower.includes('gt') ||
+      modelLower.includes('sport') || modelLower.includes('turbo')) {
+    return 'sports';
+  }
+  
+  // Luxury sedans
+  if (makeLower.includes('mercedes') || makeLower.includes('bmw') || makeLower.includes('audi') ||
+      makeLower.includes('lexus') || makeLower.includes('jaguar') || makeLower.includes('maserati')) {
+    return 'luxury';
+  }
+  
+  // SUVs
+  if (makeLower.includes('range rover') || makeLower.includes('land rover') || makeLower.includes('jeep') ||
+      modelLower.includes('suv') || modelLower.includes('x5') || modelLower.includes('q7') ||
+      modelLower.includes('glc') || modelLower.includes('evoque') || modelLower.includes('discovery')) {
+    return 'suv';
+  }
+  
+  // Classic cars
+  if (makeLower.includes('classic') || modelLower.includes('classic') || 
+      (parseInt(make) < 2000 && parseInt(make) > 1950)) {
+    return 'classic';
+  }
+  
+  // Convertibles
+  if (modelLower.includes('convertible') || modelLower.includes('cabrio') || modelLower.includes('roadster')) {
+    return 'convertible';
+  }
+  
+  // Default to luxury for premium brands
+  return 'luxury';
+};
+
+const vehicleCategoryIcons = {
+  sports: Zap,
+  luxury: Award,
+  electric: Zap,
+  classic: Calendar,
+  convertible: Shield,
+  suv: Mountain
+};
+
 const determineCarType = (car: Car): string => {
   const makeModel = `${car.make} ${car.model}`.toLowerCase();
   const title = car.title?.toLowerCase() || '';
@@ -130,6 +195,33 @@ export default function CarDetails() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  
+  // Share functionality
+  const currentUrl = window.location.href;
+  const shareText = `Check out this amazing car on ShareWheelz`;
+  
+  const handleShareWhatsApp = () => {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + currentUrl)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+  
+  const handleShareEmail = () => {
+    const subject = encodeURIComponent(`Check out this car on ShareWheelz`);
+    const body = encodeURIComponent(`${shareText}\n\n${currentUrl}`);
+    const mailtoUrl = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = mailtoUrl;
+  };
+  
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
+  };
   
   // Handle booking and redirect to payment
   const handleBookingAndPayment = async (bookingData: any) => {
@@ -266,9 +358,27 @@ export default function CarDetails() {
                   <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
                 </Button>
               )}
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
-                <Share2 className="h-5 w-5" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
+                    <Share2 className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer">
+                    <MessageSquare className="h-4 w-4 mr-2 text-green-600" />
+                    Share on WhatsApp
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShareEmail} className="cursor-pointer">
+                    <Mail className="h-4 w-4 mr-2 text-blue-600" />
+                    Share via Email
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
+                    <Copy className="h-4 w-4 mr-2 text-gray-600" />
+                    {shareCopied ? 'Link Copied!' : 'Copy Link'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -288,7 +398,7 @@ export default function CarDetails() {
                       <img
                         src={car.images[currentImageIndex]}
                         alt={car.title}
-                        className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-105"
+                        className="w-full h-full object-contain cursor-pointer transition-transform duration-300"
                         onClick={() => setShowImageModal(true)}
                       />
                     ) : (
@@ -338,23 +448,11 @@ export default function CarDetails() {
                     </>
                   )}
 
-                  {/* Image Counter */}
-                  {car.images && car.images.length > 1 && (
-                    <div className="absolute bottom-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-                      {currentImageIndex + 1} / {car.images.length}
-                    </div>
-                  )}
-
-                  {/* Fullscreen Button */}
+                  {/* Picture count badge */}
                   {car.images && car.images.length > 0 && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-4 right-4 bg-white/90 hover:bg-white shadow-lg"
-                      onClick={() => setShowImageModal(true)}
-                    >
-                      <Maximize2 className="h-4 w-4" />
-                    </Button>
+                    <div className="absolute top-4 left-4 bg-black/60 text-white text-sm px-3 py-1 rounded-full font-medium">
+                      {car.images.length} photo{car.images.length !== 1 ? 's' : ''}
+                    </div>
                   )}
                 </div>
 
@@ -401,28 +499,20 @@ export default function CarDetails() {
                         <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
                       </Button>
                     )}
-                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
-                      <Share2 className="h-5 w-5" />
-                    </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Key Stats */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {/* Vehicle Type avec image */}
+                  {/* Vehicle Type avec icon */}
                   <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg">
                     <div className="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mx-auto mb-2">
-                      <img
-                        src={getDefaultCarImage(car)}
-                        alt={determineCarType(car)}
-                        className="w-8 h-8 object-contain"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                        }}
-                      />
-                      <CarIcon className="h-6 w-6 text-indigo-600 hidden" />
+                      {(() => {
+                        const vehicleCategory = getVehicleCategory(car.make, car.model);
+                        const CategoryIcon = vehicleCategoryIcons[vehicleCategory as keyof typeof vehicleCategoryIcons] || Award;
+                        return <CategoryIcon className="h-6 w-6 text-indigo-600" />;
+                      })()}
                     </div>
                     <div className="text-sm text-gray-600">Vehicle Type</div>
                     <div className="font-semibold text-gray-900">{determineCarType(car)}</div>
@@ -577,7 +667,7 @@ export default function CarDetails() {
           {/* Sidebar */}
           <div className="space-y-6 relative z-20">
             {/* Reservation Bar */}
-            <div className="sticky top-24 z-20 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg">
+            <div id="booking" className="sticky top-24 z-20 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg">
               <ReservationBar
                 car={{
                   id: car.id,

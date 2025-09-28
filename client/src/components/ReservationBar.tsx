@@ -2,6 +2,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 import { 
   Calendar as CalendarIcon,
   Clock,
@@ -23,7 +29,10 @@ import {
   Calculator,
   ArrowRight,
   Lock,
-  Gift
+  Gift,
+  Copy,
+  Mail,
+  MessageSquare
 } from 'lucide-react';
 // import Calendar from './Calendar'; // Temporarily disabled
 import { useAuth } from '../contexts/AuthContext';
@@ -59,6 +68,33 @@ export default function ReservationBar({ car, onBook, className = '' }: Reservat
   const [guests, setGuests] = useState(1);
   const [isBooking, setIsBooking] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  
+  // Share functionality
+  const currentUrl = window.location.href;
+  const shareText = `Check out this amazing car on ShareWheelz: ${car.title}`;
+  
+  const handleShareWhatsApp = () => {
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + currentUrl)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+  
+  const handleShareEmail = () => {
+    const subject = encodeURIComponent(`Check out this car: ${car.title}`);
+    const body = encodeURIComponent(`${shareText}\n\n${currentUrl}`);
+    const mailtoUrl = `mailto:?subject=${subject}&body=${body}`;
+    window.location.href = mailtoUrl;
+  };
+  
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy link:', err);
+    }
+  };
 
   const handleDateSelect = (start: Date | null, end: Date | null) => {
     setSelectedDates({ start, end });
@@ -140,9 +176,27 @@ export default function ReservationBar({ car, onBook, className = '' }: Reservat
                   <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
                 </Button>
               )}
-              <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
-                <Share2 className="h-5 w-5" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-gray-400 hover:text-gray-600">
+                    <Share2 className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer">
+                    <MessageSquare className="h-4 w-4 mr-2 text-green-600" />
+                    Share on WhatsApp
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleShareEmail} className="cursor-pointer">
+                    <Mail className="h-4 w-4 mr-2 text-blue-600" />
+                    Share via Email
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleCopyLink} className="cursor-pointer">
+                    <Copy className="h-4 w-4 mr-2 text-gray-600" />
+                    {shareCopied ? 'Link Copied!' : 'Copy Link'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </CardHeader>

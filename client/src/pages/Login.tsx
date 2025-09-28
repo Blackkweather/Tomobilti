@@ -86,9 +86,11 @@ export default function Login() {
         <div className="hidden lg:block space-y-8">
           <div className="text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start mb-6">
-              <span className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                ShareWheelz
-              </span>
+              <img 
+                src="/assets/MAIN LOGO.png" 
+                alt="ShareWheelz" 
+                className="h-16 w-auto"
+              />
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               Welcome Back!
@@ -158,10 +160,12 @@ export default function Login() {
         <div className="w-full max-w-md mx-auto lg:max-w-none">
           <Card className="shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center pb-4">
-              <div className="mx-auto h-16 w-16 flex items-center justify-center mb-4">
-                <span className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  ShareWheelz
-                </span>
+              <div className="mx-auto h-16 w-auto flex items-center justify-center mb-4">
+                <img 
+                  src="/assets/MAIN LOGO.png" 
+                  alt="ShareWheelz" 
+                  className="h-16 w-auto"
+                />
               </div>
               <CardTitle className="text-2xl font-bold text-gray-900">
                 Sign in to your account

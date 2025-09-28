@@ -26,18 +26,18 @@ import {
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 
-// Rate limiting configurations
-const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: { error: 'Trop de requêtes, veuillez réessayer plus tard' }
-});
+// Rate limiting configurations - DISABLED FOR DEVELOPMENT
+// const generalLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 100, // limit each IP to 100 requests per windowMs
+//   message: { error: 'Trop de requêtes, veuillez réessayer plus tard' }
+// });
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 auth requests per windowMs
-  message: { error: 'Too many login attempts, please try again later' }
-});
+// const authLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 5, // limit each IP to 5 auth requests per windowMs
+//   message: { error: 'Too many login attempts, please try again later' }
+// });
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply security middleware to all routes
@@ -56,11 +56,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       },
     },
   }));
-  app.use('/api', generalLimiter);
+  // app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
   app.use('/api', sanitizeMiddleware);
   
   // Authentication routes (no auth required)
-  app.post('/api/auth/login', authLimiter, async (req, res) => {
+  app.post('/api/auth/login', async (req, res) => {
     try {
       const { email, password } = loginSchema.parse(req.body);
       
@@ -86,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  app.post('/api/auth/register', authLimiter, async (req, res) => {
+  app.post('/api/auth/register', async (req, res) => {
     try {
       const userData = registerSchema.parse(req.body);
       

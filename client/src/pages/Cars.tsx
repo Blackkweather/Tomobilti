@@ -13,6 +13,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Footer from '../components/Footer';
 import { carApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
+import { formatCurrency } from '../utils/currency';
 
 export default function Cars() {
   const [location] = useLocation();
@@ -28,7 +29,37 @@ export default function Cars() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState('price');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isAuthenticated } = useAuth();
+
+  // Real car rental platform images with different categories
+  const heroImages = [
+    // Luxury cars
+    'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // Electric cars
+    'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // Classic cars
+    'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // SUVs
+    'https://images.unsplash.com/photo-1549317336-206569e8475c?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // Sports cars
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1920&h=1080&fit=crop&auto=format&q=80'
+  ];
+
+  // Rotate images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
 
   // Parse URL parameters on component mount
   useEffect(() => {
@@ -140,24 +171,29 @@ export default function Cars() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-mauve-50 via-white to-bleu-50">
       {/* Hero Section with Attractive Image */}
       <div className="relative h-[70vh] min-h-[500px] overflow-hidden group">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
-            src="/assets/generated_images/Car_rental_listing_photo_bdcce465.png"
+            src={heroImages[currentImageIndex]}
             alt="Car rental platform"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            loading="eager"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = heroImages[(currentImageIndex + 1) % heroImages.length];
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
         </div>
         
         {/* Floating Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-20 h-20 bg-blue-500/20 rounded-full blur-xl animate-bounce-gentle"></div>
-          <div className="absolute bottom-20 right-10 w-32 h-32 bg-purple-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-green-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-20 left-10 w-20 h-20 bg-mauve-500/20 rounded-full blur-xl animate-bounce-gentle"></div>
+          <div className="absolute bottom-20 right-10 w-32 h-32 bg-rose-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-bleu-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '2s' }}></div>
         </div>
 
         {/* Content */}
@@ -167,7 +203,7 @@ export default function Cars() {
               <div className="animate-fade-in">
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
                   Find Your Perfect
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-mauve-400 to-bleu-400">
                     Ride
                   </span>
                 </h1>
@@ -270,10 +306,10 @@ export default function Cars() {
             {carsData && (
               <div className="flex items-center gap-4">
                 <p className="text-lg text-gray-700 font-medium">
-                  <span className="font-semibold text-blue-600">{carsData.total}</span> vehicles found
+                  <span className="font-semibold text-mauve-600">{carsData.total}</span> vehicles found
                 </p>
                 {hasActiveFilters && (
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                  <Badge variant="secondary" className="bg-mauve-100 text-mauve-800">
                     <Filter className="w-3 h-3 mr-1" />
                     Filtered
                   </Badge>
@@ -406,22 +442,22 @@ export default function Cars() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Star className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-mauve-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star className="w-8 h-8 text-mauve-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Verified Owners</h4>
                 <p className="text-gray-700 text-sm font-medium">All car owners are verified and trusted members of our community</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Heart className="w-8 h-8 text-green-600" />
+                <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Heart className="w-8 h-8 text-rose-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Best Prices</h4>
                 <p className="text-gray-700 text-sm font-medium">Competitive rates with no hidden fees or surprise charges</p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 bg-bleu-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-8 h-8 text-bleu-600" />
                 </div>
                 <h4 className="font-semibold text-gray-900 mb-2">Wide Selection</h4>
                 <p className="text-gray-700 text-sm font-medium">From city cars to luxury vehicles across all major UK cities</p>

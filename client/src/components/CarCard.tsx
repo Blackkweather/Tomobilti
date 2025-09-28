@@ -3,10 +3,11 @@ import { Card, CardContent } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Star, MapPin, Fuel, Zap, Heart, Calendar as CalendarIcon, Shield, Users, Settings, Clock } from 'lucide-react';
+import { Star, MapPin, Fuel, Zap, Heart, Shield, Users, Settings, Calendar, Info, BookOpen, Award, Mountain } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getCarImage, getSpecificCarImage } from '../utils/carImages';
-import Calendar from './Calendar';
+import ImageGallery from './ImageGallery';
+import { formatCurrency } from '../utils/currency';
 import type { Car } from '@shared/schema';
 
 interface CarCardProps {
@@ -31,20 +32,61 @@ const fuelTypeLabels = {
   hybrid: 'Hybrid'
 };
 
-const fuelTypeIcons = {
-  essence: Fuel,
-  diesel: Fuel,
+// Function to determine vehicle category based on make/model
+const getVehicleCategory = (make: string, model: string): string => {
+  const makeLower = make.toLowerCase();
+  const modelLower = model.toLowerCase();
+  
+  // Electric vehicles
+  if (makeLower.includes('tesla') || modelLower.includes('electric') || modelLower.includes('ev')) {
+    return 'electric';
+  }
+  
+  // Sports cars
+  if (makeLower.includes('porsche') || makeLower.includes('ferrari') || makeLower.includes('lamborghini') || 
+      makeLower.includes('mclaren') || makeLower.includes('aston martin') || modelLower.includes('gt') ||
+      modelLower.includes('sport') || modelLower.includes('turbo')) {
+    return 'sports';
+  }
+  
+  // Luxury sedans
+  if (makeLower.includes('mercedes') || makeLower.includes('bmw') || makeLower.includes('audi') ||
+      makeLower.includes('lexus') || makeLower.includes('jaguar') || makeLower.includes('maserati')) {
+    return 'luxury';
+  }
+  
+  // SUVs
+  if (makeLower.includes('range rover') || makeLower.includes('land rover') || makeLower.includes('jeep') ||
+      modelLower.includes('suv') || modelLower.includes('x5') || modelLower.includes('q7') ||
+      modelLower.includes('glc') || modelLower.includes('evoque') || modelLower.includes('discovery')) {
+    return 'suv';
+  }
+  
+  // Classic cars
+  if (makeLower.includes('classic') || modelLower.includes('classic') || 
+      (parseInt(make) < 2000 && parseInt(make) > 1950)) {
+    return 'classic';
+  }
+  
+  // Convertibles
+  if (modelLower.includes('convertible') || modelLower.includes('cabrio') || modelLower.includes('roadster')) {
+    return 'convertible';
+  }
+  
+  // Default to luxury for premium brands
+  return 'luxury';
+};
+
+const vehicleCategoryIcons = {
+  sports: Zap,
+  luxury: Award,
   electric: Zap,
-  hybrid: Zap
+  classic: Calendar,
+  convertible: Shield,
+  suv: Mountain
 };
 
 export default function CarCard({ car, isFavorited = false, onToggleFavorite }: CarCardProps) {
-  const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDates, setSelectedDates] = useState<{ start: Date | null; end: Date | null }>({
-    start: null,
-    end: null
-  });
-
   const {
     id,
     title,
@@ -65,44 +107,44 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
   } = car;
 
   const { isAuthenticated } = useAuth();
-  const [imageError, setImageError] = useState(false);
   
-  const FuelIcon = fuelTypeIcons[fuelType as keyof typeof fuelTypeIcons] || Fuel;
+  const vehicleCategory = getVehicleCategory(make, model);
+  const CategoryIcon = vehicleCategoryIcons[vehicleCategory as keyof typeof vehicleCategoryIcons] || Award;
   const carImage = getSpecificCarImage(car);
   const ownerName = owner ? `${owner.firstName} ${owner.lastName}` : 'Owner';
   const ownerImage = owner?.profileImage || `https://ui-avatars.com/api/?name=${ownerName}&background=random`;
+  
+  // Prepare images array - use car images if available, otherwise fallback to demo image
+  const carImages = images && images.length > 0 ? images : [carImage];
 
-  const handleDateSelect = (start: Date | null, end: Date | null) => {
-    setSelectedDates({ start, end });
+  const handleMoreDetails = () => {
+    // Navigate to car details page
+    window.location.href = `/cars/${id}`;
   };
 
-  const handleBookNow = () => {
-    if (selectedDates.start && selectedDates.end) {
-      // Navigate to booking page with selected dates
-      const params = new URLSearchParams();
-      params.set('startDate', selectedDates.start.toISOString());
-      params.set('endDate', selectedDates.end.toISOString());
-      window.location.href = `/cars/${id}?${params.toString()}`;
-    } else {
-      setShowCalendar(true);
-    }
+  const handleBooking = () => {
+    // Navigate to car details page and scroll to booking section
+    window.location.href = `/cars/${id}#booking`;
   };
 
   return (
     <Card className="card-modern group hover:shadow-2xl transition-all duration-300 border-0 bg-white overflow-hidden hover-lift">
       <div className="relative">
-        {/* Car Image */}
-        <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-          <img
-            src={imageError ? carImage : (images?.[0] || carImage)}
+        {/* Car Image Gallery */}
+        <div className="relative">
+          <ImageGallery 
+            images={carImages} 
             alt={`${make} ${model}`}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onError={() => setImageError(true)}
-            loading="lazy"
+            className="rounded-t-lg"
           />
           
+          {/* Picture count badge */}
+          <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+            {carImages.length} photo{carImages.length !== 1 ? 's' : ''}
+          </div>
+          
           {/* Overlay with badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
+          <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
             {fuelType === 'electric' && (
               <Badge className="badge-success shadow-lg">
                 <Zap className="w-3 h-3 mr-1" />
@@ -121,13 +163,35 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             <Button
               variant="ghost"
               size="icon"
-              className="absolute top-3 right-3 bg-white/90 hover:bg-white text-gray-600 hover:text-red-500 transition-colors duration-200"
+              className="absolute top-3 right-12 bg-white/90 hover:bg-white text-gray-600 hover:text-red-500 transition-colors duration-200 z-10"
               onClick={onToggleFavorite}
             >
               <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
             </Button>
           )}
+        </div>
 
+        {/* Action Buttons - Below Image */}
+        <div className="p-4 border-b border-gray-100">
+          <div className="flex gap-2">
+            <Button 
+              onClick={handleMoreDetails}
+              variant="outline"
+              size="sm"
+              className="flex-1 text-mauve-600 border-mauve-600 hover:bg-mauve-50 px-3 py-2 text-sm"
+            >
+              <Info className="w-4 h-4 mr-2" />
+              More Details
+            </Button>
+            <Button 
+              onClick={handleBooking}
+              size="sm"
+              className="flex-1 bg-mauve-600 hover:bg-mauve-700 text-white px-4 py-2 text-sm shadow-sm hover:shadow-md transition-all duration-200"
+            >
+              <BookOpen className="w-4 h-4 mr-2" />
+              Book Now
+            </Button>
+          </div>
         </div>
 
         <CardContent className="p-6">
@@ -145,8 +209,8 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
           {/* Car Details */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="flex items-center text-sm text-gray-700 font-medium">
-              <FuelIcon className="w-4 h-4 mr-2 text-blue-600" />
-              <span>{fuelTypeLabels[fuelType as keyof typeof fuelTypeLabels] || fuelType}</span>
+              <CategoryIcon className="w-4 h-4 mr-2 text-blue-600" />
+              <span className="capitalize">{vehicleCategory}</span>
             </div>
             <div className="flex items-center text-sm text-gray-700 font-medium">
               <Settings className="w-4 h-4 mr-2 text-blue-600" />
@@ -202,61 +266,17 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             </div>
           </div>
 
-          {/* Price and Action */}
+          {/* Price */}
           <div className="flex items-center justify-between">
             <div>
               <div className="text-2xl font-bold text-gray-900">
-                {currency} {pricePerDay}
+                {formatCurrency(pricePerDay)}
               </div>
               <div className="text-sm text-gray-700 font-medium">per day</div>
-              {selectedDates.start && selectedDates.end && (
-                <div className="text-xs text-green-600 font-medium mt-1">
-                  {selectedDates.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {selectedDates.end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                </div>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => setShowCalendar(true)}
-                variant="outline"
-                className="text-blue-600 border-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg"
-              >
-                <CalendarIcon className="w-4 h-4 mr-1" />
-                Dates
-              </Button>
-              <Button 
-                onClick={handleBookNow}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-              >
-                {selectedDates.start && selectedDates.end ? 'Book Now' : 'Select Dates'}
-              </Button>
             </div>
           </div>
         </CardContent>
       </div>
-
-      {/* Calendar Modal */}
-      {showCalendar && (
-        <>
-          {/* Backdrop */}
-          <div 
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9998]"
-            onClick={() => setShowCalendar(false)}
-          />
-          {/* Calendar */}
-          <div 
-            className="fixed z-[9999] top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-sm mx-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Calendar
-              selectedDates={selectedDates}
-              onDateSelect={handleDateSelect}
-              onClose={() => setShowCalendar(false)}
-              className="w-full"
-            />
-          </div>
-        </>
-      )}
     </Card>
   );
 }
