@@ -1,62 +1,61 @@
-// Real car images mapping by make and model - using local assets for stability
+// Real car images mapping by make and model - using high-quality Unsplash images
 export const carImages = {
   // BMW
   'bmw': {
-    '3 series': '/assets/luxury Sedam.png',
-    '5 series': '/assets/luxury Sedam.png',
-    '7 series': '/assets/luxury Sedam.png',
-    'x3': '/assets/SUV.png',
-    'x5': '/assets/SUV.png',
-    'm3': '/assets/Sport car.png',
-    'm4': '/assets/Sport car.png',
-    'i3': '/assets/ELECTRIC.png',
-    'i8': '/assets/ELECTRIC.png'
+    '3 series': 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format&q=80',
+    '5 series': 'https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&h=600&fit=crop&auto=format&q=80',
+    '7 series': 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop&auto=format&q=80',
+    'x3': 'https://images.unsplash.com/photo-1549317336-206569e8475c?w=800&h=600&fit=crop&auto=format&q=80',
+    'x5': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop&auto=format&q=80',
+    'm3': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format&q=80',
+    'm4': 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format&q=80',
+    'i3': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80',
+    'i8': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80'
   },
   
   // Mercedes-Benz
   'mercedes': {
-    'c-class': '/assets/luxury Sedam.png',
-    'e-class': '/assets/luxury Sedam.png',
-    's-class': '/assets/luxury Sedam.png',
-    'gla': '/assets/SUV.png',
-    'glc': '/assets/SUV.png',
-    'gle': '/assets/SUV.png',
-    'amg': '/assets/Sport car.png',
-    'sls': '/assets/Sport car.png'
+    'c-class': 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop&auto=format&q=80',
+    'e-class': 'https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&h=600&fit=crop&auto=format&q=80',
+    's-class': 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format&q=80',
+    'gla': 'https://images.unsplash.com/photo-1549317336-206569e8475c?w=800&h=600&fit=crop&auto=format&q=80',
+    'glc': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop&auto=format&q=80',
+    'gle': 'https://images.unsplash.com/photo-1549317336-206569e8475c?w=800&h=600&fit=crop&auto=format&q=80',
+    'amg': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format&q=80',
+    'sls': 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format&q=80'
   },
   
   // Audi
   'audi': {
-    'a3': '/assets/luxury Sedam.png',
-    'a4': '/assets/luxury Sedam.png',
-    'a6': '/assets/luxury Sedam.png',
-    'a8': '/assets/luxury Sedam.png',
-    'q3': '/assets/SUV.png',
-    'q5': '/assets/SUV.png',
-    'q7': '/assets/SUV.png',
-    'tt': '/assets/Sport car.png',
-    'r8': '/assets/Sport car.png',
-    'e-tron': '/assets/ELECTRIC.png'
+    'a3': 'https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&h=600&fit=crop&auto=format&q=80',
+    'a4': 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop&auto=format&q=80',
+    'a6': 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format&q=80',
+    'a8': 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format&q=80',
+    'q3': 'https://images.unsplash.com/photo-1549317336-206569e8475c?w=800&h=600&fit=crop&auto=format&q=80',
+    'q5': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop&auto=format&q=80',
+    'q7': 'https://images.unsplash.com/photo-1549317336-206569e8475c?w=800&h=600&fit=crop&auto=format&q=80',
+    'tt': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format&q=80',
+    'r8': 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format&q=80'
   },
   
   // Tesla
   'tesla': {
-    'model s': '/assets/ELECTRIC.png',
-    'model 3': '/assets/ELECTRIC.png',
-    'model x': '/assets/ELECTRIC.png',
-    'model y': '/assets/ELECTRIC.png',
-    'cybertruck': '/assets/ELECTRIC.png'
+    'model s': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80',
+    'model 3': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80',
+    'model x': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80',
+    'model y': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80',
+    'cybertruck': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80'
   },
   
   // Porsche
   'porsche': {
-    '911': '/assets/Sport car.png',
-    'cayenne': '/assets/SUV.png',
-    'macan': '/assets/SUV.png',
-    'panamera': '/assets/luxury Sedam.png',
-    'boxster': '/assets/Sport car.png',
-    'cayman': '/assets/Sport car.png',
-    'taycan': '/assets/ELECTRIC.png'
+    '911': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format&q=80',
+    'cayenne': 'https://images.unsplash.com/photo-1549317336-206569e8475c?w=800&h=600&fit=crop&auto=format&q=80',
+    'macan': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop&auto=format&q=80',
+    'panamera': 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format&q=80',
+    'boxster': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format&q=80',
+    'cayman': 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format&q=80',
+    'taycan': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80'
   },
   
   // Jaguar

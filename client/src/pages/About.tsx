@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Badge } from "../components/ui/badge";
 import { Users, Car, Shield, Award, MapPin, Phone, Mail } from "lucide-react";
 import { Link } from "wouter";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function About() {
+  const { isAuthenticated } = useAuth();
   const stats = [
     { icon: Users, label: "Active Users", value: "10,000+" },
     { icon: Car, label: "Available Vehicles", value: "2,500+" },
@@ -193,14 +195,16 @@ export default function About() {
             Whether you're an owner or renter, Share Wheelz offers you a new way to think about mobility.
           </p>
           <div className="flex gap-4 justify-center">
-            <Link href="/login">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-                Sign Up Now
-              </Button>
-            </Link>
-            <Link href="/become-host">
+            {!isAuthenticated && (
+              <Link href="/login">
+                <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+                  Sign Up Now
+                </Button>
+              </Link>
+            )}
+            <Link href="/become-member">
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-                Become a Host
+                Become a Member
               </Button>
             </Link>
           </div>

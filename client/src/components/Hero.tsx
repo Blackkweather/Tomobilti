@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import HeroSearch from './HeroSearch';
 import { Button } from './ui/button';
@@ -21,13 +21,36 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
   const [searchLocation, setSearchLocation] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Premium hero images with fallbacks - using local assets for stability
+  // Real car rental platform images with different categories
   const heroImages = [
-    '/assets/hero-car-1.jpg',
-    '/assets/hero-car-2.jpg', 
-    '/assets/hero-car-3.jpg'
+    // Luxury cars
+    'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // Electric cars
+    'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // Classic cars
+    'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // SUVs
+    'https://images.unsplash.com/photo-1549317336-206569e8475c?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=1080&fit=crop&auto=format&q=80',
+    // Sports cars
+    'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1920&h=1080&fit=crop&auto=format&q=80',
+    'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1920&h=1080&fit=crop&auto=format&q=80'
   ];
+
+  // Rotate images every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [heroImages.length]);
 
   const quickStats = [
     { icon: Car, label: '2,500+ Cars', value: 'Available' },
@@ -42,13 +65,13 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
       <div className="absolute inset-0">
         <div className="relative w-full h-full">
           <img 
-            src={heroImages[0]} 
+            src={heroImages[currentImageIndex]} 
             alt="Premium car rental in the UK - Luxury vehicles for your next journey"
             className="w-full h-full object-cover transition-opacity duration-1000"
             loading="eager"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = heroImages[1];
+              target.src = heroImages[(currentImageIndex + 1) % heroImages.length];
             }}
           />
           {/* Enhanced gradient overlays */}

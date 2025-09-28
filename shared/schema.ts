@@ -14,6 +14,14 @@ export const users = pgTable("users", {
   profileImage: text("profile_image"),
   userType: text("user_type").notNull().default("renter"), // "owner", "renter", "both"
   
+  // Membership & Subscription Fields
+  membershipTier: text("membership_tier").default("none"), // "none", "basic", "premium"
+  subscriptionId: text("subscription_id"),
+  subscriptionStatus: text("subscription_status").default("inactive"), // "active", "inactive", "cancelled", "past_due"
+  subscriptionCurrentPeriodEnd: timestamp("subscription_current_period_end"),
+  stripeCustomerId: text("stripe_customer_id"),
+  loyaltyPoints: integer("loyalty_points").default(0),
+  
   // Security & Verification Fields
   isEmailVerified: boolean("is_email_verified").notNull().default(false),
   isPhoneVerified: boolean("is_phone_verified").notNull().default(false),
@@ -105,6 +113,13 @@ export const bookings = pgTable("bookings", {
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   serviceFee: decimal("service_fee", { precision: 10, scale: 2 }).notNull(),
   insurance: decimal("insurance", { precision: 10, scale: 2 }).notNull(),
+  
+  // Membership & Discount Fields
+  membershipDiscount: decimal("membership_discount", { precision: 10, scale: 2 }).default("0"),
+  membershipDiscountPercentage: decimal("membership_discount_percentage", { precision: 5, scale: 2 }).default("0"),
+  loyaltyPointsEarned: integer("loyalty_points_earned").default(0),
+  loyaltyPointsRedeemed: integer("loyalty_points_redeemed").default(0),
+  
   status: text("status").notNull().default("pending"), // "pending", "confirmed", "active", "completed", "cancelled"
   message: text("message"),
   paymentStatus: text("payment_status").notNull().default("pending"), // "pending", "paid", "failed", "refunded"
@@ -123,6 +138,30 @@ export const reviews = pgTable("reviews", {
   rating: integer("rating").notNull(), // 1-5
   comment: text("comment"),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Loyalty Points Transactions table
+export const loyaltyPointsTransactions = pgTable("loyalty_points_transactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  bookingId: varchar("booking_id").references(() => bookings.id),
+  points: integer("points").notNull(), // positive for earned, negative for redeemed
+  type: text("type").notNull(), // "earned", "redeemed", "bonus", "expired"
+  description: text("description"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Membership Benefits table
+export const membershipBenefits = pgTable("membership_benefits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tier: text("tier").notNull(), // "basic", "premium"
+  benefitType: text("benefit_type").notNull(), // "discount", "points_multiplier", "priority_support", etc.
+  value: decimal("value", { precision: 10, scale: 2 }).notNull(),
+  description: text("description"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Insert schemas
@@ -158,6 +197,10 @@ export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
+export type LoyaltyPointsTransaction = typeof loyaltyPointsTransactions.$inferSelect;
+export type InsertLoyaltyPointsTransaction = typeof loyaltyPointsTransactions.$inferInsert;
+export type MembershipBenefit = typeof membershipBenefits.$inferSelect;
+export type InsertMembershipBenefit = typeof membershipBenefits.$inferInsert;
 
 // Search and filter types
 export const carSearchSchema = z.object({

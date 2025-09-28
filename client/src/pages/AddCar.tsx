@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Shield } from "lucide-react";
+import ImageUpload from "../components/ImageUpload";
 
 interface CarForm {
   make: string;
@@ -20,6 +21,7 @@ interface CarForm {
   seats: number;
   mileage: number;
   licensePlate: string;
+  images: string[];
 }
 
 const FEATURES = [
@@ -78,8 +80,8 @@ export default function AddCar() {
     seats: 5,
     mileage: 0,
     licensePlate: "",
+    images: [],
   });
-  const [images, setImages] = useState<File[]>([]);
   const [errors, setErrors] = useState<Partial<CarForm>>({});
 
   const addCarMutation = useMutation({
@@ -162,13 +164,6 @@ export default function AddCar() {
         ? prev.features.filter(f => f !== feature)
         : [...prev.features, feature]
     }));
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setImages(Array.from(e.target.files));
-      setErrors(prev => ({ ...prev, images: undefined }));
-    }
   };
 
   return (
@@ -333,18 +328,12 @@ export default function AddCar() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <ImageUpload
+                images={form.images}
+                onImagesChange={(images) => setForm(prev => ({ ...prev, images }))}
+                maxImages={10}
               />
               {errors.images && <p className="mt-1 text-sm text-red-600">{errors.images}</p>}
-              {images.length > 0 && (
-                <p className="mt-1 text-sm text-gray-600">{images.length} image(s) selected</p>
-              )}
             </div>
 
             <div className="flex justify-end space-x-4">

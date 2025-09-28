@@ -3,7 +3,7 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { 
-  Accessibility, 
+  Accessibility as AccessibilityIcon, 
   Eye, 
   Ear, 
   MousePointer, 
@@ -25,7 +25,7 @@ export default function Accessibility() {
   const [activeSection, setActiveSection] = useState('overview');
 
   const sections = [
-    { id: 'overview', title: 'Overview', icon: Accessibility },
+    { id: 'overview', title: 'Overview', icon: AccessibilityIcon },
     { id: 'features', title: 'Accessibility Features', icon: Settings },
     { id: 'standards', title: 'Standards & Compliance', icon: Shield },
     { id: 'assistive', title: 'Assistive Technologies', icon: MousePointer },
