@@ -98,18 +98,38 @@ export default function Dashboard() {
     return sum + (parseFloat(booking.totalAmount) || 0);
   }, 0);
 
+  // Calculate additional statistics
+  const totalSpent = bookings.reduce((sum: number, booking: any) => {
+    return sum + (parseFloat(booking.totalAmount) || 0);
+  }, 0);
+  
+  const completedBookings = bookings.filter((booking: any) => booking.status === 'confirmed').length;
+  const pendingBookings = bookings.filter((booking: any) => booking.status === 'pending').length;
+
   const getBookingStatusBadge = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Confirmé</Badge>;
+        return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Confirmed</Badge>;
       case 'pending':
-        return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />En attente</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />Pending</Badge>;
       case 'cancelled':
-        return <Badge className="bg-red-100 text-red-800"><XCircle className="w-3 h-3 mr-1" />Annulé</Badge>;
+        return <Badge className="bg-red-100 text-red-800"><XCircle className="w-3 h-3 mr-1" />Cancelled</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800"><AlertCircle className="w-3 h-3 mr-1" />Inconnu</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800"><AlertCircle className="w-3 h-3 mr-1" />Unknown</Badge>;
     }
   };
+
+  // Show loading state
+  if (carsLoading || bookingsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50">
@@ -120,18 +140,18 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-900 to-green-600 bg-clip-text text-transparent mb-3">
-                  Bonjour, {user.firstName} ! 👋
+                  Hello, {user.firstName}! 👋
                 </h1>
                 <p className="text-xl text-gray-600 mb-6">
-                  Gérez votre activité de location de véhicules en toute simplicité
+                  Manage your car rental activity with ease
                 </p>
                 <div className="flex items-center space-x-6">
                   <Badge variant="outline" className="text-green-600 border-green-300 bg-green-50 px-4 py-2 text-sm font-medium">
-                    {isOwner && isRenter ? 'Propriétaire & Locataire' : isOwner ? 'Propriétaire' : 'Locataire'}
+                    {isOwner && isRenter ? 'Owner & Renter' : isOwner ? 'Owner' : 'Renter'}
                   </Badge>
                   <span className="text-sm text-gray-500 flex items-center">
                     <Calendar className="w-4 h-4 mr-1" />
-                    Membre depuis {user.createdAt ? new Date(user.createdAt).toLocaleDateString('fr-FR') : 'Unknown'}
+                    Member since {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB') : 'Unknown'}
                   </span>
                 </div>
               </div>

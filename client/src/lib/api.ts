@@ -88,6 +88,27 @@ export const authApi = {
       method: 'PUT',
       body: JSON.stringify(profileData)
     });
+  },
+
+  changePassword: async (passwordData: { currentPassword: string; newPassword: string }) => {
+    return apiRequest(`${API_BASE}/auth/password`, {
+      method: 'PUT',
+      body: JSON.stringify(passwordData)
+    });
+  },
+
+  deleteAccount: async (password: string) => {
+    return apiRequest(`${API_BASE}/auth/account`, {
+      method: 'DELETE',
+      body: JSON.stringify({ password })
+    });
+  },
+
+  updatePreferences: async (preferences: any) => {
+    return apiRequest(`${API_BASE}/auth/preferences`, {
+      method: 'PUT',
+      body: JSON.stringify(preferences)
+    });
   }
 };
 
@@ -175,10 +196,33 @@ export const reviewApi = {
     return apiRequest(`${API_BASE}/reviews/car/${carId}`);
   },
 
+  getUserReviews: async (userId: string) => {
+    return apiRequest(`${API_BASE}/reviews/user/${userId}`);
+  },
+
   createReview: async (reviewData: any) => {
     return apiRequest(`${API_BASE}/reviews`, {
       method: 'POST',
       body: JSON.stringify(reviewData)
+    });
+  }
+};
+
+// Notification API functions
+export const notificationApi = {
+  getNotifications: async () => {
+    return apiRequest(`${API_BASE}/notifications`);
+  },
+
+  markNotificationAsRead: async (notificationId: string) => {
+    return apiRequest(`${API_BASE}/notifications/${notificationId}/read`, {
+      method: 'PUT'
+    });
+  },
+
+  markAllNotificationsAsRead: async () => {
+    return apiRequest(`${API_BASE}/notifications/mark-all-read`, {
+      method: 'PUT'
     });
   }
 };
@@ -212,10 +256,34 @@ export const paymentApi = {
   }
 };
 
-// Owner API functions
-export const ownerApi = {
-  getStats: async (ownerId: string) => {
-    return apiRequest(`${API_BASE}/owners/${ownerId}/stats`);
+// Messaging API functions
+export const messagingApi = {
+  getConversations: async () => {
+    return apiRequest(`${API_BASE}/conversations`);
+  },
+
+  getConversationMessages: async (conversationId: string) => {
+    return apiRequest(`${API_BASE}/conversations/${conversationId}/messages`);
+  },
+
+  createConversation: async (bookingId: string) => {
+    return apiRequest(`${API_BASE}/conversations`, {
+      method: 'POST',
+      body: JSON.stringify({ bookingId })
+    });
+  },
+
+  sendMessage: async (conversationId: string, content: string, messageType: string = 'text') => {
+    return apiRequest(`${API_BASE}/messages`, {
+      method: 'POST',
+      body: JSON.stringify({ conversationId, content, messageType })
+    });
+  },
+
+  markMessageAsRead: async (messageId: string) => {
+    return apiRequest(`${API_BASE}/messages/${messageId}/read`, {
+      method: 'PUT'
+    });
   }
 };
 

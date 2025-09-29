@@ -16,6 +16,9 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
     "db:push": "drizzle-kit push",
+    "setup-cloud-db": "node scripts/setup-cloud-db.js",
+    "setup-render-db": "node scripts/setup-render-db.js",
+    "migrate-cloud": "node scripts/migrate-cloud-db.js",
     "postinstall": "npm run build"
   },
   "dependencies": {

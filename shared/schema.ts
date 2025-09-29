@@ -44,6 +44,16 @@ export const users = pgTable("users", {
   isBlocked: boolean("is_blocked").notNull().default(false),
   blockReason: text("block_reason"),
   
+  // User Preferences
+  preferences: text("preferences").$type<{
+    emailNotifications: boolean;
+    smsNotifications: boolean;
+    marketingEmails: boolean;
+    language: string;
+    currency: string;
+    timezone: string;
+  }>(),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -140,6 +150,18 @@ export const reviews = pgTable("reviews", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Notifications table
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  type: text("type").notNull(), // "booking", "payment", "review", "system", "promotion"
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").notNull().default(false),
+  data: text("data"), // JSON string for additional data (booking ID, etc.)
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Loyalty Points Transactions table
 export const loyaltyPointsTransactions = pgTable("loyalty_points_transactions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -197,6 +219,10 @@ export type Booking = typeof bookings.$inferSelect;
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
+
 export type LoyaltyPointsTransaction = typeof loyaltyPointsTransactions.$inferSelect;
 export type InsertLoyaltyPointsTransaction = typeof loyaltyPointsTransactions.$inferInsert;
 export type MembershipBenefit = typeof membershipBenefits.$inferSelect;

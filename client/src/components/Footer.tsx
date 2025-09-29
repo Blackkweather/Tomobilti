@@ -71,7 +71,7 @@ export default function Footer() {
         <div className="mb-8">
           <Link href="/" className="flex items-center">
             <img 
-              src="/assets/MAIN LOGO.png" 
+              src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
               className="h-20 w-auto hover:scale-105 transition-transform duration-200"
             />
@@ -198,7 +198,7 @@ export default function Footer() {
               </div>
               <div>
                 <p className="font-semibold">Email</p>
-                <p className="text-gray-300 text-sm">hello@sharewheelz.com</p>
+                <p className="text-gray-300 text-sm">contact@sharewheelz.uk</p>
               </div>
             </div>
           </div>

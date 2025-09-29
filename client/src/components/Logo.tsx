@@ -23,7 +23,7 @@ export default function Logo({
   const logoElement = (
     <div className={`flex items-center ${className}`}>
       <img 
-        src="/assets/Share Wheelz.png" 
+        src="/assets/MAIN LOGO.png?v=5" 
         alt="Share Wheelz" 
         className={`${sizeClasses[size]} mr-3`}
       />

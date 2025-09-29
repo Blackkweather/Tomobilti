@@ -21,13 +21,17 @@ import {
   Save,
   AlertTriangle
 } from 'lucide-react';
+import { useLocation } from 'wouter';
 
 export default function Settings() {
   const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
   
   const [profileData, setProfileData] = useState({
     firstName: user?.firstName || '',
@@ -37,12 +41,12 @@ export default function Settings() {
   });
 
   const [preferences, setPreferences] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    marketingEmails: false,
-    language: 'en',
-    currency: 'GBP',
-    timezone: 'Europe/London'
+    emailNotifications: user?.preferences?.emailNotifications ?? true,
+    smsNotifications: user?.preferences?.smsNotifications ?? false,
+    marketingEmails: user?.preferences?.marketingEmails ?? false,
+    language: user?.preferences?.language ?? 'en',
+    currency: user?.preferences?.currency ?? 'GBP',
+    timezone: user?.preferences?.timezone ?? 'Europe/London'
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -99,8 +103,10 @@ export default function Settings() {
     }
     
     try {
-      // TODO: Implement password change API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      await authApi.changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
       setMessage('Password changed successfully');
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err: any) {
@@ -110,9 +116,45 @@ export default function Settings() {
     }
   };
 
-  const handleDeleteAccount = () => {
-    // TODO: Implement account deletion
-    alert('Account deletion functionality to be implemented');
+  const handlePreferencesChange = async (key: string, value: any) => {
+    const newPreferences = { ...preferences, [key]: value };
+    setPreferences(newPreferences);
+    
+    try {
+      await authApi.updatePreferences(newPreferences);
+      setMessage('Preferences updated successfully');
+    } catch (err: any) {
+      setError(err.message || 'Error updating preferences');
+      // Revert the change on error
+      setPreferences(preferences);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deletePassword) {
+      setError('Please enter your password to confirm account deletion');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    setMessage('');
+
+    try {
+      await authApi.deleteAccount(deletePassword);
+      setMessage('Account deleted successfully. You will be redirected to the home page.');
+      
+      // Clear auth token and redirect
+      setTimeout(() => {
+        localStorage.removeItem('auth_token');
+        setLocation('/');
+        window.location.reload(); // Force reload to clear auth state
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'Error deleting account');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -244,7 +286,7 @@ export default function Settings() {
                   <Switch
                     checked={preferences.emailNotifications}
                     onCheckedChange={(checked) => 
-                      setPreferences(prev => ({ ...prev, emailNotifications: checked }))
+                      handlePreferencesChange('emailNotifications', checked)
                     }
                   />
                 </div>
@@ -257,7 +299,7 @@ export default function Settings() {
                   <Switch
                     checked={preferences.smsNotifications}
                     onCheckedChange={(checked) => 
-                      setPreferences(prev => ({ ...prev, smsNotifications: checked }))
+                      handlePreferencesChange('smsNotifications', checked)
                     }
                   />
                 </div>
@@ -270,7 +312,7 @@ export default function Settings() {
                   <Switch
                     checked={preferences.marketingEmails}
                     onCheckedChange={(checked) => 
-                      setPreferences(prev => ({ ...prev, marketingEmails: checked }))
+                      handlePreferencesChange('marketingEmails', checked)
                     }
                   />
                 </div>
@@ -282,7 +324,7 @@ export default function Settings() {
                 <div>
                   <Label>Langue</Label>
                   <Select value={preferences.language} onValueChange={(value) => 
-                    setPreferences(prev => ({ ...prev, language: value }))
+                    handlePreferencesChange('language', value)
                   }>
                     <SelectTrigger>
                       <SelectValue />
@@ -298,7 +340,7 @@ export default function Settings() {
                 <div>
                   <Label>Devise</Label>
                   <Select value={preferences.currency} onValueChange={(value) => 
-                    setPreferences(prev => ({ ...prev, currency: value }))
+                    handlePreferencesChange('currency', value)
                   }>
                     <SelectTrigger>
                       <SelectValue />
@@ -385,14 +427,52 @@ export default function Settings() {
                 <p className="text-sm text-red-700 mb-4">
                   Cette action est irréversible. Toutes vos données seront supprimées définitivement.
                 </p>
-                <Button 
-                  variant="destructive"
-                  onClick={handleDeleteAccount}
-                  className="bg-red-600 hover:bg-red-700"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Supprimer mon compte
-                </Button>
+                
+                {!showDeleteConfirm ? (
+                  <Button 
+                    variant="destructive"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Supprimer mon compte
+                  </Button>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <Label htmlFor="deletePassword" className="text-red-800">Confirmer avec votre mot de passe</Label>
+                      <Input
+                        id="deletePassword"
+                        type="password"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        placeholder="Entrez votre mot de passe"
+                        className="border-red-300 focus:border-red-500"
+                      />
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button 
+                        variant="destructive"
+                        onClick={handleDeleteAccount}
+                        disabled={isLoading || !deletePassword}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        {isLoading ? 'Suppression...' : 'Confirmer la suppression'}
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setShowDeleteConfirm(false);
+                          setDeletePassword('');
+                        }}
+                        className="border-red-300 text-red-700 hover:bg-red-50"
+                      >
+                        Annuler
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             </CardContent>

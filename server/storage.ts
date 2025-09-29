@@ -7,6 +7,8 @@ import {
   type InsertBooking,
   type Review,
   type InsertReview,
+  type Notification,
+  type InsertNotification,
   type CarSearch
 } from "@shared/schema";
 import { randomUUID } from "crypto";
@@ -18,6 +20,8 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined>;
+  updateUserPassword(id: string, newPassword: string): Promise<boolean>;
+  deleteUser(id: string): Promise<boolean>;
 
   // Car operations
   getCar(id: string): Promise<Car | undefined>;
@@ -42,6 +46,19 @@ export interface IStorage {
   getReviewsByCar(carId: string): Promise<Review[]>;
   createReview(review: InsertReview): Promise<Review>;
   
+  // Notification operations
+  getNotifications(userId: string): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationAsRead(notificationId: string, userId: string): Promise<boolean>;
+  markAllNotificationsAsRead(userId: string): Promise<boolean>;
+  
+  // Messaging operations
+  getUserConversations(userId: string): Promise<any[]>;
+  getConversationMessages(conversationId: string, userId: string): Promise<any[]>;
+  createConversation(bookingId: string, userId: string): Promise<any>;
+  createMessage(conversationId: string, senderId: string, content: string, messageType?: string): Promise<any>;
+  markMessageAsRead(messageId: string, userId: string): Promise<boolean>;
+  
   // Analytics operations
   getOwnerStats(ownerId: string): Promise<{
     totalEarnings: number;
@@ -56,23 +73,164 @@ export class MemStorage implements IStorage {
   private cars: Map<string, Car>;
   private bookings: Map<string, Booking>;
   private reviews: Map<string, Review>;
+  private notifications: Map<string, Notification>;
+  private conversations: Map<string, any>;
+  private messages: Map<string, any>;
 
   constructor() {
     this.users = new Map();
     this.cars = new Map();
     this.bookings = new Map();
     this.reviews = new Map();
-    
+    this.notifications = new Map();
+    this.conversations = new Map();
+    this.messages = new Map();
+
     // Sample data initialization removed
+    this.initializeSampleNotifications();
+    
+    // Initialize conversations synchronously
+    this.initializeConversationsFromSQLiteSync();
+  }
+
+  // Initialize conversations and messages from SQLite synchronously
+  private initializeConversationsFromSQLiteSync() {
+    try {
+      const Database = require('better-sqlite3');
+      const path = require('path');
+      
+      const dbPath = path.join(process.cwd(), 'tomobilti.db');
+      const db = new Database(dbPath);
+      
+      // Load conversations
+      const conversations = db.prepare('SELECT * FROM conversations').all();
+      conversations.forEach((conv: any) => {
+        this.conversations.set(conv.id, {
+          id: conv.id,
+          bookingId: conv.booking_id,
+          ownerId: conv.owner_id,
+          renterId: conv.renter_id,
+          lastMessageAt: conv.last_message_at,
+          createdAt: conv.created_at
+        });
+      });
+      
+      // Load messages
+      const messages = db.prepare('SELECT * FROM messages').all();
+      messages.forEach((msg: any) => {
+        this.messages.set(msg.id, {
+          id: msg.id,
+          conversationId: msg.conversation_id,
+          senderId: msg.sender_id,
+          content: msg.content,
+          messageType: msg.message_type,
+          isRead: Boolean(msg.is_read),
+          createdAt: msg.created_at
+        });
+      });
+      
+      db.close();
+      console.log(`✅ Loaded ${conversations.length} conversations and ${messages.length} messages from SQLite`);
+    } catch (error: any) {
+      console.log('⚠️ Could not load conversations from SQLite:', error.message);
+    }
+  }
+
+
+  // Initialize sample notifications for testing
+  private async initializeSampleNotifications() {
+    // This will be called after users are created
+    setTimeout(() => {
+      this.createSampleNotifications();
+    }, 1000);
+  }
+
+  private async createSampleNotifications() {
+    const users = Array.from(this.users.values());
+    console.log('Creating sample notifications for', users.length, 'users');
+    if (users.length === 0) {
+      console.log('No users found, skipping sample notifications');
+      return;
+    }
+
+    const sampleNotifications = [
+      {
+        userId: users[0].id,
+        type: 'booking',
+        title: 'Booking Confirmed',
+        message: 'Your Ferrari La Ferrari rental has been confirmed for 15 days',
+        data: JSON.stringify({ bookingId: 'sample-booking-1' })
+      },
+      {
+        userId: users[0].id,
+        type: 'payment',
+        title: 'Payment Received',
+        message: 'Payment of £94,875 has been processed successfully',
+        data: JSON.stringify({ amount: 94875, currency: 'GBP' })
+      },
+      {
+        userId: users[0].id,
+        type: 'system',
+        title: 'Welcome to ShareWheelz',
+        message: 'Thank you for joining our platform! Start exploring amazing cars.',
+        data: null
+      }
+    ];
+
+    for (const notification of sampleNotifications) {
+      await this.createNotification(notification);
+    }
   }
 
   // User operations
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    // Parse preferences JSON if it exists
+    let processedUser = { ...user };
+    if (user.preferences && typeof user.preferences === 'string') {
+      try {
+        processedUser.preferences = JSON.parse(user.preferences);
+      } catch (error) {
+        // If parsing fails, use default preferences
+        processedUser.preferences = {
+          emailNotifications: true,
+          smsNotifications: false,
+          marketingEmails: false,
+          language: 'en',
+          currency: 'GBP',
+          timezone: 'Europe/London'
+        };
+      }
+    }
+    
+    return processedUser;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
+    const user = Array.from(this.users.values()).find(user => user.email === email);
+    if (!user) return undefined;
+    
+    // Parse preferences JSON if it exists
+    let processedUser = { ...user };
+    if (user.preferences && typeof user.preferences === 'string') {
+      try {
+        processedUser.preferences = JSON.parse(user.preferences);
+      } catch (error) {
+        // If parsing fails, use default preferences
+        processedUser.preferences = {
+          emailNotifications: true,
+          smsNotifications: false,
+          marketingEmails: false,
+          language: 'en',
+          currency: 'GBP',
+          timezone: 'Europe/London'
+        };
+      }
+    }
+    
+    return processedUser;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -95,13 +253,63 @@ export class MemStorage implements IStorage {
     const user = this.users.get(id);
     if (!user) return undefined;
     
+    // Handle preferences JSON parsing
+    let processedUpdates = { ...updates };
+    if (updates.preferences && typeof updates.preferences === 'object') {
+      processedUpdates.preferences = JSON.stringify(updates.preferences);
+    }
+    
     const updatedUser = { 
       ...user, 
-      ...updates, 
+      ...processedUpdates, 
       updatedAt: new Date() 
     };
     this.users.set(id, updatedUser);
     return updatedUser;
+  }
+
+  async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
+    const user = this.users.get(id);
+    if (!user) return false;
+    
+    // Hash the new password
+    const bcrypt = await import('bcryptjs');
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    const updatedUser = { 
+      ...user, 
+      password: hashedPassword,
+      updatedAt: new Date() 
+    };
+    this.users.set(id, updatedUser);
+    return true;
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    const user = this.users.get(id);
+    if (!user) return false;
+    
+    // Delete all user's cars
+    const userCars = Array.from(this.cars.values()).filter(car => car.ownerId === id);
+    for (const car of userCars) {
+      this.cars.delete(car.id);
+    }
+    
+    // Delete all user's bookings (as renter)
+    const userBookings = Array.from(this.bookings.values()).filter(booking => booking.renterId === id);
+    for (const booking of userBookings) {
+      this.bookings.delete(booking.id);
+    }
+    
+    // Delete all user's reviews
+    const userReviews = Array.from(this.reviews.values()).filter(review => review.userId === id);
+    for (const review of userReviews) {
+      this.reviews.delete(review.id);
+    }
+    
+    // Finally delete the user
+    this.users.delete(id);
+    return true;
   }
 
   // Car operations
@@ -303,6 +511,163 @@ export class MemStorage implements IStorage {
     };
     this.reviews.set(id, review);
     return review;
+  }
+
+  // Messaging operations
+  async getUserConversations(userId: string): Promise<any[]> {
+    const conversations = Array.from(this.conversations.values())
+      .filter(conv => conv.ownerId === userId || conv.renterId === userId)
+      .sort((a, b) => new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime());
+    
+    // Enrich with user and booking data
+    return Promise.all(conversations.map(async (conv) => {
+      const owner = await this.getUser(conv.ownerId);
+      const renter = await this.getUser(conv.renterId);
+      const booking = await this.getBooking(conv.bookingId);
+      const lastMessage = Array.from(this.messages.values())
+        .filter(msg => msg.conversationId === conv.id)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+      
+      return {
+        ...conv,
+        owner: owner ? { id: owner.id, firstName: owner.firstName, lastName: owner.lastName, profileImage: owner.profileImage } : null,
+        renter: renter ? { id: renter.id, firstName: renter.firstName, lastName: renter.lastName, profileImage: renter.profileImage } : null,
+        booking: booking ? { id: booking.id, carId: booking.carId } : null,
+        lastMessage: lastMessage || null,
+        unreadCount: Array.from(this.messages.values())
+          .filter(msg => msg.conversationId === conv.id && !msg.isRead && msg.senderId !== userId).length
+      };
+    }));
+  }
+
+  async getConversationMessages(conversationId: string, userId: string): Promise<any[]> {
+    const messages = Array.from(this.messages.values())
+      .filter(msg => msg.conversationId === conversationId)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    
+    // Enrich with sender data
+    return Promise.all(messages.map(async (msg) => {
+      const sender = await this.getUser(msg.senderId);
+      return {
+        ...msg,
+        sender: sender ? { id: sender.id, firstName: sender.firstName, lastName: sender.lastName, profileImage: sender.profileImage } : null
+      };
+    }));
+  }
+
+  async createConversation(bookingId: string, userId: string): Promise<any> {
+    const booking = await this.getBooking(bookingId);
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+
+    const car = await this.getCar(booking.carId);
+    if (!car) {
+      throw new Error('Car not found');
+    }
+
+    // Check if conversation already exists
+    const existingConv = Array.from(this.conversations.values())
+      .find(conv => conv.bookingId === bookingId);
+    
+    if (existingConv) {
+      return existingConv;
+    }
+
+    const conversation = {
+      id: randomUUID(),
+      bookingId,
+      ownerId: car.ownerId,
+      renterId: booking.renterId,
+      lastMessageAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
+    };
+
+    this.conversations.set(conversation.id, conversation);
+    return conversation;
+  }
+
+  async createMessage(conversationId: string, senderId: string, content: string, messageType: string = 'text'): Promise<any> {
+    const message = {
+      id: randomUUID(),
+      conversationId,
+      senderId,
+      content,
+      messageType,
+      isRead: false,
+      createdAt: new Date().toISOString()
+    };
+
+    this.messages.set(message.id, message);
+    
+    // Update conversation last message time
+    const conversation = this.conversations.get(conversationId);
+    if (conversation) {
+      conversation.lastMessageAt = new Date().toISOString();
+      this.conversations.set(conversationId, conversation);
+    }
+
+    return message;
+  }
+
+  async markMessageAsRead(messageId: string, userId: string): Promise<boolean> {
+    const message = this.messages.get(messageId);
+    if (!message || message.senderId === userId) {
+      return false; // Can't mark own messages as read
+    }
+
+    message.isRead = true;
+    this.messages.set(messageId, message);
+    return true;
+  }
+
+  // Notification operations
+  async getNotifications(userId: string): Promise<Notification[]> {
+    console.log('Storage: Getting notifications for user:', userId);
+    console.log('Storage: Total notifications in map:', this.notifications.size);
+    const notifications = Array.from(this.notifications.values())
+      .filter(notification => notification.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    console.log('Storage: Filtered notifications:', notifications.length);
+    return notifications;
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const id = randomUUID();
+    const notification: Notification = {
+      ...insertNotification,
+      id,
+      isRead: false,
+      data: insertNotification.data ?? null,
+      createdAt: new Date()
+    };
+    console.log('Creating notification:', notification.title, 'for user:', notification.userId);
+    this.notifications.set(id, notification);
+    console.log('Notification created, total notifications:', this.notifications.size);
+    return notification;
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<boolean> {
+    const notification = this.notifications.get(notificationId);
+    if (!notification || notification.userId !== userId) {
+      return false;
+    }
+    
+    const updatedNotification = { ...notification, isRead: true };
+    this.notifications.set(notificationId, updatedNotification);
+    return true;
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<boolean> {
+    const userNotifications = Array.from(this.notifications.values())
+      .filter(notification => notification.userId === userId && !notification.isRead);
+    
+    for (const notification of userNotifications) {
+      const updatedNotification = { ...notification, isRead: true };
+      this.notifications.set(notification.id, updatedNotification);
+    }
+    
+    return true;
   }
 
   async getOwnerStats(ownerId: string): Promise<{

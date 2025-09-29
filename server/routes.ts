@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from 'multer';
 import { storage } from "./storage";
 import { 
   carSearchSchema, 
@@ -26,6 +27,18 @@ import {
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 
+// Helper function to validate images are local only
+const validateLocalImages = (images: string[]): string[] => {
+  return images.filter(img => {
+    // Only allow local assets, data URLs, or relative paths
+    return img.startsWith('/assets/') || 
+           img.startsWith('data:') || 
+           img.startsWith('./') ||
+           img.startsWith('../') ||
+           !img.includes('http://') && !img.includes('https://');
+  });
+};
+
 // Rate limiting configurations - DISABLED FOR DEVELOPMENT
 // const generalLimiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -39,6 +52,22 @@ import helmet from "helmet";
 //   message: { error: 'Too many login attempts, please try again later' }
 // });
 
+// Configure multer for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(), // Store files in memory as buffers
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit per file
+  },
+  fileFilter: (req, file, cb) => {
+    // Only allow image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'), false);
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Apply security middleware to all routes
   app.use(helmet({
@@ -47,7 +76,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-        imgSrc: ["'self'", "data:", "https:"],
+        imgSrc: ["'self'", "data:", "blob:", "https:"],
         connectSrc: ["'self'"],
         fontSrc: ["'self'", "https:", "data:"],
         objectSrc: ["'none'"],
@@ -167,6 +196,192 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Internal server error' });
     }
   });
+
+  app.put('/api/auth/password', authMiddleware, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+
+      // Validate required fields
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ error: 'Current password and new password are required' });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ error: 'New password must contain at least 8 characters' });
+      }
+
+      // Verify current password
+      const user = await storage.getUser(req.user!.id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const isCurrentPasswordValid = await storage.verifyPassword(user.email, currentPassword);
+      if (!isCurrentPasswordValid) {
+        return res.status(400).json({ error: 'Current password is incorrect' });
+      }
+
+      // Update password
+      const success = await storage.updateUserPassword(req.user!.id, newPassword);
+      if (!success) {
+        return res.status(500).json({ error: 'Failed to update password' });
+      }
+
+      res.json({ message: 'Password changed successfully' });
+    } catch (error) {
+      console.error('Password change error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.delete('/api/auth/account', authMiddleware, async (req, res) => {
+    try {
+      const { password } = req.body;
+
+      // Validate required fields
+      if (!password) {
+        return res.status(400).json({ error: 'Password is required to delete account' });
+      }
+
+      // Verify password
+      const user = await storage.getUser(req.user!.id);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const isPasswordValid = await storage.verifyPassword(user.email, password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ error: 'Incorrect password' });
+      }
+
+      // Delete user and all associated data
+      const success = await storage.deleteUser(req.user!.id);
+      if (!success) {
+        return res.status(500).json({ error: 'Failed to delete account' });
+      }
+
+      res.json({ message: 'Account deleted successfully' });
+    } catch (error) {
+      console.error('Account deletion error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.put('/api/auth/preferences', authMiddleware, async (req, res) => {
+    try {
+      const preferences = req.body;
+
+      // Validate preferences structure
+      const validPreferences = {
+        emailNotifications: Boolean(preferences.emailNotifications),
+        smsNotifications: Boolean(preferences.smsNotifications),
+        marketingEmails: Boolean(preferences.marketingEmails),
+        language: String(preferences.language || 'en'),
+        currency: String(preferences.currency || 'GBP'),
+        timezone: String(preferences.timezone || 'Europe/London')
+      };
+
+      const updatedUser = await storage.updateUser(req.user!.id, { preferences: validPreferences });
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const sanitizedUser = sanitizeUser(updatedUser);
+      res.json({ 
+        message: 'Preferences updated successfully',
+        user: sanitizedUser 
+      });
+    } catch (error) {
+      console.error('Preferences update error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Messaging routes
+  app.get('/api/conversations', authMiddleware, async (req, res) => {
+    try {
+      const conversations = await storage.getUserConversations(req.user!.id);
+      res.json({ conversations });
+    } catch (error) {
+      console.error('Get conversations error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/conversations/:conversationId/messages', authMiddleware, async (req, res) => {
+    try {
+      const messages = await storage.getConversationMessages(req.params.conversationId, req.user!.id);
+      res.json({ messages });
+    } catch (error) {
+      console.error('Get messages error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/conversations', authMiddleware, async (req, res) => {
+    try {
+      const { bookingId } = req.body;
+      const conversation = await storage.createConversation(bookingId, req.user!.id);
+      res.json({ conversation });
+    } catch (error) {
+      console.error('Create conversation error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/messages', authMiddleware, async (req, res) => {
+    try {
+      const { conversationId, content, messageType = 'text' } = req.body;
+      const message = await storage.createMessage(conversationId, req.user!.id, content, messageType);
+      
+      // Send real-time message via WebSocket
+      const messagingServer = (global as any).messagingServer;
+      if (messagingServer) {
+        messagingServer.sendMessageToConversation(conversationId, message);
+      }
+      
+      res.json({ message });
+    } catch (error) {
+      console.error('Create message error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.put('/api/messages/:messageId/read', authMiddleware, async (req, res) => {
+    try {
+      const success = await storage.markMessageAsRead(req.params.messageId, req.user!.id);
+      if (!success) {
+        return res.status(404).json({ error: 'Message not found' });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Mark message as read error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.put('/api/notifications/:id/read', authMiddleware, async (req, res) => {
+    try {
+      const success = await storage.markNotificationAsRead(req.params.id, req.user!.id);
+      if (!success) {
+        return res.status(404).json({ error: 'Notification not found' });
+      }
+      res.json({ message: 'Notification marked as read' });
+    } catch (error) {
+      console.error('Mark notification as read error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.put('/api/notifications/mark-all-read', authMiddleware, async (req, res) => {
+    try {
+      const success = await storage.markAllNotificationsAsRead(req.user!.id);
+      res.json({ message: 'All notifications marked as read' });
+    } catch (error) {
+      console.error('Mark all notifications as read error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
   
   // Apply optional auth to public routes, required auth to protected routes
   app.use('/api/cars', optionalAuthMiddleware);
@@ -274,7 +489,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/cars", authMiddleware, requireOwner, async (req, res) => {
+  app.post("/api/cars", authMiddleware, requireOwner, upload.array('images', 10), async (req, res) => {
     try {
       let carData: any = req.body;
       
@@ -293,14 +508,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
               carData[key] = req.body[key];
             }
           } else if (key === 'images') {
-            try {
-              carData[key] = JSON.parse(req.body[key]);
-            } catch {
-              // If parsing fails, treat as single image URL
-              carData[key] = [req.body[key]];
-            }
-          } else if (key === 'year' || key === 'seats') {
-            carData[key] = parseInt(req.body[key]);
+            // Skip images here - we'll handle them separately with uploaded files
+            // Don't process blob URLs from form data, use actual uploaded files instead
+          } else if (key === 'year' || key === 'seats' || key === 'mileage') {
+                  carData[key] = parseInt(req.body[key]);
+                } else if (key === 'pricePerDay') {
+                  carData[key] = req.body[key]; // Keep as string for database
           } else if (key === 'isAvailable') {
             carData[key] = req.body[key] === 'true';
           } else {
@@ -311,18 +524,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Handle uploaded files
         const files = req.files as Express.Multer.File[];
         if (files && files.length > 0) {
-          // For now, we'll store file URLs as placeholder URLs
-          // In a real app, you'd upload these to a cloud storage service
-          carData.images = files.map(file => 
-            `https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format`
-          );
+          // Use the actual uploaded files - convert to data URLs for storage
+          carData.images = files.map(file => {
+            // Convert uploaded files to data URLs for local storage
+            return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+          });
+        }
+        
+        // Validate that all images are local only
+        if (carData.images) {
+          carData.images = validateLocalImages(carData.images);
         }
       }
       
-      const validatedCarData = enhancedInsertCarSchema.parse({
+      // Add missing required fields
+      const carDataWithDefaults = {
         ...carData,
-        ownerId: req.user!.id
-      });
+        ownerId: req.user!.id,
+        title: `${carData.make} ${carData.model}`,
+        city: carData.location || 'Unknown',
+        currency: 'GBP' // Set to GBP as requested by user
+      };
+      
+      console.log('Car data with defaults:', carDataWithDefaults);
+      
+      const validatedCarData = enhancedInsertCarSchema.parse(carDataWithDefaults);
       
       const car = await storage.createCar(validatedCarData);
       res.status(201).json({
@@ -331,6 +557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.log('Validation error details:', error.errors);
         return res.status(400).json({ error: "Invalid vehicle data", details: error.errors });
       }
       console.error('Create car error:', error);
@@ -338,10 +565,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/cars/:id", authMiddleware, requireCarOwnership, async (req, res) => {
+  app.put("/api/cars/:id", authMiddleware, requireCarOwnership, upload.array('images', 10), async (req, res) => {
     try {
-      const updates = enhancedInsertCarSchema.partial().parse(req.body);
-      const car = await storage.updateCar(req.params.id, updates);
+      let updates: any = req.body;
+      
+      // Handle FormData with file uploads
+      if (req.headers['content-type']?.includes('multipart/form-data')) {
+        updates = {};
+        
+        console.log('FormData received for update:', req.body);
+        
+        // Parse form fields with proper type conversion
+        Object.keys(req.body).forEach(key => {
+          if (key === 'features') {
+            try {
+              updates[key] = JSON.parse(req.body[key]);
+            } catch {
+              updates[key] = req.body[key];
+            }
+          } else if (key === 'images') {
+            // Skip images here - we'll handle them separately with uploaded files
+          } else if (key === 'year' || key === 'seats' || key === 'mileage') {
+            updates[key] = parseInt(req.body[key]);
+          } else if (key === 'pricePerDay') {
+            updates[key] = req.body[key]; // Keep as string for database
+          } else if (key === 'isAvailable') {
+            updates[key] = req.body[key] === 'true';
+          } else {
+            updates[key] = req.body[key];
+          }
+        });
+        
+        // Handle uploaded files
+        const files = req.files as Express.Multer.File[];
+        if (files && files.length > 0) {
+          // Use the actual uploaded files - convert to data URLs for storage
+          updates.images = files.map(file => {
+            // Convert uploaded files to data URLs for local storage
+            return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+          });
+        } else if (req.body.images) {
+          // If no new files but images field exists, keep existing images
+          try {
+            updates.images = JSON.parse(req.body.images);
+            // Validate that all images are local only
+            updates.images = validateLocalImages(updates.images);
+          } catch {
+            updates.images = req.body.images;
+          }
+        }
+      }
+      
+      // Add missing required fields if needed
+      if (updates.make && updates.model) {
+        updates.title = `${updates.make} ${updates.model}`;
+      }
+      if (updates.location) {
+        updates.city = updates.location;
+      }
+      
+      console.log('Car updates:', updates);
+      
+      const validatedUpdates = enhancedInsertCarSchema.partial().parse(updates);
+      const car = await storage.updateCar(req.params.id, validatedUpdates);
       
       if (!car) {
         return res.status(404).json({ error: "Vehicle not found" });
@@ -353,6 +639,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.log('Validation error details:', error.errors);
         return res.status(400).json({ error: "Invalid vehicle data", details: error.errors });
       }
       console.error('Update car error:', error);
@@ -429,7 +716,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
       
-      res.json(enrichedBookings);
+      res.json({ bookings: enrichedBookings });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
@@ -437,7 +724,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/bookings/owner/:ownerId", async (req, res) => {
     try {
+      console.log('Fetching bookings for owner:', req.params.ownerId);
       const bookings = await storage.getBookingsByOwner(req.params.ownerId);
+      console.log('Found bookings:', bookings.length);
       
       // Enrich bookings with car and renter information
       const enrichedBookings = await Promise.all(
@@ -465,7 +754,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
       
-      res.json(enrichedBookings);
+      console.log('Enriched bookings:', enrichedBookings.length);
+      res.json({ bookings: enrichedBookings });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
@@ -627,6 +917,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: "Invalid review data", details: error.errors });
       }
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.get("/api/reviews/user/:userId", async (req, res) => {
+    try {
+      const reviews = await storage.getReviewsByUser(req.params.userId);
+      
+      // Enrich reviews with car and reviewer information
+      const enrichedReviews = await Promise.all(
+        reviews.map(async (review) => {
+          const car = await storage.getCar(review.carId);
+          const reviewer = await storage.getUser(review.reviewerId);
+          return {
+            ...review,
+            car: car ? {
+              id: car.id,
+              title: car.title,
+              make: car.make,
+              model: car.model,
+              images: car.images
+            } : null,
+            reviewer: reviewer ? {
+              id: reviewer.id,
+              firstName: reviewer.firstName,
+              lastName: reviewer.lastName,
+              profileImage: reviewer.profileImage
+            } : null
+          };
+        })
+      );
+      
+      res.json({ reviews: enrichedReviews });
+    } catch (error) {
       res.status(500).json({ error: "Internal server error" });
     }
   });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -14,37 +14,65 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function Header() {
   const [location, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const { user, logout, loading, isAuthenticated } = useAuth();
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
 
-  // Mock notification data
-  const notifications = [
-    {
-      id: 1,
-      title: 'Booking Confirmed',
-      message: 'Your BMW 3 Series rental has been confirmed for Dec 20-23',
-      time: '2 hours ago',
-      unread: true
-    },
-    {
-      id: 2,
-      title: 'Payment Received',
-      message: 'Payment of £1,350 has been processed successfully',
-      time: '1 day ago',
-      unread: true
-    },
-    {
-      id: 3,
-      title: 'Reminder',
-      message: 'Your rental starts tomorrow at 10:00 AM',
-      time: '2 days ago',
-      unread: false
+  // Fetch notifications when user is authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchNotifications();
     }
-  ];
+  }, [isAuthenticated]);
+
+  const fetchNotifications = async () => {
+    try {
+      setNotificationsLoading(true);
+      const response = await notificationApi.getNotifications();
+      setNotifications(response.notifications || []);
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+      setNotifications([]);
+    } finally {
+      setNotificationsLoading(false);
+    }
+  };
+
+  const handleMarkAsRead = async (notificationId: string) => {
+    try {
+      await notificationApi.markNotificationAsRead(notificationId);
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
+      );
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await notificationApi.markAllNotificationsAsRead();
+      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+    }
+  };
+
+  const formatTimeAgo = (date: string | Date) => {
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    return `${Math.floor(diffInMinutes / 1440)}d ago`;
+  };
 
 
   const handleSearch = () => {
@@ -79,6 +107,10 @@ export default function Header() {
     { href: '/security', label: 'Security', icon: Shield },
   ];
 
+  const ownerNavItems = [
+    { href: '/add-car', label: 'Add Car', icon: Plus },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
       <div className="container flex h-16 items-center px-4">
@@ -86,7 +118,7 @@ export default function Header() {
         <div className="flex-shrink-0 mr-4">
           <Link href="/" className="flex items-center">
             <img 
-              src="/assets/MAIN LOGO.png" 
+              src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
               className="h-20 w-auto hover:scale-105 transition-transform duration-200"
             />
@@ -142,7 +174,7 @@ export default function Header() {
                 <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                   <Bell className="h-5 w-5" />
                   <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                    {notifications.filter(n => n.unread).length}
+                    {notifications.filter(n => !n.isRead).length}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
@@ -150,7 +182,7 @@ export default function Header() {
                 <div className="px-2 py-1.5">
                   <DropdownMenuLabel className="flex items-center justify-between">
                     <span>Notifications</span>
-                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs">
+                    <Button variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={handleMarkAllAsRead}>
                       Mark all read
                     </Button>
                   </DropdownMenuLabel>
@@ -159,9 +191,13 @@ export default function Header() {
                 <div className="max-h-80 overflow-y-auto">
                   {notifications.length > 0 ? (
                     notifications.map((notification) => (
-                      <DropdownMenuItem key={notification.id} className="flex flex-col items-start p-3 cursor-pointer hover:bg-gray-50">
+                      <DropdownMenuItem 
+                        key={notification.id} 
+                        className="flex flex-col items-start p-3 cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleMarkAsRead(notification.id)}
+                      >
                         <div className="flex items-start w-full">
-                          <div className={`w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0 ${notification.unread ? 'bg-blue-500' : 'bg-gray-300'}`} />
+                          <div className={`w-2 h-2 rounded-full mt-2 mr-3 flex-shrink-0 ${!notification.isRead ? 'bg-blue-500' : 'bg-gray-300'}`} />
                           <div className="flex-1 min-w-0">
                             <div className="font-medium text-sm text-gray-900 truncate">
                               {notification.title}
@@ -170,7 +206,7 @@ export default function Header() {
                               {notification.message}
                             </div>
                             <div className="text-xs text-gray-400 mt-1">
-                              {notification.time}
+                              {formatTimeAgo(notification.createdAt)}
                             </div>
                           </div>
                         </div>
@@ -178,12 +214,15 @@ export default function Header() {
                     ))
                   ) : (
                     <div className="p-4 text-center text-gray-500 text-sm">
-                      No notifications
+                      {notificationsLoading ? 'Loading notifications...' : 'No notifications'}
                     </div>
                   )}
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-center justify-center text-blue-600 hover:text-blue-700">
+                <DropdownMenuItem 
+                  className="text-center justify-center text-blue-600 hover:text-blue-700 cursor-pointer"
+                  onClick={() => setLocation('/notifications')}
+                >
                   View all notifications
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -201,6 +240,22 @@ export default function Header() {
                     variant="outline" 
                     size="sm"
                     className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all duration-200"
+                  >
+                    <Icon className="h-4 w-4 mr-1" />
+                    {item.label}
+                  </Button>
+                </Link>
+              );
+            })}
+            {/* Owner-specific navigation */}
+            {isAuthenticated && (user?.userType === 'owner' || user?.userType === 'both') && ownerNavItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link key={item.href} href={item.href}>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="hover:bg-green-50 hover:text-green-600 hover:border-green-300 transition-all duration-200"
                   >
                     <Icon className="h-4 w-4 mr-1" />
                     {item.label}
@@ -236,9 +291,9 @@ export default function Header() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center cursor-pointer">
+                  <Link href="/settings" className="flex items-center cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
+                    <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
@@ -277,7 +332,7 @@ export default function Header() {
                 {/* Mobile Brand Logo */}
             <div className="flex items-center justify-center pb-4 border-b">
               <img 
-                src="/assets/MAIN LOGO.png" 
+                src="/assets/MAIN LOGO.png?v=5" 
                 alt="ShareWheelz" 
                 className="h-16 w-auto hover:scale-105 transition-transform duration-200"
               />
@@ -333,6 +388,18 @@ export default function Header() {
                         </Link>
                       );
                     })}
+                    {/* Owner-specific mobile navigation */}
+                    {(user?.userType === 'owner' || user?.userType === 'both') && ownerNavItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link key={item.href} href={item.href}>
+                          <Button variant="outline" className="w-full justify-start hover:bg-green-50 hover:text-green-600">
+                            <Icon className="h-4 w-4 mr-2" />
+                            {item.label}
+                          </Button>
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
 
@@ -357,10 +424,10 @@ export default function Header() {
                         Dashboard
                       </Button>
                     </Link>
-                    <Link href="/profile">
+                    <Link href="/settings">
                       <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
                         <Settings className="h-4 w-4 mr-2" />
-                        Profile
+                        Settings
                       </Button>
                     </Link>
                     <Button 

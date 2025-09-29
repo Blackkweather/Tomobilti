@@ -39,6 +39,7 @@ export const cars = sqliteTable("cars", {
   latitude: real("latitude"),
   longitude: real("longitude"),
   images: text("images", { mode: 'json' }).$type<string[]>().default([]),
+  features: text("features", { mode: 'json' }).$type<string[]>().default([]),
   isAvailable: integer("is_available", { mode: 'boolean' }).notNull().default(true),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
@@ -164,6 +165,7 @@ export const registerSchema = z.object({
 
 export const enhancedInsertCarSchema = insertCarSchema.extend({
   // Add any additional fields for enhanced car creation
+  features: z.array(z.string()).optional(),
   vin: z.string().optional(),
   registrationNumber: z.string().optional(),
   motExpiry: z.string().optional(),
@@ -185,3 +187,54 @@ export const enhancedInsertCarSchema = insertCarSchema.extend({
   nextServiceDue: z.string().optional(),
   condition: z.string().optional(),
 });
+
+// Notifications table
+export const notifications = sqliteTable("notifications", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id").notNull().references(() => users.id),
+  type: text("type").notNull(), // "booking", "payment", "review", "system", "promotion"
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  isRead: integer("is_read", { mode: 'boolean' }).notNull().default(false),
+  data: text("data"), // JSON string for additional data (booking ID, etc.)
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+}, (table) => ({
+  userIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id)`,
+  typeIdx: sql`CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type)`,
+}));
+
+// Messaging system tables
+export const conversations = sqliteTable("conversations", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  bookingId: text("booking_id").notNull().references(() => bookings.id),
+  ownerId: text("owner_id").notNull().references(() => users.id),
+  renterId: text("renter_id").notNull().references(() => users.id),
+  lastMessageAt: text("last_message_at").default(sql`CURRENT_TIMESTAMP`),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+}, (table) => ({
+  bookingIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_conversations_booking_id ON conversations(booking_id)`,
+  ownerIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_conversations_owner_id ON conversations(owner_id)`,
+  renterIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_conversations_renter_id ON conversations(renter_id)`,
+}));
+
+export const messages = sqliteTable("messages", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  conversationId: text("conversation_id").notNull().references(() => conversations.id),
+  senderId: text("sender_id").notNull().references(() => users.id),
+  content: text("content").notNull(),
+  messageType: text("message_type").notNull().default("text"), // "text", "image", "file"
+  isRead: integer("is_read", { mode: 'boolean' }).notNull().default(false),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+}, (table) => ({
+  conversationIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_messages_conversation_id ON messages(conversation_id)`,
+  senderIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id)`,
+  createdAtIdx: sql`CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at)`,
+}));
+
+// Types for messaging
+export type Conversation = typeof conversations.$inferSelect;
+export type InsertConversation = typeof conversations.$inferInsert;
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof messages.$inferInsert;
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;

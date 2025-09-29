@@ -38,7 +38,7 @@ export default function Contact() {
     {
       icon: Mail,
       title: 'Email',
-      details: 'hello@sharewheelz.com',
+      details: 'contact@sharewheelz.uk',
       description: 'We respond within 24 hours'
     },
     {
@@ -292,7 +292,7 @@ export default function Contact() {
                   </p>
                   <div className="flex items-center gap-2 text-blue-600">
                     <Mail className="w-5 h-5" />
-                    <span>business@sharewheelz.com</span>
+                    <span>management@sharewheelz.uk</span>
                   </div>
                 </div>
 

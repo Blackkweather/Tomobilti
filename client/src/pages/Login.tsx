@@ -87,7 +87,7 @@ export default function Login() {
           <div className="text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start mb-6">
               <img 
-                src="/assets/MAIN LOGO.png" 
+                src="/assets/MAIN LOGO.png?v=5" 
                 alt="ShareWheelz" 
                 className="h-16 w-auto"
               />
@@ -162,7 +162,7 @@ export default function Login() {
             <CardHeader className="text-center pb-4">
               <div className="mx-auto h-16 w-auto flex items-center justify-center mb-4">
                 <img 
-                  src="/assets/MAIN LOGO.png" 
+                  src="/assets/MAIN LOGO.png?v=5" 
                   alt="ShareWheelz" 
                   className="h-16 w-auto"
                 />
