@@ -2,9 +2,11 @@ import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import { createServer } from 'http';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { EmailService } from "./services/email";
+import MessagingSocketServer from "./messaging";
 
 const app = express();
 
@@ -15,7 +17,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
       scriptSrc: ["'self'"],
       connectSrc: ["'self'"],
       frameSrc: ["'none'"],
@@ -100,6 +102,13 @@ app.use((req, res, next) => {
   EmailService.initialize();
   
   const server = await registerRoutes(app);
+  
+  // Create HTTP server and WebSocket server
+  const httpServer = createServer(app);
+  const messagingServer = new MessagingSocketServer(httpServer);
+  
+  // Make messaging server available globally for API routes
+  (global as any).messagingServer = messagingServer;
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -129,12 +138,13 @@ app.use((req, res, next) => {
   log(`Environment: ${process.env.NODE_ENV}`);
   log(`Binding to: ${host}:${port}`);
   
-  server.listen(port, host, () => {
+  httpServer.listen(port, host, () => {
     log(`✅ Server successfully started on ${host}:${port}`);
+    log(`✅ WebSocket messaging server initialized`);
   });
   
   // Handle server errors
-  server.on('error', (error: any) => {
+  httpServer.on('error', (error: any) => {
     log(`❌ Server error: ${error.message}`);
     if (error.code === 'EADDRINUSE') {
       log(`Port ${port} is already in use`);

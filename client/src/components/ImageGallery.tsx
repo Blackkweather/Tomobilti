@@ -68,7 +68,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
 
           {/* Image Counter */}
           {images.length > 1 && (
-            <div className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
+            <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
               {currentIndex + 1} / {images.length}
             </div>
           )}

@@ -1,0 +1,31 @@
+// Test CSP and blob URL handling
+console.log('Testing CSP and blob URL handling...');
+
+// Create a test blob URL
+const canvas = document.createElement('canvas');
+canvas.width = 100;
+canvas.height = 100;
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = 'red';
+ctx.fillRect(0, 0, 100, 100);
+
+canvas.toBlob((blob) => {
+  if (blob) {
+    const blobUrl = URL.createObjectURL(blob);
+    console.log('Created blob URL:', blobUrl);
+    
+    // Test if we can create an image with the blob URL
+    const img = new Image();
+    img.onload = () => {
+      console.log('✅ Blob URL image loaded successfully!');
+      console.log('Image dimensions:', img.width, 'x', img.height);
+    };
+    img.onerror = (error) => {
+      console.log('❌ Blob URL image failed to load:', error);
+    };
+    img.src = blobUrl;
+  }
+});
+
+
+

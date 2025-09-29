@@ -138,13 +138,8 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             className="rounded-t-lg"
           />
           
-          {/* Picture count badge */}
-          <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full">
-            {carImages.length} photo{carImages.length !== 1 ? 's' : ''}
-          </div>
-          
-          {/* Overlay with badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+          {/* Overlay with badges - moved to bottom-left to avoid overlap */}
+          <div className="absolute bottom-3 left-3 flex flex-col gap-2 z-10">
             {fuelType === 'electric' && (
               <Badge className="badge-success shadow-lg">
                 <Zap className="w-3 h-3 mr-1" />
@@ -158,27 +153,30 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             )}
           </div>
 
-          {/* Favorite button */}
-          {isAuthenticated && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-3 right-12 bg-white/90 hover:bg-white text-gray-600 hover:text-red-500 transition-colors duration-200 z-10"
-              onClick={onToggleFavorite}
-            >
-              <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
-            </Button>
-          )}
+          {/* Right side overlays - properly spaced */}
+          <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+            {/* Favorite button */}
+            {isAuthenticated && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-white/90 hover:bg-white text-gray-600 hover:text-red-500 transition-colors duration-200"
+                onClick={onToggleFavorite}
+              >
+                <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Action Buttons - Below Image */}
         <div className="p-4 border-b border-gray-100">
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button 
               onClick={handleMoreDetails}
               variant="outline"
               size="sm"
-              className="flex-1 text-mauve-600 border-mauve-600 hover:bg-mauve-50 px-3 py-2 text-sm"
+              className="flex-1 text-mauve-600 border-mauve-600 hover:bg-mauve-50 px-3 py-2 text-sm min-w-0"
             >
               <Info className="w-4 h-4 mr-2" />
               More Details
@@ -186,7 +184,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             <Button 
               onClick={handleBooking}
               size="sm"
-              className="flex-1 bg-mauve-600 hover:bg-mauve-700 text-white px-4 py-2 text-sm shadow-sm hover:shadow-md transition-all duration-200"
+              className="flex-1 bg-mauve-600 hover:bg-mauve-700 text-white px-3 py-2 text-sm shadow-sm hover:shadow-md transition-all duration-200 min-w-0"
             >
               <BookOpen className="w-4 h-4 mr-2" />
               Book Now

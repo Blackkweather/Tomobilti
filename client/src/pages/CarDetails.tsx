@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRoute } from "wouter";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -192,6 +192,7 @@ export default function CarDetails() {
   const [, params] = useRoute("/cars/:id");
   const [, setLocation] = useLocation();
   const { isAuthenticated, user } = useAuth();
+  const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isFavorited, setIsFavorited] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -260,6 +261,9 @@ export default function CarDetails() {
       
       const booking = await response.json();
       console.log('Booking created:', booking);
+      
+      // Invalidate renter bookings cache to refresh dashboard
+      queryClient.invalidateQueries({ queryKey: ['renterBookings', user?.id] });
       
       // Redirect to payment page
       setLocation(`/payment/${booking.id}`);

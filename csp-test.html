@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CSP Blob Test</title>
+</head>
+<body>
+    <h1>CSP Blob URL Test</h1>
+    <div id="result"></div>
+    
+    <script>
+        console.log('Testing CSP and blob URLs...');
+        
+        // Create a test canvas and convert to blob
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        
+        // Draw a simple pattern
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(0, 0, 100, 100);
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(100, 0, 100, 100);
+        ctx.fillStyle = '#0000ff';
+        ctx.fillRect(0, 100, 100, 100);
+        ctx.fillStyle = '#ffff00';
+        ctx.fillRect(100, 100, 100, 100);
+        
+        canvas.toBlob((blob) => {
+            if (blob) {
+                const blobUrl = URL.createObjectURL(blob);
+                console.log('Created blob URL:', blobUrl);
+                
+                // Try to display the image
+                const img = document.createElement('img');
+                img.onload = () => {
+                    console.log('✅ Image loaded successfully!');
+                    document.getElementById('result').innerHTML = '<p style="color: green;">✅ Blob URL test PASSED!</p>';
+                    document.getElementById('result').appendChild(img);
+                };
+                img.onerror = (error) => {
+                    console.log('❌ Image failed to load:', error);
+                    document.getElementById('result').innerHTML = '<p style="color: red;">❌ Blob URL test FAILED!</p>';
+                };
+                img.src = blobUrl;
+                img.style.width = '200px';
+                img.style.height = '200px';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+

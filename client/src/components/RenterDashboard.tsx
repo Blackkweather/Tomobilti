@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -32,100 +32,15 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'wouter';
-
-// Enhanced mock data
-const mockBookings = [
-  {
-    id: 'b1',
-    carTitle: 'BMW 3 Series - Premium Sedan',
-    carImage: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=400&h=300&fit=crop&auto=format',
-    ownerName: 'James Smith',
-    ownerImage: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&auto=format',
-    location: 'London, Westminster',
-    startDate: '2024-12-20',
-    endDate: '2024-12-23',
-    totalAmount: 1350,
-    status: 'upcoming',
-    canReview: false,
-    daysUntil: 2,
-    rating: null
-  },
-  {
-    id: 'b2',
-    carTitle: 'Ford Focus - City Car',
-    carImage: 'https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=400&h=300&fit=crop&auto=format',
-    ownerName: 'Sarah Johnson',
-    ownerImage: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&auto=format',
-    location: 'Manchester, Centre',
-    startDate: '2024-12-10',
-    endDate: '2024-12-13',
-    totalAmount: 840,
-    status: 'completed',
-    canReview: true,
-    daysUntil: 0,
-    rating: 5
-  },
-  {
-    id: 'b3',
-    carTitle: 'Tesla Model 3 - Electric',
-    carImage: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=300&fit=crop&auto=format',
-    ownerName: 'Michael Brown',
-    ownerImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&auto=format',
-    location: 'Edinburgh, New Town',
-    startDate: '2024-12-05',
-    endDate: '2024-12-08',
-    totalAmount: 1950,
-    status: 'completed',
-    canReview: true,
-    daysUntil: 0,
-    rating: 4
-  }
-];
-
-const mockFavorites = [
-  {
-    id: 'f1',
-    title: 'Tesla Model 3 - Electric',
-    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=400&h=300&fit=crop&auto=format',
-    location: 'Edinburgh, New Town',
-    pricePerDay: 65,
-    rating: 4.9,
-    ownerName: 'Michael Brown',
-    make: 'Tesla',
-    model: 'Model 3',
-    year: 2023
-  },
-  {
-    id: 'f2',
-    title: 'Mercedes A-Class',
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&h=300&fit=crop&auto=format',
-    location: 'Glasgow, City Centre',
-    pricePerDay: 50,
-    rating: 4.7,
-    ownerName: 'Emma Wilson',
-    make: 'Mercedes',
-    model: 'A-Class',
-    year: 2022
-  },
-  {
-    id: 'f3',
-    title: 'Audi A4 - Premium',
-    image: 'https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=400&h=300&fit=crop&auto=format',
-    location: 'Birmingham, City Centre',
-    pricePerDay: 55,
-    rating: 4.8,
-    ownerName: 'David Lee',
-    make: 'Audi',
-    model: 'A4',
-    year: 2021
-  }
-];
+import { useQuery } from '@tanstack/react-query';
+import { bookingApi, carApi, reviewApi } from '../lib/api';
+import LoadingSpinner from './LoadingSpinner';
 
 const bookingStatusConfig = {
-  upcoming: { label: 'Upcoming', variant: 'default' as const, icon: Clock, color: 'text-blue-600 bg-blue-50' },
-  active: { label: 'Active', variant: 'secondary' as const, icon: CheckCircle, color: 'text-green-600 bg-green-50' },
-  completed: { label: 'Completed', variant: 'outline' as const, icon: CheckCircle, color: 'text-gray-600 bg-gray-50' },
-  cancelled: { label: 'Cancelled', variant: 'destructive' as const, icon: XCircle, color: 'text-red-600 bg-red-50' }
+  confirmed: { label: 'Confirmed', variant: 'default' as const, icon: CheckCircle, color: 'text-green-600 bg-green-50' },
+  pending: { label: 'Pending', variant: 'secondary' as const, icon: Clock, color: 'text-blue-600 bg-blue-50' },
+  cancelled: { label: 'Cancelled', variant: 'destructive' as const, icon: XCircle, color: 'text-red-600 bg-red-50' },
+  completed: { label: 'Completed', variant: 'outline' as const, icon: CheckCircle, color: 'text-gray-600 bg-gray-50' }
 };
 
 export default function RenterDashboard() {
@@ -133,38 +48,118 @@ export default function RenterDashboard() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
-  const handleCancelBooking = (bookingId: string) => {
-    console.log('Cancel booking:', bookingId);
+  // Fetch user's bookings as a renter
+  const { data: bookingsData, isLoading: bookingsLoading, error: bookingsError } = useQuery({
+    queryKey: ['renterBookings', user?.id],
+    queryFn: () => bookingApi.getRenterBookings(user!.id),
+    enabled: !!user?.id,
+  });
+
+  // Fetch user's reviews
+  const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = useQuery({
+    queryKey: ['userReviews', user?.id],
+    queryFn: () => reviewApi.getUserReviews(user!.id),
+    enabled: !!user?.id,
+  });
+
+  // Fetch all cars for favorites (we'll implement favorites API later)
+  const { data: carsData, isLoading: carsLoading, error: carsError } = useQuery({
+    queryKey: ['allCars'],
+    queryFn: () => carApi.searchCars({ sortBy: 'date', sortOrder: 'desc', page: 1, limit: 100 }),
+  });
+
+  const bookings = bookingsData?.bookings || [];
+  const reviews = reviewsData?.reviews || [];
+  const cars = carsData?.cars || [];
+
+  // Calculate statistics from real data
+  const totalBookings = bookings.length;
+  const completedBookings = bookings.filter((b: any) => b.status === 'confirmed').length;
+  const totalSpent = bookings
+    .filter((b: any) => b.status === 'confirmed')
+    .reduce((sum: number, b: any) => sum + (parseFloat(b.totalAmount) || 0), 0);
+  
+  const averageRating = reviews.length > 0 
+    ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length 
+    : 0;
+
+  // Calculate this month's data
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  
+  const thisMonthBookings = bookings.filter((b: any) => {
+    const bookingDate = new Date(b.startDate);
+    return bookingDate.getMonth() === currentMonth && bookingDate.getFullYear() === currentYear;
+  });
+  
+  const thisMonthSpent = thisMonthBookings
+    .filter((b: any) => b.status === 'confirmed')
+    .reduce((sum: number, b: any) => sum + (parseFloat(b.totalAmount) || 0), 0);
+  
+  const tripsThisMonth = thisMonthBookings.length;
+  const savingsThisMonth = Math.round(thisMonthSpent * 0.1); // 10% savings estimate
+
+  const handleCancelBooking = async (bookingId: string) => {
+    try {
+      await bookingApi.cancelBooking(bookingId);
+      // Refresh bookings data
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to cancel booking:', error);
+    }
   };
 
   const handleLeaveReview = (bookingId: string) => {
+    // Navigate to review page or open review modal
     console.log('Leave review for booking:', bookingId);
   };
 
-  const handleRemoveFromFavorites = (favoriteId: string) => {
-    console.log('Remove from favorites:', favoriteId);
+  const handleRemoveFromFavorites = (carId: string) => {
+    // TODO: Implement remove from favorites API
+    console.log('Remove from favorites:', carId);
   };
 
-  const handleBookFavorite = (favoriteId: string) => {
-    setLocation('/cars');
+  const handleBookFavorite = (carId: string) => {
+    setLocation(`/cars/${carId}`);
   };
 
   const handleViewCar = (carId: string) => {
     setLocation(`/cars/${carId}`);
   };
 
-  // Calculate statistics
-  const totalBookings = mockBookings.length;
-  const completedBookings = mockBookings.filter(b => b.status === 'completed').length;
-  const totalSpent = mockBookings
-    .filter(b => b.status === 'completed')
-    .reduce((sum, b) => sum + b.totalAmount, 0);
-  const averageRating = mockBookings
-    .filter(b => b.rating)
-    .reduce((sum, b) => sum + (b.rating || 0), 0) / mockBookings.filter(b => b.rating).length || 0;
-  const thisMonthSpent = 1200; // Mock data
-  const savingsThisMonth = 150; // Mock data
-  const tripsThisMonth = 3; // Mock data
+  const handleMessageOwner = (bookingId: string) => {
+    // Find the booking to get owner details
+    const booking = bookings.find((b: any) => b.id === bookingId);
+    if (booking && booking.owner) {
+      // Navigate to messaging app
+      console.log('Navigating to messages for booking:', bookingId);
+      setLocation('/messages');
+    } else {
+      alert('Messaging feature coming soon! This will allow you to communicate with the car owner.');
+    }
+  };
+
+  const formatCurrency = (amount: string | number) => {
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    return `£${numAmount.toLocaleString()}`;
+  };
+
+  const formatDate = (dateString: string | Date | null) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  if (bookingsLoading || reviewsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-mauve-50 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-white to-mauve-50">
@@ -186,11 +181,11 @@ export default function RenterDashboard() {
             {user && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <User className="h-4 w-4" />
-                <span>Member since {new Date(user.createdAt).toLocaleDateString('en-GB', { 
+                <span>Member since {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric' 
-                })}</span>
+                }) : 'Unknown'}</span>
               </div>
             )}
           </div>
@@ -340,7 +335,7 @@ export default function RenterDashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Bookings List */}
               <div className="lg:col-span-2 space-y-4">
-                {mockBookings.length === 0 ? (
+                {bookings.length === 0 ? (
                   <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
                     <CardContent className="p-12 text-center">
                       <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -355,27 +350,30 @@ export default function RenterDashboard() {
                     </CardContent>
                   </Card>
                 ) : (
-                  mockBookings.map((booking) => {
+                  bookings.map((booking: any) => {
                     const statusConfig = bookingStatusConfig[booking.status as keyof typeof bookingStatusConfig];
                     const StatusIcon = statusConfig.icon;
+                    
+                    // Calculate days until pickup
+                    const daysUntil = Math.ceil((new Date(booking.startDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
                     
                     return (
                       <Card key={booking.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm">
                         <CardContent className="p-0">
                           <div className="flex gap-6 p-6">
                             <img 
-                              src={booking.carImage} 
-                              alt={booking.carTitle}
+                              src={booking.car?.images?.[0] || '/assets/hero-car-1.jpg'} 
+                              alt={booking.car?.title || 'Car'}
                               className="w-32 h-24 rounded-lg object-cover"
                             />
                             
                             <div className="flex-1 space-y-3">
                               <div className="flex justify-between items-start">
                                 <div>
-                                  <h3 className="font-bold text-xl">{booking.carTitle}</h3>
+                                  <h3 className="font-bold text-xl">{booking.car?.title || `${booking.car?.make} ${booking.car?.model}`}</h3>
                                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                                     <MapPin className="h-3 w-3" />
-                                    <span>{booking.location}</span>
+                                    <span>{booking.car?.city || booking.car?.location}</span>
                                   </div>
                                 </div>
                                 <Badge className={`${statusConfig.color} border-0`}>
@@ -386,29 +384,29 @@ export default function RenterDashboard() {
                               
                               <div className="flex items-center gap-3">
                                 <Avatar className="h-8 w-8">
-                                  <AvatarImage src={booking.ownerImage} alt={booking.ownerName} />
-                                  <AvatarFallback className="text-xs">{booking.ownerName.charAt(0)}</AvatarFallback>
+                                  <AvatarImage src={booking.car?.owner?.profileImage || `https://ui-avatars.com/api/?name=${booking.car?.owner?.firstName}&background=random`} alt={booking.car?.owner?.firstName} />
+                                  <AvatarFallback className="text-xs">{booking.car?.owner?.firstName?.charAt(0) || 'O'}</AvatarFallback>
                                 </Avatar>
                                 <span className="text-sm text-muted-foreground">
-                                  Owner: <span className="font-medium">{booking.ownerName}</span>
+                                  Owner: <span className="font-medium">{booking.car?.owner?.firstName} {booking.car?.owner?.lastName}</span>
                                 </span>
                               </div>
                               
                               <div className="flex items-center justify-between">
                                 <div className="text-sm">
                                   <p className="text-muted-foreground">
-                                    {booking.startDate} to {booking.endDate}
-                                    {booking.daysUntil > 0 && (
-                                      <span className="ml-2 text-blue-600 font-medium">({booking.daysUntil} days until pickup)</span>
+                                    {formatDate(booking.startDate)} to {formatDate(booking.endDate)}
+                                    {daysUntil > 0 && (
+                                      <span className="ml-2 text-blue-600 font-medium">({daysUntil} days until pickup)</span>
                                     )}
                                   </p>
                                   <p className="font-bold text-2xl text-rose-600">
-                                    £{booking.totalAmount}
+                                    {formatCurrency(booking.totalAmount)}
                                   </p>
                                 </div>
                                 
                                 <div className="flex gap-2">
-                                  {booking.status === 'upcoming' && (
+                                  {booking.status === 'pending' && (
                                     <Button 
                                       variant="outline" 
                                       size="sm"
@@ -417,7 +415,7 @@ export default function RenterDashboard() {
                                       Cancel
                                     </Button>
                                   )}
-                                  {booking.canReview && (
+                                  {booking.status === 'confirmed' && (
                                     <Button 
                                       size="sm"
                                       onClick={() => handleLeaveReview(booking.id)}
@@ -426,7 +424,11 @@ export default function RenterDashboard() {
                                       Leave Review
                                     </Button>
                                   )}
-                                  <Button variant="outline" size="sm">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => handleMessageOwner(booking.id)}
+                                  >
                                     <MessageSquare className="h-4 w-4 mr-2" />
                                     Message
                                   </Button>
@@ -501,102 +503,77 @@ export default function RenterDashboard() {
           </TabsContent>
 
           <TabsContent value="favorites" className="space-y-6">
-            {mockFavorites.length === 0 ? (
+            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <CardContent className="p-12 text-center">
+                <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Favorites Coming Soon</h3>
+                <p className="text-muted-foreground mb-6">The favorites feature is being developed. You'll be able to save your favorite cars here!</p>
+                <Button 
+                  onClick={() => setLocation('/cars')}
+                  className="bg-gradient-to-r from-rose-500 to-mauve-500 hover:from-rose-600 hover:to-mauve-600"
+                >
+                  Browse Cars
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reviews" className="space-y-6">
+            {reviews.length === 0 ? (
               <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
                 <CardContent className="p-12 text-center">
-                  <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No Favorites Yet</h3>
-                  <p className="text-muted-foreground mb-6">Add vehicles to your favorites to find them easily.</p>
+                  <Star className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">No Reviews Yet</h3>
+                  <p className="text-muted-foreground mb-6">Your vehicle ratings will appear here after your trips.</p>
                   <Button 
                     onClick={() => setLocation('/cars')}
                     className="bg-gradient-to-r from-rose-500 to-mauve-500 hover:from-rose-600 hover:to-mauve-600"
                   >
-                    Browse Cars
+                    Start Your First Trip
                   </Button>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {mockFavorites.map((favorite) => (
-                  <Card key={favorite.id} className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm group">
-                    <CardContent className="p-0">
-                      <div className="relative">
+              <div className="space-y-4">
+                {reviews.map((review: any) => (
+                  <Card key={review.id} className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
                         <img 
-                          src={favorite.image} 
-                          alt={favorite.title}
-                          className="w-full h-48 object-cover rounded-t-lg"
+                          src={review.car?.images?.[0] || '/assets/hero-car-1.jpg'} 
+                          alt={review.car?.title || 'Car'}
+                          className="w-20 h-16 rounded-lg object-cover"
                         />
-                        <div className="absolute top-3 right-3">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveFromFavorites(favorite.id)}
-                            className="h-8 w-8 p-0 bg-white/80 hover:bg-white backdrop-blur-sm"
-                          >
-                            <Heart className="h-4 w-4 fill-red-500 text-red-500" />
-                          </Button>
-                        </div>
-                        <div className="absolute top-3 left-3">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleViewCar(favorite.id)}
-                            className="h-8 w-8 p-0 bg-white/80 hover:bg-white backdrop-blur-sm"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div className="p-6 space-y-4">
-                        <div>
-                          <h3 className="font-bold text-xl">{favorite.title}</h3>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <MapPin className="h-3 w-3" />
-                            <span>{favorite.location}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h3 className="font-semibold text-lg">{review.car?.title || `${review.car?.make} ${review.car?.model}`}</h3>
+                            <div className="flex items-center gap-1">
+                              {[...Array(5)].map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`w-4 h-4 ${
+                                    i < review.rating
+                                      ? 'text-yellow-400 fill-current'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          {review.comment && (
+                            <p className="text-gray-600 mb-2">{review.comment}</p>
+                          )}
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Calendar className="h-4 w-4" />
+                            <span>Reviewed on {formatDate(review.createdAt)}</span>
                           </div>
                         </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1">
-                            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                            <span className="font-semibold">{favorite.rating}</span>
-                            <span className="text-sm text-muted-foreground">• {favorite.ownerName}</span>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-rose-600">£{favorite.pricePerDay}</p>
-                            <p className="text-xs text-muted-foreground">per day</p>
-                          </div>
-                        </div>
-                        
-                        <Button 
-                          onClick={() => handleBookFavorite(favorite.id)}
-                          className="w-full bg-gradient-to-r from-rose-500 to-mauve-500 hover:from-rose-600 hover:to-mauve-600 hover-elevate active-elevate-2"
-                        >
-                          Book Now
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
             )}
-          </TabsContent>
-
-          <TabsContent value="reviews" className="space-y-6">
-            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardContent className="p-12 text-center">
-                <Star className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No Reviews Yet</h3>
-                <p className="text-muted-foreground mb-6">Your vehicle ratings will appear here after your trips.</p>
-                <Button 
-                  onClick={() => setLocation('/cars')}
-                  className="bg-gradient-to-r from-rose-500 to-mauve-500 hover:from-rose-600 hover:to-mauve-600"
-                >
-                  Start Your First Trip
-                </Button>
-              </CardContent>
-            </Card>
           </TabsContent>
         </Tabs>
       </div>

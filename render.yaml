@@ -2,7 +2,7 @@ services:
   - type: web
     name: tomobilti-platform
     env: node
-    plan: free
+    plan: starter  # Updated to match your $7/month plan
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
@@ -14,11 +14,19 @@ services:
         fromDatabase:
           name: tomobilti-db
           property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: CSRF_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://tomobilti-platform.onrender.com
     healthCheckPath: /api/cars
 
 databases:
   - name: tomobilti-db
-    plan: free
+    plan: starter  # Updated to match your $7/month plan
     databaseName: tomobilti
     user: tomobilti_user
 

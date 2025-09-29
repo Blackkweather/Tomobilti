@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import DashboardSelector from "./components/DashboardSelector";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import RenterDashboard from "./pages/RenterDashboard";
+import Analytics from "./pages/Analytics";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Security from "./pages/Security";
@@ -28,6 +29,7 @@ import Services from "./pages/Services";
 import TermsPolicies from "./pages/TermsPolicies";
 import Payment from "./pages/Payment";
 import BookingConfirmation from "./pages/BookingConfirmation";
+import BookingDetails from "./pages/BookingDetails";
 import TestCars from "./pages/TestCars";
 import CarsSimple from "./pages/CarsSimple";
 import CarsDebug from "./pages/CarsDebug";
@@ -47,6 +49,9 @@ import NotFound from "./pages/not-found";
 
 // Import components
 import Header from "./components/Header";
+import Notifications from "./pages/Notifications";
+import MessagingApp from "./components/MessagingApp";
+import MessagingProvider from "./contexts/MessagingContext";
 
 function App() {
   console.log('App component rendering...');
@@ -55,7 +60,8 @@ function App() {
     return (
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <div className="min-h-screen bg-background">
+          <MessagingProvider>
+            <div className="min-h-screen bg-background">
             <Header />
             
             <Switch>
@@ -65,11 +71,15 @@ function App() {
               <Route path="/dashboard" component={DashboardSelector} />
               <Route path="/dashboard/owner" component={OwnerDashboard} />
               <Route path="/dashboard/renter" component={RenterDashboard} />
+              <Route path="/analytics" component={Analytics} />
               <Route path="/profile" component={Profile} />
               <Route path="/settings" component={Settings} />
               <Route path="/security" component={Security} />
               <Route path="/payment/:bookingId" component={Payment} />
               <Route path="/booking-confirmation/:bookingId" component={BookingConfirmation} />
+              <Route path="/booking/:bookingId" component={BookingDetails} />
+              <Route path="/notifications" component={Notifications} />
+              <Route path="/messages" component={MessagingApp} />
               <Route path="/cars" component={Cars} />
               <Route path="/cars/:id" component={CarDetails} />
               <Route path="/favorites" component={Favorites} />
@@ -101,6 +111,7 @@ function App() {
             
             <Toaster />
           </div>
+          </MessagingProvider>
         </AuthProvider>
       </QueryClientProvider>
     );

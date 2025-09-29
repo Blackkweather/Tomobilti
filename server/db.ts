@@ -7,13 +7,48 @@ import type { IStorage } from './storage';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 
-// Initialize PostgreSQL database connection
-const connectionString = process.env.DATABASE_URL || 'postgresql://demo_user:demo_password@localhost:5432/tomobilti_db';
+// Database configuration with cloud support
+const getDatabaseConfig = () => {
+  const databaseUrl = process.env.DATABASE_URL;
+  
+  // If DATABASE_URL is provided, use it (cloud or local PostgreSQL)
+  if (databaseUrl && !databaseUrl.startsWith('file:')) {
+    return {
+      connectionString: databaseUrl,
+      ssl: process.env.DB_SSL === 'true' ? {
+        rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true'
+      } : false
+    };
+  }
+  
+  // Fallback to individual parameters for cloud providers
+  if (process.env.DB_HOST && process.env.DB_HOST !== 'localhost') {
+    const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+    return {
+      connectionString,
+      ssl: process.env.DB_SSL === 'true' ? {
+        rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true'
+      } : false
+    };
+  }
+  
+  // Default local PostgreSQL
+  return {
+    connectionString: databaseUrl || 'postgresql://demo_user:demo_password@localhost:5432/tomobilti_db',
+    ssl: false
+  };
+};
 
-const sql = postgres(connectionString, {
+const config = getDatabaseConfig();
+
+const sql = postgres(config.connectionString, {
   max: 20, // Connection pool size
   idle_timeout: 20,
   connect_timeout: 10,
+  ssl: config.ssl,
+  // Add connection retry for cloud databases
+  retry_delay: 1000,
+  max_attempts: 3,
 });
 
 export const db = drizzle(sql);

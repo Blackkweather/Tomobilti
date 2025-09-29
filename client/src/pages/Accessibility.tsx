@@ -455,7 +455,7 @@ export default function Accessibility() {
                           <strong>Phone:</strong> +44 20 1234 5678
                         </div>
                         <div>
-                          <strong>Email:</strong> accessibility@sharewheelz.com
+                          <strong>Email:</strong> admin@sharewheelz.uk
                         </div>
                         <div>
                           <strong>Hours:</strong> Monday-Friday, 9AM-6PM GMT
