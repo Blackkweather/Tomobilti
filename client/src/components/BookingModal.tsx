@@ -506,7 +506,7 @@ export default function BookingModal({ car, bookingData: initialBookingData, onC
                     </div>
                     
                     <div className="flex justify-between items-center text-sm text-muted-foreground">
-                      <span>Insurance</span>
+                      <span>Insurance Discount</span>
                       <span data-testid="text-insurance">{insurance} {car.currency}</span>
                     </div>
                     

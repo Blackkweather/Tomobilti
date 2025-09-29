@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { User, Mail, Phone, Calendar as CalendarIcon } from 'lucide-react';
+import { User, Mail, Phone, Calendar as CalendarIcon, Crown, CheckCircle, Clock } from 'lucide-react';
 
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
@@ -69,6 +69,41 @@ export default function Profile() {
                 <Button variant="outline" size="sm">
                   Change Photo
                 </Button>
+              </CardContent>
+            </Card>
+
+            {/* Membership Status Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Crown className="h-5 w-5 text-purple-600" />
+                  Membership Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center">
+                  <div className="w-16 h-10 bg-gradient-to-r from-purple-500 to-blue-600 rounded-lg mx-auto mb-4 flex items-center justify-center">
+                    <Crown className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    {user.membershipType || 'Gold'} Member
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {user.membershipType === 'purple' ? 'Starter Boost' : 
+                     user.membershipType === 'black' ? 'Elite Mobility' : 'Smart Driver'}
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm text-green-600 mb-4">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Active</span>
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Clock className="h-3 w-3" />
+                      <span>Valid until: 12/25</span>
+                    </div>
+                    <div>Member ID: SWZ-****-****-****</div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 

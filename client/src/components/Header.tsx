@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel
 } from './ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin, ChevronDown, DollarSign, Crown, MessageCircle, HelpCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
@@ -98,9 +98,66 @@ export default function Header() {
   }
 
   const navItems = [
-    { href: '/cars', label: 'Rent a car' },
-    { href: '/become-member', label: 'Become a Member' },
-    { href: '/services', label: 'Our Quality service' },
+    { 
+      href: '/cars', 
+      label: 'Rent a Car',
+      description: 'Find and book a car easily near you.',
+      icon: Car,
+      subItems: [
+        { href: '/cars', label: 'Browse Cars', description: 'Search our wide selection' },
+        { href: '/cars?category=luxury', label: 'Luxury Cars', description: 'Premium vehicles' },
+        { href: '/cars?category=electric', label: 'Electric Cars', description: 'Eco-friendly options' },
+        { href: '/cars?category=economy', label: 'Economy Cars', description: 'Budget-friendly rentals' }
+      ]
+    },
+    { 
+      href: '/add-car', 
+      label: 'Make Your Car Work For You',
+      description: 'List your vehicle and earn money with ease.',
+      icon: DollarSign,
+      subItems: [
+        { href: '/add-car', label: 'List Your Car', description: 'Start earning today' },
+        { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
+        { href: '/host-guide', label: 'Host Guide', description: 'Tips and best practices' },
+        { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' }
+      ]
+    },
+    { 
+      href: '/become-member', 
+      label: 'Become a Member',
+      description: 'Get access to exclusive benefits and a secure community.',
+      icon: Crown,
+      subItems: [
+        { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
+        { href: '/membership-benefits', label: 'Benefits', description: 'See all perks' },
+        { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' },
+        { href: '/member-events', label: 'Member Events', description: 'Exclusive gatherings' }
+      ]
+    },
+    { 
+      href: '/services', 
+      label: 'Our Quality Services',
+      description: 'Discount on insurance, assistance, and support included for a hassle-free experience.',
+      icon: Shield,
+      subItems: [
+        { href: '/insurance', label: 'Insurance Discount', description: 'Get discounts on coverage' },
+        { href: '/roadside-assistance', label: 'Roadside Assistance', description: '24/7 help available' },
+        { href: '/support', label: 'Customer Support', description: 'Dedicated team ready' },
+        { href: '/quality-guarantee', label: 'Quality Guarantee', description: 'Satisfaction assured' }
+      ]
+    },
+    { 
+      href: '/contact', 
+      label: 'Customer Support',
+      description: 'A dedicated team ready to answer all your questions quickly.',
+      icon: MessageCircle,
+      subItems: [
+        { href: '/contact', label: 'Contact Us', description: 'Get in touch' },
+        { href: '/help', label: 'Help Center', description: 'Find answers' },
+        { href: '/faq', label: 'FAQ', description: 'Common questions' },
+        { href: '/live-chat', label: 'Live Chat', description: 'Instant support' }
+      ]
+    }
   ];
 
   const secondaryNavItems = [
@@ -126,21 +183,48 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation - Left */}
-        <nav className="hidden lg:flex items-center gap-2 mr-8">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} data-testid={`link-${item.label.toLowerCase().replace(/\s+/g, '-')}`}>
-              <Button 
-                variant={location === item.href ? 'default' : 'ghost'} 
-                className={`hover:scale-105 transition-all duration-200 ${
-                  location === item.href 
-                    ? 'bg-mauve-600 text-white shadow-md' 
-                    : 'hover:bg-mauve-50 text-gray-700 hover:text-mauve-600'
-                }`}
-              >
-                {item.label}
-              </Button>
-            </Link>
-          ))}
+        <nav className="hidden lg:flex items-center gap-1 mr-8">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <DropdownMenu key={item.href}>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant={location === item.href ? 'default' : 'ghost'} 
+                    className={`hover:scale-105 transition-all duration-200 flex items-center gap-1 ${
+                      location === item.href 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-80" align="start">
+                  <div className="p-3">
+                    <DropdownMenuLabel className="flex items-center gap-2 text-base font-semibold">
+                      <Icon className="h-5 w-5 text-blue-600" />
+                      {item.label}
+                    </DropdownMenuLabel>
+                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <div className="p-2">
+                    {item.subItems.map((subItem) => (
+                      <DropdownMenuItem key={subItem.href} asChild>
+                        <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
+                          <div className="font-medium text-gray-900">{subItem.label}</div>
+                          <div className="text-sm text-gray-600">{subItem.description}</div>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })}
         </nav>
 
         {/* Search Bar - CENTERED */}
@@ -358,20 +442,40 @@ export default function Header() {
 
                 {/* Mobile Navigation */}
                 <nav className="space-y-2">
-                  {navItems.map((item) => (
-                    <Link key={item.href} href={item.href}>
-                      <Button 
-                        variant={location === item.href ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === item.href 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        {item.label}
-                      </Button>
-                    </Link>
-                  ))}
+                  {navItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.href} className="space-y-1">
+                        <Link href={item.href}>
+                          <Button 
+                            variant={location === item.href ? 'default' : 'ghost'} 
+                            className={`w-full justify-start ${
+                              location === item.href 
+                                ? 'bg-blue-600 text-white' 
+                                : 'hover:bg-blue-50 hover:text-blue-600'
+                            }`}
+                          >
+                            <Icon className="h-4 w-4 mr-2" />
+                            {item.label}
+                          </Button>
+                        </Link>
+                        {/* Mobile Sub-items */}
+                        <div className="ml-6 space-y-1">
+                          {item.subItems.slice(0, 2).map((subItem) => (
+                            <Link key={subItem.href} href={subItem.href}>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                className="w-full justify-start text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                              >
+                                {subItem.label}
+                              </Button>
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </nav>
 
                 {/* Mobile Secondary Actions */}
