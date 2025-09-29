@@ -328,7 +328,7 @@ const Payment: React.FC = () => {
                     <span className="font-medium">GBP {Number(booking.serviceFee || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">Insurance</span>
+                    <span className="text-gray-600">Insurance Discount</span>
                     <span className="font-medium">GBP {Number(booking.insurance || 0).toFixed(2)}</span>
                   </div>
                   <Separator />

@@ -23,7 +23,16 @@ import {
   Heart,
   Award,
   Zap,
-  Mountain
+  Mountain,
+  DollarSign,
+  Crown,
+  Phone,
+  Mail,
+  MessageCircle,
+  X,
+  Sparkles,
+  Target,
+  Lock
 } from 'lucide-react';
 import { getFeaturedCarImages } from '../utils/carImages';
 import { useAuth } from '../contexts/AuthContext';
@@ -39,6 +48,31 @@ export default function Home() {
     start: null,
     end: null
   });
+
+  // State for membership popup
+  const [showMembershipPopup, setShowMembershipPopup] = useState(false);
+  const [popupTriggered, setPopupTriggered] = useState(false);
+
+  // Trigger membership popup after 4 seconds
+  useEffect(() => {
+    if (!isAuthenticated && !popupTriggered) {
+      const timer = setTimeout(() => {
+        setShowMembershipPopup(true);
+        setPopupTriggered(true);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated, popupTriggered]);
+
+  // Handle membership popup close
+  const handleCloseMembershipPopup = () => {
+    setShowMembershipPopup(false);
+  };
+
+  // Handle membership popup open
+  const handleOpenMembershipPopup = () => {
+    setShowMembershipPopup(true);
+  };
 
   // Fetch featured cars
   const { data: carsData, isLoading: carsLoading } = useQuery({
@@ -88,6 +122,95 @@ export default function Home() {
       description: 'Rent between individuals or with professionals',
       icon: Users,
       color: 'text-orange-600'
+    }
+  ];
+
+  // New homepage sections
+  const homepageSections = [
+    {
+      id: 'rent-car',
+      title: 'Rent a Car',
+      description: 'Find and book a car easily near you.',
+      icon: CarIcon,
+      color: 'from-blue-500 to-blue-600',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-600',
+      link: '/cars',
+      buttonText: 'Browse Cars',
+      features: [
+        'Wide selection of vehicles',
+        'Easy booking process',
+        'Secure payment system',
+        '24/7 customer support'
+      ]
+    },
+    {
+      id: 'make-car-work',
+      title: 'Make Your Car Work For You',
+      description: 'List your vehicle and earn money with ease.',
+      icon: DollarSign,
+      color: 'from-green-500 to-green-600',
+      bgColor: 'bg-green-50',
+      textColor: 'text-green-600',
+      link: '/add-car',
+      buttonText: 'List Your Car',
+      features: [
+        'Earn passive income',
+        'Full insurance coverage',
+        'Verified renters only',
+        'Flexible availability'
+      ]
+    },
+    {
+      id: 'become-member',
+      title: 'Become a Member',
+      description: 'Get access to exclusive benefits and a secure community.',
+      icon: Crown,
+      color: 'from-purple-500 to-purple-600',
+      bgColor: 'bg-purple-50',
+      textColor: 'text-purple-600',
+      link: '/become-member',
+      buttonText: 'Join Now',
+      features: [
+        'Exclusive discounts',
+        'Priority support',
+        'Loyalty points',
+        'Member-only vehicles'
+      ]
+    },
+    {
+      id: 'quality-services',
+      title: 'Our Quality Services',
+      description: 'Insurance, assistance, and support included for a hassle-free experience.',
+      icon: Shield,
+      color: 'from-indigo-500 to-indigo-600',
+      bgColor: 'bg-indigo-50',
+      textColor: 'text-indigo-600',
+      link: '/help',
+      buttonText: 'Learn More',
+      features: [
+        'Discount on the selected insurance package',
+        'Roadside assistance',
+        '24/7 support',
+        'Quality guarantee'
+      ]
+    },
+    {
+      id: 'customer-support',
+      title: 'Customer Support',
+      description: 'A dedicated team ready to answer all your questions quickly.',
+      icon: MessageCircle,
+      color: 'from-orange-500 to-orange-600',
+      bgColor: 'bg-orange-50',
+      textColor: 'text-orange-600',
+      link: '/contact',
+      buttonText: 'Contact Us',
+      features: [
+        'Live chat support',
+        'Phone assistance',
+        'Email support',
+        'FAQ database'
+      ]
     }
   ];
 
@@ -208,6 +331,54 @@ export default function Home() {
         onDatesChange={setSelectedDates}
         selectedDates={selectedDates}
       />
+
+      {/* New Homepage Sections */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Everything You Need for Car Sharing
+            </h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+              From renting to earning, we provide comprehensive solutions for all your car sharing needs.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {homepageSections.map((section, index) => {
+              const Icon = section.icon;
+              return (
+                <Card key={section.id} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105">
+                  <CardContent className="p-8 text-center">
+                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br ${section.color} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="h-10 w-10 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{section.title}</h3>
+                    <p className="text-gray-700 leading-relaxed font-medium mb-6">{section.description}</p>
+                    
+                    {/* Features List */}
+                    <div className="space-y-2 mb-6">
+                      {section.features.map((feature, featureIndex) => (
+                        <div key={featureIndex} className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span>{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Link href={section.link}>
+                      <Button className={`w-full ${section.bgColor} ${section.textColor} hover:opacity-90 border-0 shadow-lg hover:shadow-xl transition-all duration-300 group`}>
+                        {section.buttonText}
+                        <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       {/* Stats Section */}
       <section className="py-16 bg-white">
@@ -490,12 +661,13 @@ export default function Home() {
               </Button>
             </Link>
             {!isAuthenticated && (
-              <Link href="/become-member">
-                <Button className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg rounded-lg transition-all duration-300">
-                  <TrendingUp className="mr-2 h-5 w-5" />
-                  Become a Member
-                </Button>
-              </Link>
+              <Button 
+                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg rounded-lg transition-all duration-300"
+                onClick={handleOpenMembershipPopup}
+              >
+                <Crown className="mr-2 h-5 w-5" />
+                Become a Member
+              </Button>
             )}
           </div>
         </div>
@@ -503,6 +675,124 @@ export default function Home() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Membership Popup */}
+      {showMembershipPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300">
+            {/* Header */}
+            <div className="relative p-8 text-center border-b border-gray-100">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCloseMembershipPopup}
+                className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-gray-100"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+              
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+                <Crown className="h-8 w-8 text-white" />
+              </div>
+              
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Unlock Exclusive Benefits
+              </h2>
+              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+                Become a Member Today!
+              </h3>
+              <p className="text-gray-600">
+                Join our secure community and enjoy premium perks designed for both car owners and renters.
+              </p>
+            </div>
+
+            {/* Content */}
+            <div className="p-8 space-y-6">
+              {/* For Car Owners */}
+              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                    <DollarSign className="h-5 w-5 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-green-800">For Car Owners</h4>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-green-700">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm">Earn passive income</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-700">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm">Full insurance coverage</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-green-700">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm">Verified renters only</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* For Renters */}
+              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    <CarIcon className="h-5 w-5 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-blue-800">For Renters</h4>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm">Affordable prices</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm">Nearby cars</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-blue-700">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="text-sm">24/7 support & discount on insurance</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trust Badges */}
+              <div className="flex items-center justify-center gap-6 py-4 border-t border-b border-gray-200">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Shield className="h-4 w-4 text-green-500" />
+                    <span>Discount on Insurance</span>
+                  </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <MessageCircle className="h-4 w-4 text-blue-500" />
+                  <span>24/7 Support</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Lock className="h-4 w-4 text-purple-500" />
+                  <span>Secure Community</span>
+                </div>
+              </div>
+
+              {/* CTA Button */}
+              <Link href="/become-member">
+                <Button 
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={handleCloseMembershipPopup}
+                >
+                  <Crown className="h-5 w-5 mr-2" />
+                  Join Now
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              </Link>
+
+              {/* Additional Info */}
+              <div className="text-center text-sm text-gray-500">
+                <p>Join thousands of satisfied members</p>
+                <p className="mt-1">Cancel anytime • No hidden fees</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

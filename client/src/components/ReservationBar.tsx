@@ -287,7 +287,7 @@ export default function ReservationBar({ car, onBook, className = '' }: Reservat
                 <span className="font-medium">{car.currency} {pricing.serviceFee.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Insurance</span>
+                <span className="text-gray-600">Insurance Discount</span>
                 <span className="font-medium">{car.currency} {pricing.insurance.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
