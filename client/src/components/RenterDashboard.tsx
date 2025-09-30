@@ -24,7 +24,7 @@ import {
   BarChart3,
   LineChart,
   TrendingUp,
-  DollarSign,
+  PoundSterling,
   Eye,
   Zap,
   Shield,
@@ -267,7 +267,7 @@ export default function RenterDashboard() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-purple-100 rounded-lg">
-                      <DollarSign className="h-5 w-5 text-purple-600" />
+                      <PoundSterling className="h-5 w-5 text-purple-600" />
                     </div>
                     <span className="text-sm text-muted-foreground">Total Spent</span>
                   </div>
@@ -281,7 +281,7 @@ export default function RenterDashboard() {
                   </div>
                 </div>
                 <div className="p-3 bg-gradient-to-r from-purple-400 to-purple-500 rounded-full">
-                  <DollarSign className="h-6 w-6 text-white" />
+                  <PoundSterling className="h-6 w-6 text-white" />
                 </div>
               </div>
             </CardContent>

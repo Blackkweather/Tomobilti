@@ -48,7 +48,7 @@ export default function Reports() {
     queryKey: ["/api/reports", reportType, timeRange],
   });
 
-  const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`;
+  const formatCurrency = (amount: number) => `£${amount.toLocaleString()}`;
   const formatPercentage = (value: number) => `${value.toFixed(1)}%`;
 
   const exportReport = (format: "pdf" | "csv") => {

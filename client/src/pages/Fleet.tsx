@@ -13,7 +13,7 @@ import {
   CheckCircle,
   ArrowRight,
   TrendingUp,
-  DollarSign,
+  PoundSterling,
   MapPin,
   Calendar,
   Wrench,

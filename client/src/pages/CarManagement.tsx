@@ -139,11 +139,11 @@ export default function CarManagement() {
                     </div>
                     <p className="text-sm text-gray-600 mb-4">{car.location}</p>
                     <div className="flex justify-between text-sm text-gray-500 mb-4">
-                      <span>${car.pricePerDay}/day</span>
+                      <span>£{car.pricePerDay}/day</span>
                       <span>{car.totalBookings} bookings</span>
                     </div>
                     <div className="text-sm font-medium text-green-600 mb-4">
-                      Total Earnings: ${car.totalEarnings}
+                      Total Earnings: £{car.totalEarnings}
                     </div>
                     <div className="flex space-x-2">
                       <Link href={`/edit-car/${car.id}`}>

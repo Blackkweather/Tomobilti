@@ -11,8 +11,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel
 } from './ui/dropdown-menu';
+import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin, ChevronDown, DollarSign, Crown, MessageCircle, HelpCircle } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin, ChevronDown, Crown, MessageCircle, HelpCircle, Headphones, PoundSterling } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
@@ -114,7 +115,7 @@ export default function Header() {
       href: '/add-car', 
       label: 'Make Your Car Work For You',
       description: 'List your vehicle and earn money with ease.',
-      icon: DollarSign,
+      icon: PoundSterling,
       subItems: [
         { href: '/add-car', label: 'List Your Car', description: 'Start earning today' },
         { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
@@ -146,44 +147,31 @@ export default function Header() {
         { href: '/quality-guarantee', label: 'Quality Guarantee', description: 'Satisfaction assured' }
       ]
     },
-    { 
-      href: '/contact', 
-      label: 'Customer Support',
-      description: 'A dedicated team ready to answer all your questions quickly.',
-      icon: MessageCircle,
-      subItems: [
-        { href: '/contact', label: 'Contact Us', description: 'Get in touch' },
-        { href: '/help', label: 'Help Center', description: 'Find answers' },
-        { href: '/faq', label: 'FAQ', description: 'Common questions' },
-        { href: '/live-chat', label: 'Live Chat', description: 'Instant support' }
-      ]
-    }
   ];
 
-  const secondaryNavItems = [
-    { href: '/security', label: 'Security', icon: Shield },
-  ];
+  const secondaryNavItems: never[] = [];
 
   const ownerNavItems = [
     { href: '/add-car', label: 'Add Car', icon: Plus },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
-      <div className="container flex h-16 items-center px-4">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg overflow-visible">
+      <div className="container mx-auto flex h-16 items-center px-4 max-w-7xl w-full">
         {/* Brand Logo - Left Side */}
         <div className="flex-shrink-0 mr-4">
           <Link href="/" className="flex items-center">
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-20 w-auto hover:scale-105 transition-transform duration-200"
+              className="h-20 w-auto hover:scale-105 transition-transform duration-200 touch-manipulation"
+              style={{ touchAction: 'manipulation' }}
             />
           </Link>
         </div>
 
         {/* Desktop Navigation - Left */}
-        <nav className="hidden lg:flex items-center gap-1 mr-8">
+        <nav className="hidden lg:flex items-center gap-1 sm:gap-2 mr-4 sm:mr-8 flex-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -250,7 +238,7 @@ export default function Header() {
         </div>
 
         {/* User Actions - Right Side */}
-        <div className="flex items-center gap-2 flex-shrink-0 ml-8">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-4 sm:ml-8">
           {/* Notifications */}
           {isAuthenticated && (
             <DropdownMenu>
@@ -314,40 +302,6 @@ export default function Header() {
           )}
 
 
-          {/* Secondary Navigation */}
-          <div className="hidden lg:flex items-center gap-1">
-            {isAuthenticated && secondaryNavItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link key={item.href} href={item.href}>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 transition-all duration-200"
-                  >
-                    <Icon className="h-4 w-4 mr-1" />
-                    {item.label}
-                  </Button>
-                </Link>
-              );
-            })}
-            {/* Owner-specific navigation */}
-            {isAuthenticated && (user?.userType === 'owner' || user?.userType === 'both') && ownerNavItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link key={item.href} href={item.href}>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="hover:bg-green-50 hover:text-green-600 hover:border-green-300 transition-all duration-200"
-                  >
-                    <Icon className="h-4 w-4 mr-1" />
-                    {item.label}
-                  </Button>
-                </Link>
-              );
-            })}
-          </div>
 
           {/* User Menu */}
           {isAuthenticated ? (
@@ -380,6 +334,32 @@ export default function Header() {
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/become-member" className="flex items-center cursor-pointer">
+                    <Crown className="mr-2 h-4 w-4" />
+                    <span>Membership</span>
+                    {user?.membershipTier && (
+                      <Badge className="ml-auto bg-gradient-to-r from-purple-500 to-blue-600 text-white text-xs">
+                        {user.membershipTier === 'purple' ? 'Starter' : 
+                         user.membershipTier === 'black' ? 'Elite' : 'Gold'}
+                      </Badge>
+                    )}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/security" className="flex items-center cursor-pointer">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Security</span>
+                  </Link>
+                </DropdownMenuItem>
+                {(user?.userType === 'owner' || user?.userType === 'both') && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/add-car" className="flex items-center cursor-pointer">
+                      <Plus className="mr-2 h-4 w-4" />
+                      <span>Add Car</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -388,7 +368,7 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Link href="/login">
                 <Button variant="ghost" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                   Login
@@ -411,7 +391,7 @@ export default function Header() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetContent side="right" className="w-[280px] sm:w-[350px]">
               <div className="flex flex-col space-y-4">
                 {/* Mobile Brand Logo */}
             <div className="flex items-center justify-center pb-4 border-b">
@@ -478,34 +458,6 @@ export default function Header() {
                   })}
                 </nav>
 
-                {/* Mobile Secondary Actions */}
-                {isAuthenticated && (
-                  <div className="space-y-2 pt-4 border-t">
-                    {secondaryNavItems.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <Link key={item.href} href={item.href}>
-                          <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
-                            <Icon className="h-4 w-4 mr-2" />
-                            {item.label}
-                          </Button>
-                        </Link>
-                      );
-                    })}
-                    {/* Owner-specific mobile navigation */}
-                    {(user?.userType === 'owner' || user?.userType === 'both') && ownerNavItems.map((item) => {
-                      const Icon = item.icon;
-                      return (
-                        <Link key={item.href} href={item.href}>
-                          <Button variant="outline" className="w-full justify-start hover:bg-green-50 hover:text-green-600">
-                            <Icon className="h-4 w-4 mr-2" />
-                            {item.label}
-                          </Button>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
 
                 {/* Mobile User Actions */}
                 {isAuthenticated ? (
@@ -517,9 +469,16 @@ export default function Header() {
                           {user?.firstName?.[0]}{user?.lastName?.[0]}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
+                      <div className="flex-1">
                         <p className="text-sm font-medium">{user?.firstName} {user?.lastName}</p>
                         <p className="text-xs text-gray-500">{user?.email}</p>
+                        {user?.membershipTier && (
+                          <Badge className="mt-1 bg-gradient-to-r from-purple-500 to-blue-600 text-white text-xs">
+                            <Crown className="h-2 w-2 mr-1" />
+                            {user.membershipTier === 'purple' ? 'Starter' : 
+                             user.membershipTier === 'black' ? 'Elite' : 'Gold'} Member
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <Link href="/dashboard">
@@ -532,6 +491,26 @@ export default function Header() {
                       <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
                         <Settings className="h-4 w-4 mr-2" />
                         Settings
+                      </Button>
+                    </Link>
+                    <Link href="/security">
+                      <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Security
+                      </Button>
+                    </Link>
+                    {(user?.userType === 'owner' || user?.userType === 'both') && (
+                      <Link href="/add-car">
+                        <Button variant="outline" className="w-full justify-start hover:bg-green-50 hover:text-green-600">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Car
+                        </Button>
+                      </Link>
+                    )}
+                    <Link href="/become-member">
+                      <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
+                        <Crown className="h-4 w-4 mr-2" />
+                        Membership
                       </Button>
                     </Link>
                     <Button 

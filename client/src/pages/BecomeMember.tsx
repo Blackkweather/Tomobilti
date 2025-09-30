@@ -25,7 +25,7 @@ import {
   Lock,
   Calendar,
   User,
-  DollarSign,
+  PoundSterling,
   Target,
   Zap,
   Clock,
@@ -171,7 +171,7 @@ export default function BecomeMember() {
   // Enhanced benefits for owners and renters
   const ownerBenefits = [
     {
-      icon: DollarSign,
+      icon: PoundSterling,
       title: 'Earn Passive Income',
       description: 'Turn your idle car into a money-making asset',
       highlight: 'Up to £500/month'
@@ -472,7 +472,7 @@ export default function BecomeMember() {
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'owners' | 'renters')} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-12 bg-white shadow-lg">
                 <TabsTrigger value="owners" className="text-lg py-4">
-                  <DollarSign className="w-5 h-5 mr-2" />
+                  <PoundSterling className="w-5 h-5 mr-2" />
                   For Car Owners
                 </TabsTrigger>
                 <TabsTrigger value="renters" className="text-lg py-4">
@@ -649,7 +649,7 @@ export default function BecomeMember() {
                     {/* Host Features */}
                     <div>
                       <h4 className="font-semibold text-green-700 mb-3 flex items-center gap-2">
-                        <DollarSign className="h-4 w-4" />
+                        <PoundSterling className="h-4 w-4" />
                         For Hosts
                       </h4>
                       <ul className="space-y-2">

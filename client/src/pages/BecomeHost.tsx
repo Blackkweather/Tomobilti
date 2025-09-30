@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Car, DollarSign, Shield, Clock, Users, Star } from "lucide-react";
+import { Car, PoundSterling, Shield, Clock, Users, Star } from "lucide-react";
 import { Link } from "wouter";
 
 export default function BecomeHost() {
@@ -15,7 +15,7 @@ export default function BecomeHost() {
   };
   const benefits = [
     {
-      icon: DollarSign,
+      icon: PoundSterling,
       title: "Earn up to £300/month",
       description: "Monetize your vehicle when you're not using it"
     },

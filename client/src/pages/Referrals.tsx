@@ -89,7 +89,7 @@ export default function Referrals() {
     }
   };
 
-  const formatCurrency = (amount: number) => `$${amount}`;
+  const formatCurrency = (amount: number) => `£${amount}`;
 
   if (isLoading) {
     return (

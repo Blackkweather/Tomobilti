@@ -551,7 +551,7 @@ export default function BookingModal({ car, bookingData: initialBookingData, onC
               data-testid="button-confirm-booking"
               className="hover-elevate active-elevate-2"
             >
-              {isLoading ? 'Processing...' : `Confirm Booking - ${total} ${car.currency}`}
+              {isLoading ? 'Processing...' : `Confirm Booking - £${total}`}
             </Button>
           </div>
         </div>

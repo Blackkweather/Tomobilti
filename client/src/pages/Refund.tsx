@@ -54,7 +54,7 @@ export default function Refund() {
               </p>
               <ul className="list-disc pl-6 text-gray-700 space-y-2">
                 <li>Full refund regardless of timing</li>
-                <li>$50 credit for future bookings</li>
+                <li>£50 credit for future bookings</li>
                 <li>Assistance finding alternative vehicles</li>
                 <li>Reimbursement for reasonable expenses incurred</li>
               </ul>

@@ -24,7 +24,7 @@ import {
   Award,
   Zap,
   Mountain,
-  DollarSign,
+  PoundSterling,
   Crown,
   Phone,
   Mail,
@@ -148,7 +148,7 @@ export default function Home() {
       id: 'make-car-work',
       title: 'Make Your Car Work For You',
       description: 'List your vehicle and earn money with ease.',
-      icon: DollarSign,
+      icon: PoundSterling,
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-50',
       textColor: 'text-green-600',
@@ -712,7 +712,7 @@ export default function Home() {
               <div className="bg-green-50 rounded-xl p-6 border border-green-200">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                    <DollarSign className="h-5 w-5 text-white" />
+                    <PoundSterling className="h-5 w-5 text-white" />
                   </div>
                   <h4 className="text-lg font-semibold text-green-800">For Car Owners</h4>
                 </div>

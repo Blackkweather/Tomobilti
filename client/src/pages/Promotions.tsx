@@ -66,7 +66,7 @@ export default function Promotions() {
       case "percentage":
         return `${promotion.value}% OFF`;
       case "fixed":
-        return `$${promotion.value} OFF`;
+        return `£${promotion.value} OFF`;
       case "free_day":
         return `${promotion.value} FREE DAY${promotion.value > 1 ? 'S' : ''}`;
       default:
@@ -91,7 +91,7 @@ export default function Promotions() {
     return diffInDays <= 7 && diffInDays > 0;
   };
 
-  const formatCurrency = (amount: number) => `$${amount}`;
+  const formatCurrency = (amount: number) => `£${amount}`;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">

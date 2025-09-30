@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { 
   TrendingUp, 
   TrendingDown, 
-  DollarSign, 
+  PoundSterling, 
   Calendar, 
   Users, 
   Car, 
@@ -322,7 +322,7 @@ export default function AnalyticsDashboard() {
               Overview
             </TabsTrigger>
             <TabsTrigger value="revenue" className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
+              <PoundSterling className="h-4 w-4" />
               Revenue
             </TabsTrigger>
             <TabsTrigger value="bookings" className="flex items-center gap-2">
@@ -523,6 +523,8 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
+
+
 
 
 
