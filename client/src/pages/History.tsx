@@ -58,7 +58,7 @@ export default function History() {
     }
   };
 
-  const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`;
+  const formatCurrency = (amount: number) => `£${amount.toLocaleString()}`;
 
   const formatDateRange = (startDate: string, endDate: string) => {
     const start = new Date(startDate);

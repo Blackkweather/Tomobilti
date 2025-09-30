@@ -102,7 +102,7 @@ export default function SecurePayment({ amount, currency, onPayment, onCancel }:
           <div className="flex items-center justify-between">
             <span className="text-lg font-medium">Total Amount</span>
             <span className="text-2xl font-bold text-green-600">
-              {currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : currency === 'USD' ? '$' : currency} {amount.toFixed(2)}
+              {currency === 'GBP' ? '£' : currency === 'EUR' ? '€' : '£'} {amount.toFixed(2)}
             </span>
           </div>
           <div className="mt-2 text-sm text-gray-600">

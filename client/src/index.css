@@ -2,6 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ===== GLOBAL TOUCH FIXES ===== */
+html {
+  overflow-x: hidden;
+}
+
+body {
+  overflow-x: hidden;
+  background-color: white;
+}
+
+/* Ensure header is always visible */
+header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 9999 !important;
+  width: 100% !important;
+  overflow: visible !important;
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+  /* Improve touch targets */
+  button, a, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better spacing for mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Improve form inputs */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 12px 16px;
+  }
+  
+  /* Better button sizing */
+  .btn-mobile {
+    min-height: 48px;
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+}
+
 /* ===== TOMOBILTI MODERN DESIGN SYSTEM ===== */
 
 /* Brand Colors & Theme */
@@ -330,6 +377,29 @@
   
   .hover-lift {
     @apply hover:translate-y-0;
+  }
+}
+
+/* ===== TOUCH GESTURE FIXES ===== */
+
+/* Prevent horizontal scrolling */
+.container {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Prevent transform issues on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .hover-lift {
+    transform: none !important;
+  }
+  
+  .group:hover .group-hover\:scale-110 {
+    transform: none !important;
+  }
+  
+  .hover\:scale-105:hover {
+    transform: none !important;
   }
 }
 

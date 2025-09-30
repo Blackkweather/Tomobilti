@@ -12,7 +12,7 @@ import {
   Calendar, 
   TrendingUp, 
   Star, 
-  DollarSign,
+  PoundSterling,
   Clock,
   CheckCircle,
   XCircle,
@@ -258,7 +258,7 @@ export default function OwnerDashboard() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-green-100 rounded-lg">
-                      <DollarSign className="h-5 w-5 text-green-600" />
+                      <PoundSterling className="h-5 w-5 text-green-600" />
                     </div>
                     <span className="text-sm text-muted-foreground">Total Earnings</span>
                   </div>
@@ -657,7 +657,7 @@ export default function OwnerDashboard() {
                         
                         <div className="flex items-center gap-3">
                           <div className="text-right">
-                            <p className="font-bold text-lg">${parseFloat(booking.totalAmount || 0).toFixed(2)}</p>
+                            <p className="font-bold text-lg">£{parseFloat(booking.totalAmount || 0).toFixed(2)}</p>
                             <Badge className={`${bookingStatusConfig[booking.status as keyof typeof bookingStatusConfig]?.color || 'text-gray-600 bg-gray-50'}`}>
                               {booking.status}
                             </Badge>

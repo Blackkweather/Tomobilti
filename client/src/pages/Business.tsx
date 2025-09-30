@@ -12,7 +12,7 @@ import {
   CheckCircle,
   ArrowRight,
   TrendingUp,
-  DollarSign,
+  PoundSterling,
   Car,
   Phone,
   Mail,
@@ -67,7 +67,7 @@ export default function Business() {
 
   const benefits = [
     {
-      icon: DollarSign,
+      icon: PoundSterling,
       title: 'Cost Savings',
       description: 'Reduce travel costs by up to 40% with our corporate rates'
     },

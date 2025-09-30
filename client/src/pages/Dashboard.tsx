@@ -9,7 +9,7 @@ import {
   Car, 
   Calendar, 
   Star, 
-  DollarSign, 
+  PoundSterling, 
   Users, 
   Plus, 
   TrendingUp, 
@@ -222,7 +222,7 @@ export default function Dashboard() {
                       <p className="text-3xl font-bold text-green-700">£{totalEarnings.toFixed(2)}</p>
                     </div>
                     <div className="p-3 bg-green-200 rounded-full">
-                      <DollarSign className="h-6 w-6 text-green-600" />
+                      <PoundSterling className="h-6 w-6 text-green-600" />
                     </div>
                   </div>
                 </CardContent>

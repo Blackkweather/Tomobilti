@@ -11,7 +11,7 @@ import {
   LineChart, 
   TrendingUp, 
   TrendingDown,
-  DollarSign,
+  PoundSterling,
   Calendar,
   Car,
   Star,
@@ -331,7 +331,7 @@ export default function Analytics() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-green-100 rounded-lg">
-                      <DollarSign className="h-5 w-5 text-green-600" />
+                      <PoundSterling className="h-5 w-5 text-green-600" />
                     </div>
                     <span className="text-sm text-muted-foreground">Total Earnings</span>
                   </div>
@@ -438,7 +438,7 @@ export default function Analytics() {
               Overview
             </TabsTrigger>
             <TabsTrigger value="earnings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-mauve-500 data-[state=active]:to-bleu-500 data-[state=active]:text-white">
-              <DollarSign className="h-4 w-4 mr-2" />
+              <PoundSterling className="h-4 w-4 mr-2" />
               Earnings
             </TabsTrigger>
             <TabsTrigger value="vehicles" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-mauve-500 data-[state=active]:to-bleu-500 data-[state=active]:text-white">
@@ -518,7 +518,7 @@ export default function Analytics() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="text-center p-4 rounded-lg bg-green-50">
-                    <DollarSign className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <PoundSterling className="h-8 w-8 text-green-600 mx-auto mb-2" />
                     <p className="text-2xl font-bold text-green-600">£{analytics.earnings.thisMonth.toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">This Month</p>
                   </div>

@@ -192,8 +192,8 @@ export default function AddCar() {
   if (!isAuthenticated || !user) {
     console.log('User not authenticated, showing login prompt');
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12">
-        <Card className="max-w-md w-full mx-4">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+        <Card className="max-w-md w-full">
           <CardHeader className="text-center">
             <CardTitle className="flex items-center justify-center gap-2">
               <Shield className="h-6 w-6 text-primary" />
@@ -226,31 +226,31 @@ export default function AddCar() {
   console.log('User authenticated, rendering main form');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-mauve-50 via-white to-bleu-50 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-mauve-50 via-white to-bleu-50 py-4 sm:py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl border border-white/20">
-          <div className="px-8 py-6 border-b border-gray-200/50 bg-gradient-to-r from-mauve-500/10 to-bleu-500/10 rounded-t-2xl">
+          <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-gray-200/50 bg-gradient-to-r from-mauve-500/10 to-bleu-500/10 rounded-t-2xl">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-r from-mauve-500 to-bleu-500 rounded-xl">
-                <Car className="h-6 w-6 text-white" />
+              <div className="p-2 sm:p-3 bg-gradient-to-r from-mauve-500 to-bleu-500 rounded-xl">
+                <Car className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-mauve-600 to-bleu-600 bg-clip-text text-transparent">
+                <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-mauve-600 to-bleu-600 bg-clip-text text-transparent">
                   Add New Vehicle
                 </h1>
-                <p className="text-muted-foreground mt-1">List your car and start earning</p>
+                <p className="text-muted-foreground mt-1 text-sm sm:text-base">List your car and start earning</p>
               </div>
             </div>
           </div>
-          <form onSubmit={handleSubmit} className="p-8 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-6 sm:space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-800 mb-3">Make</label>
                 <input
                   type="text"
                   value={form.make}
                   onChange={handleChange("make")}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-mauve-500 focus:border-mauve-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
+                  className="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 focus:outline-none focus:ring-2 focus:ring-mauve-500 focus:border-mauve-500 transition-all duration-200 bg-white/50 backdrop-blur-sm text-base"
                   placeholder="Toyota, Honda, BMW..."
                 />
                 {errors.make && <p className="mt-2 text-sm text-red-600 font-medium">{errors.make}</p>}

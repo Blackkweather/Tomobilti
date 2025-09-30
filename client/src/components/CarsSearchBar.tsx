@@ -9,7 +9,7 @@ import {
   Search, 
   MapPin, 
   Calendar as CalendarIcon, 
-  DollarSign, 
+  PoundSterling, 
   Fuel, 
   Settings, 
   RotateCcw,
@@ -122,7 +122,7 @@ export default function CarsSearchBar({ filters, onFilterChange }: CarsSearchBar
             {/* Min Price */}
             <div className="space-y-2">
               <Label htmlFor="minPrice" className="text-sm font-medium text-gray-700">
-                <DollarSign className="w-4 h-4 inline mr-1" />
+                <PoundSterling className="w-4 h-4 inline mr-1" />
                 Min Price (£)
               </Label>
               <Input
@@ -138,7 +138,7 @@ export default function CarsSearchBar({ filters, onFilterChange }: CarsSearchBar
             {/* Max Price */}
             <div className="space-y-2">
               <Label htmlFor="maxPrice" className="text-sm font-medium text-gray-700">
-                <DollarSign className="w-4 h-4 inline mr-1" />
+                <PoundSterling className="w-4 h-4 inline mr-1" />
                 Max Price (£)
               </Label>
               <Input

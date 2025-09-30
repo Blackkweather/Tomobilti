@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
+import SupportChat from "./components/SupportChat";
 
 // Import pages
 import Home from "./pages/Home";
@@ -45,6 +46,17 @@ import Report from "./pages/Report";
 import Terms from "./pages/Terms";
 import Cookies from "./pages/Cookies";
 import Accessibility from "./pages/Accessibility";
+import EarningsCalculator from "./pages/EarningsCalculator";
+import RoadsideAssistance from "./pages/RoadsideAssistance";
+import QualityGuarantee from "./pages/QualityGuarantee";
+import FAQ from "./pages/FAQ";
+import LiveChat from "./pages/LiveChat";
+import HostGuide from "./pages/HostGuide";
+import MembershipBenefits from "./pages/MembershipBenefits";
+import LoyaltyProgram from "./pages/LoyaltyProgram";
+import MemberEvents from "./pages/MemberEvents";
+import Privacy from "./pages/Privacy";
+import Insurance from "./pages/Insurance";
 import NotFound from "./pages/not-found";
 
 // Import components
@@ -61,7 +73,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <MessagingProvider>
-            <div className="min-h-screen bg-background">
+            <div className="min-h-screen bg-white">
             <Header />
             
             <Switch>
@@ -106,10 +118,22 @@ function App() {
               <Route path="/services" component={Services} />
               <Route path="/terms-policies" component={TermsPolicies} />
               <Route path="/support" component={Support} />
+              <Route path="/earnings-calculator" component={EarningsCalculator} />
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/insurance" component={Insurance} />
+              <Route path="/roadside-assistance" component={RoadsideAssistance} />
+              <Route path="/quality-guarantee" component={QualityGuarantee} />
+              <Route path="/faq" component={FAQ} />
+              <Route path="/live-chat" component={LiveChat} />
+              <Route path="/host-guide" component={HostGuide} />
+              <Route path="/membership-benefits" component={MembershipBenefits} />
+              <Route path="/loyalty-program" component={LoyaltyProgram} />
+              <Route path="/member-events" component={MemberEvents} />
               <Route component={NotFound} />
             </Switch>
             
             <Toaster />
+            <SupportChat />
           </div>
           </MessagingProvider>
         </AuthProvider>

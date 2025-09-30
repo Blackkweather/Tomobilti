@@ -173,7 +173,7 @@ export default function BookingDetails() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Amount</span>
-                    <span className="font-bold text-lg">${parseFloat(booking.totalAmount || 0).toFixed(2)}</span>
+                    <span className="font-bold text-lg">£{parseFloat(booking.totalAmount || 0).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Booking ID</span>

@@ -121,7 +121,7 @@ export default function Maintenance() {
     }
   };
 
-  const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`;
+  const formatCurrency = (amount: number) => `£${amount.toLocaleString()}`;
 
   return (
     <div className="min-h-screen bg-gray-50 py-12">

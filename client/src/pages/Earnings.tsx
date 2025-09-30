@@ -46,7 +46,7 @@ export default function Earnings() {
     },
   });
 
-  const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`;
+  const formatCurrency = (amount: number) => `£${amount.toLocaleString()}`;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -169,7 +169,7 @@ export default function Earnings() {
             </div>
             {earnings.availableBalance < 25 && (
               <p className="mt-2 text-sm text-gray-500">
-                Minimum payout amount is $25
+                Minimum payout amount is £25
               </p>
             )}
           </div>
