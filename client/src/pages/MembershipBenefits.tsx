@@ -39,7 +39,8 @@ interface MembershipBenefitsProps {
   };
 }
 
-export default function MembershipBenefits({ config = {} }: MembershipBenefitsProps) {
+export default function MembershipBenefits(props: any) {
+  const { config = {} } = props as MembershipBenefitsProps;
   // Default configuration
   const defaultConfig = {
     currency: '£',

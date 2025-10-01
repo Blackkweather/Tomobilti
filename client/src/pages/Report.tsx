@@ -21,7 +21,6 @@ import {
   CreditCard,
   MessageCircle
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Report() {
   const [formData, setFormData] = useState({

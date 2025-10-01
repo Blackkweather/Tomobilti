@@ -5,11 +5,19 @@
 /* ===== GLOBAL TOUCH FIXES ===== */
 html {
   overflow-x: hidden;
+  /* Prevent viewport changes */
+  height: 100%;
+  width: 100%;
 }
 
 body {
   overflow-x: hidden;
   background-color: white;
+  /* Prevent viewport changes */
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 /* Ensure header is always visible */
@@ -18,7 +26,54 @@ header {
   top: 0 !important;
   z-index: 9999 !important;
   width: 100% !important;
-  overflow: visible !important;
+  overflow-x: hidden !important;
+}
+
+/* Fix dropdown resizing issues */
+[data-radix-popper-content-wrapper] {
+  position: fixed !important;
+  z-index: 10000 !important;
+}
+
+[data-radix-dropdown-menu-content] {
+  position: fixed !important;
+  z-index: 10000 !important;
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin) !important;
+}
+
+/* Prevent layout shifts from dropdowns */
+.dropdown-menu-content {
+  position: fixed !important;
+  z-index: 10000 !important;
+}
+
+/* Ensure dropdowns don't affect page layout */
+[role="menu"] {
+  position: fixed !important;
+  z-index: 10000 !important;
+}
+
+/* Prevent button interactions from causing layout shifts */
+button {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Prevent header buttons from causing resizing */
+header button {
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* Ensure stable header layout */
+header .container {
+  contain: layout;
+}
+
+/* Prevent horizontal scrolling in header container */
+header .container {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
 }
 
 /* Mobile-specific improvements */

@@ -6,7 +6,7 @@ import { getSpecificCarImage } from "../utils/carImages";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Star, MapPin, Heart, Trash2, Eye, Calendar } from "lucide-react";
-import Footer from "../components/Footer";
+import Footer from '../components/Footer';
 
 interface FavoriteCar {
   id: string;
@@ -216,7 +216,6 @@ export default function Favorites() {
         )}
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

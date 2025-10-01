@@ -249,13 +249,9 @@ export default function ReservationBar({ car, onBook, className = '', config = {
             </div>
           </div>
 
-          {/* Date Selection - Mobile Optimized */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              Select Dates
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Date Selection - Compact Layout */}
+          <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">Start Date</label>
                 <input
@@ -265,7 +261,7 @@ export default function ReservationBar({ car, onBook, className = '', config = {
                     const date = e.target.value ? new Date(e.target.value) : null;
                     handleDateSelect(date, selectedDates.end);
                   }}
-                  className="w-full px-3 py-3 sm:py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm sm:text-base"
+                  className="w-full px-2 py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-xs sm:text-sm"
                 />
               </div>
               <div>
@@ -277,106 +273,103 @@ export default function ReservationBar({ car, onBook, className = '', config = {
                     const date = e.target.value ? new Date(e.target.value) : null;
                     handleDateSelect(selectedDates.start, date);
                   }}
-                  className="w-full px-3 py-3 sm:py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm sm:text-base"
+                  className="w-full px-2 py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-xs sm:text-sm"
                 />
               </div>
             </div>
           </div>
 
-          {/* Guest Selection - Mobile Optimized */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <Users className="h-4 w-4 mr-2" />
-              Number of Guests
+          {/* Guest Selection - Compact */}
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-gray-700 flex items-center">
+              <Users className="h-3 w-3 mr-1" />
+              Guests
             </label>
             <div className="flex items-center border border-gray-200 rounded-lg">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setGuests(Math.max(finalConfig.minGuests, guests - 1))}
-                className="rounded-r-none h-12 w-12 sm:h-10 sm:w-10"
+                className="rounded-r-none h-8 w-8"
               >
                 -
               </Button>
-              <div className="flex-1 text-center py-3 sm:py-3 font-medium text-sm sm:text-base">{guests}</div>
+              <div className="flex-1 text-center py-2 font-medium text-xs">{guests}</div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setGuests(Math.min(finalConfig.maxGuests, guests + 1))}
-                className="rounded-l-none h-12 w-12 sm:h-10 sm:w-10"
+                className="rounded-l-none h-8 w-8"
               >
                 +
               </Button>
             </div>
           </div>
 
-          {/* Pricing Breakdown - Mobile Optimized */}
+          {/* Pricing Breakdown - Compact */}
           {pricing.days > 0 && (
-            <div className="space-y-2 sm:space-y-3 p-3 sm:p-4 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
+            <div className="space-y-1 p-2 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-600">{car.currency} {car.pricePerDay} × {pricing.days} days</span>
                 <span className="font-medium">{car.currency} {pricing.basePrice.toFixed(2)}</span>
               </div>
-              <div className="flex items-center justify-between text-xs sm:text-sm">
+              <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-600">Service fee</span>
                 <span className="font-medium">{car.currency} {pricing.serviceFee.toFixed(2)}</span>
               </div>
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <span className="text-gray-600">Insurance Discount</span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-600">Insurance</span>
                 <span className="font-medium">{car.currency} {pricing.insurance.toFixed(2)}</span>
               </div>
-              <div className="flex items-center justify-between text-xs sm:text-sm">
+              <div className="flex items-center justify-between text-xs">
                 <span className="text-gray-600">Taxes</span>
                 <span className="font-medium">{car.currency} {pricing.taxes.toFixed(2)}</span>
               </div>
-              <div className="border-t pt-2 flex items-center justify-between font-semibold text-sm sm:text-base">
+              <div className="border-t pt-1 flex items-center justify-between font-semibold text-sm">
                 <span>Total</span>
-                <span className="text-lg sm:text-lg">{car.currency} {pricing.total.toFixed(2)}</span>
+                <span className="text-green-600">{car.currency} {pricing.total.toFixed(2)}</span>
               </div>
             </div>
           )}
 
-          {/* Book Button - Mobile Optimized */}
+          {/* Book Button - Compact */}
           <Button
             onClick={handleBook}
             disabled={!selectedDates.start || !selectedDates.end || isBooking}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-14 sm:h-12 text-base sm:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-10 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200"
           >
             {isBooking ? (
               <div className="flex items-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
                 Processing...
               </div>
             ) : !isAuthenticated ? (
               <div className="flex items-center">
-                <LogIn className="h-5 w-5 mr-2" />
+                <LogIn className="h-4 w-4 mr-2" />
                 Login to Book
               </div>
             ) : (
               <div className="flex items-center">
-                <CreditCard className="h-5 w-5 mr-2" />
+                <CreditCard className="h-4 w-4 mr-2" />
                 Book Now
-                <ArrowRight className="h-5 w-5 ml-2" />
+                <ArrowRight className="h-4 w-4 ml-2" />
               </div>
             )}
           </Button>
 
-          {/* Security Badges - Mobile Optimized */}
-          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs text-gray-600">
+          {/* Security Badges - Compact */}
+          <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-gray-600">
             <div className="flex items-center">
-              <Shield className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-green-600" />
-              <span className="hidden sm:inline">Secure Payment</span>
-              <span className="sm:hidden">Secure</span>
+              <Shield className="h-3 w-3 mr-1 text-green-600" />
+              <span>Secure</span>
             </div>
             <div className="flex items-center">
-              <Lock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-blue-600" />
-              <span className="hidden sm:inline">SSL Encrypted</span>
-              <span className="sm:hidden">SSL</span>
+              <Lock className="h-3 w-3 mr-1 text-blue-600" />
+              <span>SSL</span>
             </div>
             <div className="flex items-center">
-              <Gift className="h-3 w-3 sm:h-4 sm:w-4 mr-1 text-purple-600" />
-              <span className="hidden sm:inline">Free Cancellation</span>
-              <span className="sm:hidden">Free Cancel</span>
+              <Gift className="h-3 w-3 mr-1 text-purple-600" />
+              <span>Free Cancel</span>
             </div>
           </div>
         </CardContent>

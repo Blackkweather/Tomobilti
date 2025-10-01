@@ -10,6 +10,7 @@ import SupportChat from "./components/SupportChat";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import PasswordReset from "./pages/PasswordReset";
 import DashboardSelector from "./components/DashboardSelector";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import RenterDashboard from "./pages/RenterDashboard";
@@ -20,7 +21,9 @@ import Security from "./pages/Security";
 import Cars from "./pages/Cars";
 import CarDetails from "./pages/CarDetails";
 import AddCar from "./pages/AddCar";
+import AddCarDynamic from "./pages/AddCarDynamic";
 import EditCar from "./pages/EditCar";
+import CarManagement from "./pages/CarManagement";
 import BecomeHost from "./pages/BecomeHost";
 import BecomeMember from "./pages/BecomeMember";
 import About from "./pages/About";
@@ -57,6 +60,7 @@ import LoyaltyProgram from "./pages/LoyaltyProgram";
 import MemberEvents from "./pages/MemberEvents";
 import Privacy from "./pages/Privacy";
 import Insurance from "./pages/Insurance";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/not-found";
 
 // Import components
@@ -80,6 +84,7 @@ function App() {
               <Route path="/" component={Home} />
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
+              <Route path="/password-reset" component={PasswordReset} />
               <Route path="/dashboard" component={DashboardSelector} />
               <Route path="/dashboard/owner" component={OwnerDashboard} />
               <Route path="/dashboard/renter" component={RenterDashboard} />
@@ -100,9 +105,12 @@ function App() {
               <Route path="/cars-debug" component={CarsDebug} />
               <Route path="/cars-debug-simple" component={CarsDebugSimple} />
               <Route path="/add-car" component={AddCar} />
+              <Route path="/add-car-dynamic" component={AddCarDynamic} />
               <Route path="/edit-car/:id" component={EditCar} />
+              <Route path="/car-management" component={CarManagement} />
               <Route path="/become-host" component={BecomeHost} />
               <Route path="/become-member" component={BecomeMember} />
+              <Route path="/admin" component={AdminDashboard} />
               <Route path="/fleet" component={Fleet} />
               <Route path="/business" component={Business} />
               <Route path="/help" component={Help} />

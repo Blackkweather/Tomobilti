@@ -15,7 +15,6 @@ import {
   AlertTriangle,
   Info
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Cookies() {
   const [cookiePreferences, setCookiePreferences] = useState({

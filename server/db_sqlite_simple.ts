@@ -1,8 +1,8 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
-import { users, cars, bookings, reviews } from '@shared/sqlite-schema';
-import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch } from '@shared/schema';
-import { eq, and, gte, lte, inArray, like, sql as sqlOp, count, desc, asc } from 'drizzle-orm';
+import { users, cars, bookings, reviews, conversations, messages, notifications } from '@shared/sqlite-schema';
+import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch, Notification, InsertNotification } from '@shared/schema';
+import { eq, and, gte, lte, inArray, like, sql as sqlOp, count, desc, asc, or } from 'drizzle-orm';
 import type { IStorage } from './storage';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
@@ -306,6 +306,221 @@ export class DatabaseStorage implements IStorage {
       averageRating,
       activeListings: ownerCars.filter(car => car.isAvailable).length
     };
+  }
+
+  // Notification operations - Mock implementation for now
+  async getNotifications(userId: string): Promise<any[]> {
+    // Return empty array for now since notifications table doesn't exist in SQLite schema
+    return [];
+  }
+
+  async createNotification(notification: any): Promise<any> {
+    // Mock implementation
+    return { id: randomUUID(), ...notification, createdAt: new Date() };
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<boolean> {
+    // Mock implementation
+    return true;
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<boolean> {
+    // Mock implementation
+    return true;
+  }
+
+  // Admin methods
+  async getAllUsers(): Promise<any[]> {
+    return await db.select().from(users);
+  }
+
+  async getUserById(id: string): Promise<any | null> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllCars(): Promise<any[]> {
+    return await db.select().from(cars);
+  }
+
+  async getCarById(id: string): Promise<any | null> {
+    const result = await db.select().from(cars).where(eq(cars.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllBookings(): Promise<any[]> {
+    return await db.select().from(bookings);
+  }
+
+  async getBookingById(id: string): Promise<any | null> {
+    const result = await db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllMessages(): Promise<any[]> {
+    return await db.select().from(conversations);
+  }
+
+  async getAllSupportTickets(): Promise<any[]> {
+    // Mock implementation - return empty array for now
+    return [];
+  }
+
+  async createSupportTicket(data: any): Promise<any> {
+    // Mock implementation
+    return {
+      id: randomUUID(),
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  async updateSupportTicket(id: string, updates: Partial<any>): Promise<boolean> {
+    // Mock implementation
+    console.log(`Updating support ticket ${id} with:`, updates);
+    return true;
+  }
+
+  // Messaging operations
+  async getUserConversations(userId: string): Promise<any[]> {
+    const userConversations = await db
+      .select()
+      .from(conversations)
+      .where(or(eq(conversations.ownerId, userId), eq(conversations.renterId, userId)))
+      .orderBy(desc(conversations.lastMessageAt));
+
+    // Enrich with user and booking data
+    return Promise.all(userConversations.map(async (conv) => {
+      const owner = await this.getUser(conv.ownerId);
+      const renter = await this.getUser(conv.renterId);
+      const booking = await this.getBooking(conv.bookingId);
+      
+      // Get last message
+      const lastMessageResult = await db
+        .select()
+        .from(messages)
+        .where(eq(messages.conversationId, conv.id))
+        .orderBy(desc(messages.createdAt))
+        .limit(1);
+      const lastMessage = lastMessageResult[0] || null;
+      
+      // Get unread count
+      const unreadCountResult = await db
+        .select({ count: count() })
+        .from(messages)
+        .where(
+          and(
+            eq(messages.conversationId, conv.id),
+            eq(messages.isRead, false),
+            sqlOp`${messages.senderId} != ${userId}`
+          )
+        );
+      const unreadCount = unreadCountResult[0]?.count || 0;
+      
+      return {
+        ...conv,
+        owner: owner ? { id: owner.id, firstName: owner.firstName, lastName: owner.lastName, profileImage: owner.profileImage } : null,
+        renter: renter ? { id: renter.id, firstName: renter.firstName, lastName: renter.lastName, profileImage: renter.profileImage } : null,
+        booking: booking ? { id: booking.id, carId: booking.carId } : null,
+        lastMessage: lastMessage || null,
+        unreadCount
+      };
+    }));
+  }
+
+  async getConversationMessages(conversationId: string, userId: string): Promise<any[]> {
+    const conversationMessages = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(asc(messages.createdAt));
+    
+    // Enrich with sender data
+    return Promise.all(conversationMessages.map(async (msg) => {
+      const sender = await this.getUser(msg.senderId);
+      return {
+        ...msg,
+        sender: sender ? { id: sender.id, firstName: sender.firstName, lastName: sender.lastName, profileImage: sender.profileImage } : null
+      };
+    }));
+  }
+
+  async createConversation(bookingId: string, userId: string): Promise<any> {
+    const booking = await this.getBooking(bookingId);
+    if (!booking) {
+      throw new Error('Booking not found');
+    }
+
+    const car = await this.getCar(booking.carId);
+    if (!car) {
+      throw new Error('Car not found');
+    }
+
+    // Check if conversation already exists
+    const existingConv = await db
+      .select()
+      .from(conversations)
+      .where(eq(conversations.bookingId, bookingId))
+      .limit(1);
+    
+    if (existingConv.length > 0) {
+      return existingConv[0];
+    }
+
+    const conversation = {
+      id: randomUUID(),
+      bookingId,
+      ownerId: car.ownerId,
+      renterId: booking.renterId,
+      lastMessageAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
+    };
+
+    await db.insert(conversations).values(conversation);
+    return conversation;
+  }
+
+  async createMessage(conversationId: string, senderId: string, content: string, messageType: string = 'text'): Promise<any> {
+    const message = {
+      id: randomUUID(),
+      conversationId,
+      senderId,
+      content,
+      messageType,
+      isRead: false,
+      createdAt: new Date().toISOString()
+    };
+
+    await db.insert(messages).values(message);
+    
+    // Update conversation last message time
+    await db
+      .update(conversations)
+      .set({ lastMessageAt: new Date().toISOString() })
+      .where(eq(conversations.id, conversationId));
+
+    return message;
+  }
+
+  async markMessageAsRead(messageId: string, userId: string): Promise<boolean> {
+    const messageResult = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.id, messageId))
+      .limit(1);
+    
+    const message = messageResult[0];
+    if (!message || message.senderId === userId) {
+      return false; // Can't mark own messages as read
+    }
+
+    await db
+      .update(messages)
+      .set({ isRead: true })
+      .where(eq(messages.id, messageId));
+    
+    return true;
   }
 
   // Sample data initialization removed

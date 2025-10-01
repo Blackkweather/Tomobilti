@@ -12,6 +12,7 @@ import {
   type CarSearch
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { DatabaseStorage } from './db_sqlite_simple';
 
 // Storage interface for all CRUD operations
 export interface IStorage {
@@ -697,12 +698,91 @@ export class MemStorage implements IStorage {
     };
   }
 
-  // Sample data initialization removed
+  // Admin methods - enhanced versions of existing methods
+  async getAllUsers(): Promise<any[]> {
+    return await this.db.select().from(users);
+  }
+
+  async getUserById(id: string): Promise<any | null> {
+    const result = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllCars(): Promise<any[]> {
+    return await this.db.select().from(cars);
+  }
+
+  async getCarById(id: string): Promise<any | null> {
+    const result = await this.db.select().from(cars).where(eq(cars.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllBookings(): Promise<any[]> {
+    return await this.db.select().from(bookings);
+  }
+
+  async getBookingById(id: string): Promise<any | null> {
+    const result = await this.db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllMessages(): Promise<any[]> {
+    return await this.db.select().from(conversations);
+  }
+
+  async getAllSupportTickets(): Promise<any[]> {
+    // For now, return empty array since we don't have support tickets table yet
+    // You can implement this when you add the support tickets table
+    return [];
+  }
+
+  async createSupportTicket(data: any): Promise<any> {
+    // Mock implementation - you can implement this when you add the support tickets table
+    return {
+      id: crypto.randomUUID(),
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  async updateSupportTicket(id: string, updates: Partial<any>): Promise<boolean> {
+    // Mock implementation - you can implement this when you add the support tickets table
+    console.log(`Updating support ticket ${id} with:`, updates);
+    return true;
+  }
 }
 
-import { DatabaseStorage } from './db_sqlite_simple';
-
 // Use SQLite storage instead of PostgreSQL for simplicity
-export const storage = new DatabaseStorage();
+// export const storage = new DatabaseStorage();
+
+// Create a hybrid storage that uses MemStorage for messaging
+class HybridStorage extends DatabaseStorage {
+  private memStorage = new MemStorage();
+
+  // Override messaging methods to use MemStorage
+  async getUserConversations(userId: string): Promise<any[]> {
+    return this.memStorage.getUserConversations(userId);
+  }
+
+  async getConversationMessages(conversationId: string, userId: string): Promise<any[]> {
+    return this.memStorage.getConversationMessages(conversationId, userId);
+  }
+
+  async createConversation(bookingId: string, userId: string): Promise<any> {
+    return this.memStorage.createConversation(bookingId, userId);
+  }
+
+  async createMessage(conversationId: string, senderId: string, content: string, messageType: string = 'text'): Promise<any> {
+    return this.memStorage.createMessage(conversationId, senderId, content, messageType);
+  }
+
+  async markMessageAsRead(messageId: string, userId: string): Promise<boolean> {
+    return this.memStorage.markMessageAsRead(messageId, userId);
+  }
+}
+
+// Use hybrid storage for messaging support
+export const storage = new HybridStorage();
 
 // Sample data initialization removed

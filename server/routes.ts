@@ -1,7 +1,6 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
-import multer from 'multer';
-import { storage } from "./storage";
+import { createServer } from 'http';
+import { registerAdminRoutes } from './routes/admin';
+import { storage } from './storage';
 import { 
   carSearchSchema, 
   insertCarSchema, 
@@ -15,6 +14,10 @@ import { z } from "zod";
 import { csrfProtection } from "./middleware/csrf";
 import { sanitizeMiddleware } from "./middleware/sanitize";
 import { EmailService } from "./services/email";
+import { InfobipSMSService } from "./services/infobip-sms";
+import { CarRentalAgentService } from "./services/car-rental-agent";
+import OpenAIService from "./services/openai";
+import multer from 'multer';
 import { 
   authMiddleware, 
   optionalAuthMiddleware,
@@ -66,6 +69,14 @@ const upload = multer({
       cb(new Error('Only image files are allowed'), false);
     }
   }
+});
+
+// Initialize Car Rental Agent Service
+const agentService = new CarRentalAgentService({
+  apiKey: process.env.OPENAI_API_KEY || '',
+  model: 'gpt-3.5-turbo',
+  temperature: 0.7,
+  maxTokens: 200,
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -347,6 +358,295 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ChatGPT API endpoint
+  app.post('/api/chatgpt/chat', async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await OpenAIService.generateQuickResponse(message);
+      
+      res.json({ 
+        response,
+        isAI: OpenAIService.isAvailable()
+      });
+    } catch (error) {
+      console.error('ChatGPT API error:', error);
+      res.status(500).json({ error: 'Failed to generate response' });
+    }
+  });
+
+  // SMS API endpoints
+  app.post('/api/sms/send', async (req, res) => {
+    try {
+      const { to, text, from } = req.body;
+      
+      if (!to || !text) {
+        return res.status(400).json({ error: 'Phone number and message text are required' });
+      }
+
+      const result = await InfobipSMSService.sendSMS({ to, text, from });
+      
+      res.json(result);
+    } catch (error) {
+      console.error('SMS send error:', error);
+      res.status(500).json({ error: 'Failed to send SMS' });
+    }
+  });
+
+  app.post('/api/sms/booking-confirmation', async (req, res) => {
+    try {
+      const { phoneNumber, bookingDetails } = req.body;
+      
+      if (!phoneNumber || !bookingDetails) {
+        return res.status(400).json({ error: 'Phone number and booking details are required' });
+      }
+
+      const result = await InfobipSMSService.sendBookingConfirmation(phoneNumber, bookingDetails);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Booking confirmation SMS error:', error);
+      res.status(500).json({ error: 'Failed to send booking confirmation SMS' });
+    }
+  });
+
+  app.post('/api/sms/booking-reminder', async (req, res) => {
+    try {
+      const { phoneNumber, bookingDetails } = req.body;
+      
+      if (!phoneNumber || !bookingDetails) {
+        return res.status(400).json({ error: 'Phone number and booking details are required' });
+      }
+
+      const result = await InfobipSMSService.sendBookingReminder(phoneNumber, bookingDetails);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Booking reminder SMS error:', error);
+      res.status(500).json({ error: 'Failed to send booking reminder SMS' });
+    }
+  });
+
+  app.post('/api/sms/verification-code', async (req, res) => {
+    try {
+      const { phoneNumber, code } = req.body;
+      
+      if (!phoneNumber || !code) {
+        return res.status(400).json({ error: 'Phone number and verification code are required' });
+      }
+
+      const result = await InfobipSMSService.sendVerificationCode(phoneNumber, code);
+      
+      res.json(result);
+    } catch (error) {
+      console.error('Verification code SMS error:', error);
+      res.status(500).json({ error: 'Failed to send verification code SMS' });
+    }
+  });
+
+  app.get('/api/sms/status/:messageId', async (req, res) => {
+    try {
+      const { messageId } = req.params;
+      
+      if (!messageId) {
+        return res.status(400).json({ error: 'Message ID is required' });
+      }
+
+      const status = await InfobipSMSService.getDeliveryStatus(messageId);
+      
+      if (!status) {
+        return res.status(404).json({ error: 'Message status not found' });
+      }
+      
+      res.json(status);
+    } catch (error) {
+      console.error('SMS status error:', error);
+      res.status(500).json({ error: 'Failed to get SMS status' });
+    }
+  });
+
+  app.post('/api/sms/validate-phone', async (req, res) => {
+    try {
+      const { phoneNumber } = req.body;
+      
+      if (!phoneNumber) {
+        return res.status(400).json({ error: 'Phone number is required' });
+      }
+
+      const isValid = InfobipSMSService.validatePhoneNumber(phoneNumber);
+      const formatted = InfobipSMSService.formatPhoneNumber(phoneNumber);
+      
+      res.json({
+        isValid,
+        formatted,
+        original: phoneNumber
+      });
+    } catch (error) {
+      console.error('Phone validation error:', error);
+      res.status(500).json({ error: 'Failed to validate phone number' });
+    }
+  });
+
+  // AI Agent API endpoints
+  app.post('/api/agent/support', async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await agentService.processMessage(message, 'support', context);
+      
+      res.json(response);
+    } catch (error) {
+      console.error('Support agent error:', error);
+      res.status(500).json({ error: 'Failed to process support request' });
+    }
+  });
+
+  app.post('/api/agent/booking', async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await agentService.processMessage(message, 'booking', context);
+      
+      res.json(response);
+    } catch (error) {
+      console.error('Booking agent error:', error);
+      res.status(500).json({ error: 'Failed to process booking request' });
+    }
+  });
+
+  app.post('/api/agent/host', async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await agentService.processMessage(message, 'host', context);
+      
+      res.json(response);
+    } catch (error) {
+      console.error('Host agent error:', error);
+      res.status(500).json({ error: 'Failed to process host request' });
+    }
+  });
+
+  app.post('/api/agent/technical', async (req, res) => {
+    try {
+      const { message, context } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await agentService.processMessage(message, 'technical', context);
+      
+      res.json(response);
+    } catch (error) {
+      console.error('Technical agent error:', error);
+      res.status(500).json({ error: 'Failed to process technical request' });
+    }
+  });
+
+  app.get('/api/agent/capabilities', async (req, res) => {
+    try {
+      const capabilities = await agentService.getAgentCapabilities();
+      res.json(capabilities);
+    } catch (error) {
+      console.error('Agent capabilities error:', error);
+      res.status(500).json({ error: 'Failed to get agent capabilities' });
+    }
+  });
+
+  // OAuth callback endpoints
+  app.get('/auth/google/callback', async (req, res) => {
+    try {
+      const { code, state } = req.query;
+      
+      if (!code) {
+        return res.redirect('/login?error=oauth_error');
+      }
+
+      // In a real implementation, you would:
+      // 1. Exchange the code for an access token
+      // 2. Get user info from Google
+      // 3. Create or find user in your database
+      // 4. Generate JWT token
+      // 5. Set cookie and redirect
+
+      // For demo purposes, redirect to dashboard
+      res.redirect('/dashboard?auth=google');
+    } catch (error) {
+      console.error('Google OAuth error:', error);
+      res.redirect('/login?error=oauth_error');
+    }
+  });
+
+  app.get('/auth/apple/callback', async (req, res) => {
+    try {
+      const { code, state } = req.query;
+      
+      if (!code) {
+        return res.redirect('/login?error=oauth_error');
+      }
+
+      // Similar implementation for Apple
+      res.redirect('/dashboard?auth=apple');
+    } catch (error) {
+      console.error('Apple OAuth error:', error);
+      res.redirect('/login?error=oauth_error');
+    }
+  });
+
+  app.get('/auth/microsoft/callback', async (req, res) => {
+    try {
+      const { code, state } = req.query;
+      
+      if (!code) {
+        return res.redirect('/login?error=oauth_error');
+      }
+
+      // Similar implementation for Microsoft
+      res.redirect('/dashboard?auth=microsoft');
+    } catch (error) {
+      console.error('Microsoft OAuth error:', error);
+      res.redirect('/login?error=oauth_error');
+    }
+  });
+
+  // ChatGPT conversation endpoint
+  app.post('/api/chatgpt/conversation', async (req, res) => {
+    try {
+      const { messages, context } = req.body;
+      
+      if (!messages || !Array.isArray(messages)) {
+        return res.status(400).json({ error: 'Messages array is required' });
+      }
+
+      const response = await OpenAIService.generateChatResponse(messages, context);
+      
+      res.json({ 
+        response,
+        isAI: OpenAIService.isAvailable()
+      });
+    } catch (error) {
+      console.error('ChatGPT conversation error:', error);
+      res.status(500).json({ error: 'Failed to generate response' });
+    }
+  });
+
   app.put('/api/messages/:messageId/read', authMiddleware, async (req, res) => {
     try {
       const success = await storage.markMessageAsRead(req.params.messageId, req.user!.id);
@@ -379,6 +679,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: 'All notifications marked as read' });
     } catch (error) {
       console.error('Mark all notifications as read error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Get notifications for authenticated user
+  app.get('/api/notifications', authMiddleware, async (req, res) => {
+    try {
+      const notifications = await storage.getNotifications(req.user!.id);
+      res.json({ notifications });
+    } catch (error) {
+      console.error('Get notifications error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -1084,6 +1395,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Refund processing failed" });
     }
   });
+
+  // Register admin routes
+  registerAdminRoutes(app);
 
   // Health check
   app.get("/api/health", (req, res) => {

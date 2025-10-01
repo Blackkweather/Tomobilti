@@ -220,7 +220,14 @@ export default function EditCar() {
   const handleNewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      setNewImages(prev => [...prev, ...files].slice(0, 10));
+      // Limit to 10 images total (existing + new)
+      const maxNewImages = Math.max(0, 10 - existingImages.length);
+      const filesToAdd = files.slice(0, maxNewImages);
+      setNewImages(prev => [...prev, ...filesToAdd].slice(0, maxNewImages));
+      
+      if (files.length > maxNewImages) {
+        alert(`You can only add ${maxNewImages} more images (max 10 total)`);
+      }
     }
   };
 
@@ -474,79 +481,28 @@ export default function EditCar() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Current Images</label>
-              {console.log('Rendering existing images:', existingImages)}
-              {existingImages.length > 0 ? (
-                <>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    {existingImages.map((image, index) => {
-                      console.log(`Rendering image ${index}:`, image);
-                      return (
-                        <div key={index} className="relative">
-                          <img
-                            src={image}
-                            alt={`Car image ${index + 1}`}
-                            className="w-full h-24 object-cover rounded-md"
-                            onError={(e) => {
-                              console.error(`Failed to load image ${index}:`, image);
-                              console.error('Image error:', e);
-                            }}
-                            onLoad={() => {
-                              console.log(`Successfully loaded image ${index}:`, image);
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => {
-                              console.log('Removing existing image:', image);
-                              removeExistingImage(image);
-                            }}
-                            className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 shadow-lg"
-                            title="Remove this image"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    💡 Click the × button on any image to remove it individually
-                  </p>
-                </>
-              ) : (
-                <div className="mb-4 p-4 border-2 border-dashed border-gray-300 rounded-md text-center">
-                  <p className="text-sm text-gray-500">No existing images</p>
-                  <p className="text-xs text-gray-400 mt-1">Add new images below</p>
-                </div>
-              )}
+              <label className="block text-sm font-semibold text-gray-800 mb-3">Car Images</label>
               
-              <label className="block text-sm font-medium text-gray-700 mb-2">Add New Images</label>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleNewImageChange}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              {newImages.length > 0 && (
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">New Images Preview:</p>
+              {/* Current Images */}
+              {existingImages.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Current Images ({existingImages.length}/10)</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {newImages.map((file, index) => (
-                      <div key={index} className="relative">
+                    {existingImages.map((image, index) => (
+                      <div key={index} className="relative group">
                         <img
-                          src={URL.createObjectURL(file)}
-                          alt={`New image ${index + 1}`}
-                          className="w-full h-24 object-cover rounded-md"
+                          src={image}
+                          alt={`Car image ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-colors"
+                          onError={(e) => {
+                            console.error(`Failed to load image ${index}:`, image);
+                            e.currentTarget.src = '/assets/placeholder-car.png';
+                          }}
                         />
                         <button
                           type="button"
-                          onClick={() => {
-                            console.log('Removing new image:', file.name);
-                            removeNewImage(index);
-                          }}
-                          className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 shadow-lg"
+                          onClick={() => removeExistingImage(image)}
+                          className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
                           title="Remove this image"
                         >
                           ×
@@ -554,9 +510,99 @@ export default function EditCar() {
                       </div>
                     ))}
                   </div>
-                  <p className="mt-2 text-sm text-gray-600">{newImages.length} new image(s) selected</p>
                 </div>
               )}
+              
+              {/* Add New Images */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">
+                  Add New Images ({newImages.length + existingImages.length}/10)
+                </h4>
+                
+                {/* File Input */}
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-600">
+                      Drag and drop images here, or click to select
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, WEBP up to 5MB each
+                    </p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleNewImageChange}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="mt-2"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Choose Images
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* New Images Preview */}
+                {newImages.length > 0 && (
+                  <div className="mt-4">
+                    <h5 className="text-sm font-medium text-gray-700 mb-3">New Images Preview:</h5>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {newImages.map((file, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`New image ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg border-2 border-green-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeNewImage(index)}
+                            className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-700 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove this image"
+                          >
+                            ×
+                          </button>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 rounded-b-lg">
+                            {file.name}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-2 flex justify-between items-center">
+                      <p className="text-sm text-gray-600">
+                        {newImages.length} new image(s) selected
+                      </p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={clearAllNewImages}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Clear All
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Image Tips */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h5 className="text-sm font-medium text-blue-800 mb-2">💡 Image Tips:</h5>
+                <ul className="text-xs text-blue-700 space-y-1">
+                  <li>• Upload high-quality images for better visibility</li>
+                  <li>• Include exterior shots from multiple angles</li>
+                  <li>• Add interior photos to show features</li>
+                  <li>• Maximum 10 images per car</li>
+                </ul>
+              </div>
             </div>
 
             <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200/50">

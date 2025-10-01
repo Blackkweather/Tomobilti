@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import Footer from '../components/Footer';
 import { 
   Accessibility as AccessibilityIcon, 
   Eye, 
@@ -19,7 +20,6 @@ import {
   Mail,
   FileText
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Accessibility() {
   const [activeSection, setActiveSection] = useState('overview');

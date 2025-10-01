@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import Footer from '../components/Footer';
 import { 
   Phone, 
   Mail, 
@@ -15,7 +16,6 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Contact() {
   const [formData, setFormData] = useState({

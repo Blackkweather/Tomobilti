@@ -17,7 +17,6 @@ import {
   Phone,
   Mail
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Guidelines() {
   const [activeSection, setActiveSection] = useState('overview');

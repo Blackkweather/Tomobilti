@@ -2,13 +2,24 @@ import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import cors from 'cors';
 import { createServer } from 'http';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { EmailService } from "./services/email";
+import { InfobipSMSService } from "./services/infobip-sms";
+import { CarRentalAgentService } from "./services/car-rental-agent";
 import MessagingSocketServer from "./messaging";
 
 const app = express();
+
+// CORS configuration for development
+app.use(cors({
+  origin: ['http://localhost:5000', 'http://127.0.0.1:5000', 'file://'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
 
 // Security middleware
 app.use(helmet({
@@ -100,6 +111,17 @@ app.use((req, res, next) => {
 (async () => {
   // Initialize email service
   EmailService.initialize();
+  
+  // Initialize Infobip SMS service
+  InfobipSMSService.initialize();
+  
+  // Initialize Car Rental Agent service
+  const agentService = new CarRentalAgentService({
+    apiKey: process.env.OPENAI_API_KEY || '',
+    model: 'gpt-3.5-turbo',
+    temperature: 0.7,
+    maxTokens: 200,
+  });
   
   const server = await registerRoutes(app);
   
