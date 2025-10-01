@@ -20,7 +20,6 @@ import {
   Phone,
   Mail
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Fleet() {
   const [selectedPlan, setSelectedPlan] = useState('basic');

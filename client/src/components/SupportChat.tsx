@@ -57,7 +57,7 @@ export default function SupportChat() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputText.trim()) return;
 
     const userMessage: Message = {
@@ -68,22 +68,50 @@ export default function SupportChat() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputText;
     setInputText('');
     setShowFAQ(false);
     setIsTyping(true);
 
-    // Simulate AI response after 2 seconds
-    setTimeout(() => {
+    try {
+      // Call ChatGPT API
+      const response = await fetch('/api/chatgpt/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: currentMessage,
+          context: 'ShareWheelz car rental platform support'
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const aiResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          text: data.response,
+          isUser: false,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, aiResponse]);
+      } else {
+        throw new Error('Failed to get AI response');
+      }
+    } catch (error) {
+      console.error('ChatGPT API error:', error);
+      // Fallback to static response
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Thank you for your message! Our support team will respond within 5 minutes. In the meantime, here are some frequently asked questions that might help:",
+        text: "Hi there! I'm Alanna from ShareWheelz Support. Thank you for your message! Our support team will respond within 5 minutes. In the meantime, here are some frequently asked questions that might help:",
         isUser: false,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, aiResponse]);
-      setIsTyping(false);
       setShowFAQ(true);
-    }, 2000);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleFAQClick = (faq: FAQItem) => {
@@ -117,18 +145,20 @@ export default function SupportChat() {
 
       {/* Chat Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-end justify-end p-4 sm:items-center sm:justify-center">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setIsOpen(false)} />
-          <Card className="relative w-full max-w-md h-[600px] flex flex-col">
+        <div className="fixed bottom-20 right-6 z-50 w-96 h-[500px] flex flex-col max-w-[calc(100vw-3rem)] max-h-[calc(100vh-8rem)] animate-in slide-in-from-bottom-4 duration-300">
+          <Card className="w-full h-full flex flex-col shadow-2xl border-2 border-blue-200 rounded-lg bg-white">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <div className="flex items-center space-x-2">
                 <MessageCircle className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-lg">Customer Support</CardTitle>
+                <div>
+                  <CardTitle className="text-lg">Customer Support</CardTitle>
+                  <p className="text-xs text-gray-500">Alanna is online</p>
+                </div>
               </div>
               <div className="flex items-center space-x-2">
-                <Badge variant="secondary" className="text-xs">
-                  <Clock className="h-3 w-3 mr-1" />
-                  5 min response
+                <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
+                  Online now
                 </Badge>
                 <Button
                   variant="ghost"
@@ -140,29 +170,37 @@ export default function SupportChat() {
               </div>
             </CardHeader>
             
-            <CardContent className="flex-1 flex flex-col p-0">
+            <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
                 {messages.length === 0 && (
                   <div className="text-center text-gray-500">
-                    <MessageCircle className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                    <p>Welcome! How can we help you today?</p>
+                    <div className="w-12 h-12 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center">
+                      <span className="text-blue-600 font-semibold text-lg">A</span>
+                    </div>
+                    <p className="font-medium text-gray-700">Hi! I'm Alanna from ShareWheelz Support</p>
+                    <p className="text-sm">How can I help you today?</p>
                   </div>
                 )}
                 
                 {messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${message.isUser ? 'justify-end' : 'justify-start'} items-end space-x-2`}
                   >
+                    {!message.isUser && (
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-blue-600 font-semibold text-sm">A</span>
+                      </div>
+                    )}
                     <div
-                      className={`max-w-[80%] rounded-lg px-3 py-2 ${
+                      className={`max-w-[80%] rounded-lg px-3 py-2 break-words ${
                         message.isUser
                           ? 'bg-blue-600 text-white'
                           : 'bg-gray-100 text-gray-900'
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                      <p className="text-sm whitespace-pre-wrap break-words">{message.text}</p>
                       <p className="text-xs opacity-70 mt-1">
                         {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
@@ -171,7 +209,10 @@ export default function SupportChat() {
                 ))}
                 
                 {isTyping && (
-                  <div className="flex justify-start">
+                  <div className="flex justify-start items-end space-x-2">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-600 font-semibold text-sm">A</span>
+                    </div>
                     <div className="bg-gray-100 rounded-lg px-3 py-2">
                       <div className="flex space-x-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
@@ -204,7 +245,7 @@ export default function SupportChat() {
               </div>
               
               {/* Input Area */}
-              <div className="border-t p-4">
+              <div className="border-t p-4 flex-shrink-0 bg-white">
                 <div className="flex space-x-2">
                   <Input
                     value={inputText}

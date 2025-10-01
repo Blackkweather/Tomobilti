@@ -1,182 +1,279 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "wouter";
-import { apiRequest } from "../lib/queryClient";
-
-interface Car {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  pricePerDay: number;
-  location: string;
-  status: "available" | "rented" | "maintenance";
-  images: string[];
-  totalBookings: number;
-  totalEarnings: number;
-}
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'wouter';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { carApi } from '../lib/api';
+import { useAuth } from '../contexts/AuthContext';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { 
+  Car, 
+  Edit, 
+  Trash2, 
+  Plus, 
+  Eye, 
+  MapPin, 
+  Calendar, 
+  Fuel, 
+  Settings,
+  Upload,
+  Image as ImageIcon
+} from 'lucide-react';
+import { formatCurrency } from '../utils/currency';
+import Footer from '../components/Footer';
 
 export default function CarManagement() {
+  const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const [filter, setFilter] = useState<"all" | "available" | "rented" | "maintenance">("all");
+  const { isAuthenticated, user } = useAuth();
+  const [selectedCar, setSelectedCar] = useState<any>(null);
 
-  const { data: cars = [], isLoading } = useQuery<Car[]>({
-    queryKey: ["/api/cars/owner"],
+  // Fetch owner's cars
+  const { data: cars, isLoading, error } = useQuery({
+    queryKey: ['cars', 'owner'],
+    queryFn: () => carApi.getOwnerCars(),
+    enabled: isAuthenticated,
   });
 
+  // Delete car mutation
   const deleteCarMutation = useMutation({
-    mutationFn: async (carId: string) => {
-      await apiRequest("DELETE", `/api/cars/${carId}`);
-    },
+    mutationFn: (carId: string) => carApi.deleteCar(carId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cars/owner"] });
+      queryClient.invalidateQueries({ queryKey: ['cars', 'owner'] });
+      setSelectedCar(null);
     },
   });
-
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ carId, status }: { carId: string; status: Car["status"] }) => {
-      await apiRequest("PATCH", `/api/cars/${carId}/status`, { status });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cars/owner"] });
-    },
-  });
-
-  const filteredCars = cars.filter(car => filter === "all" || car.status === filter);
 
   const handleDeleteCar = (carId: string) => {
-    if (confirm("Are you sure you want to delete this car?")) {
+    if (confirm('Are you sure you want to delete this car? This action cannot be undone.')) {
       deleteCarMutation.mutate(carId);
     }
   };
 
+  const handleEditCar = (carId: string) => {
+    setLocation(`/edit-car/${carId}`);
+  };
+
+  const handleViewCar = (carId: string) => {
+    setLocation(`/cars/${carId}`);
+  };
+
+  // Redirect if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md w-full mx-4">
+          <CardHeader className="text-center">
+            <CardTitle>Authentication Required</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              You need to be logged in to manage your cars.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button variant="outline" onClick={() => setLocation('/')}>
+                Go Home
+              </Button>
+              <Button onClick={() => setLocation('/login')}>
+                Login
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="max-w-md w-full mx-4">
+          <CardContent className="text-center space-y-4 py-8">
+            <h2 className="text-2xl font-bold text-gray-900">Error Loading Cars</h2>
+            <p className="text-muted-foreground">
+              There was an error loading your cars. Please try again.
+            </p>
+            <Button onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">My Cars</h1>
-            <Link href="/add-car">
-              <a className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                Add New Car
-              </a>
-            </Link>
-          </div>
-
-          <div className="mb-6">
-            <div className="flex space-x-4">
-              {["all", "available", "rented", "maintenance"].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilter(status as typeof filter)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
-                    filter === status
-                      ? "bg-blue-600 text-white"
-                      : "bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {status.charAt(0).toUpperCase() + status.slice(1)}
-                  {status !== "all" && (
-                    <span className="ml-2 bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">
-                      {cars.filter(car => car.status === status).length}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {filteredCars.length === 0 ? (
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No cars found</h3>
-              <p className="mt-1 text-sm text-gray-500">
-                {filter === "all" ? "Get started by adding your first car." : `No cars with ${filter} status.`}
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">My Cars</h1>
+              <p className="text-gray-600 mt-1">
+                Manage your vehicle listings and bookings
               </p>
-              {filter === "all" && (
-                <div className="mt-6">
-                  <Link href="/add-car">
-                    <a className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                      Add Car
-                    </a>
-                  </Link>
-                </div>
-              )}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCars.map((car) => (
-                <div key={car.id} className="bg-white overflow-hidden shadow rounded-lg">
-                  <div className="aspect-w-16 aspect-h-9">
-                    <img
-                      src={car.images[0] || "/placeholder-car.jpg"}
-                      alt={`${car.make} ${car.model}`}
-                      className="w-full h-48 object-cover"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {car.year} {car.make} {car.model}
-                      </h3>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        car.status === "available" ? "bg-green-100 text-green-800" :
-                        car.status === "rented" ? "bg-yellow-100 text-yellow-800" :
-                        "bg-red-100 text-red-800"
-                      }`}>
-                        {car.status}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-4">{car.location}</p>
-                    <div className="flex justify-between text-sm text-gray-500 mb-4">
-                      <span>£{car.pricePerDay}/day</span>
-                      <span>{car.totalBookings} bookings</span>
-                    </div>
-                    <div className="text-sm font-medium text-green-600 mb-4">
-                      Total Earnings: £{car.totalEarnings}
-                    </div>
-                    <div className="flex space-x-2">
-                      <Link href={`/edit-car/${car.id}`}>
-                        <a className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium text-center">
-                          Edit
-                        </a>
-                      </Link>
-                      <select
-                        value={car.status}
-                        onChange={(e) => updateStatusMutation.mutate({ 
-                          carId: car.id, 
-                          status: e.target.value as Car["status"] 
-                        })}
-                        className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
-                      >
-                        <option value="available">Available</option>
-                        <option value="rented">Rented</option>
-                        <option value="maintenance">Maintenance</option>
-                      </select>
-                      <button
-                        onClick={() => handleDeleteCar(car.id)}
-                        className="px-3 py-2 border border-red-300 text-red-700 hover:bg-red-50 rounded-md text-sm font-medium"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setLocation('/add-car')}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add New Car
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {!cars || cars.length === 0 ? (
+          <Card className="text-center py-12">
+            <CardContent>
+              <Car className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No cars listed yet
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Start earning by listing your first vehicle
+              </p>
+              <Button
+                onClick={() => setLocation('/add-car')}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                List Your First Car
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cars.map((car: any) => (
+              <Card key={car.id} className="group hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-1">
+                        {car.title || `${car.make} ${car.model}`}
+                      </CardTitle>
+                      <div className="flex items-center text-sm text-gray-600 mt-1">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        <span className="line-clamp-1">{car.city || car.location}</span>
+                      </div>
+                    </div>
+                    <Badge 
+                      variant={car.isAvailable ? "default" : "secondary"}
+                      className={car.isAvailable ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}
+                    >
+                      {car.isAvailable ? 'Available' : 'Unavailable'}
+                    </Badge>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  {/* Car Image */}
+                  <div className="relative">
+                    {car.images && car.images.length > 0 ? (
+                      <img
+                        src={car.images[0]}
+                        alt={car.title}
+                        className="w-full h-48 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.currentTarget.src = '/assets/placeholder-car.png';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <ImageIcon className="h-12 w-12 text-gray-400" />
+                      </div>
+                    )}
+                    
+                    {/* Image Count Badge */}
+                    {car.images && car.images.length > 1 && (
+                      <Badge className="absolute top-2 right-2 bg-black bg-opacity-60 text-white">
+                        +{car.images.length - 1} more
+                      </Badge>
+                    )}
+                  </div>
+
+                  {/* Car Details */}
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center text-gray-600">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      <span>{car.year}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <Fuel className="h-4 w-4 mr-1" />
+                      <span className="capitalize">{car.fuelType}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <Settings className="h-4 w-4 mr-1" />
+                      <span className="capitalize">{car.transmission}</span>
+                    </div>
+                    <div className="flex items-center text-gray-600">
+                      <Car className="h-4 w-4 mr-1" />
+                      <span>{car.seats} seats</span>
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div className="flex items-center justify-between pt-2 border-t">
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {formatCurrency(car.pricePerDay)}
+                      </div>
+                      <div className="text-sm text-gray-600">per day</div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleViewCar(car.id)}
+                      className="flex-1"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEditCar(car.id)}
+                      className="flex-1"
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteCar(car.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      disabled={deleteCarMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <Footer />
     </div>
   );
 }

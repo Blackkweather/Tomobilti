@@ -10,7 +10,7 @@ export const carImages = {
     'm3': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format&q=80',
     'm4': 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format&q=80',
     'i3': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80',
-    'i8': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80'
+    'i8': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80&fm=jpg'
   },
   
   // Mercedes-Benz
@@ -41,7 +41,7 @@ export const carImages = {
   // Tesla
   'tesla': {
     'model s': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80',
-    'model 3': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80',
+    'model 3': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80&fm=jpg',
     'model x': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80',
     'model y': 'https://images.unsplash.com/photo-1593941707882-a5bac6861d75?w=800&h=600&fit=crop&auto=format&q=80',
     'cybertruck': 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format&q=80'

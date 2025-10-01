@@ -278,31 +278,39 @@ export default function BecomeMember() {
     }
   ];
 
-  // Trust badges
-  const trustBadges = [
+  // Our Quality Services cards
+  const qualityServices = [
     {
       icon: Shield,
-      title: "Discount on Insurance Package",
+      title: "Insurance Discount",
       description: "Get discounts on comprehensive coverage with every rental",
-      color: "text-green-600"
+      color: "text-green-600",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200"
     },
     {
-      icon: MessageCircle,
-      title: "24/7 Support",
-      description: "Round-the-clock customer assistance",
-      color: "text-blue-600"
+      icon: Phone,
+      title: "Roadside Assistance & 24/7 Help",
+      description: "Round-the-clock roadside assistance and emergency support",
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200"
     },
     {
       icon: Lock,
       title: "Secure Community",
       description: "Verified members and secure transactions",
-      color: "text-purple-600"
+      color: "text-purple-600",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200"
     },
     {
       icon: Award,
-      title: "Quality Guarantee",
-      description: "Satisfaction guaranteed or your money back",
-      color: "text-orange-600"
+      title: "Premium Service",
+      description: "Priority support and exclusive member benefits",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+      borderColor: "border-orange-200"
     }
   ];
 
@@ -420,13 +428,13 @@ export default function BecomeMember() {
             
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               Become a
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-mauve-600 to-bleu-600">
-                Valued Member
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                ShareWheelz Member
               </span>
             </h1>
             
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Unlock exclusive benefits, earn loyalty points, and enjoy premium discounts with our ShareWheelz membership program.
+              Unlock exclusive benefits, earn loyalty points, and enjoy premium discounts with our ShareWheelz membership program across the UK.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -574,36 +582,60 @@ export default function BecomeMember() {
                   
                   <CardHeader className="text-center pb-6 pt-8">
                     <div className="flex justify-center mb-4">
-                      <div className="w-56 h-32 rounded-2xl overflow-hidden shadow-lg">
-                        <div className={`bg-gradient-to-r ${plan.color} rounded-2xl p-5 text-white h-full flex flex-col justify-between`}>
-                          <div className="flex justify-between items-start mb-4">
-                            <div>
-                              <h4 className="text-lg font-semibold">ShareWheelz</h4>
-                              <p className="text-sm opacity-80">Digital Membership Card</p>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-crown w-8 h-8">
-                              <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path>
-                              <path d="M5 21h14"></path>
-                            </svg>
+                      <div className="transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                        <div className={`bg-gradient-to-br ${plan.color} rounded-xl p-6 text-white w-80 h-48 flex flex-col justify-between shadow-2xl border border-white/20 relative overflow-hidden`}>
+                          {/* Card Background Pattern */}
+                          <div className="absolute inset-0 opacity-10">
+                            <div className="absolute top-4 right-4 w-20 h-20 bg-white rounded-full"></div>
+                            <div className="absolute bottom-4 left-4 w-16 h-16 bg-white rounded-full"></div>
+                            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white rounded-full"></div>
                           </div>
                           
-                          <div className="mb-4">
-                            <div className="bg-white/20 rounded-lg p-4">
-                              <div className="text-xs opacity-80 mb-2">Member ID</div>
-                              <div className="text-lg font-mono">SWZ-****-****-****</div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex justify-between items-end">
-                            <div>
-                              <div className="text-xs opacity-80">Valid Until</div>
-                              <div className="text-sm">12/25</div>
+                          {/* Top Section */}
+                          <div className="flex justify-between items-start relative z-10">
+                            <div className="flex items-center gap-3">
+                              <img 
+                                src="/assets/MAIN LOGO.png" 
+                                alt="ShareWheelz Logo" 
+                                className="h-8 w-auto object-contain"
+                              />
+                              <div>
+                                <h3 className="text-sm font-bold tracking-wide">SHAREWHEELZ</h3>
+                                <p className="text-xs opacity-80 font-medium">DIGITAL MEMBERSHIP</p>
+                              </div>
                             </div>
                             <div className="text-right">
-                              <div className="text-xs opacity-80">Status</div>
-                              <div className="text-sm font-semibold">
-                                {plan.id === 'gold' ? 'Gold' : plan.id === 'black' ? 'Black Elite' : 'Purple'}
+                              <div className="text-xs opacity-80 font-medium tracking-wider">MEMBER</div>
+                              <div className="text-xs opacity-80 font-medium tracking-wider">SINCE</div>
+                              <div className="text-sm font-bold">2024</div>
+                            </div>
+                          </div>
+                          
+                          {/* Card Number Section */}
+                          <div className="relative z-10">
+                            <div className="text-xs opacity-80 mb-2 font-medium tracking-wider">MEMBER ID</div>
+                            <div className="text-lg font-mono font-bold tracking-widest">SWZ-****-****-****</div>
+                          </div>
+                          
+                          {/* Bottom Section */}
+                          <div className="flex justify-between items-end relative z-10">
+                            <div>
+                              <div className="text-xs opacity-80 font-medium tracking-wider">VALID UNTIL</div>
+                              <div className="text-sm font-bold">12/25</div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-xs opacity-80 font-medium tracking-wider">STATUS</div>
+                              <div className="text-sm font-bold">
+                                {plan.id === 'gold' ? 'GOLD' : plan.id === 'black' ? 'BLACK ELITE' : 'PURPLE'}
                               </div>
+                            </div>
+                          </div>
+                          
+                          {/* Visa/Mastercard Style Elements */}
+                          <div className="absolute bottom-4 right-4 opacity-20">
+                            <div className="flex gap-2">
+                              <div className="w-8 h-5 bg-white rounded-sm"></div>
+                              <div className="w-8 h-5 bg-white rounded-sm"></div>
                             </div>
                           </div>
                         </div>
@@ -696,18 +728,28 @@ export default function BecomeMember() {
             </div>
           </div>
 
-          {/* Trust Badges */}
-          <div className="mt-16 text-center">
-            <p className="text-gray-600 mb-8 font-medium">Trusted by thousands of members</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-              {trustBadges.map((badge, index) => {
-                const Icon = badge.icon;
+          {/* Our Quality Services */}
+          <div className="mt-16">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">Our Quality Services</h3>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Discount on insurance, assistance, and support included for a hassle-free experience
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {qualityServices.map((service, index) => {
+                const Icon = service.icon;
                 return (
-                  <div key={index} className="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-                    <Icon className={`h-8 w-8 ${badge.color} mb-2`} />
-                    <h4 className="font-semibold text-gray-900 text-sm">{badge.title}</h4>
-                    <p className="text-xs text-gray-600 text-center">{badge.description}</p>
-                  </div>
+                  <Card key={index} className={`group hover:shadow-xl transition-all duration-300 border-2 ${service.borderColor} ${service.bgColor} hover:scale-105`}>
+                    <CardContent className="p-6 text-center">
+                      <div className={`inline-flex items-center justify-center w-16 h-16 ${service.bgColor} rounded-full mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                        <Icon className={`h-8 w-8 ${service.color}`} />
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-3">{service.title}</h4>
+                      <p className="text-sm text-gray-600 leading-relaxed">{service.description}</p>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
@@ -716,7 +758,7 @@ export default function BecomeMember() {
       </section>
 
       {/* ShareWheelz Digital Card Preview */}
-      <section className="py-20 bg-gradient-to-r from-mauve-600 to-bleu-600">
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -747,36 +789,60 @@ export default function BecomeMember() {
               </div>
               
               <div className="relative">
-                <div className="bg-gradient-to-br from-white to-gray-100 rounded-2xl p-8 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                  <div className="bg-gradient-to-r from-mauve-600 to-bleu-600 rounded-xl p-6 text-white">
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <h3 className="text-lg font-semibold">ShareWheelz</h3>
-                        <p className="text-sm opacity-80">Digital Membership Card</p>
-                      </div>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-crown w-8 h-8">
-                        <path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"></path>
-                        <path d="M5 21h14"></path>
-                      </svg>
+                <div className="transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                  <div className={`bg-gradient-to-r ${selectedPlan === 'gold' ? 'from-yellow-500 to-orange-500' : selectedPlan === 'black' ? 'from-gray-800 to-black' : 'from-purple-500 to-purple-700'} rounded-xl p-5 text-white w-80 h-48 flex flex-col justify-between shadow-2xl relative overflow-hidden`}>
+                    {/* Card Background Pattern */}
+                    <div className="absolute inset-0 opacity-10">
+                      <div className="absolute top-4 right-4 w-20 h-20 bg-white rounded-full"></div>
+                      <div className="absolute bottom-4 left-4 w-16 h-16 bg-white rounded-full"></div>
+                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-white rounded-full"></div>
                     </div>
                     
-                    <div className="mb-6">
-                      <div className="bg-white/20 rounded-lg p-4">
-                        <div className="text-xs opacity-80 mb-2">Member ID</div>
-                        <div className="text-lg font-mono">SWZ-****-****-****</div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <div className="text-xs opacity-80">Valid Until</div>
-                        <div className="text-sm">12/25</div>
+                    {/* Top Section */}
+                    <div className="flex justify-between items-start relative z-10 mb-4">
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src="/assets/MAIN LOGO.png" 
+                          alt="ShareWheelz Logo" 
+                          className="h-8 w-auto object-contain"
+                        />
+                        <div>
+                          <h3 className="text-sm font-bold tracking-wide">SHAREWHEELZ</h3>
+                          <p className="text-xs opacity-80 font-medium tracking-wider">DIGITAL MEMBERSHIP CARD</p>
+                        </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-xs opacity-80">Status</div>
-                        <div className="text-sm font-semibold">
-                          {selectedPlan === 'gold' ? 'Gold' : selectedPlan === 'black' ? 'Black Elite' : 'Purple'}
+                        <div className="text-xs opacity-80 font-medium tracking-wider">MEMBER</div>
+                        <div className="text-xs opacity-80 font-medium tracking-wider">SINCE</div>
+                        <div className="text-sm font-bold">2024</div>
+                      </div>
+                    </div>
+                    
+                    {/* Card Number Section */}
+                    <div className="relative z-10 mb-4">
+                      <div className="text-xs opacity-80 mb-1 font-medium tracking-wider">MEMBER ID</div>
+                      <div className="text-lg font-mono font-bold tracking-widest">SWZ-****-****-****</div>
+                    </div>
+                    
+                    {/* Bottom Section */}
+                    <div className="flex justify-between items-end relative z-10">
+                      <div>
+                        <div className="text-xs opacity-80 font-medium tracking-wider">VALID UNTIL</div>
+                        <div className="text-sm font-bold">12/25</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs opacity-80 font-medium tracking-wider">STATUS</div>
+                        <div className="text-sm font-bold">
+                          {selectedPlan === 'gold' ? 'GOLD' : selectedPlan === 'black' ? 'BLACK ELITE' : 'PURPLE'}
                         </div>
+                      </div>
+                    </div>
+                    
+                    {/* Visa/Mastercard Style Elements */}
+                    <div className="absolute bottom-4 right-4 opacity-20">
+                      <div className="flex gap-2">
+                        <div className="w-8 h-5 bg-white rounded-sm"></div>
+                        <div className="w-8 h-5 bg-white rounded-sm"></div>
                       </div>
                     </div>
                   </div>
@@ -900,8 +966,14 @@ export default function BecomeMember() {
 
       {/* Payment Confirmation Modal */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={handleCloseModal}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             {paymentStep === 'confirm' && (
               <>
                 <div className="flex items-center justify-between p-6 border-b">

@@ -2,9 +2,9 @@ import { defineConfig } from "drizzle-kit";
 
 export default defineConfig({
   out: "./migrations",
-  schema: "./shared/schema.ts",
-  dialect: "postgresql",
+  schema: "./shared/sqlite-schema.ts",
+  dialect: "sqlite",
   dbCredentials: {
-    url: "postgresql://postgres:brams324brams@localhost:5432/tomobilti",
+    url: "./tomobilti.db",
   },
 });

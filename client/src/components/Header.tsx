@@ -101,7 +101,7 @@ export default function Header() {
   const navItems = [
     { 
       href: '/cars', 
-      label: 'Rent a Car',
+      label: 'Rent',
       description: 'Find and book a car easily near you.',
       icon: Car,
       subItems: [
@@ -112,39 +112,25 @@ export default function Header() {
       ]
     },
     { 
-      href: '/add-car', 
-      label: 'Make Your Car Work For You',
+      href: '/add-car-dynamic', 
+      label: 'Earn',
       description: 'List your vehicle and earn money with ease.',
       icon: PoundSterling,
       subItems: [
-        { href: '/add-car', label: 'List Your Car', description: 'Start earning today' },
+        { href: '/add-car-dynamic', label: 'List Your Car', description: 'Start earning today' },
         { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
-        { href: '/host-guide', label: 'Host Guide', description: 'Tips and best practices' },
         { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' }
       ]
     },
     { 
       href: '/become-member', 
-      label: 'Become a Member',
-      description: 'Get access to exclusive benefits and a secure community.',
+      label: 'Member',
+      description: '',
       icon: Crown,
       subItems: [
         { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
         { href: '/membership-benefits', label: 'Benefits', description: 'See all perks' },
-        { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' },
-        { href: '/member-events', label: 'Member Events', description: 'Exclusive gatherings' }
-      ]
-    },
-    { 
-      href: '/services', 
-      label: 'Our Quality Services',
-      description: 'Discount on insurance, assistance, and support included for a hassle-free experience.',
-      icon: Shield,
-      subItems: [
-        { href: '/insurance', label: 'Insurance Discount', description: 'Get discounts on coverage' },
-        { href: '/roadside-assistance', label: 'Roadside Assistance', description: '24/7 help available' },
-        { href: '/support', label: 'Customer Support', description: 'Dedicated team ready' },
-        { href: '/quality-guarantee', label: 'Quality Guarantee', description: 'Satisfaction assured' }
+        { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' }
       ]
     },
   ];
@@ -156,22 +142,21 @@ export default function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg overflow-visible">
-      <div className="container mx-auto flex h-16 items-center px-4 max-w-7xl w-full">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
+      <div className="container mx-auto flex h-16 items-center px-2 sm:px-4 max-w-7xl w-full">
         {/* Brand Logo - Left Side */}
-        <div className="flex-shrink-0 mr-4">
+        <div className="flex-shrink-0 mr-2 sm:mr-4">
           <Link href="/" className="flex items-center">
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-20 w-auto hover:scale-105 transition-transform duration-200 touch-manipulation"
-              style={{ touchAction: 'manipulation' }}
+              className="h-12 sm:h-16 w-auto hover:scale-105 transition-transform duration-200"
             />
           </Link>
         </div>
 
         {/* Desktop Navigation - Left */}
-        <nav className="hidden lg:flex items-center gap-1 sm:gap-2 mr-4 sm:mr-8 flex-1">
+        <nav className="hidden xl:flex items-center gap-1 mr-4 flex-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -179,7 +164,7 @@ export default function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button 
                     variant={location === item.href ? 'default' : 'ghost'} 
-                    className={`hover:scale-105 transition-all duration-200 flex items-center gap-1 ${
+                    className={`hover:scale-105 transition-all duration-200 flex items-center gap-1 text-sm px-2 ${
                       location === item.href 
                         ? 'bg-blue-600 text-white shadow-md' 
                         : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
@@ -190,7 +175,7 @@ export default function Header() {
                     <ChevronDown className="h-3 w-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-80" align="start">
+                <DropdownMenuContent className="w-80" align="start" sideOffset={8} avoidCollisions={true}>
                   <div className="p-3">
                     <DropdownMenuLabel className="flex items-center gap-2 text-base font-semibold">
                       <Icon className="h-5 w-5 text-blue-600" />
@@ -216,29 +201,30 @@ export default function Header() {
         </nav>
 
         {/* Search Bar - CENTERED */}
-        <div className="hidden md:flex items-center gap-2 flex-1 justify-center">
-          <div className="relative w-full max-w-md">
+        <div className="hidden lg:flex items-center gap-2 flex-1 justify-center max-w-md mx-4">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
               data-testid="input-search"
-              placeholder="Search cars, locations..."
+              placeholder="Search cars..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-10 bg-white border-gray-200 focus:border-mauve-500 focus:ring-2 focus:ring-mauve-200 transition-all duration-200 rounded-lg"
+              className="pl-10 bg-white border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 rounded-lg text-sm"
             />
           </div>
           <Button 
             onClick={handleSearch} 
             data-testid="button-search" 
-            className="bg-mauve-600 hover:bg-mauve-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-4"
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-3"
+            size="sm"
           >
             <Search className="h-4 w-4" />
           </Button>
         </div>
 
         {/* User Actions - Right Side */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-4 sm:ml-8">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2 sm:ml-4">
           {/* Notifications */}
           {isAuthenticated && (
             <DropdownMenu>
@@ -250,7 +236,7 @@ export default function Header() {
                   </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80" align="end">
+              <DropdownMenuContent className="w-80" align="end" sideOffset={8} avoidCollisions={true}>
                 <div className="px-2 py-1.5">
                   <DropdownMenuLabel className="flex items-center justify-between">
                     <span>Notifications</span>
@@ -316,7 +302,7 @@ export default function Header() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56" align="end" sideOffset={8} avoidCollisions={true} forceMount>
                 <div className="flex flex-col space-y-1 p-2">
                   <p className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</p>
                   <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
@@ -353,12 +339,20 @@ export default function Header() {
                   </Link>
                 </DropdownMenuItem>
                 {(user?.userType === 'owner' || user?.userType === 'both') && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/add-car" className="flex items-center cursor-pointer">
-                      <Plus className="mr-2 h-4 w-4" />
-                      <span>Add Car</span>
-                    </Link>
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem asChild>
+                      <Link href="/car-management" className="flex items-center cursor-pointer">
+                        <Car className="mr-2 h-4 w-4" />
+                        <span>My Cars</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/add-car" className="flex items-center cursor-pointer">
+                        <Plus className="mr-2 h-4 w-4" />
+                        <span>Add Car</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
@@ -368,14 +362,14 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1">
               <Link href="/login">
-                <Button variant="ghost" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 text-sm">
                   Login
                 </Button>
               </Link>
               <Link href="/register">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg text-sm px-3">
                   Sign Up
                 </Button>
               </Link>
@@ -384,10 +378,10 @@ export default function Header() {
         </div>
 
         {/* Mobile Menu */}
-        <div className="md:hidden">
+        <div className="xl:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+              <Button variant="ghost" size="icon" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Browser Cache - WebSocket Fix</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f4fd;
+            border-left: 4px solid #2196F3;
+            border-radius: 4px;
+        }
+        .important {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 WebSocket Cache Clear Instructions</h1>
+        
+        <div class="step important">
+            <h3>⚠️ The WebSocket error is caused by cached JavaScript code</h3>
+            <p>The error <code>ws://localhost:undefined/</code> indicates your browser is running old cached code that doesn't exist in the current codebase.</p>
+        </div>
+
+        <div class="step">
+            <h3>Method 1: Hard Refresh (Recommended)</h3>
+            <p><strong>Windows/Linux:</strong> Press <code>Ctrl + Shift + R</code></p>
+            <p><strong>Mac:</strong> Press <code>Cmd + Shift + R</code></p>
+            <button class="button" onclick="location.reload(true)">Hard Refresh This Page</button>
+        </div>
+
+        <div class="step">
+            <h3>Method 2: Developer Tools Cache Clear</h3>
+            <ol>
+                <li>Press <code>F12</code> to open Developer Tools</li>
+                <li>Right-click on the refresh button in your browser</li>
+                <li>Select "Empty Cache and Hard Reload"</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Method 3: Manual Cache Clear</h3>
+            <ol>
+                <li>Press <code>Ctrl + Shift + Delete</code> (Windows) or <code>Cmd + Shift + Delete</code> (Mac)</li>
+                <li>Select "Cached images and files"</li>
+                <li>Choose "Last hour" or "All time"</li>
+                <li>Click "Clear data"</li>
+            </ol>
+        </div>
+
+        <div class="step success">
+            <h3>✅ After clearing cache, you should see:</h3>
+            <ul>
+                <li><code>🔌 MessagingContext: Connecting to WebSocket at: http://localhost:5000</code></li>
+                <li><code>✅ MessagingContext: Connected to messaging server</code></li>
+                <li><strong>No more</strong> <code>ws://localhost:undefined/</code> errors</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>🔍 If the problem persists:</h3>
+            <ol>
+                <li>Close all browser tabs for this site</li>
+                <li>Close the browser completely</li>
+                <li>Reopen the browser</li>
+                <li>Navigate back to <code>http://localhost:5000</code></li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>📱 Alternative: Incognito/Private Mode</h3>
+            <p>Open the site in incognito/private mode to bypass all cache:</p>
+            <p><strong>Windows:</strong> <code>Ctrl + Shift + N</code></p>
+            <p><strong>Mac:</strong> <code>Cmd + Shift + N</code></p>
+        </div>
+    </div>
+
+    <script>
+        // Add a timestamp to prevent caching of this page
+        console.log('Cache clear instructions loaded at:', new Date().toISOString());
+    </script>
+</body>
+</html>
+

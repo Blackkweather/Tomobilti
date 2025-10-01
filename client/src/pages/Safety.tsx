@@ -19,7 +19,6 @@ import {
   Eye,
   Heart
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Safety() {
   const [activeTab, setActiveTab] = useState('overview');

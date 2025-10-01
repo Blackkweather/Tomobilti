@@ -17,8 +17,9 @@ export default function SocialLoginButtons({
     if (onGoogleLogin) {
       onGoogleLogin();
     } else {
-      // Default behavior - redirect to Google OAuth
-      window.location.href = '/api/auth/google';
+      // Redirect to Google OAuth with proper scopes
+      const googleAuthUrl = `https://accounts.google.com/oauth/authorize?client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}&scope=openid%20email%20profile&response_type=code&state=login`;
+      window.location.href = googleAuthUrl;
     }
   };
 
@@ -26,8 +27,9 @@ export default function SocialLoginButtons({
     if (onAppleLogin) {
       onAppleLogin();
     } else {
-      // Default behavior - redirect to Apple OAuth
-      window.location.href = '/api/auth/apple';
+      // Redirect to Apple OAuth
+      const appleAuthUrl = `https://appleid.apple.com/auth/authorize?client_id=${process.env.REACT_APP_APPLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/apple/callback')}&scope=name%20email&response_type=code&state=login`;
+      window.location.href = appleAuthUrl;
     }
   };
 
@@ -35,8 +37,9 @@ export default function SocialLoginButtons({
     if (onOutlookLogin) {
       onOutlookLogin();
     } else {
-      // Default behavior - redirect to Microsoft OAuth
-      window.location.href = '/api/auth/microsoft';
+      // Redirect to Microsoft OAuth
+      const microsoftAuthUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${process.env.REACT_APP_MICROSOFT_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/microsoft/callback')}&scope=openid%20email%20profile&response_type=code&state=login`;
+      window.location.href = microsoftAuthUrl;
     }
   };
 

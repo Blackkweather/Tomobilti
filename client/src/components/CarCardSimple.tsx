@@ -67,19 +67,6 @@ export default function CarCardSimple({ car, isFavorited = false, onToggleFavori
             </div>
           )}
           
-          {/* Overlay with badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {fuelType === 'electric' && (
-              <Badge className="bg-green-500 text-white border-0 shadow-lg">
-                Electric
-              </Badge>
-            )}
-            {pricePerDay > 100 && (
-              <Badge className="bg-purple-500 text-white border-0 shadow-lg">
-                Premium
-              </Badge>
-            )}
-          </div>
 
           {/* Favorite button */}
           <Button

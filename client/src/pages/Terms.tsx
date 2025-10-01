@@ -15,7 +15,6 @@ import {
   Mail,
   Clock
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Terms() {
   const [activeSection, setActiveSection] = useState('overview');

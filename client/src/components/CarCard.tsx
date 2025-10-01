@@ -138,20 +138,6 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
             className="rounded-t-lg"
           />
           
-          {/* Overlay with badges - moved to bottom-left to avoid overlap */}
-          <div className="absolute bottom-3 left-3 flex flex-col gap-2 z-10">
-            {fuelType === 'electric' && (
-              <Badge className="badge-success shadow-lg">
-                <Zap className="w-3 h-3 mr-1" />
-                Electric
-              </Badge>
-            )}
-            {pricePerDay > 100 && (
-              <Badge className="badge-primary shadow-lg">
-                Premium
-              </Badge>
-            )}
-          </div>
 
           {/* Right side overlays - properly spaced */}
           <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
@@ -207,8 +193,8 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
           {/* Car Details */}
           <div className="grid grid-cols-2 gap-3 mb-4">
             <div className="flex items-center text-sm text-gray-700 font-medium">
-              <CategoryIcon className="w-4 h-4 mr-2 text-blue-600" />
-              <span className="capitalize">{vehicleCategory}</span>
+              <Fuel className="w-4 h-4 mr-2 text-blue-600" />
+              <span className="capitalize">{fuelTypeLabels[fuelType as keyof typeof fuelTypeLabels] || fuelType}</span>
             </div>
             <div className="flex items-center text-sm text-gray-700 font-medium">
               <Settings className="w-4 h-4 mr-2 text-blue-600" />

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import Footer from '../components/Footer';
 import { 
   Building2, 
   Users, 
@@ -21,7 +22,6 @@ import {
   Award,
   Zap
 } from 'lucide-react';
-import Footer from '../components/Footer';
 
 export default function Business() {
   const [selectedSolution, setSelectedSolution] = useState('corporate');
