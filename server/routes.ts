@@ -1,5 +1,6 @@
 import type { Express } from 'express';
 import { registerAdminRoutes } from './routes/admin';
+import oauthRoutes from './routes/oauth';
 import { storage } from './storage';
 import { 
   carSearchSchema, 
@@ -1398,6 +1399,9 @@ export async function registerRoutes(app: Express): Promise<Express> {
 
   // Register admin routes
   registerAdminRoutes(app);
+
+  // Register OAuth routes
+  app.use('/api/auth/oauth', oauthRoutes);
 
   // Health check
   app.get("/api/health", (req, res) => {

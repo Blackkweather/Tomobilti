@@ -7,6 +7,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<{ user: User; token: string; message: string }>;
   register: (userData: any) => Promise<{ user: User; token: string; message: string }>;
+  oauthLogin: (provider: string, token: string, userData?: any) => Promise<{ user: User; token: string; message: string }>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -64,6 +65,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const oauthLogin = async (provider: string, token: string, userData?: any) => {
+    try {
+      const response = await fetch(`/api/auth/oauth/${provider}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, ...userData }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`${provider} authentication failed`);
+      }
+
+      const data = await response.json();
+      setUser(data.user);
+      localStorage.setItem('authToken', data.token);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const logout = () => {
     authApi.logout();
     setUser(null);
@@ -76,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     login,
     register,
+    oauthLogin,
     logout,
     isAuthenticated,
   };

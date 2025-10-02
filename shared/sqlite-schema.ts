@@ -7,17 +7,26 @@ import { z } from "zod";
 export const users = sqliteTable("users", {
   id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"), // Made optional for OAuth users
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
   phone: text("phone"),
   profileImage: text("profile_image"),
   userType: text("user_type").notNull().default("renter"), // "owner", "renter", "both"
+  isVerified: integer("is_verified", { mode: 'boolean' }).notNull().default(false),
+  // OAuth provider IDs
+  googleId: text("google_id"),
+  facebookId: text("facebook_id"),
+  appleId: text("apple_id"),
+  githubId: text("github_id"),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 }, (table) => ({
   emailIdx: sql`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`,
   userTypeIdx: sql`CREATE INDEX IF NOT EXISTS idx_users_user_type ON users(user_type)`,
+  googleIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)`,
+  facebookIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_users_facebook_id ON users(facebook_id)`,
+  appleIdIdx: sql`CREATE INDEX IF NOT EXISTS idx_users_apple_id ON users(apple_id)`,
 }));
 
 // Cars table
