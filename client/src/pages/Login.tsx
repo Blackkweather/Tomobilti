@@ -286,7 +286,15 @@ export default function Login() {
                 </Button>
 
                 {/* Social Login Buttons */}
-                <SocialLoginButtons />
+                <SocialLoginButtons 
+                  onSuccess={(user) => {
+                    console.log('OAuth login successful:', user);
+                    redirectBasedOnUserType(user.userType, setLocation);
+                  }}
+                  onError={(error) => {
+                    setError(error);
+                  }}
+                />
               </form>
 
               {/* Security Badges */}
