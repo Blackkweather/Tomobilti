@@ -39,6 +39,9 @@ header {
   position: fixed !important;
   z-index: 10000 !important;
   transform-origin: var(--radix-dropdown-menu-content-transform-origin) !important;
+  max-width: calc(100vw - 20px) !important;
+  left: auto !important;
+  right: 10px !important;
 }
 
 /* Prevent layout shifts from dropdowns */

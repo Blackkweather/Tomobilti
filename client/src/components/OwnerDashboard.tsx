@@ -31,7 +31,29 @@ import {
   Settings,
   BarChart3,
   PieChart,
-  LineChart
+  LineChart,
+  Zap,
+  Shield,
+  Gift,
+  Bell,
+  Filter,
+  Search,
+  Download,
+  RefreshCw,
+  TrendingDown,
+  DollarSign,
+  CreditCard,
+  Wallet,
+  Receipt,
+  FileText,
+  AlertTriangle,
+  Info,
+  HelpCircle,
+  ExternalLink,
+  ChevronRight,
+  ChevronDown,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'wouter';
@@ -74,6 +96,9 @@ export default function OwnerDashboard() {
   const [selectedTab, setSelectedTab] = useState('overview');
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const [timeRange, setTimeRange] = useState('30d');
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Fetch owner's cars
   const { data: carsData, isLoading: carsLoading, error: carsError } = useQuery({
@@ -128,6 +153,156 @@ export default function OwnerDashboard() {
   
   // Calculate statistics from real data
   const { totalEarnings, totalBookings, averageRating, averageOccupancy } = calculateCarStats(cars, bookings);
+  
+  // Enhanced analytics calculations
+  const enhancedStats = {
+    totalEarnings,
+    totalBookings,
+    averageRating,
+    averageOccupancy,
+    monthlyGrowth: calculateGrowthRate(bookings, timeRange),
+    topPerformingCar: getTopPerformingCar(cars, bookings),
+    recentActivity: getRecentActivity(bookings),
+    earningsTrend: calculateEarningsTrend(bookings, timeRange),
+    occupancyRate: calculateOccupancyRate(cars, bookings),
+    customerSatisfaction: calculateCustomerSatisfaction(cars),
+    revenueBreakdown: calculateRevenueBreakdown(bookings),
+    seasonalTrends: calculateSeasonalTrends(bookings)
+  };
+
+  // Helper functions for enhanced analytics
+  function calculateGrowthRate(bookings: any[], period: string): number {
+    const now = new Date();
+    const periodDays = period === '7d' ? 7 : period === '30d' ? 30 : 90;
+    const currentPeriod = bookings.filter(b => {
+      const bookingDate = new Date(b.createdAt);
+      return bookingDate >= new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+    });
+    
+    const previousPeriod = bookings.filter(b => {
+      const bookingDate = new Date(b.createdAt);
+      const start = new Date(now.getTime() - (periodDays * 2) * 24 * 60 * 60 * 1000);
+      const end = new Date(now.getTime() - periodDays * 24 * 60 * 60 * 1000);
+      return bookingDate >= start && bookingDate < end;
+    });
+    
+    if (previousPeriod.length === 0) return 100;
+    return ((currentPeriod.length - previousPeriod.length) / previousPeriod.length) * 100;
+  }
+
+  function getTopPerformingCar(cars: any[], bookings: any[]): any {
+    if (!cars.length) return null;
+    
+    return cars.reduce((top, car) => {
+      const carBookings = bookings.filter(b => b.carId === car.id);
+      const carEarnings = carBookings.reduce((sum, b) => sum + (parseFloat(b.totalAmount) || 0), 0);
+      
+      const topEarnings = bookings.filter(b => b.carId === top.id)
+        .reduce((sum, b) => sum + (parseFloat(b.totalAmount) || 0), 0);
+      
+      return carEarnings > topEarnings ? car : top;
+    });
+  }
+
+  function getRecentActivity(bookings: any[]): any[] {
+    return bookings
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5);
+  }
+
+  function calculateEarningsTrend(bookings: any[], period: string): any[] {
+    const days = period === '7d' ? 7 : period === '30d' ? 30 : 90;
+    const trend = [];
+    
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      const dayStart = new Date(date.setHours(0, 0, 0, 0));
+      const dayEnd = new Date(date.setHours(23, 59, 59, 999));
+      
+      const dayBookings = bookings.filter(b => {
+        const bookingDate = new Date(b.createdAt);
+        return bookingDate >= dayStart && bookingDate <= dayEnd;
+      });
+      
+      const dayEarnings = dayBookings.reduce((sum, b) => sum + (parseFloat(b.totalAmount) || 0), 0);
+      
+      trend.push({
+        date: date.toISOString().split('T')[0],
+        earnings: dayEarnings,
+        bookings: dayBookings.length
+      });
+    }
+    
+    return trend;
+  }
+
+  function calculateOccupancyRate(cars: any[], bookings: any[]): number {
+    if (!cars.length) return 0;
+    
+    const totalDays = cars.length * 30; // Assuming 30 days period
+    const bookedDays = bookings.reduce((sum, booking) => {
+      const start = new Date(booking.startDate);
+      const end = new Date(booking.endDate);
+      return sum + Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    }, 0);
+    
+    return (bookedDays / totalDays) * 100;
+  }
+
+  function calculateCustomerSatisfaction(cars: any[]): number {
+    if (!cars.length) return 0;
+    return cars.reduce((sum, car) => sum + (car.rating || 0), 0) / cars.length;
+  }
+
+  function calculateRevenueBreakdown(bookings: any[]): any {
+    const breakdown = {
+      daily: 0,
+      weekly: 0,
+      monthly: 0,
+      total: 0
+    };
+    
+    bookings.forEach(booking => {
+      const amount = parseFloat(booking.totalAmount) || 0;
+      breakdown.total += amount;
+      
+      const days = Math.ceil((new Date(booking.endDate).getTime() - new Date(booking.startDate).getTime()) / (1000 * 60 * 60 * 24));
+      
+      if (days <= 1) breakdown.daily += amount;
+      else if (days <= 7) breakdown.weekly += amount;
+      else breakdown.monthly += amount;
+    });
+    
+    return breakdown;
+  }
+
+  function calculateSeasonalTrends(bookings: any[]): any {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const trends = months.map(month => ({ month, bookings: 0, earnings: 0 }));
+    
+    bookings.forEach(booking => {
+      const month = new Date(booking.createdAt).getMonth();
+      trends[month].bookings += 1;
+      trends[month].earnings += parseFloat(booking.totalAmount) || 0;
+    });
+    
+    return trends;
+  }
+
+  const toggleCardExpansion = (cardId: string) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(cardId)) {
+      newExpanded.delete(cardId);
+    } else {
+      newExpanded.add(cardId);
+    }
+    setExpandedCards(newExpanded);
+  };
+
+  const refreshData = () => {
+    setRefreshKey(prev => prev + 1);
+  };
   
   // Mock growth data (you can replace with real calculations later)
   const thisMonthEarnings = totalEarnings * 0.3; // Assume 30% of total is this month
@@ -375,6 +550,111 @@ export default function OwnerDashboard() {
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
+            {/* Enhanced Analytics Header */}
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Dashboard Analytics</h2>
+                <p className="text-gray-600">Comprehensive insights into your car rental business</p>
+              </div>
+              <div className="flex gap-2">
+                <select
+                  value={timeRange}
+                  onChange={(e) => setTimeRange(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="7d">Last 7 days</option>
+                  <option value="30d">Last 30 days</option>
+                  <option value="90d">Last 90 days</option>
+                </select>
+                <Button onClick={refreshData} variant="outline" size="sm">
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+              </div>
+            </div>
+
+            {/* Key Performance Indicators */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-blue-100 text-sm">Total Earnings</p>
+                      <p className="text-2xl font-bold">£{enhancedStats.totalEarnings.toLocaleString()}</p>
+                      <p className="text-blue-200 text-xs">
+                        {enhancedStats.monthlyGrowth > 0 ? (
+                          <span className="flex items-center">
+                            <TrendingUp className="h-3 w-3 mr-1" />
+                            +{enhancedStats.monthlyGrowth.toFixed(1)}%
+                          </span>
+                        ) : (
+                          <span className="flex items-center">
+                            <TrendingDown className="h-3 w-3 mr-1" />
+                            {enhancedStats.monthlyGrowth.toFixed(1)}%
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                    <DollarSign className="h-8 w-8 text-blue-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-green-100 text-sm">Total Bookings</p>
+                      <p className="text-2xl font-bold">{enhancedStats.totalBookings}</p>
+                      <p className="text-green-200 text-xs">
+                        <span className="flex items-center">
+                          <Activity className="h-3 w-3 mr-1" />
+                          {enhancedStats.occupancyRate.toFixed(1)}% occupancy
+                        </span>
+                      </p>
+                    </div>
+                    <Calendar className="h-8 w-8 text-green-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-purple-100 text-sm">Avg Rating</p>
+                      <p className="text-2xl font-bold">{enhancedStats.customerSatisfaction.toFixed(1)}</p>
+                      <p className="text-purple-200 text-xs">
+                        <span className="flex items-center">
+                          <Star className="h-3 w-3 mr-1" />
+                          Customer satisfaction
+                        </span>
+                      </p>
+                    </div>
+                    <Star className="h-8 w-8 text-purple-200" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-orange-100 text-sm">Active Cars</p>
+                      <p className="text-2xl font-bold">{cars.length}</p>
+                      <p className="text-orange-200 text-xs">
+                        <span className="flex items-center">
+                          <Car className="h-3 w-3 mr-1" />
+                          In your fleet
+                        </span>
+                      </p>
+                    </div>
+                    <Car className="h-8 w-8 text-orange-200" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Performance Overview */}
               <Card className="lg:col-span-2 border-0 shadow-lg bg-white/80 backdrop-blur-sm">
@@ -480,6 +760,176 @@ export default function OwnerDashboard() {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Enhanced Analytics Sections */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Top Performing Car */}
+              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5 text-yellow-600" />
+                    Top Performing Car
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {enhancedStats.topPerformingCar ? (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        {enhancedStats.topPerformingCar.images && enhancedStats.topPerformingCar.images.length > 0 ? (
+                          <img
+                            src={enhancedStats.topPerformingCar.images[0]}
+                            alt={enhancedStats.topPerformingCar.title}
+                            className="w-16 h-16 object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <Car className="h-8 w-8 text-gray-400" />
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-lg">{enhancedStats.topPerformingCar.title}</h4>
+                          <p className="text-gray-600">{enhancedStats.topPerformingCar.make} {enhancedStats.topPerformingCar.model}</p>
+                          <div className="flex items-center gap-4 mt-2">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-yellow-500" />
+                              <span className="text-sm font-medium">{enhancedStats.topPerformingCar.rating?.toFixed(1) || 'N/A'}</span>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              £{enhancedStats.topPerformingCar.pricePerDay}/day
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-4 pt-4 border-t">
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-green-600">
+                            £{bookings.filter((b: any) => b.carId === enhancedStats.topPerformingCar.id)
+                              .reduce((sum: number, b: any) => sum + (parseFloat(b.totalAmount) || 0), 0).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-gray-600">Total Earnings</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-blue-600">
+                            {bookings.filter((b: any) => b.carId === enhancedStats.topPerformingCar.id).length}
+                          </p>
+                          <p className="text-xs text-gray-600">Bookings</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-purple-600">
+                            {enhancedStats.occupancyRate.toFixed(0)}%
+                          </p>
+                          <p className="text-xs text-gray-600">Occupancy</p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Car className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                      <p>No cars available yet</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Revenue Breakdown */}
+              <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <PieChart className="h-5 w-5 text-green-600" />
+                    Revenue Breakdown
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                          <span className="text-sm">Daily Rentals</span>
+                        </div>
+                        <span className="font-semibold">£{enhancedStats.revenueBreakdown.daily.toLocaleString()}</span>
+                      </div>
+                      <Progress 
+                        value={(enhancedStats.revenueBreakdown.daily / enhancedStats.revenueBreakdown.total) * 100} 
+                        className="h-2" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                          <span className="text-sm">Weekly Rentals</span>
+                        </div>
+                        <span className="font-semibold">£{enhancedStats.revenueBreakdown.weekly.toLocaleString()}</span>
+                      </div>
+                      <Progress 
+                        value={(enhancedStats.revenueBreakdown.weekly / enhancedStats.revenueBreakdown.total) * 100} 
+                        className="h-2" 
+                      />
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                          <span className="text-sm">Monthly Rentals</span>
+                        </div>
+                        <span className="font-semibold">£{enhancedStats.revenueBreakdown.monthly.toLocaleString()}</span>
+                      </div>
+                      <Progress 
+                        value={(enhancedStats.revenueBreakdown.monthly / enhancedStats.revenueBreakdown.total) * 100} 
+                        className="h-2" 
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mt-6 pt-4 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold">Total Revenue</span>
+                      <span className="text-xl font-bold text-green-600">£{enhancedStats.revenueBreakdown.total.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Earnings Trend Chart */}
+            <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <LineChart className="h-5 w-5 text-blue-600" />
+                  Earnings Trend ({timeRange})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-7 gap-2">
+                    {enhancedStats.earningsTrend.slice(-7).map((day, index) => (
+                      <div key={index} className="text-center">
+                        <div className="text-xs text-gray-600 mb-2">
+                          {new Date(day.date).toLocaleDateString('en', { weekday: 'short' })}
+                        </div>
+                        <div 
+                          className="bg-blue-500 rounded-t-sm mx-auto"
+                          style={{ 
+                            height: `${Math.max(20, (day.earnings / Math.max(...enhancedStats.earningsTrend.map(d => d.earnings))) * 100)}px`,
+                            width: '20px'
+                          }}
+                        ></div>
+                        <div className="text-xs text-gray-600 mt-1">
+                          £{day.earnings.toFixed(0)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600">
+                    <span>Lowest: £{Math.min(...enhancedStats.earningsTrend.map(d => d.earnings)).toFixed(0)}</span>
+                    <span>Highest: £{Math.max(...enhancedStats.earningsTrend.map(d => d.earnings)).toFixed(0)}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="cars" className="space-y-6">

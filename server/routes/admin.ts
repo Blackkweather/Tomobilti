@@ -171,6 +171,39 @@ export function registerAdminRoutes(app: Express) {
     }
   });
 
+  // Admin: Update any car details (bypasses ownership requirements)
+  app.put('/api/admin/cars/:id', async (req, res) => {
+    try {
+      const carId = req.params.id;
+      const updateData = req.body;
+      
+      // Remove any fields that shouldn't be updated directly
+      delete updateData.id;
+      delete updateData.createdAt;
+      
+      const success = await storage.updateCar(carId, updateData);
+      
+      if (!success) {
+        return res.status(404).json({ error: 'Car not found' });
+      }
+      
+      // Get the updated car
+      const updatedCar = await storage.getCarById(carId);
+      const owner = await storage.getUserById(updatedCar.ownerId);
+      
+      res.json({
+        message: 'Car updated successfully',
+        car: {
+          ...updatedCar,
+          ownerName: owner ? `${owner.firstName} ${owner.lastName}` : 'Unknown'
+        }
+      });
+    } catch (error) {
+      console.error('Error updating car:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Get all bookings
   app.get('/api/admin/bookings', async (req, res) => {
     try {

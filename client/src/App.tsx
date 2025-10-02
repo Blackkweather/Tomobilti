@@ -32,8 +32,13 @@ import Support from "./pages/Support";
 import Services from "./pages/Services";
 import TermsPolicies from "./pages/TermsPolicies";
 import Payment from "./pages/Payment";
+import PaymentManagement from "./pages/PaymentManagement";
+import BookingManagement from "./pages/BookingManagement";
+import NotificationSettings from "./pages/NotificationSettings";
+import PaymentMethods from "./pages/PaymentMethods";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import BookingDetails from "./pages/BookingDetails";
+import AdminPanel from "./pages/AdminPanel";
 import TestCars from "./pages/TestCars";
 import CarsSimple from "./pages/CarsSimple";
 import CarsDebug from "./pages/CarsDebug";
@@ -93,8 +98,13 @@ function App() {
               <Route path="/settings" component={Settings} />
               <Route path="/security" component={Security} />
               <Route path="/payment/:bookingId" component={Payment} />
-              <Route path="/booking-confirmation/:bookingId" component={BookingConfirmation} />
-              <Route path="/booking/:bookingId" component={BookingDetails} />
+              <Route path="/payment-management" component={PaymentManagement} />
+              <Route path="/booking-management" component={BookingManagement} />
+              <Route path="/notification-settings" component={NotificationSettings} />
+              <Route path="/payment-methods" component={PaymentMethods} />
+            <Route path="/booking-confirmation/:bookingId" component={BookingConfirmation} />
+            <Route path="/booking/:bookingId" component={BookingDetails} />
+            <Route path="/admin" component={AdminPanel} />
               <Route path="/notifications" component={Notifications} />
               <Route path="/messages" component={MessagingApp} />
               <Route path="/cars" component={Cars} />
@@ -110,7 +120,7 @@ function App() {
               <Route path="/car-management" component={CarManagement} />
               <Route path="/become-host" component={BecomeHost} />
               <Route path="/become-member" component={BecomeMember} />
-              <Route path="/admin" component={AdminDashboard} />
+              <Route path="/admin-dashboard" component={AdminDashboard} />
               <Route path="/fleet" component={Fleet} />
               <Route path="/business" component={Business} />
               <Route path="/help" component={Help} />

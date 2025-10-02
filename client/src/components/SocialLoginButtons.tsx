@@ -17,9 +17,8 @@ export default function SocialLoginButtons({
     if (onGoogleLogin) {
       onGoogleLogin();
     } else {
-      // Redirect to Google OAuth with proper scopes
-      const googleAuthUrl = `https://accounts.google.com/oauth/authorize?client_id=${process.env.REACT_APP_GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}&scope=openid%20email%20profile&response_type=code&state=login`;
-      window.location.href = googleAuthUrl;
+      // Mock Google login for demo purposes
+      alert('Google login is not configured yet. Please use email/password login for now.');
     }
   };
 
@@ -27,9 +26,8 @@ export default function SocialLoginButtons({
     if (onAppleLogin) {
       onAppleLogin();
     } else {
-      // Redirect to Apple OAuth
-      const appleAuthUrl = `https://appleid.apple.com/auth/authorize?client_id=${process.env.REACT_APP_APPLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/apple/callback')}&scope=name%20email&response_type=code&state=login`;
-      window.location.href = appleAuthUrl;
+      // Mock Apple login for demo purposes
+      alert('Apple login is not configured yet. Please use email/password login for now.');
     }
   };
 
@@ -37,9 +35,8 @@ export default function SocialLoginButtons({
     if (onOutlookLogin) {
       onOutlookLogin();
     } else {
-      // Redirect to Microsoft OAuth
-      const microsoftAuthUrl = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${process.env.REACT_APP_MICROSOFT_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/microsoft/callback')}&scope=openid%20email%20profile&response_type=code&state=login`;
-      window.location.href = microsoftAuthUrl;
+      // Mock Outlook login for demo purposes
+      alert('Outlook login is not configured yet. Please use email/password login for now.');
     }
   };
 

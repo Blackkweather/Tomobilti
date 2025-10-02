@@ -11,6 +11,7 @@ import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, 
 import CarCard from '../components/CarCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Footer from '../components/Footer';
+import { LocationPicker } from '../components/LocationPicker';
 import { carApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../utils/currency';
@@ -24,7 +25,9 @@ export default function Cars() {
     fuelType: '',
     transmission: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    category: '',
+    seats: ''
   });
   const [favorites, setFavorites] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -61,41 +64,117 @@ export default function Cars() {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  // Parse URL parameters on component mount
+  // Parse URL parameters - reactive to URL changes
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.split('?')[1] || '');
-    const locationParam = urlParams.get('location') || '';
-    const startDateParam = urlParams.get('startDate') || '';
-    const endDateParam = urlParams.get('endDate') || '';
-    
-    if (locationParam || startDateParam || endDateParam) {
-      setFilters(prev => ({
-        ...prev,
-        location: locationParam,
-        startDate: startDateParam,
-        endDate: endDateParam
-      }));
-    }
-  }, [location]);
+    const parseUrlParams = () => {
+      try {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        
+        const newFilters = {
+          location: urlParams.get('location') || '',
+          startDate: urlParams.get('startDate') || '',
+          endDate: urlParams.get('endDate') || '',
+          fuelType: urlParams.get('fuelType') || '',
+          transmission: urlParams.get('transmission') || '',
+          category: urlParams.get('category') || '',
+          seats: urlParams.get('seats') || '',
+          minPrice: '',
+          maxPrice: ''
+        };
+        
+        setFilters(newFilters);
+      } catch (error) {
+        console.error('❌ URL PARSING ERROR:', error);
+      }
+    };
 
-  // Fetch cars data
+    // Parse on mount
+    parseUrlParams();
+
+    // Listen for URL changes (including programmatic changes)
+    const handleUrlChange = () => {
+      parseUrlParams();
+    };
+
+    // Listen to both popstate and custom events
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('urlchange', handleUrlChange);
+    
+    // Also check for URL changes periodically (fallback)
+    let lastUrl = window.location.search;
+    const interval = setInterval(() => {
+      const currentUrl = window.location.search;
+      if (currentUrl !== lastUrl) {
+        lastUrl = currentUrl;
+        parseUrlParams();
+      }
+    }, 100);
+    
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('urlchange', handleUrlChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+
+  // Fetch cars data - Use a simple key since we're doing all filtering client-side
   const { data: carsData, isLoading, error } = useQuery({
-    queryKey: ['cars', filters],
+    queryKey: ['cars'],
     queryFn: () => carApi.searchCars({
       sortBy: 'date' as const,
       sortOrder: 'desc' as const,
       page: 1,
       limit: 50,
-      location: filters.location || undefined,
-      minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
-      maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
-      fuelType: filters.fuelType ? [filters.fuelType] : undefined,
-      transmission: filters.transmission as 'manual' | 'automatic' | undefined,
-      startDate: filters.startDate || undefined,
-      endDate: filters.endDate || undefined
+      // Remove all filters from API call - we'll apply them client-side
+      // This ensures we get all cars and can filter them properly
     }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  // Helper function to determine car category based on make, model, and price
+  const getCarCategory = (car: any) => {
+    const price = parseFloat(car.pricePerDay.toString());
+    const make = car.make.toLowerCase();
+    const model = car.model.toLowerCase();
+    
+    // Economy cars (lowest tier)
+    if (
+      ['toyota', 'honda', 'ford', 'volkswagen', 'nissan', 'hyundai', 'kia', 'renault', 'peugeot', 'citroen'].includes(make) ||
+      price < 40
+    ) {
+      return 'economy';
+    }
+    
+    // Compact cars (mid-low tier)
+    if (price >= 40 && price < 60) {
+      return 'compact';
+    }
+    
+    // Premium brands and mid-high tier (£60-150)
+    if (
+      ['bmw', 'mercedes', 'audi', 'jaguar', 'range rover', 'tesla', 'volvo', 'lexus'].includes(make) ||
+      (price >= 60 && price <= 150) ||
+      model.includes('model') ||
+      model.includes('sport')
+    ) {
+      return 'premium';
+    }
+    
+    // Luxury brands and highest tier (>£150 or exclusive brands)
+    if (
+      ['porsche', 'ferrari', 'lamborghini', 'maserati', 'bentley', 'rolls-royce', 'aston martin'].includes(make) ||
+      price > 150 ||
+      model.includes('911') ||
+      model.includes('f-type')
+    ) {
+      return 'luxury';
+    }
+    
+    // Default to premium for anything else
+    return 'premium';
+  };
 
   // Filter and sort cars
   const filteredCars = useMemo(() => {
@@ -111,11 +190,11 @@ export default function Cars() {
     }
     
     if (filters.minPrice) {
-      filtered = filtered.filter(car => car.pricePerDay >= parseFloat(filters.minPrice));
+      filtered = filtered.filter(car => parseFloat(car.pricePerDay.toString()) >= parseFloat(filters.minPrice));
     }
     
     if (filters.maxPrice) {
-      filtered = filtered.filter(car => car.pricePerDay <= parseFloat(filters.maxPrice));
+      filtered = filtered.filter(car => parseFloat(car.pricePerDay.toString()) <= parseFloat(filters.maxPrice));
     }
     
     if (filters.fuelType) {
@@ -126,11 +205,20 @@ export default function Cars() {
       filtered = filtered.filter(car => car.transmission === filters.transmission);
     }
     
+    if (filters.seats) {
+      filtered = filtered.filter(car => car.seats.toString() === filters.seats);
+    }
+    
+    // Category filtering based on derived category
+    if (filters.category) {
+      filtered = filtered.filter(car => getCarCategory(car) === filters.category);
+    }
+    
     // Sort cars
     filtered.sort((a, b) => {
       switch (sortBy) {
         case 'price':
-          return a.pricePerDay - b.pricePerDay;
+          return parseFloat(a.pricePerDay.toString()) - parseFloat(b.pricePerDay.toString());
         case 'name':
           return a.make.localeCompare(b.make);
         case 'rating':
@@ -159,6 +247,7 @@ export default function Cars() {
   };
 
   const clearFilters = () => {
+    // Clear the filters state
     setFilters({
       location: '',
       minPrice: '',
@@ -166,14 +255,46 @@ export default function Cars() {
       fuelType: '',
       transmission: '',
       startDate: '',
-      endDate: ''
+      endDate: '',
+      category: '',
+      seats: ''
     });
+    
+    // Update the URL to remove query parameters
+    const newUrl = window.location.pathname; // Just the path without query params
+    window.history.pushState({}, '', newUrl);
+    
+    // Trigger custom event to notify of URL change
+    window.dispatchEvent(new CustomEvent('urlchange'));
+    
+    console.log('🧹 CLEAR: Filters cleared and URL updated to:', newUrl);
+  };
+
+  const applyFilters = () => {
+    // Build URL with current filters
+    const urlParams = new URLSearchParams();
+    
+    if (filters.location) urlParams.set('location', filters.location);
+    if (filters.startDate) urlParams.set('startDate', filters.startDate);
+    if (filters.endDate) urlParams.set('endDate', filters.endDate);
+    if (filters.fuelType) urlParams.set('fuelType', filters.fuelType);
+    if (filters.transmission) urlParams.set('transmission', filters.transmission);
+    if (filters.category) urlParams.set('category', filters.category);
+    if (filters.seats) urlParams.set('seats', filters.seats);
+    
+    const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+    window.history.pushState({}, '', newUrl);
+    
+    // Trigger custom event to notify of URL change
+    window.dispatchEvent(new CustomEvent('urlchange'));
+    
+    console.log('🔍 SEARCH: Filters applied and URL updated to:', newUrl);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-mauve-50 via-white to-bleu-50">
       {/* Hero Section with Attractive Image */}
-      <div className="relative h-[70vh] min-h-[500px] overflow-hidden group">
+      <div className="relative h-[60vh] min-h-[400px] overflow-hidden group">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
@@ -211,24 +332,19 @@ export default function Cars() {
             </div>
             
             {/* Search Bar */}
-            <div className="max-w-6xl mx-auto">
-              <div className="card-modern bg-white/95 backdrop-blur-sm p-8 shadow-2xl">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div className="max-w-6xl mx-auto relative z-10 overflow-visible">
+              <div className="card-modern bg-white/95 backdrop-blur-sm p-8 shadow-2xl relative z-20 overflow-visible">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
                   {/* Location */}
-                  <div>
+                  <div className="relative overflow-visible">
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       Where are you going?
                     </label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                      <Input
-                        type="text"
-                        placeholder="Enter city or location"
-                        value={filters.location}
-                        onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                        className="input-modern pl-10"
-                      />
-                    </div>
+                    <LocationPicker
+                      value={filters.location}
+                      onChange={(location) => setFilters(prev => ({ ...prev, location }))}
+                      placeholder="Enter city or location"
+                    />
                   </div>
 
                   {/* Start Date */}
@@ -240,7 +356,7 @@ export default function Cars() {
                       type="date"
                       value={filters.startDate}
                       onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                      className="input-modern"
+                      className="input-modern h-12"
                     />
                   </div>
 
@@ -253,7 +369,7 @@ export default function Cars() {
                       type="date"
                       value={filters.endDate}
                       onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                      className="input-modern"
+                      className="input-modern h-12"
                     />
                   </div>
 
@@ -262,28 +378,29 @@ export default function Cars() {
                     <label className="text-sm font-medium text-gray-700 mb-2 block">
                       Price Range
                     </label>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <Input
                         type="number"
-                        placeholder="Min price"
+                        placeholder="Min"
                         value={filters.minPrice}
                         onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
-                        className="input-modern"
+                        className="input-modern h-12"
                       />
                       <Input
                         type="number"
-                        placeholder="Max price"
+                        placeholder="Max"
                         value={filters.maxPrice}
                         onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
-                        className="input-modern"
+                        className="input-modern h-12"
                       />
                     </div>
                   </div>
 
                   {/* Search Button */}
-                  <div className="flex items-end">
+                  <div>
                     <button
-                      className="btn-primary w-full py-3 px-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                      onClick={applyFilters}
+                      className="btn-primary w-full h-12 px-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                     >
                       <Search className="w-5 h-5" />
                       Search Cars
@@ -296,7 +413,7 @@ export default function Cars() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-12 mt-8">
         {/* Results Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
           <div className="mb-6 md:mb-0">
@@ -306,7 +423,8 @@ export default function Cars() {
             {carsData && (
               <div className="flex items-center gap-4">
                 <p className="text-lg text-gray-700 font-medium">
-                  <span className="font-semibold text-mauve-600">{carsData.total}</span> vehicles found
+                  <span className="font-semibold text-mauve-600">{filteredCars.length}</span> vehicles found
+                  <span className="text-sm text-gray-500">({carsData.total} total)</span>
                 </p>
                 {hasActiveFilters && (
                   <Badge variant="secondary" className="bg-mauve-100 text-mauve-800">

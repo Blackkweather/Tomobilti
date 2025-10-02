@@ -152,6 +152,10 @@ export const carApi = {
     return apiRequest(`${API_BASE}/cars/${id}`, {
       method: 'DELETE'
     });
+  },
+
+  getOwnerCars: async (ownerId: string) => {
+    return apiRequest(`${API_BASE}/cars/owner/${ownerId}`);
   }
 };
 

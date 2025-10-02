@@ -1,4 +1,4 @@
-import { createServer } from 'http';
+import type { Express } from 'express';
 import { registerAdminRoutes } from './routes/admin';
 import { storage } from './storage';
 import { 
@@ -79,7 +79,7 @@ const agentService = new CarRentalAgentService({
   maxTokens: 200,
 });
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express): Promise<Express> {
   // Apply security middleware to all routes
   app.use(helmet({
     contentSecurityPolicy: {
@@ -1404,6 +1404,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ status: "ok", message: "Tomobilto API is running" });
   });
 
-  const httpServer = createServer(app);
-  return httpServer;
+  // Routes registered successfully
+  return app;
 }
