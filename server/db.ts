@@ -115,11 +115,11 @@ export class DatabaseStorage implements IStorage {
     const conditions = [eq(cars.isAvailable, true)];
 
     // Apply filters
-    if (filters.city) {
+    if (filters.city && filters.city.trim() !== '') {
       conditions.push(like(cars.city, `%${filters.city}%`));
     }
 
-    if (filters.location) {
+    if (filters.location && filters.location.trim() !== '') {
       conditions.push(like(cars.location, `%${filters.location}%`));
     }
 
@@ -127,7 +127,7 @@ export class DatabaseStorage implements IStorage {
       conditions.push(inArray(cars.fuelType, filters.fuelType));
     }
 
-    if (filters.transmission) {
+    if (filters.transmission && filters.transmission.trim() !== '') {
       conditions.push(eq(cars.transmission, filters.transmission));
     }
 
@@ -136,11 +136,11 @@ export class DatabaseStorage implements IStorage {
     }
 
     if (filters.minPrice !== undefined) {
-      conditions.push(gte(cars.pricePerDay, filters.minPrice.toString()));
+      conditions.push(sqlOp`${cars.pricePerDay}::numeric >= ${filters.minPrice}`);
     }
 
     if (filters.maxPrice !== undefined) {
-      conditions.push(lte(cars.pricePerDay, filters.maxPrice.toString()));
+      conditions.push(sqlOp`${cars.pricePerDay}::numeric <= ${filters.maxPrice}`);
     }
 
     // Handle date-based availability filtering

@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import Footer from '../components/Footer';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Award, 
   Star, 
@@ -21,9 +23,21 @@ import {
   Clock,
   ThumbsUp
 } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 
 export default function LoyaltyProgram() {
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Handle join loyalty program with auth check
+  const handleJoinLoyalty = () => {
+    if (!isAuthenticated) {
+      setLocation('/login');
+      return;
+    }
+    // User is authenticated, show success message or redirect to membership
+    alert('Welcome to the ShareWheelz Loyalty Program! You can now start earning points with every rental.');
+  };
   const loyaltyLevels = [
     {
       level: "Bronze",
@@ -234,12 +248,14 @@ export default function LoyaltyProgram() {
               The more you rent, the more you save!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/become-member">
-                <Button size="lg" className="bg-white text-yellow-600 hover:bg-gray-100">
-                  <Crown className="h-5 w-5 mr-2" />
-                  Join Program
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                className="bg-white text-yellow-600 hover:bg-gray-100"
+                onClick={handleJoinLoyalty}
+              >
+                <Crown className="h-5 w-5 mr-2" />
+                {isAuthenticated ? 'Join Program' : 'Login to Join'}
+              </Button>
               <Link href="/membership-benefits">
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-yellow-600">
                   <Star className="h-5 w-5 mr-2" />
@@ -440,12 +456,14 @@ export default function LoyaltyProgram() {
               Join our loyalty program and start saving on every rental
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/become-member">
-                <Button size="lg" className="bg-white text-yellow-600 hover:bg-gray-100">
-                  <Trophy className="h-5 w-5 mr-2" />
-                  Join Loyalty Program
-                </Button>
-              </Link>
+              <Button 
+                size="lg" 
+                className="bg-white text-yellow-600 hover:bg-gray-100"
+                onClick={handleJoinLoyalty}
+              >
+                <Trophy className="h-5 w-5 mr-2" />
+                {isAuthenticated ? 'Join Loyalty Program' : 'Login to Join'}
+              </Button>
               <Link href="/cars">
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-yellow-600">
                   <Car className="h-5 w-5 mr-2" />
@@ -456,6 +474,8 @@ export default function LoyaltyProgram() {
           </CardContent>
         </Card>
       </div>
+      
+      <Footer />
     </div>
   );
 }

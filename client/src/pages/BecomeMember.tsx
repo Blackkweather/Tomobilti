@@ -737,17 +737,17 @@ export default function BecomeMember() {
               </p>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
               {qualityServices.map((service, index) => {
                 const Icon = service.icon;
                 return (
-                  <Card key={index} className={`group hover:shadow-xl transition-all duration-300 border-2 ${service.borderColor} ${service.bgColor} hover:scale-105`}>
-                    <CardContent className="p-6 text-center">
-                      <div className={`inline-flex items-center justify-center w-16 h-16 ${service.bgColor} rounded-full mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                        <Icon className={`h-8 w-8 ${service.color}`} />
+                  <Card key={index} className={`group hover:shadow-lg transition-all duration-300 border-2 ${service.borderColor} ${service.bgColor} hover:scale-102`}>
+                    <CardContent className="p-4 text-center">
+                      <div className={`inline-flex items-center justify-center w-12 h-12 ${service.bgColor} rounded-full mb-3 group-hover:scale-105 transition-transform duration-300`}>
+                        <Icon className={`h-6 w-6 ${service.color}`} />
                       </div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-3">{service.title}</h4>
-                      <p className="text-sm text-gray-600 leading-relaxed">{service.description}</p>
+                      <h4 className="text-base font-semibold text-gray-900 mb-2">{service.title}</h4>
+                      <p className="text-xs text-gray-600 leading-relaxed">{service.description}</p>
                     </CardContent>
                   </Card>
                 );

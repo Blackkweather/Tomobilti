@@ -1,6 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import Footer from '../components/Footer';
+import { useAuth } from '../contexts/AuthContext';
 import { 
   Crown, 
   Star, 
@@ -20,9 +22,10 @@ import {
   MessageCircle,
   ThumbsUp,
   Heart,
-  Sparkles
+  Sparkles,
+  CreditCard
 } from 'lucide-react';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 
 interface MembershipBenefitsProps {
   config?: {
@@ -41,61 +44,114 @@ interface MembershipBenefitsProps {
 
 export default function MembershipBenefits(props: any) {
   const { config = {} } = props as MembershipBenefitsProps;
-  // Default configuration
-  const defaultConfig = {
-    currency: '£',
-    platformName: 'ShareWheelz',
-    membershipTiers: [
-      {
-        name: "Basic",
-        price: "Free",
-        description: "Essential features for getting started",
-        features: [
-          "Access to all vehicles",
-          "Basic customer support",
-          "Standard booking process",
-          "Email notifications"
-        ],
-        color: "bg-gray-100 text-gray-800",
-        popular: false
-      },
-      {
-        name: "Premium",
-        price: "£9.99/month",
-        description: "Enhanced experience with exclusive benefits",
-        features: [
-          "Priority customer support",
-          "Exclusive vehicle access",
-          "Free cancellation up to 2 hours",
-          "Earn loyalty points",
-          "Special member discounts",
-          "24/7 roadside assistance"
-        ],
-        color: "bg-blue-100 text-blue-800",
-        popular: true
-      },
-      {
-        name: "Elite",
-        price: "£19.99/month",
-        description: "Ultimate experience with maximum benefits",
-        features: [
-          "VIP customer support",
-          "Access to luxury vehicles",
-          "Free cancellation anytime",
-          "Double loyalty points",
-          "Maximum member discounts",
-          "Personal concierge service",
-          "Free delivery and pickup",
-          "Exclusive member events"
-        ],
-        color: "bg-purple-100 text-purple-800",
-        popular: false
-      }
-    ]
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+
+  // Handle membership plan selection with auth check
+  const handleMembershipClick = (planName: string) => {
+    if (!isAuthenticated) {
+      setLocation('/login');
+      return;
+    }
+    setLocation('/become-member');
   };
 
-  const finalConfig = { ...defaultConfig, ...config };
-  const membershipTiers = finalConfig.membershipTiers;
+  // Handle loyalty program click with auth check
+  const handleLoyaltyClick = () => {
+    if (!isAuthenticated) {
+      setLocation('/login');
+      return;
+    }
+    setLocation('/loyalty-program');
+  };
+  
+  // Same membership plans as BecomeMember page
+  const membershipPlans = [
+    {
+      id: 'purple',
+      name: 'Purple Plan',
+      subtitle: 'Starter Boost',
+      description: 'Perfect for trying out ShareWheelz with real savings',
+      price: 9.99,
+      period: 'month',
+      yearlyPrice: 100,
+      yearlyPeriod: 'year',
+      originalYearlyPrice: 120,
+      yearlySavings: 20,
+      hostFeatures: [
+        '+10% boost in search visibility',
+        '"Starter Member" badge (increases renter trust)'
+      ],
+      renterFeatures: [
+        '5% discount on all rentals',
+        '5% discount on insurance fees per booking',
+        'Earn 1 loyalty point per £1 spent',
+        'Access to weekend-only deals'
+      ],
+      popular: false,
+      color: 'from-purple-500 to-purple-600',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200'
+    },
+    {
+      id: 'gold',
+      name: 'Gold Plan',
+      subtitle: 'Smart Driver',
+      description: 'Best value for frequent users – more bookings for hosts, real savings for renters',
+      price: 19.99,
+      period: 'month',
+      yearlyPrice: 180,
+      yearlyPeriod: 'year',
+      originalYearlyPrice: 240,
+      yearlySavings: 60,
+      hostFeatures: [
+        '5% lower commission on each booking (higher net earnings)',
+        '"Gold Verified Host" badge + premium placement in listings'
+      ],
+      renterFeatures: [
+        '15% discount on all rentals',
+        '10% discount on insurance fees',
+        '1 free rental day after 5 booked days',
+        'Priority customer support',
+        'Double loyalty points (2 per £1 spent)',
+        'Free cancellation up to 24h before trip'
+      ],
+      popular: true,
+      color: 'from-yellow-500 to-yellow-600',
+      bgColor: 'bg-yellow-50',
+      borderColor: 'border-yellow-200'
+    },
+    {
+      id: 'black',
+      name: 'Black Plan',
+      subtitle: 'Elite Mobility',
+      description: 'For serious car owners and frequent renters who want maximum benefits and premium experience',
+      price: 199,
+      period: 'year',
+      monthlyPrice: 40,
+      monthlyPeriod: 'month',
+      yearlySavings: 281,
+      hostFeatures: [
+        '10% lower commission = more money in your pocket',
+        '"Black Elite Host" badge = instant trust & credibility',
+        'Premium placement = more bookings for your car',
+        'Priority support = problems solved faster'
+      ],
+      renterFeatures: [
+        '20% discount on ALL rentals = save on every trip',
+        '15% discount on insurance = cheaper protection',
+        'Priority access to luxury cars = drive the best',
+        'Free upgrades when available = get more for less',
+        '5% cashback on all spending = money back in your account',
+        'Exclusive member events = network with other members',
+        '£25 welcome credit = start saving immediately'
+      ],
+      popular: false,
+      color: 'from-gray-800 to-gray-900',
+      bgColor: 'bg-gray-50',
+      borderColor: 'border-gray-300'
+    }
+  ];
 
   const benefits = [
     {
@@ -210,35 +266,63 @@ export default function MembershipBenefits(props: any) {
           </p>
         </div>
 
-        {/* Membership Tiers */}
+        {/* Membership Plans */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          {membershipTiers.map((tier, index) => (
-            <Card key={index} className={`shadow-lg ${tier.popular ? 'ring-2 ring-blue-500' : ''} relative`}>
-              {tier.popular && (
+          {membershipPlans.map((plan, index) => (
+            <Card key={index} className={`shadow-lg ${plan.popular ? 'ring-2 ring-yellow-500 scale-105 bg-gradient-to-br from-yellow-50 to-orange-50' : plan.bgColor} relative`}>
+              {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-blue-600 text-white px-4 py-1">
+                  <Badge className="bg-yellow-600 text-white px-4 py-1">
                     Most Popular
                   </Badge>
                 </div>
               )}
               <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold">{tier.name}</CardTitle>
-                <div className="text-3xl font-bold text-gray-900 mb-2">{tier.price}</div>
-                <p className="text-gray-600">{tier.description}</p>
+                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                <div className="text-sm text-gray-600 mb-2">{plan.subtitle}</div>
+                <div className="text-3xl font-bold text-gray-900 mb-2">
+                  £{plan.price}/{plan.period}
+                </div>
+                <p className="text-gray-600">{plan.description}</p>
               </CardHeader>
               <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {tier.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center">
-                      <CheckCircle className="h-5 w-5 text-green-600 mr-3 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                {/* Host Features */}
+                <div className="mb-4">
+                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                    <Car className="h-4 w-4 mr-2 text-blue-600" />
+                    For Car Owners
+                  </h4>
+                  <ul className="space-y-2">
+                    {plan.hostFeatures.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start text-sm">
+                        <CheckCircle className="h-4 w-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                {/* Renter Features */}
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
+                    <Users className="h-4 w-4 mr-2 text-green-600" />
+                    For Renters
+                  </h4>
+                  <ul className="space-y-2">
+                    {plan.renterFeatures.map((feature, featureIndex) => (
+                      <li key={featureIndex} className="flex items-start text-sm">
+                        <CheckCircle className="h-4 w-4 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
                 <Button 
-                  className={`w-full ${tier.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'}`}
+                  onClick={() => handleMembershipClick(plan.name)}
+                  className={`w-full ${plan.popular ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 hover:bg-gray-700'}`}
                 >
-                  {tier.name === "Basic" ? "Current Plan" : "Upgrade Now"}
+                  {isAuthenticated ? `Choose ${plan.name}` : 'Login to Choose'}
                 </Button>
               </CardContent>
             </Card>
@@ -312,12 +396,13 @@ export default function MembershipBenefits(props: any) {
               <p className="text-gray-600 mb-4">
                 Earn 1 point for every £1 spent on rentals
               </p>
-              <Link href="/loyalty-program">
-                <Button variant="outline">
-                  Learn More About Loyalty Program
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
+              <Button 
+                variant="outline"
+                onClick={handleLoyaltyClick}
+              >
+                {isAuthenticated ? 'Apply to Loyalty Program' : 'Login to Apply'}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -419,6 +504,8 @@ export default function MembershipBenefits(props: any) {
           </CardContent>
         </Card>
       </div>
+      
+      <Footer />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { 
   MessageSquare, 
   Send, 
@@ -18,7 +19,81 @@ import {
   Check,
   CheckCheck,
   MoreVertical,
-  ArrowLeft
+  ArrowLeft,
+  Search,
+  Filter,
+  Settings,
+  Archive,
+  Pin,
+  Star,
+  Image as ImageIcon,
+  Paperclip,
+  Smile,
+  Mic,
+  Video,
+  Users,
+  Shield,
+  Zap,
+  RefreshCw,
+  Download,
+  Upload,
+  Eye,
+  EyeOff,
+  Trash2,
+  Edit,
+  Copy,
+  Share2,
+  Flag,
+  AlertTriangle,
+  Info,
+  HelpCircle,
+  ExternalLink,
+  ChevronDown,
+  ChevronRight,
+  Maximize2,
+  Minimize2,
+  Plus,
+  Minus,
+  X,
+  Menu,
+  Bell,
+  BellOff,
+  Volume2,
+  VolumeX,
+  Wifi,
+  WifiOff,
+  Battery,
+  BatteryLow,
+  Signal,
+  SignalHigh,
+  SignalLow,
+  SignalZero,
+  Activity,
+  TrendingUp,
+  BarChart3,
+  PieChart,
+  LineChart,
+  Target,
+  Award,
+  Gift,
+  Heart,
+  ThumbsUp,
+  ThumbsDown,
+  MessageCircle,
+  MessageCirclePlus,
+  MessageSquarePlus,
+  MessageSquareText,
+  MessageSquareX,
+  MessageSquareWarning,
+  MessageSquareReply,
+  MessageSquareLock,
+  MessageSquareShare,
+  MessageSquareDashed,
+  MessageSquareHeart,
+  MessageSquarePlusIcon,
+  MessageSquareCode,
+  MessageSquareDot,
+  MessageSquareQuote
 } from 'lucide-react';
 import { useMessaging } from '../contexts/MessagingContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -198,7 +273,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onBack }) => {
                 key={message.id}
                 message={message}
                 isOwn={message.senderId === user?.id}
-                sender={message.sender}
+                sender={{ id: message.senderId, name: 'User' }}
               />
             ))}
             

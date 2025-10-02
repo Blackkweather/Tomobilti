@@ -17,6 +17,7 @@ import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, S
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
+import CarFilterDropdown from './CarFilterDropdown';
 
 export default function Header() {
   const [location, setLocation] = useLocation();
@@ -24,6 +25,7 @@ export default function Header() {
   const { user, logout, loading, isAuthenticated } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [showCarFilter, setShowCarFilter] = useState(false);
 
   // Fetch notifications when user is authenticated
   useEffect(() => {
@@ -101,31 +103,31 @@ export default function Header() {
   const navItems = [
     { 
       href: '/cars', 
-      label: 'Rent',
+      label: 'Rent a Car',
       description: 'Find and book a car easily near you.',
       icon: Car,
       subItems: [
-        { href: '/cars', label: 'Browse Cars', description: 'Search our wide selection' },
-        { href: '/cars?category=luxury', label: 'Luxury Cars', description: 'Premium vehicles' },
-        { href: '/cars?category=electric', label: 'Electric Cars', description: 'Eco-friendly options' },
-        { href: '/cars?category=economy', label: 'Economy Cars', description: 'Budget-friendly rentals' }
+        { href: '/cars', label: 'Browse Cars', description: 'Search our wide selection', isFilterable: true },
+        { href: '/favorites', label: 'My Favorites', description: 'Saved vehicles' }
       ]
     },
     { 
       href: '/add-car-dynamic', 
-      label: 'Earn',
+      label: 'Make Your Car Work For You',
       description: 'List your vehicle and earn money with ease.',
       icon: PoundSterling,
       subItems: [
         { href: '/add-car-dynamic', label: 'List Your Car', description: 'Start earning today' },
         { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
-        { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' }
+        { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' },
+        { href: '/host-guide', label: 'Host Guide', description: 'Tips for successful hosting' },
+        { href: '/car-management', label: 'Manage Cars', description: 'Track your listings' }
       ]
     },
     { 
       href: '/become-member', 
-      label: 'Member',
-      description: '',
+      label: 'Become a Member',
+      description: 'Get access to exclusive benefits and a secure community.',
       icon: Crown,
       subItems: [
         { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
@@ -159,6 +161,35 @@ export default function Header() {
         <nav className="hidden xl:flex items-center gap-1 mr-4 flex-1">
           {navItems.map((item) => {
             const Icon = item.icon;
+            
+            // Special handling for "Rent a Car" with filter dropdown
+            if (item.label === 'Rent a Car') {
+              return (
+                <div key={item.href} className="relative">
+                  <DropdownMenu open={showCarFilter} onOpenChange={setShowCarFilter}>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant={location === item.href ? 'default' : 'ghost'} 
+                        className={`hover:scale-105 transition-all duration-200 flex items-center gap-1 text-sm px-2 ${
+                          location === item.href 
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
+                        }`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                        <ChevronDown className="h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="p-0 border-0 shadow-none bg-transparent" align="start" sideOffset={8}>
+                      <CarFilterDropdown onClose={() => setShowCarFilter(false)} />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              );
+            }
+            
+            // Regular dropdown for other items
             return (
               <DropdownMenu key={item.href}>
                 <DropdownMenuTrigger asChild>
@@ -302,7 +333,15 @@ export default function Header() {
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" sideOffset={8} avoidCollisions={true} forceMount>
+              <DropdownMenuContent 
+                className="w-56" 
+                align="end" 
+                side="bottom"
+                sideOffset={8} 
+                avoidCollisions={true} 
+                forceMount
+                alignOffset={-20}
+              >
                 <div className="flex flex-col space-y-1 p-2">
                   <p className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</p>
                   <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
@@ -338,6 +377,14 @@ export default function Header() {
                     <span>Security</span>
                   </Link>
                 </DropdownMenuItem>
+                {user?.userType === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="flex items-center cursor-pointer">
+                      <Crown className="mr-2 h-4 w-4 text-yellow-500" />
+                      <span>Admin Panel</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 {(user?.userType === 'owner' || user?.userType === 'both') && (
                   <>
                     <DropdownMenuItem asChild>

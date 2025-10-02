@@ -17,7 +17,17 @@ import {
   Fuel, 
   Settings,
   Upload,
-  Image as ImageIcon
+  Image as ImageIcon,
+  TrendingUp,
+  DollarSign,
+  Clock,
+  Star,
+  Filter,
+  Search,
+  MoreHorizontal,
+  BarChart3,
+  Activity,
+  Zap
 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 import Footer from '../components/Footer';
@@ -27,12 +37,15 @@ export default function CarManagement() {
   const queryClient = useQueryClient();
   const { isAuthenticated, user } = useAuth();
   const [selectedCar, setSelectedCar] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [sortBy, setSortBy] = useState('name');
 
   // Fetch owner's cars
   const { data: cars, isLoading, error } = useQuery({
-    queryKey: ['cars', 'owner'],
-    queryFn: () => carApi.getOwnerCars(),
-    enabled: isAuthenticated,
+    queryKey: ['cars', 'owner', user?.id],
+    queryFn: () => carApi.getOwnerCars(user?.id || ''),
+    enabled: isAuthenticated && !!user?.id,
   });
 
   // Delete car mutation
@@ -48,6 +61,41 @@ export default function CarManagement() {
     if (confirm('Are you sure you want to delete this car? This action cannot be undone.')) {
       deleteCarMutation.mutate(carId);
     }
+  };
+
+  // Filter and sort cars
+  const filteredCars = cars?.filter((car: any) => {
+    const matchesSearch = car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         car.model.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesFilter = filterStatus === 'all' || 
+                         (filterStatus === 'active' && car.isActive) ||
+                         (filterStatus === 'inactive' && !car.isActive);
+    
+    return matchesSearch && matchesFilter;
+  }).sort((a: any, b: any) => {
+    switch (sortBy) {
+      case 'name':
+        return a.title.localeCompare(b.title);
+      case 'price':
+        return b.pricePerDay - a.pricePerDay;
+      case 'earnings':
+        return (b.totalEarnings || 0) - (a.totalEarnings || 0);
+      case 'bookings':
+        return (b.totalBookings || 0) - (a.totalBookings || 0);
+      default:
+        return 0;
+    }
+  }) || [];
+
+  // Calculate analytics
+  const analytics = {
+    totalCars: cars?.length || 0,
+    activeCars: cars?.filter((car: any) => car.isActive).length || 0,
+    totalEarnings: cars?.reduce((sum: number, car: any) => sum + (car.totalEarnings || 0), 0) || 0,
+    totalBookings: cars?.reduce((sum: number, car: any) => sum + (car.totalBookings || 0), 0) || 0,
+    averageRating: cars?.reduce((sum: number, car: any) => sum + (car.averageRating || 0), 0) / (cars?.length || 1) || 0
   };
 
   const handleEditCar = (carId: string) => {
@@ -135,6 +183,112 @@ export default function CarManagement() {
         </div>
       </div>
 
+      {/* Analytics Dashboard */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm">Total Cars</p>
+                  <p className="text-2xl font-bold">{analytics.totalCars}</p>
+                </div>
+                <Car className="h-8 w-8 text-blue-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100 text-sm">Active Cars</p>
+                  <p className="text-2xl font-bold">{analytics.activeCars}</p>
+                </div>
+                <Activity className="h-8 w-8 text-green-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100 text-sm">Total Earnings</p>
+                  <p className="text-2xl font-bold">{formatCurrency(analytics.totalEarnings)}</p>
+                </div>
+                <DollarSign className="h-8 w-8 text-purple-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-100 text-sm">Total Bookings</p>
+                  <p className="text-2xl font-bold">{analytics.totalBookings}</p>
+                </div>
+                <Calendar className="h-8 w-8 text-orange-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-yellow-100 text-sm">Avg Rating</p>
+                  <p className="text-2xl font-bold">{analytics.averageRating.toFixed(1)}</p>
+                </div>
+                <Star className="h-8 w-8 text-yellow-200" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Search and Filter Controls */}
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4 items-center">
+              <div className="flex-1 relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <input
+                  type="text"
+                  placeholder="Search cars by name, make, or model..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="all">All Cars</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+                
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="name">Sort by Name</option>
+                  <option value="price">Sort by Price</option>
+                  <option value="earnings">Sort by Earnings</option>
+                  <option value="bookings">Sort by Bookings</option>
+                </select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {!cars || cars.length === 0 ? (
@@ -158,7 +312,7 @@ export default function CarManagement() {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cars.map((car: any) => (
+            {filteredCars.map((car: any) => (
               <Card key={car.id} className="group hover:shadow-lg transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -223,6 +377,22 @@ export default function CarManagement() {
                     <div className="flex items-center text-gray-600">
                       <Car className="h-4 w-4 mr-1" />
                       <span>{car.seats} seats</span>
+                    </div>
+                  </div>
+
+                  {/* Analytics Row */}
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-blue-50 rounded-lg p-2">
+                      <p className="text-xs text-blue-600 font-medium">Earnings</p>
+                      <p className="text-sm font-bold text-blue-800">{formatCurrency(car.totalEarnings || 0)}</p>
+                    </div>
+                    <div className="bg-green-50 rounded-lg p-2">
+                      <p className="text-xs text-green-600 font-medium">Rating</p>
+                      <p className="text-sm font-bold text-green-800">{car.averageRating?.toFixed(1) || 'N/A'}</p>
+                    </div>
+                    <div className="bg-purple-50 rounded-lg p-2">
+                      <p className="text-xs text-purple-600 font-medium">Bookings</p>
+                      <p className="text-sm font-bold text-purple-800">{car.totalBookings || 0}</p>
                     </div>
                   </div>
 
