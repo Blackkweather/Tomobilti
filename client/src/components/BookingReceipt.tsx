@@ -138,7 +138,7 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
 
             <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
               <p>Thank you for using ShareWheelz!</p>
-              <p>For support, contact us at support@sharewheelz.com</p>
+              <p>For support, contact us at support@sharewheelz.uk</p>
             </div>
           </body>
         </html>
