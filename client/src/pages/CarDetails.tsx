@@ -507,93 +507,52 @@ export default function CarDetails() {
               </CardContent>
             </Card>
 
-            {/* Car Details */}
-            <Card>
-              <CardHeader className="pb-4">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">Vehicle Information</CardTitle>
-                  <div className="flex items-center gap-2">
-                    {isAuthenticated && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setIsFavorited(!isFavorited)}
-                        className={`${isFavorited ? 'text-red-500' : 'text-gray-400'} hover:text-red-500`}
-                      >
-                        <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
-                      </Button>
-                    )}
+            {/* Quick Info Section */}
+            <Card className="bg-white shadow-sm rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg mr-3">
+                    <Car className="h-5 w-5 text-blue-600" />
                   </div>
+                  <h2 className="text-lg font-semibold text-gray-900">Quick Info</h2>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Key Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {/* Vehicle Type avec icon */}
-                  <div className="text-center p-4 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-lg">
-                    <div className="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-full mx-auto mb-2">
-                      {(() => {
-                        const vehicleCategory = getVehicleCategory(car.make, car.model);
-                        const CategoryIcon = vehicleCategoryIcons[vehicleCategory as keyof typeof vehicleCategoryIcons] || Award;
-                        return <CategoryIcon className="h-6 w-6 text-indigo-600" />;
-                      })()}
-                    </div>
-                    <div className="text-sm text-gray-600">Vehicle Type</div>
-                    <div className="font-semibold text-gray-900">{determineCarType(car)}</div>
-                  </div>
-                  
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mx-auto mb-2">
-                      <Fuel className="h-6 w-6 text-blue-600" />
-                    </div>
-                    <div className="text-sm text-gray-600">Fuel Type</div>
-                    <div className="font-semibold text-gray-900">{fuelTypeLabels[car.fuelType] || car.fuelType}</div>
-                  </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mx-auto mb-2">
-                      <Settings className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div className="text-sm text-gray-600">Transmission</div>
-                    <div className="font-semibold text-gray-900">{transmissionLabels[car.transmission] || car.transmission}</div>
-                  </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <div className="flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mx-auto mb-2">
-                      <Users className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <div className="text-sm text-gray-600">Seats</div>
-                    <div className="font-semibold text-gray-900">{car.seats}</div>
-                  </div>
-                  <div className="text-center p-4 bg-orange-50 rounded-lg">
-                    <div className="flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full mx-auto mb-2">
-                      <Calendar className="h-6 w-6 text-orange-600" />
-                    </div>
-                    <div className="text-sm text-gray-600">Year</div>
-                    <div className="font-semibold text-gray-900">{car.year}</div>
-                  </div>
+                
+                {/* Location Badge */}
+                <div className="flex items-center mb-4">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 border border-orange-200 text-gray-700">
+                    <MapPin className="h-4 w-4 mr-1 text-red-500" />
+                    {car.location}
+                  </span>
                 </div>
 
-                {/* Detailed Information */}
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="text-sm font-medium text-gray-500 mb-1 block">Make & Model</label>
-                      <p className="text-lg font-semibold text-gray-900">{car.make} {car.model}</p>
+                {/* Key Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < 4 ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
                     </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-500 mb-1 block">Location</label>
-                      <p className="text-lg font-semibold text-gray-900 flex items-center">
-                        <MapPin className="h-5 w-5 mr-2 text-blue-600" />
-                        {car.location}
-                      </p>
-                    </div>
+                    <span className="text-xs text-gray-600 mt-1">Rating</span>
+                    <span className="text-sm font-medium text-gray-900">0.0</span>
                   </div>
                   
-                  {car.description && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500 mb-2 block">Description</label>
-                      <p className="text-gray-700 leading-relaxed">{car.description}</p>
-                    </div>
-                  )}
+                  <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
+                    <Users className="h-5 w-5 text-blue-600" />
+                    <span className="text-xs text-gray-600 mt-1">Seats</span>
+                    <span className="text-sm font-medium text-gray-900">{car.seats}</span>
+                  </div>
+                  
+                  <div className="flex flex-col items-center p-3 bg-gray-50 rounded-lg">
+                    <Fuel className="h-5 w-5 text-green-600" />
+                    <span className="text-xs text-gray-600 mt-1">Fuel</span>
+                    <span className="text-sm font-medium text-gray-900">{fuelTypeLabels[car.fuelType] || car.fuelType}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -719,16 +678,18 @@ export default function CarDetails() {
               />
             </div>
 
-            {/* Owner Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="h-5 w-5 mr-2 text-blue-600" />
-                  Meet Your Host
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
+            {/* Host Profile - Enhanced */}
+            <Card className="bg-white shadow-sm rounded-xl">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="flex items-center justify-center w-8 h-8 bg-purple-100 rounded-lg mr-3">
+                    <Star className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <h2 className="text-lg font-semibold text-gray-900">Hosted by {car.owner?.firstName} {car.owner?.lastName}</h2>
+                </div>
+
+                {/* Host Info */}
+                <div className="flex items-start gap-4 mb-4">
                   <Avatar className="h-16 w-16">
                     <AvatarImage src={car.owner?.profileImage || `https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000) + 1500000000000}/150x150/?portrait`} />
                     <AvatarFallback className="text-lg bg-blue-100 text-blue-600">
@@ -736,10 +697,12 @@ export default function CarDetails() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg text-gray-900">
+                    <h3 className="font-semibold text-lg text-gray-900 mb-2">
                       {car.owner?.firstName} {car.owner?.lastName}
                     </h3>
-                    <div className="flex items-center gap-2 mb-2">
+                    
+                    {/* Rating and Reviews */}
+                    <div className="flex items-center gap-2 mb-3">
                       <div className="flex items-center">
                         {[...Array(5)].map((_, i) => (
                           <Star
@@ -752,40 +715,42 @@ export default function CarDetails() {
                       </div>
                       <span className="text-sm text-gray-600">0.0 (0 reviews)</span>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
+                    
+                    {/* Status Tags */}
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
                         <Shield className="h-3 w-3 mr-1" />
                         Verified Host
-                      </Badge>
-                      <Badge variant="outline" className="text-xs whitespace-nowrap">
+                      </span>
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
                         <Clock className="h-3 w-3 mr-1" />
                         Responds within 1 hour
-                      </Badge>
+                      </span>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <MessageCircle className="h-4 w-4 mr-1" />
+                        Send Message
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Phone className="h-4 w-4 mr-1" />
+                        Call Host
+                      </Button>
                     </div>
                   </div>
                 </div>
-
-                {/* Contact Options */}
-                <div className="space-y-2">
-                  <Button variant="outline" className="w-full justify-start">
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Send Message
-                  </Button>
-                  <Button variant="outline" className="w-full justify-start">
-                    <Phone className="h-4 w-4 mr-2" />
-                    Call Host
-                  </Button>
-                </div>
-
+                
                 {/* Host Stats */}
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                <div className="grid grid-cols-2 gap-6 pt-4 border-t">
                   <div className="text-center">
-                    <div className="text-lg font-semibold text-gray-900">24</div>
-                    <div className="text-xs text-gray-600">Total Rentals</div>
+                    <div className="text-xl font-bold text-gray-900">24</div>
+                    <div className="text-sm text-gray-600">Total Rentals</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold text-gray-900">98%</div>
-                    <div className="text-xs text-gray-600">Response Rate</div>
+                    <div className="text-xl font-bold text-gray-900">98%</div>
+                    <div className="text-sm text-gray-600">Response Rate</div>
                   </div>
                 </div>
               </CardContent>
