@@ -15,7 +15,7 @@ import { z } from "zod";
 import { csrfProtection } from "./middleware/csrf";
 import { sanitizeMiddleware } from "./middleware/sanitize";
 import { EmailService } from "./services/email";
-import { InfobipSMSService } from "./services/infobip-sms";
+import { TwilioSMSService } from "./services/twilio-sms";
 import { CarRentalAgentService } from "./services/car-rental-agent";
 import OpenAIService from "./services/openai";
 import multer from 'multer';
@@ -389,7 +389,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         return res.status(400).json({ error: 'Phone number and message text are required' });
       }
 
-      const result = await InfobipSMSService.sendSMS({ to, text, from });
+      const result = await TwilioSMSService.sendSMS({ to, text, from });
       
       res.json(result);
     } catch (error) {
@@ -406,7 +406,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         return res.status(400).json({ error: 'Phone number and booking details are required' });
       }
 
-      const result = await InfobipSMSService.sendBookingConfirmation(phoneNumber, bookingDetails);
+      const result = await TwilioSMSService.sendBookingConfirmation(phoneNumber, bookingDetails);
       
       res.json(result);
     } catch (error) {
@@ -423,7 +423,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         return res.status(400).json({ error: 'Phone number and booking details are required' });
       }
 
-      const result = await InfobipSMSService.sendBookingReminder(phoneNumber, bookingDetails);
+      const result = await TwilioSMSService.sendBookingReminder(phoneNumber, bookingDetails);
       
       res.json(result);
     } catch (error) {
@@ -440,7 +440,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         return res.status(400).json({ error: 'Phone number and verification code are required' });
       }
 
-      const result = await InfobipSMSService.sendVerificationCode(phoneNumber, code);
+      const result = await TwilioSMSService.sendVerificationCode(phoneNumber, code);
       
       res.json(result);
     } catch (error) {
@@ -457,7 +457,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         return res.status(400).json({ error: 'Message ID is required' });
       }
 
-      const status = await InfobipSMSService.getDeliveryStatus(messageId);
+      const status = await TwilioSMSService.getDeliveryStatus(messageId);
       
       if (!status) {
         return res.status(404).json({ error: 'Message status not found' });
@@ -478,8 +478,8 @@ export async function registerRoutes(app: Express): Promise<Express> {
         return res.status(400).json({ error: 'Phone number is required' });
       }
 
-      const isValid = InfobipSMSService.validatePhoneNumber(phoneNumber);
-      const formatted = InfobipSMSService.formatPhoneNumber(phoneNumber);
+      const isValid = TwilioSMSService.validatePhoneNumber(phoneNumber);
+      const formatted = TwilioSMSService.formatPhoneNumber(phoneNumber);
       
       res.json({
         isValid,
@@ -1402,6 +1402,103 @@ export async function registerRoutes(app: Express): Promise<Express> {
 
   // Register OAuth routes
   app.use('/api/auth/oauth', oauthRoutes);
+
+  // Car API endpoints
+  app.get('/api/cars', async (req, res) => {
+    try {
+      const cars = await storage.getAllCars();
+      res.json({
+        cars,
+        total: cars.length
+      });
+    } catch (error) {
+      console.error('Error fetching cars:', error);
+      res.status(500).json({ error: 'Failed to fetch cars' });
+    }
+  });
+
+  app.get('/api/cars/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      if (!id || !id.match(/^\d+$/)) {
+        return res.status(400).json({ error: 'Invalid car ID format' });
+      }
+      
+      const car = await storage.getCarById(parseInt(id));
+      if (!car) {
+        return res.status(404).json({ error: 'Car not found' });
+      }
+      
+      res.json(car);
+    } catch (error) {
+      console.error('Error fetching car:', error);
+      res.status(500).json({ error: 'Failed to fetch car' });
+    }
+  });
+
+  app.post('/api/cars', authMiddleware, async (req, res) => {
+    try {
+      const user = req.user;
+      const carData = req.body;
+      
+      // Add owner information
+      carData.ownerId = user.id;
+      
+      const car = await storage.createCar(carData);
+      res.status(201).json(car);
+    } catch (error) {
+      console.error('Error creating car:', error);
+      res.status(500).json({ error: 'Failed to create car' });
+    }
+  });
+
+  app.put('/api/cars/:id', authMiddleware, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updates = req.body;
+      const user = req.user;
+      
+      // Check if car exists and user owns it
+      const existingCar = await storage.getCarById(parseInt(id));
+      if (!existingCar) {
+        return res.status(404).json({ error: 'Car not found' });
+      }
+      
+      if (existingCar.ownerId !== user.id) {
+        return res.status(403).json({ error: 'Not authorized to update this car' });
+      }
+      
+      const updatedCar = await storage.updateCar(parseInt(id), updates);
+      res.json(updatedCar);
+    } catch (error) {
+      console.error('Error updating car:', error);
+      res.status(500).json({ error: 'Failed to update car' });
+    }
+  });
+
+  app.delete('/api/cars/:id', authMiddleware, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = req.user;
+      
+      // Check if car exists and user owns it
+      const existingCar = await storage.getCarById(parseInt(id));
+      if (!existingCar) {
+        return res.status(404).json({ error: 'Car not found' });
+      }
+      
+      if (existingCar.ownerId !== user.id) {
+        return res.status(403).json({ error: 'Not authorized to delete this car' });
+      }
+      
+      await storage.deleteCar(parseInt(id));
+      res.json({ message: 'Car deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting car:', error);
+      res.status(500).json({ error: 'Failed to delete car' });
+    }
+  });
 
   // Health check
   app.get("/api/health", (req, res) => {
