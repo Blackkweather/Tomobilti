@@ -276,7 +276,8 @@ export default function CarDetails() {
   
   // Fetch car data from API
   const { data: car, isLoading, error } = useQuery<Car & { owner?: any }>({
-    queryKey: [`/api/cars/${params?.id}`],
+    queryKey: ['car', params?.id],
+    queryFn: () => carApi.getCar(params!.id),
     enabled: !!params?.id,
   });
 
