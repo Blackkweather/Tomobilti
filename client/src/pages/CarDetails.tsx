@@ -344,7 +344,7 @@ export default function CarDetails() {
                         }`}
                       />
                     ))}
-                    <span className="ml-2 text-sm text-gray-600">4.8 (24 reviews)</span>
+                    <span className="ml-2 text-sm text-gray-600">0.0 (0 reviews)</span>
                   </div>
                 </div>
               </div>
@@ -681,7 +681,7 @@ export default function CarDetails() {
                   location: car.location,
                   owner: {
                     name: car.owner?.firstName + ' ' + car.owner?.lastName || 'Owner',
-                    rating: 4.8,
+                    rating: 0,
                     verified: true
                   },
                   images: car.images || [],
@@ -730,7 +730,7 @@ export default function CarDetails() {
                           />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-600">4.8 (24 reviews)</span>
+                      <span className="text-sm text-gray-600">0.0 (0 reviews)</span>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <Badge className="bg-green-100 text-green-700 border-green-200 text-xs">

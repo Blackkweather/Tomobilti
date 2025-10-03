@@ -104,10 +104,10 @@ export default function Fleet() {
   ];
 
   const stats = [
-    { icon: Car, value: '2,500+', label: 'Fleet Vehicles' },
-    { icon: Users, value: '1,200+', label: 'Fleet Partners' },
-    { icon: TrendingUp, value: '35%', label: 'Cost Reduction' },
-    { icon: Star, value: '4.9★', label: 'Customer Rating' }
+    { icon: Car, value: 'Multiple', label: 'Fleet Vehicles' },
+    { icon: Users, value: 'Growing', label: 'Fleet Partners' },
+    { icon: TrendingUp, value: 'Significant', label: 'Cost Reduction' },
+    { icon: Star, value: 'High★', label: 'Customer Rating' }
   ];
 
   return (

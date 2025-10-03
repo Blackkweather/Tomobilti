@@ -89,10 +89,10 @@ export default function Business() {
   ];
 
   const stats = [
-    { value: '500+', label: 'Corporate Clients' },
-    { value: '£2M+', label: 'Cost Savings' },
+    { value: 'Multiple', label: 'Corporate Clients' },
+    { value: 'Significant', label: 'Cost Savings' },
     { value: '99.5%', label: 'Uptime' },
-    { value: '4.9★', label: 'Client Rating' }
+    { value: 'High★', label: 'Client Satisfaction' }
   ];
 
   return (

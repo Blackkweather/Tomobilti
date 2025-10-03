@@ -137,8 +137,7 @@ export default function HostGuide() {
         "Valid UK driving license",
         "Background check verification",
         "Insurance coverage verification",
-        "Responsive communication",
-        "Positive customer reviews"
+        "Responsive communication"
       ]
     },
     {
@@ -386,6 +385,7 @@ export default function HostGuide() {
     </div>
   );
 }
+
 
 
 

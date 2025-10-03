@@ -215,10 +215,10 @@ export default function Home() {
   ];
 
   const stats = [
-    { label: 'Active Users', value: '10,000+', icon: Users },
-    { label: 'Available Cars', value: '2,500+', icon: CarIcon },
-    { label: 'Successful Rentals', value: '50,000+', icon: CheckCircle },
-    { label: 'Average Rating', value: '4.8/5', icon: Star }
+    { label: 'Active Users', value: 'Growing', icon: Users },
+    { label: 'Available Cars', value: 'Multiple', icon: CarIcon },
+    { label: 'Successful Rentals', value: 'Ongoing', icon: CheckCircle },
+    { label: 'Customer Satisfaction', value: 'Excellent', icon: Star }
   ];
 
   const howItWorks = [
@@ -300,29 +300,6 @@ export default function Home() {
     }
   ];
 
-  const testimonials = [
-    {
-      name: 'Sarah Johnson',
-      location: 'London',
-      rating: 5,
-      text: 'ShareWheelz made my weekend trip so easy! The car was perfect and the owner was very helpful.',
-      avatar: 'https://ui-avatars.com/api/?name=Sarah+Johnson&background=4F46E5&color=fff&size=100'
-    },
-    {
-      name: 'Michael Chen',
-      location: 'Manchester',
-      rating: 5,
-      text: 'Great platform! I found an electric car for my business trip. Clean, efficient, and affordable.',
-      avatar: 'https://ui-avatars.com/api/?name=Michael+Chen&background=10B981&color=fff&size=100'
-    },
-    {
-      name: 'Emma Williams',
-      location: 'Birmingham',
-      rating: 5,
-      text: 'As a car owner, ShareWheelz helped me earn extra income. The process is simple and secure.',
-      avatar: 'https://ui-avatars.com/api/?name=Emma+Williams&background=EC4899&color=fff&size=100'
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -451,7 +428,7 @@ export default function Home() {
               <LoadingSpinner />
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
               {carsData?.cars?.slice(0, 6).map((car: Car) => (
                 <CarCard key={car.id} car={car} />
               ))}
@@ -603,45 +580,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              What Our Users Say
-            </h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Join thousands of satisfied customers who have discovered the convenience of Share Wheelz.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
-                <CardContent className="p-8">
-                  <div className="flex items-center mb-6">
-                    <img 
-                      src={testimonial.avatar} 
-                      alt={testimonial.name}
-                      className="w-12 h-12 rounded-full mr-4 object-cover"
-                    />
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                      <p className="text-sm text-gray-600 font-medium">{testimonial.location}</p>
-                    </div>
-                  </div>
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-gray-700 leading-relaxed italic font-medium">"{testimonial.text}"</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white relative overflow-hidden">
@@ -679,101 +617,101 @@ export default function Home() {
       {/* Membership Popup */}
       {showMembershipPopup && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-300"
           onClick={handleCloseMembershipPopup}
         >
           <div 
-            className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300"
+            className="bg-white rounded-xl sm:rounded-2xl max-w-sm sm:max-w-lg w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="relative p-8 text-center border-b border-gray-100">
+            <div className="relative p-4 sm:p-8 text-center border-b border-gray-100">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCloseMembershipPopup}
-                className="absolute top-4 right-4 h-8 w-8 p-0 hover:bg-gray-100"
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 h-8 w-8 p-0 hover:bg-gray-100"
               >
                 <X className="h-4 w-4" />
               </Button>
               
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
-                <Crown className="h-8 w-8 text-white" />
+              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-3 sm:mb-4">
+                <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl sm:text-3xl font-bold text-gray-900 mb-2">
                 Unlock Exclusive Benefits
               </h2>
-              <h3 className="text-xl font-semibold text-blue-600 mb-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">
                 Become a Member Today!
               </h3>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 Join our secure community and enjoy premium perks designed for both car owners and renters.
               </p>
             </div>
 
             {/* Content */}
-            <div className="p-8 space-y-6">
+            <div className="p-4 sm:p-8 space-y-4 sm:space-y-6">
               {/* For Car Owners */}
-              <div className="bg-green-50 rounded-xl p-6 border border-green-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
-                    <PoundSterling className="h-5 w-5 text-white" />
+              <div className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-green-200">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center">
+                    <PoundSterling className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
-                  <h4 className="text-lg font-semibold text-green-800">For Car Owners</h4>
+                  <h4 className="text-base sm:text-lg font-semibold text-green-800">For Car Owners</h4>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm">Earn passive income</span>
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">Earn passive income</span>
                   </div>
                   <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm">Full insurance coverage</span>
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">Full insurance coverage</span>
                   </div>
                   <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm">Verified renters only</span>
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">Verified renters only</span>
                   </div>
                 </div>
               </div>
 
               {/* For Renters */}
-              <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                    <CarIcon className="h-5 w-5 text-white" />
+              <div className="bg-blue-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-blue-200">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    <CarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
-                  <h4 className="text-lg font-semibold text-blue-800">For Renters</h4>
+                  <h4 className="text-base sm:text-lg font-semibold text-blue-800">For Renters</h4>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-blue-700">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm">Affordable prices</span>
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">Affordable prices</span>
                   </div>
                   <div className="flex items-center gap-2 text-blue-700">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm">Nearby cars</span>
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">Nearby cars</span>
                   </div>
                   <div className="flex items-center gap-2 text-blue-700">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="text-sm">24/7 support & discount on insurance</span>
+                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">24/7 support & discount on insurance</span>
                   </div>
                 </div>
               </div>
 
               {/* Trust Badges */}
-              <div className="flex items-center justify-center gap-6 py-4 border-t border-b border-gray-200">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Shield className="h-4 w-4 text-green-500" />
-                    <span>Discount on Insurance</span>
-                  </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <MessageCircle className="h-4 w-4 text-blue-500" />
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 py-3 sm:py-4 border-t border-b border-gray-200">
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                  <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
+                  <span>Discount on Insurance</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                  <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
                   <span>24/7 Support</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <Lock className="h-4 w-4 text-purple-500" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                  <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500" />
                   <span>Secure Community</span>
                 </div>
               </div>
@@ -781,18 +719,18 @@ export default function Home() {
               {/* CTA Button */}
               <Link href="/become-member">
                 <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
                   onClick={handleCloseMembershipPopup}
                 >
-                  <Crown className="h-5 w-5 mr-2" />
+                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                   Join Now
-                  <ArrowRight className="h-5 w-5 ml-2" />
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
                 </Button>
               </Link>
 
               {/* Additional Info */}
               <div className="text-center text-sm text-gray-500">
-                <p>Join thousands of satisfied members</p>
+                <p>Join our growing community of satisfied members</p>
                 <p className="mt-1">Cancel anytime • No hidden fees</p>
               </div>
             </div>

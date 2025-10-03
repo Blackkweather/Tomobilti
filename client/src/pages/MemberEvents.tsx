@@ -159,29 +159,6 @@ export default function MemberEvents() {
     }
   ];
 
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      membership: "Elite",
-      event: "Luxury Car Showcase",
-      text: "The luxury car showcase was incredible! I got to test drive cars I never thought I'd have access to. The event was beautifully organized and the staff were amazing.",
-      avatar: "SJ"
-    },
-    {
-      name: "Michael Chen",
-      membership: "Premium",
-      event: "Member Networking Mixer",
-      text: "Great networking event! I met so many interesting people and made valuable connections. The atmosphere was relaxed and welcoming.",
-      avatar: "MC"
-    },
-    {
-      name: "Emma Williams",
-      membership: "Gold",
-      event: "Photography Workshop",
-      text: "The photography workshop was fantastic! I learned so much about car photography and the instructor was very knowledgeable and patient.",
-      avatar: "EW"
-    }
-  ];
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -321,36 +298,6 @@ export default function MemberEvents() {
           </CardContent>
         </Card>
 
-        {/* Member Testimonials */}
-        <Card className="shadow-lg mb-12">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Heart className="h-6 w-6 mr-2 text-red-600" />
-              What Members Say
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="bg-gray-50 p-6 rounded-lg">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-3">
-                      {testimonial.avatar}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                      <div className="text-sm text-gray-600">{testimonial.event}</div>
-                      <Badge className="mt-1 bg-purple-100 text-purple-800">
-                        {testimonial.membership}
-                      </Badge>
-                    </div>
-                  </div>
-                  <p className="text-gray-700 text-sm italic">"{testimonial.text}"</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Event Calendar */}
         <Card className="shadow-lg mb-12">
@@ -414,6 +361,7 @@ export default function MemberEvents() {
     </div>
   );
 }
+
 
 
 

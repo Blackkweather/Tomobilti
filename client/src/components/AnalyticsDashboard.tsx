@@ -75,86 +75,86 @@ export default function AnalyticsDashboard() {
       // Mock data - replace with actual API response
       const mockData: AnalyticsData = {
         overview: {
-          totalRevenue: 125000,
-          totalBookings: 342,
-          averageRating: 4.7,
-          activeCars: 28,
-          revenueGrowth: 12.5,
-          bookingGrowth: 8.3,
-          ratingGrowth: 2.1,
+          totalRevenue: 0,
+          totalBookings: 0,
+          averageRating: 0,
+          activeCars: 0,
+          revenueGrowth: 0,
+          bookingGrowth: 0,
+          ratingGrowth: 0,
           carGrowth: 15.2
         },
         revenue: {
           daily: Array.from({ length: 30 }, (_, i) => ({
             date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            amount: Math.floor(Math.random() * 5000) + 1000
+            amount: 0
           })),
           monthly: [
-            { month: 'Jan', amount: 15000 },
-            { month: 'Feb', amount: 18000 },
-            { month: 'Mar', amount: 22000 },
-            { month: 'Apr', amount: 19000 },
-            { month: 'May', amount: 25000 },
-            { month: 'Jun', amount: 28000 }
+            { month: 'Jan', amount: 0 },
+            { month: 'Feb', amount: 0 },
+            { month: 'Mar', amount: 0 },
+            { month: 'Apr', amount: 0 },
+            { month: 'May', amount: 0 },
+            { month: 'Jun', amount: 0 }
           ],
           yearly: [
-            { year: '2021', amount: 120000 },
-            { year: '2022', amount: 150000 },
-            { year: '2023', amount: 180000 },
-            { year: '2024', amount: 125000 }
+            { year: '2021', amount: 0 },
+            { year: '2022', amount: 0 },
+            { year: '2023', amount: 0 },
+            { year: '2024', amount: 0 }
           ]
         },
         bookings: {
           status: [
-            { status: 'completed', count: 280, percentage: 82 },
-            { status: 'upcoming', count: 35, percentage: 10 },
-            { status: 'cancelled', count: 27, percentage: 8 }
+            { status: 'completed', count: 0, percentage: 0 },
+            { status: 'upcoming', count: 0, percentage: 0 },
+            { status: 'cancelled', count: 0, percentage: 0 }
           ],
           monthly: [
-            { month: 'Jan', count: 45 },
-            { month: 'Feb', count: 52 },
-            { month: 'Mar', count: 68 },
-            { month: 'Apr', count: 58 },
-            { month: 'May', count: 72 },
-            { month: 'Jun', count: 78 }
+            { month: 'Jan', count: 0 },
+            { month: 'Feb', count: 0 },
+            { month: 'Mar', count: 0 },
+            { month: 'Apr', count: 0 },
+            { month: 'May', count: 0 },
+            { month: 'Jun', count: 0 }
           ],
           topCars: [
-            { carId: '1', title: 'BMW 3 Series', bookings: 45, revenue: 18000 },
-            { carId: '2', title: 'Mercedes A-Class', bookings: 38, revenue: 15200 },
-            { carId: '3', title: 'Tesla Model 3', bookings: 32, revenue: 19200 },
-            { carId: '4', title: 'Audi A4', bookings: 28, revenue: 14000 },
-            { carId: '5', title: 'Volkswagen Golf', bookings: 25, revenue: 10000 }
+            { carId: '1', title: 'No bookings yet', bookings: 0, revenue: 0 },
+            { carId: '2', title: 'No bookings yet', bookings: 0, revenue: 0 },
+            { carId: '3', title: 'No bookings yet', bookings: 0, revenue: 0 },
+            { carId: '4', title: 'No bookings yet', bookings: 0, revenue: 0 },
+            { carId: '5', title: 'No bookings yet', bookings: 0, revenue: 0 }
           ]
         },
         users: {
           newUsers: Array.from({ length: 30 }, (_, i) => ({
             date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            count: Math.floor(Math.random() * 10) + 1
+            count: 0
           })),
           userTypes: [
-            { type: 'renter', count: 1200, percentage: 65 },
-            { type: 'owner', count: 450, percentage: 25 },
-            { type: 'both', count: 180, percentage: 10 }
+            { type: 'renter', count: 0, percentage: 0 },
+            { type: 'owner', count: 0, percentage: 0 },
+            { type: 'both', count: 0, percentage: 0 }
           ],
           topLocations: [
-            { location: 'Casablanca', users: 320 },
-            { location: 'Rabat', users: 280 },
-            { location: 'Marrakech', users: 250 },
-            { location: 'Fez', users: 180 },
-            { location: 'Tangier', users: 150 }
+            { location: 'No data yet', users: 0 },
+            { location: 'No data yet', users: 0 },
+            { location: 'No data yet', users: 0 },
+            { location: 'No data yet', users: 0 },
+            { location: 'No data yet', users: 0 }
           ]
         },
         performance: {
           pageViews: [
-            { page: 'Home', views: 12500 },
-            { page: 'Cars', views: 8900 },
-            { page: 'Car Details', views: 5600 },
-            { page: 'Booking', views: 2100 },
-            { page: 'Dashboard', views: 1800 }
+            { page: 'Home', views: 0 },
+            { page: 'Cars', views: 0 },
+            { page: 'Car Details', views: 0 },
+            { page: 'Booking', views: 0 },
+            { page: 'Dashboard', views: 0 }
           ],
-          conversionRate: 3.2,
-          averageSessionDuration: 4.5,
-          bounceRate: 28.5
+          conversionRate: 0,
+          averageSessionDuration: 0,
+          bounceRate: 0
         }
       };
       
@@ -523,6 +523,7 @@ export default function AnalyticsDashboard() {
     </div>
   );
 }
+
 
 
 

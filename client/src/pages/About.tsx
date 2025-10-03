@@ -8,10 +8,10 @@ import { useAuth } from "../contexts/AuthContext";
 export default function About() {
   const { isAuthenticated } = useAuth();
   const stats = [
-    { icon: Users, label: "Active Users", value: "10,000+" },
-    { icon: Car, label: "Available Vehicles", value: "2,500+" },
-    { icon: Shield, label: "Secure Rentals", value: "50,000+" },
-    { icon: Award, label: "Average Rating", value: "4.8/5" }
+    { icon: Users, label: "Active Users", value: "Growing" },
+    { icon: Car, label: "Available Vehicles", value: "Multiple" },
+    { icon: Shield, label: "Secure Rentals", value: "Ongoing" },
+    { icon: Award, label: "Customer Satisfaction", value: "High" }
   ];
 
   const team = [

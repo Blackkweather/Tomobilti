@@ -173,13 +173,13 @@ export default function Profile() {
     lastActiveAt: new Date().toISOString(),
     preferences,
     stats: {
-      totalBookings: 24,
-      totalEarnings: 12500,
-      averageRating: 4.8,
-      totalReviews: 18,
+      totalBookings: 0,
+      totalEarnings: 0,
+      averageRating: 0,
+      totalReviews: 0,
       memberSince: '2023-01-15',
-      carsOwned: 2,
-      tripsCompleted: 24,
+      carsOwned: 0,
+      tripsCompleted: 0,
     }
   };
 
@@ -485,7 +485,7 @@ export default function Profile() {
                         </div>
                         <div>
                           <p className="text-sm font-medium">Top Rated Host</p>
-                          <p className="text-xs text-gray-500">4.8+ average rating</p>
+                          <p className="text-xs text-gray-500">0.0+ average rating</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">

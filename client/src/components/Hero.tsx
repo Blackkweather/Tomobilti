@@ -53,10 +53,10 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
   }, [heroImages.length]);
 
   const quickStats = [
-    { icon: Car, label: '2,500+ Cars', value: 'Available' },
+    { icon: Car, label: 'Multiple Cars', value: 'Available' },
     { icon: Shield, label: '100% Secure', value: 'Payments' },
     { icon: Clock, label: '24/7', value: 'Support' },
-    { icon: Star, label: '4.8/5', value: 'Rating' }
+    { icon: Star, label: 'Excellent', value: 'Service' }
   ];
 
   return (
@@ -92,7 +92,7 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
           <div className="flex justify-center mb-8">
             <Badge className="bg-white/20 text-white border-white/30 px-6 py-2 text-sm font-medium backdrop-blur-sm">
               <Shield className="w-4 h-4 mr-2" />
-              Trusted by 10,000+ Users
+              Trusted by Growing Community
             </Badge>
           </div>
 

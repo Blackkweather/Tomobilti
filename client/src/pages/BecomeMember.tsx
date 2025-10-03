@@ -247,36 +247,6 @@ export default function BecomeMember() {
     }
   ];
 
-  // Enhanced testimonials
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      role: "Premium Member & Car Owner",
-      location: "London",
-      content: "The ShareWheelz membership has been incredible! I'm earning £400+ monthly from my car, and the premium support is outstanding. The insurance discount saves me money every month.",
-      rating: 5,
-      avatar: "https://ui-avatars.com/api/?name=Sarah+Johnson&background=4F46E5&color=fff&size=100",
-      highlight: "Earns £400+/month"
-    },
-    {
-      name: "Michael Chen",
-      role: "Premium Member",
-      location: "Manchester",
-      content: "As a frequent renter, the membership pays for itself. I save 15% on every rental and the loyalty points add up quickly. The insurance discount is a huge bonus!",
-      rating: 5,
-      avatar: "https://ui-avatars.com/api/?name=Michael+Chen&background=10B981&color=fff&size=100",
-      highlight: "Saves £200+/month"
-    },
-    {
-      name: "Emma Williams",
-      role: "Basic Member",
-      location: "Birmingham",
-      content: "Even the basic membership offers great value. The member-only vehicles are fantastic, and I love the priority booking feature. Highly recommended!",
-      rating: 5,
-      avatar: "https://ui-avatars.com/api/?name=Emma+Williams&background=EC4899&color=fff&size=100",
-      highlight: "5-star experience"
-    }
-  ];
 
   // Our Quality Services cards
   const qualityServices = [
@@ -471,7 +441,7 @@ export default function BecomeMember() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Why Choose ShareWheelz Membership?</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Join thousands of satisfied members who are earning more and saving more with our exclusive benefits
+              Join our growing community of satisfied members who are earning more and saving more with our exclusive benefits
             </p>
           </div>
 
@@ -853,48 +823,6 @@ export default function BecomeMember() {
         </div>
       </section>
 
-      {/* Enhanced Testimonials */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">What Our Members Say</h2>
-            <p className="text-xl text-gray-600">Real stories from real members who are earning and saving more</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white hover:scale-105">
-                <CardContent className="p-8">
-                  {/* Rating */}
-                  <div className="flex justify-center mb-6">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <StarIcon key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  
-                  {/* Content */}
-                  <p className="text-gray-700 mb-6 italic text-center leading-relaxed">"{testimonial.content}"</p>
-                  
-                  {/* Author */}
-                  <div className="text-center">
-                    <img 
-                      src={testimonial.avatar} 
-                      alt={testimonial.name}
-                      className="w-16 h-16 rounded-full mx-auto mb-4 object-cover"
-                    />
-                    <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-600 mb-2">{testimonial.role}</div>
-                    <div className="text-sm text-gray-500 mb-3">{testimonial.location}</div>
-                    <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                      {testimonial.highlight}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Enhanced CTA Section */}
       <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white relative overflow-hidden">
@@ -904,21 +832,21 @@ export default function BecomeMember() {
             Ready to Transform Your Car Sharing Experience?
           </h2>
           <p className="text-xl mb-8 text-white/90 max-w-3xl mx-auto">
-            Join thousands of satisfied members who are earning more and saving more. Start your membership today and unlock exclusive benefits.
+            Join our growing community of satisfied members who are earning more and saving more. Start your membership today and unlock exclusive benefits.
           </p>
           
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-white mb-2">10,000+</div>
+              <div className="text-3xl font-bold text-white mb-2">Growing</div>
               <div className="text-white/80">Active Members</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white mb-2">£500+</div>
+              <div className="text-3xl font-bold text-white mb-2">Variable</div>
               <div className="text-white/80">Average Monthly Earnings</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-white mb-2">15%</div>
+              <div className="text-3xl font-bold text-white mb-2">Significant</div>
               <div className="text-white/80">Average Savings</div>
             </div>
           </div>
@@ -967,17 +895,17 @@ export default function BecomeMember() {
       {/* Payment Confirmation Modal */}
       {showPaymentModal && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
           onClick={handleCloseModal}
         >
           <div 
-            className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-xl sm:rounded-2xl max-w-sm sm:max-w-md w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {paymentStep === 'confirm' && (
               <>
-                <div className="flex items-center justify-between p-6 border-b">
-                  <h3 className="text-xl font-semibold">Confirm Your Membership</h3>
+                <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+                  <h3 className="text-lg sm:text-xl font-semibold">Confirm Your Membership</h3>
                   <Button
                     variant="ghost"
                     size="sm"
