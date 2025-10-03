@@ -332,11 +332,11 @@ export default function Cars() {
             </div>
             
             {/* Search Bar */}
-            <div className="max-w-4xl mx-auto relative z-10">
-              <div className="card-modern bg-white/95 backdrop-blur-sm p-6 rounded-2xl shadow-2xl border border-white/20">
-                <div className="space-y-6">
+            <div className="max-w-4xl mx-auto relative z-10 px-4">
+              <div className="card-modern bg-white/95 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-2xl border border-white/20">
+                <div className="space-y-4 sm:space-y-6">
                   {/* First Row - Location and Dates */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                     {/* Location */}
                     <div className="relative">
                       <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -358,7 +358,7 @@ export default function Cars() {
                         type="date"
                         value={filters.startDate}
                         onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                        className="input-modern h-12"
+                        className="input-modern h-10 sm:h-12 text-sm sm:text-base"
                       />
                     </div>
 
@@ -371,44 +371,45 @@ export default function Cars() {
                         type="date"
                         value={filters.endDate}
                         onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                        className="input-modern h-12"
+                        className="input-modern h-10 sm:h-12 text-sm sm:text-base"
                       />
                     </div>
                   </div>
 
                   {/* Second Row - Price Range and Search */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 gap-4 items-end">
                     {/* Price Range */}
-                    <div className="md:col-span-2">
+                    <div className="lg:col-span-2">
                       <label className="text-sm font-medium text-gray-700 mb-2 block">
                         Price Range (£ per day)
                       </label>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         <Input
                           type="number"
                           placeholder="Min Price"
                           value={filters.minPrice}
                           onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
-                          className="input-modern h-12"
+                          className="input-modern h-10 sm:h-12 text-sm sm:text-base"
                         />
                         <Input
                           type="number"
                           placeholder="Max Price"
                           value={filters.maxPrice}
                           onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
-                          className="input-modern h-12"
+                          className="input-modern h-10 sm:h-12 text-sm sm:text-base"
                         />
                       </div>
                     </div>
 
                     {/* Search Button */}
-                    <div>
+                    <div className="sm:mt-0 mt-4">
                       <button
                         onClick={applyFilters}
-                        className="btn-primary w-full h-12 px-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                        className="btn-primary w-full h-10 sm:h-12 px-4 sm:px-6 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                       >
-                        <Search className="w-5 h-5" />
-                        Search Cars
+                        <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <span className="hidden sm:inline">Search Cars</span>
+                        <span className="sm:hidden">Search</span>
                       </button>
                     </div>
                   </div>
