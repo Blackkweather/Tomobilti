@@ -13,7 +13,7 @@ import {
 } from './ui/dropdown-menu';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin, ChevronDown, Crown, MessageCircle, HelpCircle, Headphones, PoundSterling } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin, ChevronDown, Crown, MessageCircle, HelpCircle, Headphones, PoundSterling, PhoneCall, Wrench, Phone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
@@ -133,6 +133,21 @@ export default function Header() {
         { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
         { href: '/membership-benefits', label: 'Benefits', description: 'See all perks' },
         { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' }
+      ]
+    },
+    { 
+      href: '/support', 
+      label: 'Customer Support',
+      description: 'Get help, roadside assistance and customer service.',
+      icon: Headphones,
+      subItems: [
+        { href: '/roadside-assistance', label: 'Roadside Assistance', description: '24/7 emergency help' },
+        { href: '/live-chat', label: 'Live Chat', description: 'Chat with our support team' },
+        { href: '/support', label: 'Help Center', description: 'Find answers to common questions' },
+        { href: '/faq', label: 'FAQ', description: 'Frequently asked questions' },
+        { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
+        { href: '/safety', label: 'Safety Info', description: 'Important safety guidelines' },
+        { href: '/quality-guarantee', label: 'Quality Guarantee', description: 'Our quality promise' }
       ]
     },
   ];
