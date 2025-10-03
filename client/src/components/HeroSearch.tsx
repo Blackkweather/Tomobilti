@@ -70,84 +70,88 @@ export default function HeroSearch({ onDatesChange, initialDates }: HeroSearchPr
   };
 
   return (
-    <div className="relative z-10">
-      <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl max-w-4xl mx-auto p-4 md:p-6 relative z-10 touch-manipulation">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-end">
+    <div className="relative z-10 px-4">
+      <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg max-w-sm mx-auto p-3 sm:max-w-4xl sm:p-6 sm:rounded-xl relative z-10 touch-manipulation">
+        <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-4 sm:items-end">
           {/* Location */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <MapPin className="h-4 w-4" />
-              <span>Location</span>
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-1 sm:gap-2">
+              <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Location</span>
+              <span className="sm:hidden">Where</span>
             </label>
             <Input
-              placeholder="London, Manchester, Birmingham..."
+              placeholder="Enter location..."
               value={searchLocation}
               onChange={(e) => setSearchLocation(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
+              className="w-full px-2 sm:px-3 py-1.5 sm:py-2 h-8 sm:h-10 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
             />
           </div>
 
           {/* Start Date */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <CalendarIcon className="h-4 w-4" />
-              <span>Start Date</span>
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-1 sm:gap-2">
+              <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">Start Date</span>
+              <span className="sm:hidden">From</span>
             </label>
             <Button
               variant="outline"
               onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full justify-start h-10 sm:h-10 text-left touch-manipulation min-h-[44px] text-sm"
+              className="w-full justify-start h-8 sm:h-10 text-left touch-manipulation text-xs sm:text-sm border-gray-300"
             >
-              <CalendarIcon className="h-4 w-4 mr-2" />
+              <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               {selectedDates.start ? (
-                <span>
+                <span className="text-xs sm:text-sm">
                   {selectedDates.start.toLocaleDateString('en-US', { 
                     day: 'numeric', 
                     month: 'short' 
                   })}
                 </span>
               ) : (
-                <span className="text-gray-600">Start Date</span>
+                <span className="text-gray-600 text-xs sm:text-sm">Start Date</span>
               )}
             </Button>
           </div>
 
           {/* End Date */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <CalendarIcon className="h-4 w-4" />
-              <span>End Date</span>
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="text-xs sm:text-sm font-medium text-gray-700 flex items-center gap-1 sm:gap-2">
+              <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden sm:inline">End Date</span>
+              <span className="sm:hidden">To</span>
             </label>
             <Button
               variant="outline"
               onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full justify-start h-10 sm:h-10 text-left text-sm"
+              className="w-full justify-start h-8 sm:h-10 text-left text-xs sm:text-sm border-gray-300"
             >
-              <CalendarIcon className="h-4 w-4 mr-2" />
+              <CalendarIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               {selectedDates.end ? (
-                <span>
+                <span className="text-xs sm:text-sm">
                   {selectedDates.end.toLocaleDateString('en-US', { 
                     day: 'numeric', 
                     month: 'short' 
                   })}
                 </span>
               ) : (
-                <span className="text-gray-600">End Date</span>
+                <span className="text-gray-600 text-xs sm:text-sm">End Date</span>
               )}
             </Button>
           </div>
 
           {/* Search Button */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 opacity-0">
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="text-xs sm:text-sm font-medium text-gray-700 opacity-0">
               Action
             </label>
             <Button 
               onClick={handleSearch}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors h-10 sm:h-10 text-sm"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-1.5 sm:py-2 px-3 sm:px-4 rounded-md transition-colors h-8 sm:h-10 text-xs sm:text-sm"
             >
-              <Search className="h-4 w-4 mr-2" />
-              Search Cars
+              <Search className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Search Cars</span>
+              <span className="sm:hidden">Search</span>
             </Button>
           </div>
         </div>
