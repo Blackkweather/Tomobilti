@@ -1,10 +1,18 @@
 import twilio from 'twilio';
 
 async function checkTwilioStatus() {
+  // Load environment variables
+  import('dotenv/config');
+  
   const config = {
-    accountSid: 'ACd605e7802eaa975f4f1c2ba59b4b1f6c',
-    authToken: '9e828ebb528c84ee0ba95225f3d23ef0'
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN
   };
+
+  if (!config.accountSid || !config.authToken) {
+    console.error('�<｜tool▁sep｜>err> Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN in environment variables');
+    return;
+  }
 
   try {
     const client = twilio(config.accountSid, config.authToken);
