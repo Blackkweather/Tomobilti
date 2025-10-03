@@ -332,79 +332,85 @@ export default function Cars() {
             </div>
             
             {/* Search Bar */}
-            <div className="max-w-6xl mx-auto relative z-10 overflow-visible">
-              <div className="card-modern bg-white/95 backdrop-blur-sm p-8 shadow-2xl relative z-20 overflow-visible">
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
-                  {/* Location */}
-                  <div className="relative overflow-visible">
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      Where are you going?
-                    </label>
-                    <LocationPicker
-                      value={filters.location}
-                      onChange={(location) => setFilters(prev => ({ ...prev, location }))}
-                      placeholder="Enter city or location"
-                    />
-                  </div>
+            <div className="max-w-4xl mx-auto relative z-10">
+              <div className="card-modern bg-white/95 backdrop-blur-sm p-6 rounded-2xl shadow-2xl border border-white/20">
+                <div className="space-y-6">
+                  {/* First Row - Location and Dates */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Location */}
+                    <div className="relative">
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Where are you going?
+                      </label>
+                      <LocationPicker
+                        value={filters.location}
+                        onChange={(location) => setFilters(prev => ({ ...prev, location }))}
+                        placeholder="Enter city or location"
+                      />
+                    </div>
 
-                  {/* Start Date */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      Pick-up Date
-                    </label>
-                    <Input
-                      type="date"
-                      value={filters.startDate}
-                      onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                      className="input-modern h-12"
-                    />
-                  </div>
-
-                  {/* End Date */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      Return Date
-                    </label>
-                    <Input
-                      type="date"
-                      value={filters.endDate}
-                      onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                      className="input-modern h-12"
-                    />
-                  </div>
-
-                  {/* Price Range */}
-                  <div>
-                    <label className="text-sm font-medium text-gray-700 mb-2 block">
-                      Price Range
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
+                    {/* Start Date */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Pick-up Date
+                      </label>
                       <Input
-                        type="number"
-                        placeholder="Min"
-                        value={filters.minPrice}
-                        onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                        type="date"
+                        value={filters.startDate}
+                        onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
                         className="input-modern h-12"
                       />
+                    </div>
+
+                    {/* End Date */}
+                    <div>
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Return Date
+                      </label>
                       <Input
-                        type="number"
-                        placeholder="Max"
-                        value={filters.maxPrice}
-                        onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                        type="date"
+                        value={filters.endDate}
+                        onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
                         className="input-modern h-12"
                       />
                     </div>
                   </div>
 
-                  {/* Search Button */}
-                  <div>
-                    <button
-                      onClick={applyFilters}
-                      className="btn-primary w-full h-12 px-6 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-                    >
-                      <Search className="w-5 h-5" />
-                      Search Cars
-                    </button>
+                  {/* Second Row - Price Range and Search */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                    {/* Price Range */}
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Price Range (£ per day)
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Input
+                          type="number"
+                          placeholder="Min Price"
+                          value={filters.minPrice}
+                          onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                          className="input-modern h-12"
+                        />
+                        <Input
+                          type="number"
+                          placeholder="Max Price"
+                          value={filters.maxPrice}
+                          onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                          className="input-modern h-12"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Search Button */}
+                    <div>
+                      <button
+                        onClick={applyFilters}
+                        className="btn-primary w-full h-12 px-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                      >
+                        <Search className="w-5 h-5" />
+                        Search Cars
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
