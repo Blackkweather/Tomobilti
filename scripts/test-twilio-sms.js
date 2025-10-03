@@ -4,11 +4,11 @@ import twilio from 'twilio';
 async function testTwilioSMS() {
   console.log('🧪 Testing Twilio SMS Service...\n');
 
-  // Configuration from your .env
+  // Configuration from environment variables
   const config = {
-    accountSid: 'ACd605e7802eaa975f4f1c2ba59b4b1f6c', // Your actual Account SID
-    authToken: '9e828ebb528c84ee0ba95225f3d23ef0',     // Your actual Auth Token
-    phoneNumber: '+1 901 716 8513'                     // Your Twilio phone number
+    accountSid: process.env.TWILIO_ACCOUNT_SID,
+    authToken: process.env.TWILIO_AUTH_TOKEN,
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER
   };
 
   // Test phone number (US number for trial testing)
@@ -112,7 +112,17 @@ async function runTests() {
   
   console.log('\n' + '=' .repeat(50));
   console.log('🏁 Tests completed!');
-  console.log('\n⚠️  IMPORTANT: Make sure to replace the placeholder credentials in this script with your actual Twilio credentials!');
+  console.log('\n✅ Using environment variables for Twilio credentials');
+}
+
+// Load environment variables
+import 'dotenv/config';
+
+// Validate environment variables
+if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_PHONE_NUMBER) {
+  console.error('💥 Missing Twilio credentials in environment variables!');
+  console.error('Make sure TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER are set in your .env file.');
+  process.exit(1);
 }
 
 runTests().catch(console.error);
