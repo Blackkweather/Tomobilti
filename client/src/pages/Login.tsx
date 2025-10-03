@@ -108,7 +108,7 @@ export default function Login() {
                 <Car className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">2,500+ Vehicles</h3>
+                <h3 className="font-semibold text-gray-900">Multiple Vehicles</h3>
                 <p className="text-gray-600">From city cars to luxury vehicles</p>
               </div>
             </div>
@@ -135,8 +135,8 @@ export default function Login() {
                 <Star className="h-6 w-6 text-orange-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">4.8/5 Rating</h3>
-                <p className="text-gray-600">Trusted by 10,000+ users</p>
+                <h3 className="font-semibold text-gray-900">Excellent Service</h3>
+                <p className="text-gray-600">Trusted by our growing community</p>
               </div>
             </div>
           </div>
@@ -144,11 +144,11 @@ export default function Login() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 pt-8 border-t">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">10K+</div>
+              <div className="text-2xl font-bold text-blue-600">Growing</div>
               <div className="text-sm text-gray-600">Active Users</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">50K+</div>
+              <div className="text-2xl font-bold text-green-600">Ongoing</div>
               <div className="text-sm text-gray-600">Successful Rentals</div>
             </div>
             <div className="text-center">

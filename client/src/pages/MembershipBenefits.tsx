@@ -221,35 +221,12 @@ export default function MembershipBenefits(props: any) {
     },
     {
       level: "Platinum",
-      points: "10000+",
+      points: "High",
       benefits: ["Concierge service", "15% discount", "Exclusive access"],
       color: "bg-purple-100 text-purple-800"
     }
   ];
 
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      location: "London",
-      membership: "Elite",
-      text: "The Elite membership has been amazing! The personal concierge service and exclusive vehicle access make every trip special.",
-      avatar: "SJ"
-    },
-    {
-      name: "Michael Chen",
-      location: "Manchester",
-      membership: "Premium",
-      text: "Premium membership is worth every penny. The priority support and discounts have saved me hundreds of pounds.",
-      avatar: "MC"
-    },
-    {
-      name: "Emma Williams",
-      location: "Birmingham",
-      membership: "Elite",
-      text: "The exclusive member events and luxury vehicle access make me feel like a VIP. Highly recommended!",
-      avatar: "EW"
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-12">
@@ -407,36 +384,6 @@ export default function MembershipBenefits(props: any) {
           </CardContent>
         </Card>
 
-        {/* Member Testimonials */}
-        <Card className="shadow-lg mb-12">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Heart className="h-6 w-6 mr-2 text-red-600" />
-              What Our Members Say
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="bg-gray-50 p-6 rounded-lg">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold mr-3">
-                      {testimonial.avatar}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                      <div className="text-sm text-gray-600">{testimonial.location}</div>
-                      <Badge className="mt-1 bg-purple-100 text-purple-800">
-                        {testimonial.membership}
-                      </Badge>
-                    </div>
-                  </div>
-                  <p className="text-gray-700 text-sm italic">"{testimonial.text}"</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Support Options */}
         <Card className="shadow-lg mb-12">
@@ -485,7 +432,7 @@ export default function MembershipBenefits(props: any) {
           <CardContent className="p-12 text-center">
             <h2 className="text-3xl font-bold mb-4">Ready to Upgrade?</h2>
             <p className="text-xl mb-8 opacity-90">
-              Join thousands of satisfied members and enjoy exclusive benefits
+              Join our growing community of satisfied members and enjoy exclusive benefits
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/become-member">

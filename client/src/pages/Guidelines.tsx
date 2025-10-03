@@ -249,12 +249,12 @@ export default function Guidelines() {
                     </h3>
                     <div className="grid grid-cols-2 gap-4 text-center">
                       <div>
-                        <div className="text-3xl font-bold text-blue-600">50K+</div>
+                        <div className="text-3xl font-bold text-blue-600">Growing</div>
                         <div className="text-gray-600">Active Users</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-green-600">4.9★</div>
-                        <div className="text-gray-600">Average Rating</div>
+                        <div className="text-3xl font-bold text-green-600">High★</div>
+                        <div className="text-gray-600">Customer Satisfaction</div>
                       </div>
                     </div>
                   </CardContent>

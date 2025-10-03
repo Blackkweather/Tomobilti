@@ -145,16 +145,37 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
-      <div className="container mx-auto flex h-16 items-center px-2 sm:px-4 max-w-7xl w-full">
+      <div className="container mx-auto flex h-14 sm:h-16 items-center px-2 sm:px-4 max-w-7xl w-full">
         {/* Brand Logo - Left Side */}
         <div className="flex-shrink-0 mr-2 sm:mr-4">
           <Link href="/" className="flex items-center">
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-12 sm:h-16 w-auto hover:scale-105 transition-transform duration-200"
+              className="h-8 sm:h-12 lg:h-16 w-auto hover:scale-105 transition-transform duration-200"
             />
           </Link>
+        </div>
+
+        {/* Mobile Search Bar - Show on mobile */}
+        <div className="flex lg:hidden items-center gap-2 flex-1 mx-2">
+          <div className="relative w-full">
+            <Search className="absolute left-2 top-1/2 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-gray-400" />
+            <Input
+              placeholder="Search cars..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              className="pl-6 sm:pl-8 h-8 sm:h-9 text-xs sm:text-sm bg-white border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all duration-200 rounded-md"
+            />
+          </div>
+          <Button 
+            onClick={handleSearch} 
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md px-2 sm:px-3 h-8 sm:h-9"
+            size="sm"
+          >
+            <Search className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
         </div>
 
         {/* Desktop Navigation - Left */}
@@ -231,7 +252,7 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Search Bar - CENTERED */}
+        {/* Search Bar - CENTERED (Desktop only) */}
         <div className="hidden lg:flex items-center gap-2 flex-1 justify-center max-w-md mx-4">
           <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -241,13 +262,13 @@ export default function Header() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-10 bg-white border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 rounded-lg text-sm"
+              className="pl-10 bg-white border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 rounded-lg text-sm h-9"
             />
           </div>
           <Button 
             onClick={handleSearch} 
             data-testid="button-search" 
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-3"
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-3 h-9"
             size="sm"
           >
             <Search className="h-4 w-4" />
@@ -255,16 +276,18 @@ export default function Header() {
         </div>
 
         {/* User Actions - Right Side */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-2 sm:ml-4">
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-1 sm:ml-4">
           {/* Notifications */}
           {isAuthenticated && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                    {notifications.filter(n => !n.isRead).length}
-                  </span>
+                <Button variant="ghost" size="icon" className="relative hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 h-8 w-8 sm:h-10 sm:w-10">
+                  <Bell className="h-4 w-4 sm:h-5 sm:w-5" />
+                  {notifications.filter(n => !n.isRead).length > 0 && (
+                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                      {notifications.filter(n => !n.isRead).length}
+                    </span>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-80" align="end" sideOffset={8} avoidCollisions={true}>
@@ -324,10 +347,10 @@ export default function Header() {
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-blue-50 transition-colors duration-200">
-                  <Avatar className="h-8 w-8">
+                <Button variant="ghost" className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full hover:bg-blue-50 transition-colors duration-200">
+                  <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                     <AvatarImage src={user?.profileImage || undefined} alt={user?.firstName || 'User'} />
-                    <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">
+                    <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold text-xs sm:text-sm">
                       {user?.firstName?.[0]}{user?.lastName?.[0]}
                     </AvatarFallback>
                   </Avatar>
@@ -411,12 +434,12 @@ export default function Header() {
           ) : (
             <div className="flex items-center gap-1">
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 text-sm">
+                <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 text-xs sm:text-sm px-2 sm:px-3 h-7 sm:h-8">
                   Login
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg text-sm px-3">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md text-xs sm:text-sm px-2 sm:px-3 h-7 sm:h-8">
                   Sign Up
                 </Button>
               </Link>
@@ -428,8 +451,8 @@ export default function Header() {
         <div className="xl:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 h-8 w-8 sm:h-10 sm:w-10">
+                <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[280px] sm:w-[350px]">

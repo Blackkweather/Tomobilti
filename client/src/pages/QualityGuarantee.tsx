@@ -86,7 +86,6 @@ export default function QualityGuarantee() {
         "Background check verification",
         "Valid driving license",
         "Insurance coverage verification",
-        "Positive customer reviews",
         "Responsive communication"
       ]
     },
@@ -102,29 +101,6 @@ export default function QualityGuarantee() {
     }
   ];
 
-  const testimonials = [
-    {
-      name: "Sarah Johnson",
-      location: "London",
-      rating: 5,
-      text: "The quality guarantee gives me peace of mind. Every car I've rented has been exactly as described and in perfect condition.",
-      avatar: "SJ"
-    },
-    {
-      name: "Michael Chen",
-      location: "Manchester",
-      rating: 5,
-      text: "Amazing service! The 24/7 support and quality guarantee made my trip stress-free. Highly recommended!",
-      avatar: "MC"
-    },
-    {
-      name: "Emma Williams",
-      location: "Birmingham",
-      rating: 5,
-      text: "I love knowing that every vehicle meets strict quality standards. It's like having a personal guarantee for every rental.",
-      avatar: "EW"
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-12">
@@ -255,8 +231,8 @@ export default function QualityGuarantee() {
                 <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Star className="h-8 w-8 text-purple-600" />
                 </div>
-                <h3 className="font-semibold mb-2">Customer Reviews</h3>
-                <p className="text-sm text-gray-600">Real reviews help maintain high standards</p>
+                <h3 className="font-semibold mb-2">Quality Assurance</h3>
+                <p className="text-sm text-gray-600">Maintaining high standards through verification</p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -269,45 +245,13 @@ export default function QualityGuarantee() {
           </CardContent>
         </Card>
 
-        {/* Customer Testimonials */}
-        <Card className="shadow-lg mb-12">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Heart className="h-6 w-6 mr-2 text-red-600" />
-              What Our Customers Say
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="bg-gray-50 p-6 rounded-lg">
-                  <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-3">
-                      {testimonial.avatar}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                      <div className="text-sm text-gray-600">{testimonial.location}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center mb-3">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-gray-700 text-sm italic">"{testimonial.text}"</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* CTA Section */}
         <Card className="shadow-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white">
           <CardContent className="p-12 text-center">
             <h2 className="text-3xl font-bold mb-4">Experience Quality Guaranteed</h2>
             <p className="text-xl mb-8 opacity-90">
-              Join thousands of satisfied customers who trust our quality guarantee
+              Join our growing community of satisfied customers who trust our quality guarantee
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/cars">
@@ -329,6 +273,7 @@ export default function QualityGuarantee() {
     </div>
   );
 }
+
 
 
 

@@ -92,7 +92,7 @@ export default function LoyaltyProgram() {
     },
     {
       level: "Platinum",
-      points: "10000+",
+      points: "High",
       color: "bg-purple-100 text-purple-800",
       icon: Trophy,
       benefits: [

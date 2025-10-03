@@ -135,7 +135,7 @@ export default function Register() {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">Rent Anywhere</h3>
-                <p className="text-gray-600">Access 2,500+ vehicles across the UK</p>
+                <p className="text-gray-600">Access multiple vehicles across the UK</p>
               </div>
             </div>
             <div className="flex items-center gap-4">

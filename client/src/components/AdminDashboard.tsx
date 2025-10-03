@@ -81,9 +81,9 @@ export default function AdminDashboard() {
         type: 'host',
         status: 'active',
         joinDate: '2024-01-15',
-        totalBookings: 45,
-        totalEarnings: 12500,
-        rating: 4.8,
+        totalBookings: 0,
+        totalEarnings: 0,
+        rating: 0,
         lastActive: '2024-01-20'
       },
       {
@@ -93,9 +93,9 @@ export default function AdminDashboard() {
         type: 'renter',
         status: 'active',
         joinDate: '2024-01-10',
-        totalBookings: 12,
+        totalBookings: 0,
         totalEarnings: 0,
-        rating: 4.9,
+        rating: 0,
         lastActive: '2024-01-19'
       },
       {
@@ -105,9 +105,9 @@ export default function AdminDashboard() {
         type: 'both',
         status: 'suspended',
         joinDate: '2023-12-20',
-        totalBookings: 8,
-        totalEarnings: 2100,
-        rating: 3.2,
+        totalBookings: 0,
+        totalEarnings: 0,
+        rating: 0,
         lastActive: '2024-01-18'
       }
     ]);
@@ -138,14 +138,14 @@ export default function AdminDashboard() {
     ]);
 
     setStats({
-      totalUsers: 1247,
-      totalCars: 892,
-      totalBookings: 3456,
-      totalRevenue: 125000,
-      activeBookings: 23,
-      pendingBookings: 8,
-      monthlyGrowth: 15.3,
-      averageRating: 4.6
+      totalUsers: 0,
+      totalCars: 0,
+      totalBookings: 0,
+      totalRevenue: 0,
+      activeBookings: 0,
+      pendingBookings: 0,
+      monthlyGrowth: 0,
+      averageRating: 0
     });
   }, []);
 

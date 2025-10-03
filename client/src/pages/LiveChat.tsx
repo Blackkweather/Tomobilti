@@ -47,7 +47,7 @@ export default function LiveChat() {
   const [agentInfo, setAgentInfo] = useState({
     name: 'Sarah Johnson',
     status: 'online',
-    rating: 4.9,
+    rating: 0,
     responseTime: '< 1 min'
   });
 
@@ -419,6 +419,7 @@ export default function LiveChat() {
     </div>
   );
 }
+
 
 
 

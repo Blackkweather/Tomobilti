@@ -261,7 +261,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-yellow-600">Average Rating</p>
-                      <p className="text-3xl font-bold text-yellow-700">4.8</p>
+                      <p className="text-3xl font-bold text-yellow-700">0.0</p>
                     </div>
                     <div className="p-3 bg-yellow-200 rounded-full">
                       <Star className="h-6 w-6 text-yellow-600" />
@@ -347,7 +347,7 @@ export default function Dashboard() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {cars.map((car: any) => (
                   <Card key={car.id} className="hover:shadow-xl transition-all duration-300 border-0 shadow-md">
                     <div className="relative overflow-hidden rounded-t-lg">
@@ -378,7 +378,7 @@ export default function Dashboard() {
                           </span>
                           <div className="flex items-center">
                             <Star className="w-4 h-4 text-yellow-400 mr-1" />
-                            <span className="font-medium">4.8</span>
+                            <span className="font-medium">0.0</span>
                           </div>
                         </div>
                       </div>

@@ -68,7 +68,7 @@ export default function CarComparison({ cars, onRemoveCar, onBookCar, onAddToFav
 
     const data = {
       prices: cars.map(car => car.pricePerDay),
-      ratings: cars.map(car => car.rating || 4.5),
+      ratings: cars.map(car => car.rating || 0),
       fuelTypes: cars.map(car => car.fuelType),
       transmissions: cars.map(car => car.transmission),
       seats: cars.map(car => car.seats || 5),
@@ -206,10 +206,10 @@ export default function CarComparison({ cars, onRemoveCar, onBookCar, onAddToFav
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
                     <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                    <span className="font-semibold">{car.rating?.toFixed(1) || '4.5'}</span>
+                    <span className="font-semibold">{car.rating?.toFixed(1) || '0.0'}</span>
                   </div>
                   <span className="text-sm text-gray-500">
-                    ({car.reviewCount || 24} reviews)
+                    ({car.reviewCount || 0} reviews)
                   </span>
                 </div>
 
@@ -322,6 +322,7 @@ export default function CarComparison({ cars, onRemoveCar, onBookCar, onAddToFav
     </div>
   );
 }
+
 
 
 

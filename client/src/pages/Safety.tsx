@@ -57,9 +57,9 @@ export default function Safety() {
   ];
 
   const safetyStats = [
-    { value: '99.9%', label: 'Safety Record' },
+    { value: 'Excellent', label: 'Safety Record' },
     { value: '24/7', label: 'Emergency Support' },
-    { value: '£1M+', label: 'Insurance Coverage' },
+    { value: 'Comprehensive', label: 'Insurance Coverage' },
     { value: '100%', label: 'Verified Users' }
   ];
 
@@ -259,7 +259,7 @@ export default function Safety() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-6">
-              Trusted by Thousands
+              Trusted by Our Community
             </h2>
             <p className="text-xl text-blue-100 mb-8">
               Our comprehensive safety measures have earned the trust of users across the UK.
@@ -276,7 +276,7 @@ export default function Safety() {
                 <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Star className="w-8 h-8" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">4.9★ Rating</h3>
+                <h3 className="text-xl font-semibold mb-2">High★ Rating</h3>
                 <p className="text-blue-100">Highly rated by our community of users</p>
               </div>
               <div className="text-center">

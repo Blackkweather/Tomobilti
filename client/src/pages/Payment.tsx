@@ -277,7 +277,7 @@ const Payment: React.FC = () => {
                     <div className="flex items-center gap-4 mt-3">
                       <Badge className="bg-green-100 text-green-700">
                         <Star className="h-3 w-3 mr-1" />
-                        4.8 Rating
+                        0.0 Rating
                       </Badge>
                       <Badge variant="outline">
                         <Shield className="h-3 w-3 mr-1" />
