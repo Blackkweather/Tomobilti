@@ -899,7 +899,7 @@ export default function BecomeMember() {
           onClick={handleCloseModal}
         >
           <div 
-            className="bg-white rounded-xl sm:rounded-2xl max-w-sm sm:max-w-md w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-xl sm:rounded-2xl max-w-xs sm:max-w-sm md:max-w-md w-full max-h-[90vh] sm:max-h-[85vh] md:max-h-[90vh] overflow-y-auto shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {paymentStep === 'confirm' && (
@@ -916,7 +916,7 @@ export default function BecomeMember() {
                   </Button>
                 </div>
                 
-                <div className="p-6 space-y-6">
+                <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                   {/* Plan Summary */}
                   <div className="bg-gray-50 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">

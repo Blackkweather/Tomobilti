@@ -239,7 +239,7 @@ export default function BookingModal({ car, bookingData: initialBookingData, onC
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] md:w-full mx-4 md:mx-0" aria-describedby="booking-description">
+      <DialogContent className="max-w-sm sm:max-w-xl md:max-w-2xl max-h-[85vh] sm:max-h-[90vh] overflow-y-auto w-[95vw] mx-2 sm:mx-4 md:mx-0 p-4 sm:p-6" aria-describedby="booking-description">
         <DialogHeader>
           <DialogTitle>Book This Vehicle</DialogTitle>
           <p id="booking-description" className="sr-only">Booking form for the selected vehicle with automatic price calculation and rental dates. Complete your booking by selecting dates, times, and payment method.</p>
