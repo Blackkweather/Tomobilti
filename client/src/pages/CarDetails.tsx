@@ -277,8 +277,27 @@ export default function CarDetails() {
   // Fetch car data from API
   const { data: car, isLoading, error } = useQuery<Car & { owner?: any }>({
     queryKey: ['car', params?.id],
-    queryFn: () => carApi.getCar(params!.id),
+    queryFn: async () => {
+      if (!params?.id) {
+        throw new Error('Car ID is required');
+      }
+      
+      // Validate the ID format
+      if (typeof params.id !== 'number' && !params.id.match(/^\d+$/)) {
+        console.warn('Car ID may be invalid:', params.id);
+      }
+      
+      try {
+        const result = await carApi.getCar(params.id);
+        return result;
+      } catch (err) {
+        console.error('Error fetching car data:', err);
+        throw err;
+      }
+    },
     enabled: !!params?.id,
+    retry: 1,
+    retryDelay: 1000,
   });
 
   if (isLoading) {
