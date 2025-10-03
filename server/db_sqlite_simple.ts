@@ -334,18 +334,8 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users);
   }
 
-  async getUserById(id: string): Promise<any | null> {
-    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
-    return result[0] || null;
-  }
-
   async getAllCars(): Promise<any[]> {
     return await db.select().from(cars);
-  }
-
-  async getCarById(id: string): Promise<any | null> {
-    const result = await db.select().from(cars).where(eq(cars.id, id)).limit(1);
-    return result[0] || null;
   }
 
   async getAllBookings(): Promise<any[]> {
