@@ -4,12 +4,10 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { 
   CurrencyPound,
-  Calendar,
-  TrendingUp,
-  Zap,
   ArrowRight,
   Sparkles,
   Target,
+  Calendar,
   Heart
 } from 'lucide-react';
 
