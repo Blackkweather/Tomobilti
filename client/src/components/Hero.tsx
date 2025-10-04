@@ -10,7 +10,7 @@ import {
   Star, 
   ArrowRight,
   CheckCircle,
-  CurrencyPound
+  DollarSign
 } from 'lucide-react';
 // import HeroPromotionalBubbles from './HeroPromotionalBubbles';
 // import HeroPromotionalStats from './HeroPromotionalStats';
@@ -97,7 +97,7 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
           <div className="absolute right-[-12px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[10px] border-b-[10px] border-l-[12px] border-t-transparent border-b-transparent border-l-white/90"></div>
           <div className="text-center">
             <div className="w-8 h-8 mx-auto mb-2 bg-green-500 rounded-full flex items-center justify-center">
-              <CurrencyPound className="w-4 h-4 text-white" />
+              <DollarSign className="w-4 h-4 text-white" />
             </div>
             <h3 className="font-bold text-gray-800 text-sm mb-1">Earn up to</h3>
             <div className="text-lg font-black text-green-600 mb-1">£280/month</div>
