@@ -56,6 +56,13 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
+  // Trust stats - keep essential customer trust messaging
+  const trustStats = [
+    { icon: Shield, label: '100% Secure', value: 'Payments' },
+    { icon: Clock, label: '24/7', value: 'Support' }
+  ];
+
+  // Promotional stats - compelling earnings messaging
   const promotionalStats = [
     { 
       icon: DollarSign, 
@@ -68,7 +75,7 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
       href: '/become-member'
     },
     { 
-      icon: Clock, 
+      icon: Car, 
       label: 'Weekend rental', 
       value: 'pays insurance!',
       badge: 'Quick Setup',
@@ -185,7 +192,23 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
             />
           </div>
 
-          {/* Promotional Bubbles - Replacing Quick Stats */}
+          {/* Trust Stats - Essential customer confidence */}
+          <div className="grid grid-cols-2 gap-6 max-w-lg mx-auto mb-8">
+            {trustStats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="text-center group">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-3 group-hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm">
+                    <Icon className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="text-xl font-bold text-white mb-1">{stat.label}</div>
+                  <div className="text-white/80 text-sm">{stat.value}</div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Promotional Bubbles - Compelling earnings messaging */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
             {promotionalStats.map((stat, index) => {
               const Icon = stat.icon;
