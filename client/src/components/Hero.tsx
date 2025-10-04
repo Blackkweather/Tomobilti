@@ -89,7 +89,48 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
         <div className="absolute bottom-40 left-1/4 w-16 h-16 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}} />
       </div>
 
-      {/* Promotional Bubbles - TEMPORARILY DISABLED FOR DEBUGGING */}
+      {/* Promotional Bubbles */}
+      {/* Left Bubble */}
+      <div className="absolute left-4 md:left-8 top-1/4 z-20">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 max-w-xs cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl">
+          <div className="absolute right-[-12px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[10px] border-b-[10px] border-l-[12px] border-t-transparent border-b-transparent border-l-white/90"></div>
+          <div className="text-center">
+            <div className="w-8 h-8 mx-auto mb-2 bg-green-500 rounded-full flex items-center justify-center">
+              <CurrencyPound className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="font-bold text-gray-800 text-sm mb-1">Earn up to</h3>
+            <div className="text-lg font-black text-green-600 mb-1">£280/month</div>
+            <p className="text-xs text-gray-600 mb-3">From your idle car!</p>
+            <div className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded mb-2">Most Popular</div>
+            <Link href="/become-member">
+              <Button size="sm" className="w-full bg-green-500 hover:bg-green-600 text-white text-xs">
+                Start Earning →
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Bubble */}
+      <div className="absolute right-4 md:right-8 top-1/4 z-20">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 max-w-xs cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl">
+          <div className="absolute left-[-12px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[10px] border-b-[10px] border-r-[12px] border-t-transparent border-b-transparent border-r-white/90"></div>
+          <div className="text-center">
+            <div className="w-8 h-8 mx-auto mb-2 bg-blue-500 rounded-full flex items-center justify-center">
+              <Clock className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="font-bold text-gray-800 text-sm mb-1">Weekend rental</h3>
+            <div className="text-lg font-black text-blue-600 mb-1">pays insurance</div>
+            <p className="text-xs text-gray-600 mb-3">Quick earnings!</p>
+            <div className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mb-2">Quick Setup</div>
+            <Link href="/add-car">
+              <Button size="sm" className="w-full bg-blue-500 hover:bg-blue-600 text-white text-xs">
+                List My Car →
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
       
       <div className="relative z-10 container px-4 text-center text-white">
         <div className="max-w-6xl mx-auto space-y-12">
