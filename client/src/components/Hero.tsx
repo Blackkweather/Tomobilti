@@ -89,62 +89,7 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
         <div className="absolute bottom-40 left-1/4 w-16 h-16 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}} />
       </div>
 
-      {/* Promotional Bubbles - Option A: In the red areas */}
-      {/* Left Side Promotional Bubble */}
-      <div className="absolute left-4 md:left-8 top-1/4 z-20 group">
-        <div className="relative">
-          {/* Chat Bubble */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 max-w-xs cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:-translate-y-2">
-            {/* Bubble Tail */}
-            <div className="absolute right-[-14px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[12px] border-b-[12px] border-l-[14px] border-t-transparent border-b-transparent border-l-white/90"></div>
-            
-            {/* Content */}
-            <div className="text-center">
-              <div className="w-8 h-8 mx-auto mb-2 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
-                <CurrencyPound className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="font-bold text-gray-800 text-sm mb-1">Earn up to</h3>
-              <div className="text-lg font-black text-green-600 mb-1">£280/month</div>
-              <p className="text-xs text-gray-600 mb-3">Passive income from idle car</p>
-              <div className="w-full bg-green-100 text-green-800 text-xs px-2 py-1 rounded mb-2">Most Popular</div>
-              <Link href="/become-member">
-                <Button size="sm" className="w-full bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white text-xs py-1">
-                  Start Earning
-                  <ArrowRight className="w-3 h-3 ml-1" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side Promotional Bubble */}
-      <div className="absolute right-4 md:right-8 top-1/4 z-20 group">
-        <div className="relative">
-          {/* Chat Bubble */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 max-w-xs cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:-translate-y-2">
-            {/* Bubble Tail */}
-            <div className="absolute left-[-14px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[12px] border-b-[12px] border-r-[14px] border-t-transparent border-b-transparent border-r-white/90"></div>
-            
-            {/* Content */}
-            <div className="text-center">
-              <div className="w-8 h-8 mx-auto mb-2 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-                <Clock className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="font-bold text-gray-800 text-sm mb-1">Weekend rental</h3>
-              <div className="text-lg font-black text-blue-600 mb-1">pays insurance</div>
-              <p className="text-xs text-gray-600 mb-3">Quick cash from spare car</p>
-              <div className="w-full bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mb-2">Quick Setup</div>
-              <Link href="/add-car">
-                <Button size="sm" className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white text-xs py-1">
-                  List My Car
-                  <ArrowRight className="w-3 h-3 ml-1" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Promotional Bubbles - TEMPORARILY DISABLED FOR DEBUGGING */}
       
       <div className="relative z-10 container px-4 text-center text-white">
         <div className="max-w-6xl mx-auto space-y-12">
