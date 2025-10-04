@@ -11,6 +11,8 @@ import {
   ArrowRight,
   CheckCircle
 } from 'lucide-react';
+import HeroPromotionalBubbles from './HeroPromotionalBubbles';
+import HeroPromotionalStats from './HeroPromotionalStats';
 
 interface HeroProps {
   onDatesChange?: (dates: { start: Date | null; end: Date | null }) => void;
@@ -85,6 +87,9 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
         <div className="absolute top-40 right-20 w-32 h-32 bg-gradient-to-br from-green-500/30 to-blue-500/30 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}} />
         <div className="absolute bottom-40 left-1/4 w-16 h-16 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-xl animate-pulse" style={{animationDelay: '2s'}} />
       </div>
+
+      {/* Promotional Bubbles - Option A: In the red areas */}
+      <HeroPromotionalBubbles />
       
       <div className="relative z-10 container px-4 text-center text-white">
         <div className="max-w-6xl mx-auto space-y-12">
@@ -122,21 +127,8 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
             />
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            {quickStats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div key={index} className="text-center group">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-3 group-hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm">
-                    <Icon className="h-8 w-8 text-white" />
-                  </div>
-                  <div className="text-2xl font-bold text-white mb-1">{stat.label}</div>
-                  <div className="text-white/80 text-sm">{stat.value}</div>
-                </div>
-              );
-            })}
-          </div>
+          {/* Promotional Stats - Option B: Replace black feature sections */}
+          <HeroPromotionalStats />
 
           {/* CTA Buttons */}
           <div className="flex justify-center items-center">
