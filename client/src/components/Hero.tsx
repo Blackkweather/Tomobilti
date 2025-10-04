@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { SearchForm } from './SearchForm';
+// import { SearchForm } from './SearchForm';
 import { CarIcon, Shield, Clock, Navigation, CheckCircle, ArrowRight, DollarSign, Car } from 'lucide-react';
 
 export default function Hero() {
@@ -110,12 +110,11 @@ export default function Hero() {
               Discover the perfect vehicle for your journey. From city cars to luxury vehicles, find and book your ideal ride in minutes with Share Wheelz.
             </p>
 
-            {/* Search Form */}
+            {/* Search Form - Temporarily Disabled */}
             <div className="flex justify-center">
-              <SearchForm
-                onDatesChange={onDatesChange}
-                initialDates={selectedDates}
-              />
+              <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-xl">
+                <div className="text-gray-600 text-lg font-medium">Search functionality coming soon!</div>
+              </div>
             </div>
 
             {/* Strategic Marketing Messages */}
