@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import SearchForm from './SearchForm';
 import { CarIcon, Shield, Clock, Navigation, CheckCircle, ArrowRight, DollarSign, Car } from 'lucide-react';
 
 export default function Hero() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedDates, setSelectedDates] = useState({
+    start: null,
+    end: null
+  });
 
   const heroImages = [
     '/assets/Bentley.jpg',
@@ -23,9 +28,13 @@ export default function Hero() {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
+  const onDatesChange = (dates: { start: Date | null; end: Date | null }) => {
+    setSelectedDates(dates);
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Dynamic Background */}
+      {/* Dynamic Background with Multiple Images */}
       <div className="absolute inset-0">
         <div className="relative w-full h-full">
           <img 
@@ -43,6 +52,10 @@ export default function Hero() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/40" />
           <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-transparent to-purple-900/30" />
         </div>
+        
+        {/* Enhanced floating elements */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-full blur-xl animate-pulse" />
+        <div className="absolute top-40 right-20 w-32 h-32 bg-gradient-to-br from-green-500/30 to-blue-500/30 rounded-full blur-xl animate-pulse" style={{animationDelay: '1s'}} />
       </div>
       
       <div className="relative z-10 container px-4 text-center text-white">
@@ -71,11 +84,12 @@ export default function Hero() {
               Discover the perfect vehicle for your journey. From city cars to luxury vehicles, find and book your ideal ride in minutes with Share Wheelz.
             </p>
 
-            {/* Search Form Placeholder */}
-            <div className="flex justify-center mb-8">
-              <div className="bg-white/90 backdrop-blur-sm rounded-lg p-6 shadow-xl">
-                <div className="text-gray-600 text-lg font-medium">Search functionality coming soon!</div>
-              </div>
+            {/* Search Form */}
+            <div className="flex justify-center">
+              <SearchForm
+                onDatesChange={onDatesChange}
+                initialDates={selectedDates}
+              />
             </div>
 
             {/* Marketing Messages */}
@@ -160,7 +174,7 @@ export default function Hero() {
                 No Hidden Fees
               </div>
               <div className="flex items-center">
-                <CheckCircle className="w-4 h-4 mr-2 text-green-400"> 
+                <CheckCircle className="w-4 h-4 mr-2 text-green-400" />
                 Instant Booking
               </div>
               <div className="flex items-center">
