@@ -56,11 +56,27 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  const quickStats = [
-    { icon: Car, label: 'Multiple Cars', value: 'Available' },
-    { icon: Shield, label: '100% Secure', value: 'Payments' },
-    { icon: Clock, label: '24/7', value: 'Support' },
-    { icon: Star, label: 'Excellent', value: 'Service' }
+  const promotionalStats = [
+    { 
+      icon: DollarSign, 
+      label: 'Earn up to £280/month', 
+      value: 'From your idle car!',
+      badge: 'Most Popular',
+      buttonText: 'Start Earning →',
+      bgColor: 'from-green-500/20 to-green-700/20',
+      buttonColor: 'from-green-500 to-green-700',
+      href: '/become-member'
+    },
+    { 
+      icon: Clock, 
+      label: 'Weekend rental', 
+      value: 'pays insurance!',
+      badge: 'Quick Setup',
+      buttonText: 'List My Car →',
+      bgColor: 'from-blue-500/20 to-blue-700/20',
+      buttonColor: 'from-blue-500 to-blue-700',
+      href: '/add-car'
+    }
   ];
 
   return (
@@ -169,18 +185,44 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
             />
           </div>
 
-          {/* Quick Stats - Original */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            {quickStats.map((stat, index) => {
+          {/* Promotional Bubbles - Replacing Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+            {promotionalStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <div key={index} className="text-center group">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-3 group-hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm">
-                    <Icon className="h-8 w-8 text-white" />
+                <Link key={index} href={stat.href}>
+                  <div className={`text-center cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl rounded-full w-64 h-64 p-8 mx-auto bg-gradient-to-br ${stat.bgColor} border border-white/20 backdrop-blur-sm relative group`}>
+                    {/* Chat tail */}
+                    <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1 w-8 h-4 bg-gradient-to-br from-white/20 to-white/40 transform rotate-180 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <div className="flex flex-col items-center space-y-4 h-full justify-center">
+                      {/* Icon */}
+                      <div className={`bg-gradient-to-br ${stat.buttonColor} text-white p-4 rounded-full shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                        <Icon className="h-8 w-8" />
+                      </div>
+
+                      {/* Content */}
+                      <div className="text-center">
+                        <div className="text-white font-bold text-lg leading-tight mb-2">
+                          {stat.label}
+                        </div>
+                        <div className="text-white/80 text-sm mb-3">
+                          {stat.value}
+                        </div>
+                      </div>
+
+                      {/* Badge */}
+                      <div className={`bg-gradient-to-r ${stat.buttonColor} text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg opacity-90`}>
+                        {stat.badge}
+                      </div>
+
+                      {/* Action Button */}
+                      <div className={`bg-gradient-to-r ${stat.buttonColor} hover:from-green-600 hover:to-green-800 text-white border-0 rounded-full px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300 transform group-hover:scale-105 text-sm font-medium`}>
+                        {stat.buttonText}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-white mb-1">{stat.label}</div>
-                  <div className="text-white/80 text-sm">{stat.value}</div>
-                </div>
+                </Link>
               );
             })}
           </div>
