@@ -7,7 +7,6 @@ import { createServer } from 'http';
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { EmailService } from "./services/email";
-import { TwilioSMSService } from "./services/twilio-sms";
 import { CarRentalAgentService } from "./services/car-rental-agent";
 import MessagingSocketServer from "./messaging";
 
@@ -111,9 +110,6 @@ app.use((req, res, next) => {
 (async () => {
   // Initialize email service
   EmailService.initialize();
-  
-  // Initialize Twilio SMS service
-  TwilioSMSService.initialize();
   
   // Initialize Car Rental Agent service
   const agentService = new CarRentalAgentService({
