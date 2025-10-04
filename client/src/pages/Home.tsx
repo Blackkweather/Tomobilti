@@ -7,6 +7,7 @@ import CarCard from '../components/CarCard';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Footer from '../components/Footer';
+import PromotionalBubbles from '../components/PromotionalBubbles';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -309,7 +310,10 @@ export default function Home() {
         selectedDates={selectedDates}
       />
 
-      {/* New Homepage Sections */}
+      {/* Promotional Bubbles */}
+      <PromotionalBubbles />
+
+      {/* Main Homepage Sections */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
