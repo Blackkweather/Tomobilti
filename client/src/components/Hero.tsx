@@ -21,6 +21,7 @@ interface HeroProps {
 }
 
 export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
+  console.log('Hero component is rendering');
   const [searchLocation, setSearchLocation] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
