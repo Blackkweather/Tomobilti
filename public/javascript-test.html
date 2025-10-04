@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JavaScript Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: linear-gradient(45deg, #ff9800, #f44336); color: white; }
+        .test-box { background: blue; padding: 20px; margin: 20px 0; border-radius: 10px; }
+        #dynamic-output { background: green; padding: 15px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 JavaScript Test Page</h1>
+    
+    <div class="test-box">
+        <h2>✅ If you see this blue box, CSS is working!</h2>
+    </div>
+    
+    <div id="dynamic-output">
+        <h3>🔧 Testing JavaScript...</h3>
+        <p>If JavaScript works, you'll see dynamic content below:</p>
+        <div id="js-test">⏳ Loading...</div>
+        <button onclick="increaseCounter()" style="background: white; color: black; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin: 10px;">Click to Test</button>
+        <div id="counter">Counter: 0</div>
+    </div>
+    
+    <script>
+        console.log('🧪 JavaScript test starting...');
+        
+        let clickCount = 0;
+        
+        function increaseCounter() {
+            clickCount++;
+            document.getElementById('counter').innerHTML = 'Counter: ' + clickCount;
+            document.getElementById('js-test').innerHTML = '✅ JavaScript is working! Click count: ' + clickCount;
+            alert('🎉 JavaScript click event works! Counter: ' + clickCount);
+        }
+        
+        // Test on load
+        document.getElementById('js-test').innerHTML = '✅ JavaScript loaded successfully! Page loaded at: ' + new Date().toLocaleTimeString();
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('✅ DOM loaded successfully');
+            alert('✅ JavaScript and DOM working! ShareWheelz can work!');
+        });
+        
+        // Test external JavaScript (simulating Vite)
+        setTimeout(function() {
+            document.body.style.border = '5px solid yellow';
+            console.log('✅ JavaScript timer works!');
+        }, 2000);
+    </script>
+    
+    <div style="background: purple; padding: 20px; margin: 20px 0; border-radius: 10px;">
+        <h2>💰 Promotional Test Content</h2>
+        <p><strong>Earn up to £280/month from your car!</strong></p>
+        <p><strong>Weekend rental = Insurance paid!</strong></p>
+    </div>
+</body>
+</html>

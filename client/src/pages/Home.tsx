@@ -303,6 +303,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* DEBUG: This element should be visible if React is working */}
+      <div style={{background: 'red', color: 'white', padding: '10px', textAlign: 'center', fontSize: '20px', fontWeight: 'bold'}}>
+        ⚠️ DEBUG: React is working! Home page loaded successfully!
+      </div>
       {/* Hero Section with Promotional Bubbles */}
       <Hero 
         onDatesChange={setSelectedDates}

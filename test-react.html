@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>React Test</title>
+</head>
+<body>
+    <h1>Testing React...</h1>
+    <div id="root"></div>
+    <script type="module">
+        import { createRoot } from 'react-dom/client';
+        import React from 'react';
+        
+        console.log('Testing React mounting...');
+        
+        function TestComponent() {
+            return React.createElement('div', null, 
+                React.createElement('h2', null, 'React is working!'),
+                React.createElement('p', null, 'If you can see this, React app is mounting correctly.')
+            );
+        }
+        
+        const rootElement = document.getElementById("root");
+        console.log('Root element found:', rootElement);
+        
+        if (rootElement) {
+            const root = createRoot(rootElement);
+            console.log('Creating root...');
+            root.render(React.createElement(TestComponent));
+            console.log('Render complete!');
+        } else {
+            console.error('Root element not found!');
+        }
+    </script>
+</body>
+</html>
