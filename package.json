@@ -18,10 +18,10 @@
     "db:push": "drizzle-kit push",
     "setup-cloud-db": "node scripts/setup-cloud-db.js",
     "setup-render-db": "node scripts/setup-render-db.js",
-    "migrate-cloud": "node scripts/migrate-cloud-db.js",
+    "migrate-cloud": "node scripts/migrate-cloud-db.js"
   },
   "engines": {
-    "node": ">=18.20.0",
+    "node": ">=20.18.0",
     "npm": ">=9.0.0"
   },
   "dependencies": {
