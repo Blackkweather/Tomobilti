@@ -93,8 +93,8 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
       {/* Promotional Bubbles */}
       {/* Left Bubble */}
       <div className="absolute left-4 md:left-8 top-1/4 z-20">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 max-w-xs cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl">
-          <div className="absolute right-[-12px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[10px] border-b-[10px] border-l-[12px] border-t-transparent border-b-transparent border-l-white/90"></div>
+        <div className="bg-white/90 backdrop-blur-sm rounded-full w-64 h-64 p-8 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center relative">
+          <div className="absolute right-[-16px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[12px] border-b-[12px] border-l-[16px] border-t-transparent border-b-transparent border-l-white/90"></div>
           <div className="text-center">
             <div className="w-8 h-8 mx-auto mb-2 bg-green-500 rounded-full flex items-center justify-center">
               <DollarSign className="w-4 h-4 text-white" />
@@ -114,8 +114,8 @@ export default function Hero({ onDatesChange, selectedDates }: HeroProps) {
 
       {/* Right Bubble */}
       <div className="absolute right-4 md:right-8 top-1/4 z-20">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 max-w-xs cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl">
-          <div className="absolute left-[-12px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[10px] border-b-[10px] border-r-[12px] border-t-transparent border-b-transparent border-r-white/90"></div>
+        <div className="bg-white/90 backdrop-blur-sm rounded-full w-64 h-64 p-8 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center relative">
+          <div className="absolute left-[-16px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[12px] border-b-[12px] border-r-[16px] border-t-transparent border-b-transparent border-r-white/90"></div>
           <div className="text-center">
             <div className="w-8 h-8 mx-auto mb-2 bg-blue-500 rounded-full flex items-center justify-center">
               <Clock className="w-4 h-4 text-white" />
