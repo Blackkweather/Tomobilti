@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import SearchForm from './SearchForm';
 import { Shield, Clock, CheckCircle, ArrowRight, DollarSign, Car } from 'lucide-react';
 
 export default function Hero() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [selectedDates, setSelectedDates] = useState({
+    start: null,
+    end: null
+  });
 
   const heroImages = [
     '/assets/Bentley.jpg',
@@ -22,6 +27,10 @@ export default function Hero() {
 
     return () => clearInterval(interval);
   }, [heroImages.length]);
+
+  const onDatesChange = (dates: { start: Date | null; end: Date | null }) => {
+    setSelectedDates(dates);
+  };
 
 
   return (
@@ -76,8 +85,27 @@ export default function Hero() {
               Discover the perfect vehicle for your journey. From city cars to luxury vehicles, find and book your ideal ride in minutes with Share Wheelz.
             </p>
 
-            {/* Marketing Bubbles - Small size like trust circles, text on hover */}
-            <div className="grid grid-cols-2 gap-6 max-w-lg mx-auto mb-8">
+            {/* Search Form */}
+            <div className="flex justify-center mb-12">
+              <SearchForm
+                onDatesChange={onDatesChange}
+                initialDates={selectedDates}
+              />
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex justify-center items-center">
+              <a href="/cars">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                  <Car className="mr-2 h-5 w-5" />
+                  Browse Vehicles
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </a>
+            </div>
+
+            {/* Marketing + Trust Circles - All aligned */}
+            <div className="grid grid-cols-4 gap-6 max-w-2xl mx-auto mb-8">
               {/* Insurance Paid Off Bubble */}
               <a href="/add-car">
                 <div className="text-center cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl rounded-full w-16 h-16 mx-auto bg-gradient-to-br from-green-500/20 to-green-600/20 border border-white/20 backdrop-blur-sm relative group flex items-center justify-center">
@@ -117,21 +145,7 @@ export default function Hero() {
                   </div>
                 </div>
               </a>
-            </div>
 
-            {/* CTA Buttons */}
-            <div className="flex justify-center items-center">
-              <a href="/cars">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                  <Car className="mr-2 h-5 w-5" />
-                  Browse Vehicles
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </a>
-            </div>
-
-            {/* Trust Stats Section - Same size as marketing bubbles */}
-            <div className="grid grid-cols-2 gap-6 max-w-lg mx-auto mb-8">
               {/* 100% Secure Payments */}
               <div className="text-center group">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-full mb-3 group-hover:bg-white/30 transition-colors duration-300 backdrop-blur-sm">
