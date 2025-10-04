@@ -7,7 +7,6 @@ import CarCard from '../components/CarCard';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Footer from '../components/Footer';
-import PromotionalBubbles from '../components/PromotionalBubbles';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
