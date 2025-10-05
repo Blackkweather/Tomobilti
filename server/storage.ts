@@ -14,15 +14,6 @@ import {
 import { randomUUID } from "crypto";
 // Select storage backend per environment to avoid native sqlite in production
 const isProd = process.env.NODE_ENV === 'production';
-let DatabaseStorage: any;
-// Use top-level await to conditionally import without loading sqlite module in prod
-if (isProd) {
-  const mod = await import('./db');
-  DatabaseStorage = mod.DatabaseStorage;
-} else {
-  const mod = await import('./db_sqlite_simple');
-  DatabaseStorage = mod.DatabaseStorage;
-}
 
 // Storage interface for all CRUD operations
 export interface IStorage {
@@ -796,7 +787,19 @@ class HybridStorage extends DatabaseStorage {
   }
 }
 
-// Use hybrid storage for messaging support
-export const storage = new HybridStorage();
+// Storage factory function
+async function createStorage() {
+  if (isProd) {
+    // In production, use PostgreSQL DatabaseStorage
+    const { DatabaseStorage } = await import('./db');
+    return new DatabaseStorage();
+  } else {
+    // In development, use MemStorage for simplicity
+    return new MemStorage();
+  }
+}
+
+// Create storage instance
+export const storage = await createStorage();
 
 // Sample data initialization removed
