@@ -234,9 +234,9 @@ export default function Profile() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-GB', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'GBP'
     }).format(amount);
   };
 
@@ -884,7 +884,7 @@ export default function Profile() {
                     <div className="flex items-center gap-3 p-3 border rounded-lg">
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium">Received payment: $150.00</p>
+                        <p className="text-sm font-medium">Received payment: £150.00</p>
                         <p className="text-xs text-gray-500">3 days ago</p>
                       </div>
                       <Badge variant="outline" className="text-purple-600">Payment</Badge>

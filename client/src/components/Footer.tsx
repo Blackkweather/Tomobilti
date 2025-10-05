@@ -171,32 +171,32 @@ export default function Footer() {
 
         {/* Contact Info */}
         <div className="border-t border-white/10 mt-12 pt-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="flex items-center justify-center gap-3">
               <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center">
                 <MapPin className="w-5 h-5 text-blue-400" />
               </div>
-              <div>
+              <div className="text-center">
                 <p className="font-semibold">Headquarters</p>
                 <p className="text-gray-300 text-sm">London, United Kingdom</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center gap-3">
               <div className="w-10 h-10 bg-green-600/20 rounded-full flex items-center justify-center">
                 <Phone className="w-5 h-5 text-green-400" />
               </div>
-              <div>
+              <div className="text-center">
                 <p className="font-semibold">Phone</p>
                 <p className="text-gray-300 text-sm">+44 20 1234 5678</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center gap-3">
               <div className="w-10 h-10 bg-purple-600/20 rounded-full flex items-center justify-center">
                 <Mail className="w-5 h-5 text-purple-400" />
               </div>
-              <div>
+              <div className="text-center">
                 <p className="font-semibold">Email</p>
                 <p className="text-gray-300 text-sm">contact@sharewheelz.uk</p>
               </div>
