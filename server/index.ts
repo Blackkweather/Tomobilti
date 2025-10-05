@@ -119,6 +119,23 @@ app.use((req, res, next) => {
     maxTokens: 200,
   });
   
+  // Initialize storage properly for production
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      console.log('🔄 Initializing production storage...');
+      const { DatabaseStorage } = await import('./db');
+      const { storage } = await import('./storage');
+      
+      // Replace the MemStorage with DatabaseStorage
+      Object.setPrototypeOf(storage, DatabaseStorage.prototype);
+      Object.assign(storage, new DatabaseStorage());
+      
+      console.log('✅ Production storage initialized successfully');
+    } catch (error) {
+      console.error('❌ Failed to initialize production storage:', error);
+    }
+  }
+  
   await registerRoutes(app);
   
   // Initialize sample data in production if database is empty
