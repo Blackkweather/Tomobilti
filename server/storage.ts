@@ -147,7 +147,9 @@ export class MemStorage implements IStorage {
   private async initializeSampleNotifications() {
     // This will be called after users are created
     setTimeout(() => {
-      this.createSampleNotifications();
+      if (typeof this.createSampleNotifications === 'function') {
+        this.createSampleNotifications();
+      }
     }, 1000);
   }
 
@@ -763,7 +765,42 @@ export class MemStorage implements IStorage {
 
 // Note: HybridStorage removed - using direct DatabaseStorage in production
 
-// Create storage instance - will be initialized properly in server startup
-export const storage = new MemStorage();
+// Storage factory function
+async function createStorageInstance() {
+  if (isProd) {
+    try {
+      const { DatabaseStorage } = await import('./db');
+      return new DatabaseStorage();
+    } catch (error) {
+      console.error('Failed to create DatabaseStorage:', error);
+      return new MemStorage();
+    }
+  } else {
+    return new MemStorage();
+  }
+}
+
+// Create storage instance
+let storageInstance: any = null;
+
+// Initialize storage
+createStorageInstance().then(instance => {
+  storageInstance = instance;
+  console.log('✅ Storage instance created:', instance.constructor.name);
+}).catch(error => {
+  console.error('❌ Failed to create storage instance:', error);
+  storageInstance = new MemStorage();
+});
+
+// Export storage with getter
+export const storage = new Proxy({} as any, {
+  get(target, prop) {
+    if (!storageInstance) {
+      console.warn('Storage not initialized yet, using fallback');
+      return new MemStorage()[prop];
+    }
+    return storageInstance[prop];
+  }
+});
 
 // Sample data initialization removed
