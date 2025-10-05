@@ -126,10 +126,10 @@ app.use((req, res, next) => {
     try {
       const { DatabaseStorage } = await import('./db');
       const dbStorage = new DatabaseStorage();
-      await dbStorage.initializeSampleData();
-      console.log('✅ Sample data initialized for production');
+      await dbStorage.forceInitializeCars();
+      console.log('✅ Cars initialized for production');
     } catch (error) {
-      console.error('⚠️ Failed to initialize sample data:', error);
+      console.error('⚠️ Failed to initialize cars:', error);
     }
   }
   
