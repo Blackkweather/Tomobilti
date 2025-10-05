@@ -761,31 +761,7 @@ export class MemStorage implements IStorage {
 // Use SQLite storage instead of PostgreSQL for simplicity
 // export const storage = new DatabaseStorage();
 
-// Create a hybrid storage that uses MemStorage for messaging
-class HybridStorage extends DatabaseStorage {
-  private memStorage = new MemStorage();
-
-  // Override messaging methods to use MemStorage
-  async getUserConversations(userId: string): Promise<any[]> {
-    return this.memStorage.getUserConversations(userId);
-  }
-
-  async getConversationMessages(conversationId: string, userId: string): Promise<any[]> {
-    return this.memStorage.getConversationMessages(conversationId, userId);
-  }
-
-  async createConversation(bookingId: string, userId: string): Promise<any> {
-    return this.memStorage.createConversation(bookingId, userId);
-  }
-
-  async createMessage(conversationId: string, senderId: string, content: string, messageType: string = 'text'): Promise<any> {
-    return this.memStorage.createMessage(conversationId, senderId, content, messageType);
-  }
-
-  async markMessageAsRead(messageId: string, userId: string): Promise<boolean> {
-    return this.memStorage.markMessageAsRead(messageId, userId);
-  }
-}
+// Note: HybridStorage removed - using direct DatabaseStorage in production
 
 // Storage factory function
 async function createStorage() {
