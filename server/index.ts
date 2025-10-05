@@ -121,6 +121,18 @@ app.use((req, res, next) => {
   
   await registerRoutes(app);
   
+  // Initialize sample data in production if database is empty
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const { DatabaseStorage } = await import('./db');
+      const dbStorage = new DatabaseStorage();
+      await dbStorage.initializeSampleData();
+      console.log('✅ Sample data initialized for production');
+    } catch (error) {
+      console.error('⚠️ Failed to initialize sample data:', error);
+    }
+  }
+  
   // Create HTTP server and WebSocket server
   const httpServer = createServer(app);
   const messagingServer = new MessagingSocketServer(httpServer);
