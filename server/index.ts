@@ -119,21 +119,11 @@ app.use((req, res, next) => {
     maxTokens: 200,
   });
   
-  // Initialize storage properly for production
+  // Wait for storage to be initialized
   if (process.env.NODE_ENV === 'production') {
-    try {
-      console.log('🔄 Initializing production storage...');
-      const { DatabaseStorage } = await import('./db');
-      const { storage } = await import('./storage');
-      
-      // Replace the MemStorage with DatabaseStorage
-      Object.setPrototypeOf(storage, DatabaseStorage.prototype);
-      Object.assign(storage, new DatabaseStorage());
-      
-      console.log('✅ Production storage initialized successfully');
-    } catch (error) {
-      console.error('❌ Failed to initialize production storage:', error);
-    }
+    console.log('⏳ Waiting for storage initialization...');
+    // Give storage time to initialize
+    await new Promise(resolve => setTimeout(resolve, 2000));
   }
   
   await registerRoutes(app);
