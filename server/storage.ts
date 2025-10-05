@@ -12,7 +12,17 @@ import {
   type CarSearch
 } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { DatabaseStorage } from './db_sqlite_simple';
+// Select storage backend per environment to avoid native sqlite in production
+const isProd = process.env.NODE_ENV === 'production';
+let DatabaseStorage: any;
+// Use top-level await to conditionally import without loading sqlite module in prod
+if (isProd) {
+  const mod = await import('./db');
+  DatabaseStorage = mod.DatabaseStorage;
+} else {
+  const mod = await import('./db_sqlite_simple');
+  DatabaseStorage = mod.DatabaseStorage;
+}
 
 // Storage interface for all CRUD operations
 export interface IStorage {
@@ -96,6 +106,10 @@ export class MemStorage implements IStorage {
 
   // Initialize conversations and messages from SQLite synchronously
   private initializeConversationsFromSQLiteSync() {
+    // In production we avoid touching better-sqlite3 entirely
+    if (isProd) {
+      return;
+    }
     try {
       const Database = require('better-sqlite3');
       const path = require('path');
