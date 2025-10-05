@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { users, cars, bookings, reviews } from '@shared/schema';
-import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch } from '@shared/schema';
+import { users, cars, bookings, reviews, notifications } from '@shared/schema';
+import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch, Notification, InsertNotification } from '@shared/schema';
 import { eq, and, gte, lte, inArray, like, sql as sqlOp, count, desc, asc } from 'drizzle-orm';
 import type { IStorage } from './storage';
 import bcrypt from 'bcrypt';
@@ -46,9 +46,6 @@ const sql = postgres(config.connectionString, {
   idle_timeout: 20,
   connect_timeout: 10,
   ssl: config.ssl,
-  // Add connection retry for cloud databases
-  retry_delay: 1000,
-  max_attempts: 3,
 });
 
 export const db = drizzle(sql);
@@ -58,9 +55,14 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     // Hash password before storing
     const hashedPassword = await bcrypt.hash(insertUser.password, 12);
-    const userWithHashedPassword = {
-      ...insertUser,
+    const userWithHashedPassword: any = {
+      email: insertUser.email,
       password: hashedPassword,
+      firstName: insertUser.firstName,
+      lastName: insertUser.lastName,
+      phone: insertUser.phone,
+      profileImage: insertUser.profileImage,
+      userType: insertUser.userType || 'renter',
       id: randomUUID(),
     };
     
@@ -78,7 +80,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined> {
     // Hash password if it's being updated
-    let updateData = { ...updates };
+    let updateData: any = { ...updates };
     if (updates.password) {
       updateData.password = await bcrypt.hash(updates.password, 12);
     }
@@ -187,7 +189,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCar(insertCar: InsertCar): Promise<Car> {
-    const carData = {
+    const carData: any = {
       ...insertCar,
       id: randomUUID(),
       createdAt: new Date(),
@@ -199,7 +201,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateCar(id: string, updates: Partial<InsertCar>): Promise<Car | undefined> {
-    const updateData = {
+    const updateData: any = {
       ...updates,
       updatedAt: new Date(),
     };
@@ -262,7 +264,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBooking(insertBooking: InsertBooking): Promise<Booking> {
-    const [booking] = await db.insert(bookings).values(insertBooking).returning();
+    const bookingData: any = {
+      ...insertBooking,
+      id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    const [booking] = await db.insert(bookings).values(bookingData).returning();
     return booking;
   }
 
@@ -276,7 +285,7 @@ export class DatabaseStorage implements IStorage {
 
   async cancelBooking(id: string): Promise<boolean> {
     const [booking] = await db.update(bookings)
-      .set({ status: 'cancelled' })
+      .set({ status: 'cancelled' as any })
       .where(eq(bookings.id, id))
       .returning();
     return !!booking;
@@ -296,7 +305,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createReview(insertReview: InsertReview): Promise<Review> {
-    const [review] = await db.insert(reviews).values(insertReview).returning();
+    const reviewData: any = {
+      ...insertReview,
+      id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
+    const [review] = await db.insert(reviews).values(reviewData).returning();
     return review;
   }
 
@@ -541,5 +557,99 @@ export class DatabaseStorage implements IStorage {
     });
 
     console.log('✅ Created 6 UK luxury cars for ShareWheelz platform');
+  }
+
+  // Missing methods to implement IStorage interface
+  async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
+    try {
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      await db
+        .update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error updating user password:', error);
+      return false;
+    }
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    try {
+      await db.delete(users).where(eq(users.id, id));
+      return true;
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      return false;
+    }
+  }
+
+  async getNotifications(userId: string): Promise<Notification[]> {
+    try {
+      return await db.select().from(notifications).where(eq(notifications.userId, userId));
+    } catch (error) {
+      console.error('Error getting notifications:', error);
+      return [];
+    }
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const [newNotification] = await db.insert(notifications).values({
+      ...notification,
+      id: randomUUID(),
+      createdAt: new Date()
+    } as any).returning();
+    return newNotification;
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<boolean> {
+    try {
+      await db
+        .update(notifications)
+        .set({ isRead: true } as any)
+        .where(and(eq(notifications.id, notificationId), eq(notifications.userId, userId)));
+      return true;
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      return false;
+    }
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<boolean> {
+    try {
+      await db
+        .update(notifications)
+        .set({ isRead: true } as any)
+        .where(eq(notifications.userId, userId));
+      return true;
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+      return false;
+    }
+  }
+
+  async getUserConversations(userId: string): Promise<any[]> {
+    // Conversations table not implemented yet
+    return [];
+  }
+
+  async getConversationMessages(conversationId: string, userId: string): Promise<any[]> {
+    // Messages table not implemented yet
+    return [];
+  }
+
+  async createConversation(bookingId: string, userId: string): Promise<any> {
+    // Conversations table not implemented yet
+    return { id: randomUUID(), bookingId, userId };
+  }
+
+  async createMessage(conversationId: string, senderId: string, content: string, messageType?: string): Promise<any> {
+    // Messages table not implemented yet
+    return { id: randomUUID(), conversationId, senderId, content, messageType };
+  }
+
+  async markMessageAsRead(messageId: string, userId: string): Promise<boolean> {
+    // Messages table not implemented yet
+    return true;
   }
 }
