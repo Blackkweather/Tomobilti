@@ -189,7 +189,8 @@ const getDefaultCarImage = (car: Car): string => {
 };
 
 export default function CarDetails() {
-  const [, params] = useRoute("/cars/:id");
+  const [match, params] = useRoute<{ id: string }>("/cars/:id");
+  const carId: string | undefined = match ? params?.id : undefined;
   const [, setLocation] = useLocation();
   const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
@@ -276,26 +277,20 @@ export default function CarDetails() {
   
   // Fetch car data from API
   const { data: car, isLoading, error } = useQuery<Car & { owner?: any }>({
-    queryKey: ['car', params?.id],
+    queryKey: ['car', carId],
     queryFn: async () => {
-      if (!params?.id) {
+      if (!carId) {
         throw new Error('Car ID is required');
       }
-      
-      // Validate the ID format
-      if (typeof params.id !== 'number' && !params.id.match(/^\d+$/)) {
-        console.warn('Car ID may be invalid:', params.id);
-      }
-      
       try {
-        const result = await carApi.getCar(params.id);
+        const result = await carApi.getCar(carId);
         return result;
       } catch (err) {
         console.error('Error fetching car data:', err);
         throw err;
       }
     },
-    enabled: !!params?.id,
+    enabled: !!carId,
     retry: 1,
     retryDelay: 1000,
   });
@@ -512,7 +507,7 @@ export default function CarDetails() {
               <CardContent className="p-6">
                 <div className="flex items-center mb-4">
                   <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg mr-3">
-                    <Car className="h-5 w-5 text-blue-600" />
+                    <CarIcon className="h-5 w-5 text-blue-600" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-900">Quick Info</h2>
                 </div>

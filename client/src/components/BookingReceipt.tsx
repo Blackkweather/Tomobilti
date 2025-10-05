@@ -16,6 +16,8 @@ import {
   QrCode
 } from 'lucide-react';
 import { Link } from 'wouter';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface BookingReceiptProps {
   bookingId: string;
@@ -62,6 +64,7 @@ interface BookingReceiptProps {
 }
 
 export default function BookingReceipt({ bookingId, booking }: BookingReceiptProps) {
+  const receiptRef = React.useRef<HTMLDivElement | null>(null);
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-GB', {
       weekday: 'long',
@@ -78,74 +81,189 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
     });
   };
 
-  const handleDownloadReceipt = () => {
-    // Create a printable version of the receipt
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>Booking Receipt - ${bookingId}</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
-              .section { margin-bottom: 20px; }
-              .row { display: flex; justify-content: space-between; margin-bottom: 5px; }
-              .total { font-weight: bold; font-size: 18px; border-top: 1px solid #000; padding-top: 10px; }
-              .logo { font-size: 24px; font-weight: bold; color: #2563eb; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <div class="logo">ShareWheelz</div>
-              <h1>Booking Receipt</h1>
-              <p>Receipt #${bookingId}</p>
-            </div>
-            
-            <div class="section">
-              <h3>Booking Details</h3>
-              <div class="row"><span>Car:</span><span>${booking.car.year} ${booking.car.make} ${booking.car.model}</span></div>
-              <div class="row"><span>License Plate:</span><span>${booking.car.licensePlate}</span></div>
-              <div class="row"><span>Start Date:</span><span>${formatDate(booking.dates.startDate)} at ${formatTime(booking.dates.startTime)}</span></div>
-              <div class="row"><span>End Date:</span><span>${formatDate(booking.dates.endDate)} at ${formatTime(booking.dates.endTime)}</span></div>
-              <div class="row"><span>Duration:</span><span>${booking.pricing.totalDays} day(s)</span></div>
+  const handleDownloadPdf = async () => {
+    // Build branded HTML (same as print template) but render off-screen
+    const html = `
+      <html>
+        <head>
+          <meta charset=\"utf-8\" />
+          <title>Booking Receipt - ${bookingId}</title>
+          <style>
+            @page { size: A4; margin: 14mm; }
+            :root {
+              --brand: #2563eb;
+              --brand-2: #7c3aed;
+              --text: #111827;
+              --muted: #6b7280;
+              --line: #e5e7eb;
+              --bg: #ffffff;
+            }
+            * { box-sizing: border-box; }
+            body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif; margin: 0; color: var(--text); background: var(--bg); }
+            .container { padding: 14mm; }
+            .header { display:flex; align-items:center; justify-content:space-between; border-bottom: 2px solid var(--line); padding-bottom: 12px; margin-bottom: 18px; }
+            .brand { display:flex; align-items:center; gap: 12px; }
+            .brand img { height: 42px; width:auto; }
+            .brand-name { font-size: 22px; font-weight: 800; letter-spacing: .2px; color: var(--brand); }
+            .doc-meta { text-align:right; font-size: 12px; color: var(--muted); }
+            .title { margin: 6px 0 0; font-size: 20px; color: var(--text); font-weight:700; }
+            .badge { display:inline-block; padding: 4px 10px; background: #ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius: 999px; font-size: 12px; font-weight:600; }
+            .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+            .card { border:1px solid var(--line); border-radius: 10px; padding: 14px; }
+            .section-title { margin: 0 0 10px; font-size: 14px; font-weight:700; color: var(--brand); }
+            .row { display:flex; justify-content: space-between; gap: 10px; margin: 6px 0; font-size: 13px; }
+            .label { color: var(--muted); }
+            table { width:100%; border-collapse: collapse; font-size: 13px; }
+            th, td { padding: 10px 12px; text-align: left; }
+            thead th { background: #f8fafc; border-bottom: 1px solid var(--line); color:#334155; font-weight:700; }
+            tbody td { border-bottom: 1px solid var(--line); }
+            tfoot td { border-top: 2px solid var(--line); font-weight:800; font-size: 14px; }
+            .muted { color: var(--muted); }
+            .footer { text-align:center; margin-top: 16px; font-size: 11px; color: var(--muted); }
+          </style>
+        </head>
+        <body>
+          <div class=\"container\">
+            <div class=\"header\">
+              <div class=\"brand\">
+                <img src=\"/assets/MAIN LOGO.png?v=5\" alt=\"ShareWheelz\" />
+                <div>
+                  <div class=\"brand-name\">ShareWheelz</div>
+                  <div class=\"muted\" style=\"font-size:11px;\">Modern car sharing platform</div>
+                </div>
+              </div>
+              <div class=\"doc-meta\">
+                <div class=\"title\">Booking Receipt</div>
+                <div>Receipt #${bookingId}</div>
+                <div>${new Date().toLocaleString('en-GB')}</div>
+                <div class=\"badge\" style=\"margin-top:6px;\">Confirmed</div>
+              </div>
             </div>
 
-            <div class="section">
-              <h3>Pricing Breakdown</h3>
-              <div class="row"><span>Daily Rate:</span><span>£${booking.pricing.dailyRate.toFixed(2)} × ${booking.pricing.totalDays}</span></div>
-              <div class="row"><span>Subtotal:</span><span>£${booking.pricing.subtotal.toFixed(2)}</span></div>
-              <div class="row"><span>Service Fee:</span><span>£${booking.pricing.serviceFee.toFixed(2)}</span></div>
-              <div class="row"><span>Insurance:</span><span>£${booking.pricing.insurance.toFixed(2)}</span></div>
-              <div class="row total"><span>Total:</span><span>£${booking.pricing.total.toFixed(2)}</span></div>
+            <div class=\"grid\">
+              <div class=\"card\">
+                <div class=\"section-title\">Booking Details</div>
+                <div class=\"row\"><span class=\"label\">Vehicle</span><span>${booking.car.year} ${booking.car.make} ${booking.car.model}</span></div>
+                <div class=\"row\"><span class=\"label\">License Plate</span><span>${booking.car.licensePlate}</span></div>
+                <div class=\"row\"><span class=\"label\">Pickup</span><span>${formatDate(booking.dates.startDate)} — ${formatTime(booking.dates.startTime)}</span></div>
+                <div class=\"row\"><span class=\"label\">Return</span><span>${formatDate(booking.dates.endDate)} — ${formatTime(booking.dates.endTime)}</span></div>
+                <div class=\"row\"><span class=\"label\">Duration</span><span>${booking.pricing.totalDays} day(s)</span></div>
+              </div>
+              <div class=\"card\">
+                <div class=\"section-title\">Contacts</div>
+                <div class=\"row\"><span class=\"label\">Owner</span><span>${booking.owner.name} — ${booking.owner.phone}</span></div>
+                <div class=\"row\"><span class=\"label\">Renter</span><span>${booking.renter.name} — ${booking.renter.phone}</span></div>
+                <div class=\"row\"><span class=\"label\">Support</span><span>support@sharewheelz.uk</span></div>
+              </div>
             </div>
 
-            <div class="section">
-              <h3>Payment Information</h3>
-              <div class="row"><span>Payment Method:</span><span>${booking.payment.method}</span></div>
-              <div class="row"><span>Transaction ID:</span><span>${booking.payment.transactionId}</span></div>
-              <div class="row"><span>Payment Status:</span><span>${booking.payment.status}</span></div>
-              <div class="row"><span>Paid At:</span><span>${new Date(booking.payment.paidAt).toLocaleString('en-GB')}</span></div>
+            <div class=\"card\" style=\"margin-bottom:18px;\">
+              <div class=\"section-title\">Pricing</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th style=\"width: 180px;\">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Daily Rate × ${booking.pricing.totalDays} day(s)</td>
+                    <td>£${booking.pricing.subtotal.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Service Fee</td>
+                    <td>£${booking.pricing.serviceFee.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Insurance</td>
+                    <td>£${booking.pricing.insurance.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td>Total</td>
+                    <td>£${booking.pricing.total.toFixed(2)}</td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
 
-            <div class="section">
-              <h3>Contact Information</h3>
-              <div class="row"><span>Car Owner:</span><span>${booking.owner.name}</span></div>
-              <div class="row"><span>Owner Phone:</span><span>${booking.owner.phone}</span></div>
-              <div class="row"><span>Renter:</span><span>${booking.renter.name}</span></div>
-              <div class="row"><span>Renter Phone:</span><span>${booking.renter.phone}</span></div>
+            <div class=\"grid\">
+              <div class=\"card\">
+                <div class=\"section-title\">Payment</div>
+                <div class=\"row\"><span class=\"label\">Method</span><span>${booking.payment.method}</span></div>
+                <div class=\"row\"><span class=\"label\">Transaction ID</span><span>${booking.payment.transactionId}</span></div>
+                <div class=\"row\"><span class=\"label\">Status</span><span>${booking.payment.status}</span></div>
+                <div class=\"row\"><span class=\"label\">Paid At</span><span>${new Date(booking.payment.paidAt).toLocaleString('en-GB')}</span></div>
+              </div>
+              <div class=\"card\">
+                <div class=\"section-title\">Notes</div>
+                <div class=\"muted\" style=\"font-size:12px; line-height:1.5;\">Please present this receipt upon pickup. Ensure your driving license and ID match the booking details. Contact support for any changes.</div>
+              </div>
             </div>
 
-            <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #666;">
-              <p>Thank you for using ShareWheelz!</p>
-              <p>For support, contact us at support@sharewheelz.uk</p>
+            <div class=\"footer\">
+              Thank you for choosing ShareWheelz • sharewheelz.uk • Company No. 00000000
             </div>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.print();
-    }
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Render HTML into a hidden iframe to rasterize with html2canvas
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) return;
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    // Wait a tick for assets to load, then capture
+    setTimeout(async () => {
+      try {
+        const body = doc.body as HTMLBodyElement;
+        const canvas = await html2canvas(body, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let y = 0;
+        if (imgHeight < pageHeight) {
+          pdf.addImage(imgData, 'PNG', 0, y, imgWidth, imgHeight);
+        } else {
+          let heightLeft = imgHeight;
+          let position = 0;
+          while (heightLeft > 0) {
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            if (heightLeft > 0) {
+              pdf.addPage();
+              position = position - pageHeight;
+            }
+          }
+        }
+
+        pdf.save(`ShareWheelz_Receipt_${bookingId}.pdf`);
+      } finally {
+        document.body.removeChild(iframe);
+      }
+    }, 300);
+  };
+
+  const handlePrintReceipt = () => {
+    window.print();
   };
 
   const handleEmailReceipt = () => {
@@ -155,7 +273,7 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+      <div className="max-w-4xl mx-auto px-4" ref={receiptRef}>
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
@@ -317,19 +435,19 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button 
-                  onClick={handleDownloadReceipt}
+                  onClick={handleDownloadPdf}
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
                   <Download className="h-4 w-4 mr-2" />
-                  Download Receipt
+                  Download PDF
                 </Button>
                 <Button 
-                  onClick={handleEmailReceipt}
+                  onClick={handlePrintReceipt}
                   variant="outline"
                   className="w-full"
                 >
                   <Mail className="h-4 w-4 mr-2" />
-                  Email Receipt
+                  Print / Save as PDF
                 </Button>
                 <Button 
                   variant="outline"
@@ -415,6 +533,8 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
     </div>
   );
 }
+
+
 
 
 

@@ -195,23 +195,6 @@ export default function Home() {
         'Quality guarantee'
       ]
     },
-    {
-      id: 'customer-support',
-      title: 'Customer Support',
-      description: 'A dedicated team ready to answer all your questions quickly.',
-      icon: MessageCircle,
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-50',
-      textColor: 'text-orange-600',
-      link: '/contact',
-      buttonText: 'Contact Us',
-      features: [
-        'Live chat support',
-        'Phone assistance',
-        'Email support',
-        'FAQ database'
-      ]
-    }
   ];
 
   const stats = [
@@ -302,17 +285,14 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-x-hidden">
       {/* Hero Section with Promotional Bubbles */}
-      <Hero 
-        onDatesChange={setSelectedDates}
-        selectedDates={selectedDates}
-      />
+      <Hero />
 
       {/* Main Homepage Sections */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-8 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Everything You Need for Car Sharing
             </h2>
@@ -321,32 +301,32 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {homepageSections.map((section, index) => {
               const Icon = section.icon;
               return (
-                <Card key={section.id} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105">
-                  <CardContent className="p-8 text-center">
-                    <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br ${section.color} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="h-10 w-10 text-white" />
+                <Card key={section.id} className={`group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105`}>
+                  <CardContent className="p-6 text-center">
+                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br ${section.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="h-8 w-8 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{section.title}</h3>
-                    <p className="text-gray-700 leading-relaxed font-medium mb-6">{section.description}</p>
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">{section.title}</h3>
+                    <p className="text-gray-700 leading-relaxed font-medium mb-4 text-sm">{section.description}</p>
                     
                     {/* Features List */}
-                    <div className="space-y-2 mb-6">
+                    <div className="space-y-1 mb-4">
                       {section.features.map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-center justify-center gap-2 text-sm text-gray-600">
-                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        <div key={featureIndex} className="flex items-center justify-center gap-2 text-xs text-gray-600">
+                          <CheckCircle className="h-3 w-3 text-green-500" />
                           <span>{feature}</span>
                         </div>
                       ))}
                     </div>
 
                     <Link href={section.link}>
-                      <Button className={`w-full ${section.bgColor} ${section.textColor} hover:opacity-90 border-0 shadow-lg hover:shadow-xl transition-all duration-300 group`}>
+                      <Button className={`w-full ${section.bgColor} ${section.textColor} hover:opacity-90 border-0 shadow-lg hover:shadow-xl transition-all duration-300 group text-sm py-2`}>
                         {section.buttonText}
-                        <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
+                        <ArrowRight className="h-3 w-3 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
                       </Button>
                     </Link>
                   </CardContent>
@@ -358,13 +338,13 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => {
               const Icon = stat.icon;
               return (
-                <div key={index} className="text-center group">
+                <div key={index} className={`text-center group`}>
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 group-hover:scale-110 transition-transform duration-300">
                     <Icon className="h-8 w-8 text-white" />
                   </div>
@@ -378,9 +358,9 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50">
+      <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50 overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               Why Choose Share Wheelz?
             </h2>
@@ -393,7 +373,7 @@ export default function Home() {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <Card key={index} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm">
+                <Card key={index} className={`group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm scroll-animate`} style={{animationDelay: `${index * 0.1}s`}}>
                   <CardContent className="p-8 text-center">
                     <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       <Icon className={`h-8 w-8 ${feature.color}`} />
@@ -409,9 +389,9 @@ export default function Home() {
       </section>
 
       {/* Featured Cars Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               {selectedDates.start && selectedDates.end ? 'Available Vehicles' : 'Featured Vehicles'}
             </h2>
@@ -424,14 +404,27 @@ export default function Home() {
           </div>
 
           {carsLoading ? (
-            <div className="flex justify-center py-12">
-              <LoadingSpinner />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="rounded-lg bg-gray-100 h-72 sm:h-80 animate-pulse" />
+              ))}
+            </div>
+          ) : carsData?.cars?.length ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
+              {carsData.cars.slice(0, 6).map((car: Car) => (
+                <div key={car.id}>
+                  <CarCard car={car} />
+                </div>
+              ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
-              {carsData?.cars?.slice(0, 6).map((car: Car) => (
-                <CarCard key={car.id} car={car} />
-              ))}
+            <div className="text-center py-12 mb-12">
+              <p className="text-gray-700 mb-4 text-lg">No cars found right now.</p>
+              <Link href="/cars">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow">
+                  Browse All Cars
+                </Button>
+              </Link>
             </div>
           )}
 
@@ -447,9 +440,9 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-50 to-blue-50">
+      <section className="py-20 bg-gradient-to-r from-purple-50 to-blue-50 overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
               How It Works
             </h2>
@@ -462,7 +455,7 @@ export default function Home() {
             {howItWorks.map((step, index) => {
               const Icon = step.icon;
               return (
-                <div key={index} className="text-center group">
+                <div key={index} className={`text-center group scroll-animate`} style={{animationDelay: `${index * 0.2}s`}}>
                   <div className="relative mb-8">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full text-white text-2xl font-bold mb-4 group-hover:scale-110 transition-transform duration-300">
                       {step.step}
@@ -482,10 +475,10 @@ export default function Home() {
       </section>
 
       {/* Car Categories Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl font-bold gradient-text mb-6 animate-fade-in">
+          <div className="text-center mb-20 scroll-animate">
+            <h2 className="text-5xl font-bold gradient-text mb-6">
               Explore Our Car Categories
             </h2>
             <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
@@ -499,7 +492,7 @@ export default function Home() {
               return (
                 <div 
                   key={index} 
-                  className="animate-fade-in hover-lift" 
+                  className="scroll-animate hover-lift" 
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <Card className={`card-modern group hover:shadow-2xl transition-all duration-500 border-0 bg-white overflow-hidden ${category.gradient}`}>
@@ -617,43 +610,43 @@ export default function Home() {
       {/* Membership Popup */}
       {showMembershipPopup && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4 animate-in fade-in duration-300"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[60] p-2 sm:p-4 animate-in fade-in duration-300"
           onClick={handleCloseMembershipPopup}
         >
           <div 
-            className="bg-white rounded-xl sm:rounded-2xl max-w-sm sm:max-w-lg w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300"
+            className="bg-white rounded-xl sm:rounded-2xl max-w-sm sm:max-w-md w-full max-h-[85vh] sm:max-h-[80vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300 mt-20 sm:mt-24 scrollbar-hide"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="relative p-4 sm:p-8 text-center border-b border-gray-100">
+            <div className="relative p-3 sm:p-6 text-center border-b border-gray-100">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleCloseMembershipPopup}
-                className="absolute top-2 right-2 sm:top-4 sm:right-4 h-8 w-8 p-0 hover:bg-gray-100"
+                className="absolute top-2 right-2 sm:top-3 sm:right-3 h-6 w-6 p-0 hover:bg-gray-100"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3 w-3" />
               </Button>
               
-              <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-3 sm:mb-4">
-                <Crown className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+              <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-2 sm:mb-3">
+                <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
               
-              <h2 className="text-xl sm:text-3xl font-bold text-gray-900 mb-2">
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
                 Unlock Exclusive Benefits
               </h2>
-              <h3 className="text-lg sm:text-xl font-semibold text-blue-600 mb-3 sm:mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-blue-600 mb-2 sm:mb-3">
                 Become a Member Today!
               </h3>
-              <p className="text-sm sm:text-base text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 Join our secure community and enjoy premium perks designed for both car owners and renters.
               </p>
             </div>
 
             {/* Content */}
-            <div className="p-4 sm:p-8 space-y-4 sm:space-y-6">
+            <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
               {/* For Car Owners */}
-              <div className="bg-green-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-green-200">
+              <div className="bg-green-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-green-200">
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center">
                     <PoundSterling className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -677,7 +670,7 @@ export default function Home() {
               </div>
 
               {/* For Renters */}
-              <div className="bg-blue-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-blue-200">
+              <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-blue-200">
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center">
                     <CarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
@@ -701,7 +694,7 @@ export default function Home() {
               </div>
 
               {/* Trust Badges */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 py-3 sm:py-4 border-t border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 py-2 sm:py-3 border-t border-b border-gray-200">
                 <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
                   <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
                   <span>Discount on Insurance</span>
