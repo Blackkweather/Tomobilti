@@ -763,19 +763,7 @@ export class MemStorage implements IStorage {
 
 // Note: HybridStorage removed - using direct DatabaseStorage in production
 
-// Storage factory function
-async function createStorage() {
-  if (isProd) {
-    // In production, use PostgreSQL DatabaseStorage
-    const { DatabaseStorage } = await import('./db');
-    return new DatabaseStorage();
-  } else {
-    // In development, use MemStorage for simplicity
-    return new MemStorage();
-  }
-}
-
-// Create storage instance
-export const storage = await createStorage();
+// Create storage instance - will be initialized properly in server startup
+export const storage = new MemStorage();
 
 // Sample data initialization removed
