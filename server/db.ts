@@ -336,7 +336,36 @@ export class DatabaseStorage implements IStorage {
       return;
     }
 
-    // Create sample users
+    await this.createSampleUsersAndCars();
+  }
+
+  // Force initialize cars even if users exist
+  async forceInitializeCars() {
+    console.log('🚗 Force initializing cars...');
+    
+    // Get existing users or create them
+    let existingUsers = await db.select().from(users);
+    let owners = existingUsers.filter(user => user.userType === 'owner');
+    
+    if (owners.length === 0) {
+      console.log('No owners found, creating sample users...');
+      await this.createSampleUsersAndCars();
+      existingUsers = await db.select().from(users);
+      owners = existingUsers.filter(user => user.userType === 'owner');
+    }
+    
+    // Check if cars exist
+    const existingCars = await db.select().from(cars);
+    if (existingCars.length > 0) {
+      console.log(`✅ ${existingCars.length} cars already exist`);
+      return;
+    }
+    
+    // Create cars
+    await this.createSampleCars(owners);
+  }
+
+  private async createSampleUsersAndCars() {
     const owner1 = await this.createUser({
       email: "ahmed.bennani@example.com",
       password: process.env.DEMO_USER_PASSWORD || "demo_password_123",
