@@ -124,12 +124,26 @@ app.use((req, res, next) => {
   // Initialize sample data in production if database is empty
   if (process.env.NODE_ENV === 'production') {
     try {
+      console.log('🚀 Starting production database initialization...');
       const { DatabaseStorage } = await import('./db');
       const dbStorage = new DatabaseStorage();
+      
+      console.log('📊 Checking database connection...');
+      const testUsers = await dbStorage.getAllUsers();
+      console.log(`📊 Database connected. Found ${testUsers.length} users`);
+      
+      console.log('🚗 Initializing cars...');
       await dbStorage.forceInitializeCars();
       console.log('✅ Cars initialized for production');
+      
+      // Verify cars were created
+      const finalCars = await dbStorage.getAllCars();
+      console.log(`✅ Production ready with ${finalCars.length} cars`);
+      
     } catch (error) {
-      console.error('⚠️ Failed to initialize cars:', error);
+      console.error('❌ CRITICAL: Failed to initialize production database:', error);
+      console.error('❌ Stack trace:', error.stack);
+      // Don't throw - let the server start even if initialization fails
     }
   }
   
