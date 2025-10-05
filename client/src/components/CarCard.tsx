@@ -9,6 +9,8 @@ import { getCarImage, getSpecificCarImage } from '../utils/carImages';
 import ImageGallery from './ImageGallery';
 import { formatCurrency } from '../utils/currency';
 import type { Car } from '@shared/schema';
+import { useLocation } from 'wouter';
+import { Link } from 'wouter';
 
 interface CarCardProps {
   car: Car & {
@@ -107,6 +109,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
   } = car;
 
   const { isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
   
   const vehicleCategory = getVehicleCategory(make, model);
   const CategoryIcon = vehicleCategoryIcons[vehicleCategory as keyof typeof vehicleCategoryIcons] || Award;
@@ -118,13 +121,13 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
   const carImages = images && images.length > 0 ? images : [carImage];
 
   const handleMoreDetails = () => {
-    // Navigate to car details page
-    window.location.href = `/cars/${id}`;
+    if (!id) return;
+    setLocation(`/cars/${id}`);
   };
 
   const handleBooking = () => {
-    // Navigate to car details page and scroll to booking section
-    window.location.href = `/cars/${id}#booking`;
+    if (!id) return;
+    setLocation(`/cars/${id}#booking`);
   };
 
   return (
@@ -146,6 +149,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
                 className="bg-white/90 hover:bg-white text-gray-600 hover:text-red-500 transition-colors duration-200"
                 onClick={onToggleFavorite}
               >
@@ -159,6 +163,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
         <div className="p-3 sm:p-4 border-b border-gray-100">
           <div className="flex gap-2 sm:gap-3">
             <Button 
+              type="button"
               onClick={handleMoreDetails}
               variant="outline"
               size="sm"
@@ -169,6 +174,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
               <span className="sm:hidden">Details</span>
             </Button>
             <Button 
+              type="button"
               onClick={handleBooking}
               size="sm"
               className="flex-1 bg-mauve-600 hover:bg-mauve-700 text-white px-2 sm:px-3 py-2 text-xs sm:text-sm shadow-sm hover:shadow-md transition-all duration-200 min-w-0"

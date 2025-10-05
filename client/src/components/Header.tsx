@@ -18,6 +18,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
 import CarFilterDropdown from './CarFilterDropdown';
+import { LocationPicker } from './LocationPicker';
 
 export default function Header() {
   const [location, setLocation] = useLocation();
@@ -160,41 +161,22 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
-      <div className="container mx-auto flex h-14 sm:h-16 items-center px-2 sm:px-4 max-w-7xl w-full">
-        {/* Brand Logo - Left Side */}
-        <div className="flex-shrink-0 mr-2 sm:mr-4">
-          <Link href="/" className="flex items-center">
-            <img 
-              src="/assets/MAIN LOGO.png?v=5" 
-              alt="ShareWheelz" 
-              className="h-8 sm:h-12 lg:h-16 w-auto hover:scale-105 transition-transform duration-200"
-            />
-          </Link>
-        </div>
-
-        {/* Mobile Search Bar - Show on mobile */}
-        <div className="flex lg:hidden items-center gap-2 flex-1 mx-2">
-          <div className="relative w-full">
-            <Search className="absolute left-2 top-1/2 h-3 w-3 sm:h-4 sm:w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              placeholder="Search cars..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-6 sm:pl-8 h-8 sm:h-9 text-xs sm:text-sm bg-white border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all duration-200 rounded-md"
-            />
+      <div className="container mx-auto flex h-14 sm:h-16 items-center justify-between px-2 sm:px-4 max-w-7xl w-full">
+        {/* Left Section - Logo + Navigation */}
+        <div className="flex items-center gap-2 sm:gap-4">
+          {/* Brand Logo */}
+          <div className="flex-shrink-0">
+            <Link href="/" className="flex items-center">
+              <img 
+                src="/assets/MAIN LOGO.png?v=5" 
+                alt="ShareWheelz" 
+                className="h-8 sm:h-12 lg:h-16 w-auto hover:scale-105 transition-transform duration-200"
+              />
+            </Link>
           </div>
-          <Button 
-            onClick={handleSearch} 
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md px-2 sm:px-3 h-8 sm:h-9"
-            size="sm"
-          >
-            <Search className="h-3 w-3 sm:h-4 sm:w-4" />
-          </Button>
-        </div>
 
-        {/* Desktop Navigation - Left */}
-        <nav className="hidden xl:flex items-center gap-1 mr-4 flex-1">
+          {/* Desktop Navigation */}
+          <nav className="hidden xl:flex items-center gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             
@@ -267,31 +249,49 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Search Bar - CENTERED (Desktop only) */}
-        <div className="hidden lg:flex items-center gap-2 flex-1 justify-center max-w-md mx-4">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <Input
-              data-testid="input-search"
-              placeholder="Search cars..."
+        </div>
+
+        {/* Center Section - Search Bar */}
+        <div className="hidden lg:flex items-center gap-2 max-w-md mx-4">
+          <div className="w-full">
+            <LocationPicker
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="pl-10 bg-white border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 rounded-lg text-sm h-9"
+              onChange={setSearchQuery}
+              placeholder="Enter city or location..."
+              className="h-10 py-0"
             />
           </div>
           <Button 
             onClick={handleSearch} 
             data-testid="button-search" 
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-3 h-9"
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-3 h-10"
             size="sm"
           >
             <Search className="h-4 w-4" />
           </Button>
         </div>
 
-        {/* User Actions - Right Side */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-1 sm:ml-4">
+        {/* Mobile Search Bar - Show on mobile */}
+        <div className="flex lg:hidden items-center gap-2 mx-2">
+          <div className="w-full max-w-xs">
+            <LocationPicker
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Enter city..."
+              className="h-8 sm:h-10 py-0 text-xs sm:text-sm"
+            />
+          </div>
+          <Button 
+            onClick={handleSearch} 
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md px-2 sm:px-3 h-8 sm:h-10"
+            size="sm"
+          >
+            <Search className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
+        </div>
+
+        {/* Right Section - User Actions */}
+        <div className="flex items-center gap-1 sm:gap-2">
           {/* Notifications */}
           {isAuthenticated && (
             <DropdownMenu>
@@ -483,16 +483,12 @@ export default function Header() {
 
                 {/* Mobile Search */}
                 <div className="space-y-2">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <Input
-                      placeholder="Search cars, locations..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                      className="pl-10"
-                    />
-                  </div>
+                  <LocationPicker
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    placeholder="Enter city or location..."
+                    className="w-full"
+                  />
                   <Button onClick={handleSearch} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                     <Search className="h-4 w-4 mr-2" />
                     Search

@@ -227,10 +227,10 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className="w-full pl-10 pr-10 py-3 text-sm border border-gray-300 rounded-lg 
+          className={`w-full pl-10 pr-10 text-sm border border-gray-300 rounded-lg 
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                      bg-white shadow-sm transition-all duration-200
-                     placeholder:text-gray-400 hover:border-gray-400"
+                     placeholder:text-gray-400 hover:border-gray-400 ${className || ''}`}
         />
         
         {inputValue && (

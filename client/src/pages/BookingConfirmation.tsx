@@ -6,7 +6,8 @@ import BookingReceipt from "../components/BookingReceipt";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function BookingConfirmation() {
-  const [, params] = useRoute("/booking-confirmation/:bookingId");
+  const [match, params] = useRoute<{ bookingId: string }>("/booking-confirmation/:bookingId");
+  const bookingId: string | undefined = match ? params?.bookingId : undefined;
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [booking, setBooking] = useState<any>(null);
@@ -14,14 +15,14 @@ export default function BookingConfirmation() {
   
   useEffect(() => {
     const fetchBookingDetails = async () => {
-      if (!params?.bookingId) {
+      if (!bookingId) {
         setError('Booking ID is missing.');
         setIsLoading(false);
         return;
       }
       
       try {
-        const fetchedBooking = await bookingApi.getBooking(params.bookingId);
+        const fetchedBooking = await bookingApi.getBooking(bookingId);
         setBooking(fetchedBooking);
       } catch (err) {
         console.error("Failed to fetch booking details:", err);
@@ -32,7 +33,7 @@ export default function BookingConfirmation() {
     };
 
     fetchBookingDetails();
-  }, [params?.bookingId]);
+  }, [bookingId]);
   
   if (isLoading) {
     return (
@@ -73,7 +74,7 @@ export default function BookingConfirmation() {
 
   // Transform booking data to match BookingReceipt component interface
   const receiptData = {
-    bookingId: params?.bookingId || 'unknown',
+    bookingId: bookingId || 'unknown',
     booking: {
       id: booking.id,
       car: {
@@ -89,7 +90,7 @@ export default function BookingConfirmation() {
         phone: booking.owner?.phone || '+44 7123 456789'
       },
       renter: {
-        name: user?.name || 'Sarah Johnson',
+        name: user ? `${user.firstName} ${user.lastName}` : 'Sarah Johnson',
         email: user?.email || 'sarah.johnson@example.com',
         phone: user?.phone || '+44 7987 654321'
       },
@@ -100,12 +101,12 @@ export default function BookingConfirmation() {
         endTime: '18:00'
       },
       pricing: {
-        dailyRate: booking.car?.pricePerDay || 85,
+        dailyRate: Number(booking.car?.pricePerDay) || 85,
         totalDays: 2,
-        subtotal: (booking.car?.pricePerDay || 85) * 2,
-        serviceFee: booking.serviceFee || 17,
-        insurance: booking.insurance || 15,
-        total: booking.totalAmount || 202
+        subtotal: (Number(booking.car?.pricePerDay) || 85) * 2,
+        serviceFee: Number(booking.serviceFee) || 17,
+        insurance: Number(booking.insurance) || 15,
+        total: Number(booking.totalAmount) || 202
       },
       payment: {
         method: 'Credit Card',

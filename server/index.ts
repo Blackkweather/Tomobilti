@@ -74,8 +74,8 @@ const upload = multer({
   }
 });
 
-// Apply multer middleware to car routes
-app.use('/api/cars', upload.array('images', 5));
+// Apply multer middleware only in routes that need it (POST/PUT in routes.ts)
+// app.use('/api/cars', upload.array('images', 5));
 
 app.use((req, res, next) => {
   const start = Date.now();
