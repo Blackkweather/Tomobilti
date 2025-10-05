@@ -446,16 +446,18 @@ export default function BecomeMember() {
           </div>
 
           {/* Tabs for Owners vs Renters */}
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'owners' | 'renters')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-12 bg-white shadow-lg">
-                <TabsTrigger value="owners" className="text-lg py-4">
-                  <PoundSterling className="w-5 h-5 mr-2" />
-                  For Car Owners
+              <TabsList className="grid w-full grid-cols-2 mb-12 bg-white shadow-lg rounded-lg overflow-hidden max-w-2xl mx-auto">
+                <TabsTrigger value="owners" className="text-base sm:text-lg py-3 sm:py-4 px-4 sm:px-6 flex items-center justify-center whitespace-nowrap">
+                  <PoundSterling className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="hidden sm:inline">For Car Owners</span>
+                  <span className="sm:hidden">Owners</span>
                 </TabsTrigger>
-                <TabsTrigger value="renters" className="text-lg py-4">
-                  <Car className="w-5 h-5 mr-2" />
-                  For Renters
+                <TabsTrigger value="renters" className="text-base sm:text-lg py-3 sm:py-4 px-4 sm:px-6 flex items-center justify-center whitespace-nowrap">
+                  <Car className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="hidden sm:inline">For Renters</span>
+                  <span className="sm:hidden">Renters</span>
                 </TabsTrigger>
               </TabsList>
 
