@@ -341,28 +341,45 @@ export class DatabaseStorage implements IStorage {
 
   // Force initialize cars even if users exist
   async forceInitializeCars() {
-    console.log('🚗 Force initializing cars...');
-    
-    // Get existing users or create them
-    let existingUsers = await db.select().from(users);
-    let owners = existingUsers.filter(user => user.userType === 'owner');
-    
-    if (owners.length === 0) {
-      console.log('No owners found, creating sample users...');
-      await this.createSampleUsersAndCars();
-      existingUsers = await db.select().from(users);
-      owners = existingUsers.filter(user => user.userType === 'owner');
+    try {
+      console.log('🚗 Force initializing cars...');
+      
+      // Get existing users or create them
+      let existingUsers = await db.select().from(users);
+      console.log(`Found ${existingUsers.length} users in database`);
+      
+      let owners = existingUsers.filter(user => user.userType === 'owner');
+      console.log(`Found ${owners.length} car owners`);
+      
+      if (owners.length === 0) {
+        console.log('No owners found, creating sample users...');
+        await this.createSampleUsersAndCars();
+        existingUsers = await db.select().from(users);
+        owners = existingUsers.filter(user => user.userType === 'owner');
+        console.log(`Created ${owners.length} owners`);
+      }
+      
+      // Check if cars exist
+      const existingCars = await db.select().from(cars);
+      console.log(`Found ${existingCars.length} cars in database`);
+      
+      if (existingCars.length > 0) {
+        console.log(`✅ ${existingCars.length} cars already exist`);
+        return;
+      }
+      
+      // Create cars
+      console.log('Creating sample cars...');
+      await this.createSampleCars(owners);
+      
+      // Verify cars were created
+      const finalCars = await db.select().from(cars);
+      console.log(`✅ Successfully created ${finalCars.length} cars`);
+      
+    } catch (error) {
+      console.error('❌ Error in forceInitializeCars:', error);
+      throw error;
     }
-    
-    // Check if cars exist
-    const existingCars = await db.select().from(cars);
-    if (existingCars.length > 0) {
-      console.log(`✅ ${existingCars.length} cars already exist`);
-      return;
-    }
-    
-    // Create cars
-    await this.createSampleCars(owners);
   }
 
   private async createSampleUsersAndCars() {
