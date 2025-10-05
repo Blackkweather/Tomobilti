@@ -1410,8 +1410,30 @@ export async function registerRoutes(app: Express): Promise<Express> {
 
 
   // Health check
-  app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", message: "Tomobilto API is running" });
+  app.get("/api/health", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const cars = await storage.getAllCars();
+      
+      res.json({ 
+        status: "ok", 
+        message: "Tomobilto API is running",
+        database: {
+          users: users.length,
+          cars: cars.length,
+          connected: true
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        status: "error", 
+        message: "Database connection failed",
+        database: {
+          connected: false,
+          error: error.message
+        }
+      });
+    }
   });
 
   // Database status check
