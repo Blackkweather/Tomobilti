@@ -12,7 +12,7 @@ import {
 } from './ui/dropdown-menu';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown, ChevronDown, HelpCircle, Phone, AlertTriangle, Users, PoundSterling, Headphones, MessageCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
@@ -87,6 +87,127 @@ export default function Header() {
     setLocation('/');
   };
 
+  const navItems = [
+    // Company Section
+    { 
+      href: '/about', 
+      label: 'About Us',
+      description: 'Learn about ShareWheelz and our mission.',
+      icon: User,
+      subItems: [
+        { href: '/about', label: 'Our Story', description: 'Learn about ShareWheelz' },
+        { href: '/how-it-works', label: 'How It Works', description: 'See how our platform works' }
+      ]
+    },
+    { 
+      href: '/how-it-works', 
+      label: 'How It Works',
+      description: 'Understand how ShareWheelz works for you.',
+      icon: HelpCircle,
+      subItems: [
+        { href: '/how-it-works', label: 'For Renters', description: 'How to rent a car' },
+        { href: '/how-it-works', label: 'For Owners', description: 'How to list your car' }
+      ]
+    },
+    
+    // Services Section
+    { 
+      href: '/cars', 
+      label: 'Rent a Car',
+      description: 'Find and book a car easily near you.',
+      icon: Car,
+      subItems: [
+        { href: '/cars', label: 'Browse Cars', description: 'Search our wide selection' },
+        { href: '/favorites', label: 'My Favorites', description: 'Saved vehicles' }
+      ]
+    },
+    { 
+      href: '/become-member', 
+      label: 'Become a Member',
+      description: 'Get access to exclusive benefits and a secure community.',
+      icon: Crown,
+      subItems: [
+        { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
+        { href: '/membership-benefits', label: 'Benefits', description: 'See all perks' },
+        { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' }
+      ]
+    },
+    { 
+      href: '/add-car-dynamic', 
+      label: 'Fleet Management',
+      description: 'Manage your vehicle fleet and maximize earnings.',
+      icon: PoundSterling,
+      subItems: [
+        { href: '/add-car-dynamic', label: 'List Your Car', description: 'Start earning today' },
+        { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
+        { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' },
+        { href: '/car-management', label: 'Manage Cars', description: 'Track your listings' }
+      ]
+    },
+    { 
+      href: '/business', 
+      label: 'Business Solutions',
+      description: 'Enterprise solutions for businesses.',
+      icon: Shield,
+      subItems: [
+        { href: '/business', label: 'Corporate Accounts', description: 'Business solutions' },
+        { href: '/business', label: 'Fleet Services', description: 'Fleet management' }
+      ]
+    },
+    
+    // Support Section
+    { 
+      href: '/support', 
+      label: 'Help Center',
+      description: 'Find answers to common questions.',
+      icon: HelpCircle,
+      subItems: [
+        { href: '/support', label: 'Help Center', description: 'Find answers to common questions' },
+        { href: '/faq', label: 'FAQ', description: 'Frequently asked questions' }
+      ]
+    },
+    { 
+      href: '/contact', 
+      label: 'Contact Us',
+      description: 'Get in touch with our team.',
+      icon: Phone,
+      subItems: [
+        { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
+        { href: '/live-chat', label: 'Live Chat', description: 'Chat with our support team' }
+      ]
+    },
+    { 
+      href: '/safety', 
+      label: 'Safety Center',
+      description: 'Safety guidelines and emergency assistance.',
+      icon: Shield,
+      subItems: [
+        { href: '/safety', label: 'Safety Guidelines', description: 'Safety best practices' },
+        { href: '/roadside-assistance', label: 'Roadside Assistance', description: '24/7 emergency help' }
+      ]
+    },
+    { 
+      href: '/guidelines', 
+      label: 'Community Guidelines',
+      description: 'Community rules and guidelines.',
+      icon: Users,
+      subItems: [
+        { href: '/guidelines', label: 'Community Guidelines', description: 'Community rules' },
+        { href: '/terms', label: 'Terms of Service', description: 'Terms and conditions' }
+      ]
+    },
+    { 
+      href: '/report', 
+      label: 'Report a Problem',
+      description: 'Report issues or concerns.',
+      icon: AlertTriangle,
+      subItems: [
+        { href: '/report', label: 'Report a Problem', description: 'Report issues or concerns' },
+        { href: '/support', label: 'Get Help', description: 'Additional support options' }
+      ]
+    }
+  ];
+
   if (loading) {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
@@ -100,8 +221,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-7xl">
-        {/* Left Section - Logo */}
-        <div className="flex items-center">
+        {/* Left Section - Logo + Navigation */}
+        <div className="flex items-center gap-4">
+          {/* Brand Logo */}
           <Link href="/" className="flex items-center">
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
@@ -109,6 +231,51 @@ export default function Header() {
               className="h-10 w-auto hover:scale-105 transition-transform duration-200"
             />
           </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden xl:flex items-center gap-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <DropdownMenu key={item.href}>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant={location === item.href ? 'default' : 'ghost'} 
+                    className={`hover:scale-105 transition-all duration-200 flex items-center gap-1 text-sm px-2 ${
+                      location === item.href 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {item.label}
+                    <ChevronDown className="h-3 w-3" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-80" align="start" sideOffset={8} avoidCollisions={true}>
+                  <div className="p-3">
+                    <DropdownMenuLabel className="flex items-center gap-2 text-base font-semibold">
+                      <Icon className="h-5 w-5 text-blue-600" />
+                      {item.label}
+                    </DropdownMenuLabel>
+                    <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <div className="p-2">
+                    {item.subItems.map((subItem) => (
+                      <DropdownMenuItem key={subItem.href} asChild>
+                        <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
+                          <div className="font-medium text-gray-900">{subItem.label}</div>
+                          <div className="text-sm text-gray-600">{subItem.description}</div>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          })}
+        </nav>
         </div>
 
         {/* Center Section - Search Bar */}
@@ -214,7 +381,7 @@ export default function Header() {
                 align="end" 
                 side="bottom"
                 sideOffset={8} 
-                avoidCollisions={true}
+                avoidCollisions={true} 
               >
                 <div className="flex flex-col space-y-1 p-2">
                   <p className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</p>
@@ -289,188 +456,157 @@ export default function Header() {
             </div>
           )}
 
-          {/* Mobile Menu */}
+        {/* Mobile Menu */}
           <div className="md:hidden">
-            <Sheet>
-              <SheetTrigger asChild>
+          <Sheet>
+            <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 h-10 w-10">
                   <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[350px]">
-                <div className="flex flex-col space-y-4">
-                  {/* Mobile Brand Logo */}
-                  <div className="flex items-center justify-center pb-4 border-b">
-                    <img 
-                      src="/assets/MAIN LOGO.png?v=5" 
-                      alt="ShareWheelz" 
-                      className="h-16 w-auto hover:scale-105 transition-transform duration-200"
-                    />
-                  </div>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[280px] sm:w-[350px]">
+              <div className="flex flex-col space-y-4">
+                {/* Mobile Brand Logo */}
+            <div className="flex items-center justify-center pb-4 border-b">
+              <img 
+                src="/assets/MAIN LOGO.png?v=5" 
+                alt="ShareWheelz" 
+                className="h-16 w-auto hover:scale-105 transition-transform duration-200"
+              />
+            </div>
 
-                  {/* Mobile Search */}
-                  <div className="space-y-2">
+                {/* Mobile Search */}
+                <div className="space-y-2">
                     <LocationPicker
                       value={searchQuery}
                       onChange={setSearchQuery}
                       placeholder="Enter city or location..."
                       className="w-full"
                     />
-                    <Button onClick={handleSearch} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                      <Search className="h-4 w-4 mr-2" />
-                      Search
-                    </Button>
-                  </div>
+                  <Button onClick={handleSearch} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                    <Search className="h-4 w-4 mr-2" />
+                    Search
+                  </Button>
+                </div>
 
                   {/* Mobile Navigation */}
                   <nav className="space-y-2">
-                    <Link href="/cars">
-                      <Button 
-                        variant={location === '/cars' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === '/cars' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        <Car className="h-4 w-4 mr-2" />
-                        Rent a Car
-                      </Button>
-                    </Link>
-                    <Link href="/become-member">
-                      <Button 
-                        variant={location === '/become-member' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === '/become-member' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        <Crown className="h-4 w-4 mr-2" />
-                        Become a Member
-                      </Button>
-                    </Link>
-                    <Link href="/add-car-dynamic">
-                      <Button 
-                        variant={location === '/add-car-dynamic' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === '/add-car-dynamic' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        List Your Car
-                      </Button>
-                    </Link>
-                    <Link href="/about">
-                      <Button 
-                        variant={location === '/about' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === '/about' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        About Us
-                      </Button>
-                    </Link>
-                    <Link href="/contact">
-                      <Button 
-                        variant={location === '/contact' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === '/contact' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        Contact Us
-                      </Button>
-                    </Link>
+                    {navItems.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <div key={item.href} className="space-y-1">
+                          <Link href={item.href}>
+                            <Button 
+                              variant={location === item.href ? 'default' : 'ghost'} 
+                              className={`w-full justify-start ${
+                                location === item.href 
+                                  ? 'bg-blue-600 text-white' 
+                                  : 'hover:bg-blue-50 hover:text-blue-600'
+                              }`}
+                            >
+                              <Icon className="h-4 w-4 mr-2" />
+                              {item.label}
+                            </Button>
+                          </Link>
+                          {/* Mobile Sub-items */}
+                          <div className="ml-6 space-y-1">
+                            {item.subItems.slice(0, 2).map((subItem) => (
+                              <Link key={subItem.href} href={subItem.href}>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  className="w-full justify-start text-sm text-gray-600 hover:text-blue-600 hover:bg-blue-50"
+                                >
+                                  {subItem.label}
+                                </Button>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </nav>
 
-                  {/* Mobile User Actions */}
-                  {isAuthenticated ? (
-                    <div className="space-y-2 pt-4 border-t">
-                      <div className="flex items-center space-x-3 p-2">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={user?.profileImage || undefined} alt={user?.firstName || 'User'} />
-                          <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">
-                            {user?.firstName?.[0]}{user?.lastName?.[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{user?.firstName} {user?.lastName}</p>
-                          <p className="text-xs text-gray-500">{user?.email}</p>
-                          {user?.membershipTier && (
-                            <Badge className="mt-1 bg-gradient-to-r from-purple-500 to-blue-600 text-white text-xs">
-                              <Crown className="h-2 w-2 mr-1" />
-                              {user.membershipTier === 'purple' ? 'Starter' : 
-                               user.membershipTier === 'black' ? 'Elite' : 'Gold'} Member
-                            </Badge>
-                          )}
-                        </div>
+                {/* Mobile User Actions */}
+                {isAuthenticated ? (
+                  <div className="space-y-2 pt-4 border-t">
+                    <div className="flex items-center space-x-3 p-2">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={user?.profileImage || undefined} alt={user?.firstName || 'User'} />
+                        <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold">
+                          {user?.firstName?.[0]}{user?.lastName?.[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">{user?.firstName} {user?.lastName}</p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
+                        {user?.membershipTier && (
+                          <Badge className="mt-1 bg-gradient-to-r from-purple-500 to-blue-600 text-white text-xs">
+                            <Crown className="h-2 w-2 mr-1" />
+                            {user.membershipTier === 'purple' ? 'Starter' : 
+                             user.membershipTier === 'black' ? 'Elite' : 'Gold'} Member
+                          </Badge>
+                        )}
                       </div>
-                      <Link href="/dashboard">
-                        <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
-                          <User className="h-4 w-4 mr-2" />
-                          Dashboard
-                        </Button>
-                      </Link>
-                      <Link href="/settings">
-                        <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Settings
-                        </Button>
-                      </Link>
-                      <Link href="/security">
-                        <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
-                          <Shield className="h-4 w-4 mr-2" />
-                          Security
-                        </Button>
-                      </Link>
-                      {(user?.userType === 'owner' || user?.userType === 'both') && (
-                        <Link href="/add-car">
-                          <Button variant="outline" className="w-full justify-start hover:bg-green-50 hover:text-green-600">
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Car
-                          </Button>
-                        </Link>
-                      )}
-                      <Link href="/become-member">
-                        <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
-                          <Crown className="h-4 w-4 mr-2" />
-                          Membership
-                        </Button>
-                      </Link>
-                      <Button 
-                        onClick={handleLogout} 
-                        variant="outline" 
-                        className="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700"
-                      >
-                        <LogOut className="h-4 w-4 mr-2" />
-                        Log out
+                    </div>
+                    <Link href="/dashboard">
+                      <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
+                        <User className="h-4 w-4 mr-2" />
+                        Dashboard
                       </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-2 pt-4 border-t">
-                      <Link href="/login">
-                        <Button variant="outline" className="w-full hover:bg-blue-50 hover:text-blue-600">
-                          Login
+                    </Link>
+                    <Link href="/settings">
+                      <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Settings
+                      </Button>
+                    </Link>
+                    <Link href="/security">
+                      <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Security
+                      </Button>
+                    </Link>
+                    {(user?.userType === 'owner' || user?.userType === 'both') && (
+                      <Link href="/add-car">
+                        <Button variant="outline" className="w-full justify-start hover:bg-green-50 hover:text-green-600">
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Car
                         </Button>
                       </Link>
-                      <Link href="/register">
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                          Sign Up
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </SheetContent>
-            </Sheet>
+                    )}
+                    <Link href="/become-member">
+                      <Button variant="outline" className="w-full justify-start hover:bg-blue-50 hover:text-blue-600">
+                        <Crown className="h-4 w-4 mr-2" />
+                        Membership
+                      </Button>
+                    </Link>
+                    <Button 
+                      onClick={handleLogout} 
+                      variant="outline" 
+                      className="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      Log out
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-2 pt-4 border-t">
+                    <Link href="/login">
+                      <Button variant="outline" className="w-full hover:bg-blue-50 hover:text-blue-600">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/register">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
           </div>
         </div>
       </div>
