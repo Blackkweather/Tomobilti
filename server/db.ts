@@ -384,178 +384,162 @@ export class DatabaseStorage implements IStorage {
 
   private async createSampleUsersAndCars() {
     const owner1 = await this.createUser({
-      email: "ahmed.bennani@example.com",
+      email: "john.smith@example.com",
       password: process.env.DEMO_USER_PASSWORD || "demo_password_123",
-      firstName: "Ahmed",
-      lastName: "Bennani",
-      phone: "+212 6 12 34 56 78",
+      firstName: "John",
+      lastName: "Smith",
+      phone: "+44 20 1234 5678",
       userType: "owner"
     });
 
     const owner2 = await this.createUser({
-      email: "youssef.alami@example.com", 
+      email: "james.wilson@example.com", 
       password: process.env.DEMO_USER_PASSWORD || "demo_password_123",
-      firstName: "Youssef",
-      lastName: "Alami",
-      phone: "+212 6 23 45 67 89",
+      firstName: "James",
+      lastName: "Wilson",
+      phone: "+44 161 234 5678",
       userType: "owner"
     });
 
     const owner3 = await this.createUser({
-      email: "sara.idrissi@example.com", 
+      email: "sarah.jones@example.com", 
       password: process.env.DEMO_USER_PASSWORD || "demo_password_123",
-      firstName: "Sara",
-      lastName: "Idrissi",
-      phone: "+212 6 45 67 89 01",
+      firstName: "Sarah",
+      lastName: "Jones",
+      phone: "+44 151 234 5678",
       userType: "owner"
     });
 
     await this.createUser({
-      email: "fatima.zahra@example.com",
+      email: "emma.brown@example.com",
       password: process.env.DEMO_USER_PASSWORD || "demo_password_123", 
-      firstName: "Fatima",
-      lastName: "Zahra",
-      phone: "+212 6 34 56 78 90",
+      firstName: "Emma",
+      lastName: "Brown",
+      phone: "+44 131 234 5678",
       userType: "renter"
     });
 
-    // Create realistic cars
+    // Create YOUR UK luxury cars for ShareWheelz platform
     await this.createCar({
       ownerId: owner1.id,
-      title: "Dacia Logan - Berline Familiale",
-      description: "Berline spacieuse et économique, parfaite pour les familles. Climatisation, GPS intégré.",
-      make: "Dacia",
-      model: "Logan",
-      year: 2021,
+      title: "Porsche 911 F Model - Classic Sports Car",
+      description: "Iconic classic Porsche 911 F Model with timeless design and exceptional performance. Perfect for enthusiasts who appreciate automotive heritage and driving excellence.",
+      make: "Porsche",
+      model: "911 F",
+      year: 1973,
       fuelType: "essence",
       transmission: "manual",
-      seats: 5,
-      pricePerDay: "250.00",
-      location: "Casablanca, Maarif",
-      city: "Casablanca",
-      images: ["https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format"],
+      seats: 2,
+      pricePerDay: "120.00",
+      currency: "GBP",
+      location: "London, Westminster",
+      city: "London",
+      latitude: 51.5074,
+      longitude: -0.1278,
+      images: ["/assets/CLASSIC.png"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner2.id,
-      title: "Renault Clio - Citadine Moderne",
-      description: "Citadine moderne avec toutes les commodités. Idéale pour la ville, consommation réduite.",
-      make: "Renault",
-      model: "Clio",
-      year: 2022,
+      title: "Jaguar F-Type Convertible - Luxury Sports Car",
+      description: "Stunning Jaguar F-Type Convertible with breathtaking design and exhilarating performance. Experience the thrill of open-top driving with British luxury and style.",
+      make: "Jaguar",
+      model: "F-Type",
+      year: 2023,
       fuelType: "essence",
-      transmission: "automatic", 
-      seats: 5,
-      pricePerDay: "320.00",
-      location: "Rabat, Agdal",
-      city: "Rabat",
-      images: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=600&fit=crop&auto=format"],
+      transmission: "automatic",
+      seats: 2,
+      pricePerDay: "95.00",
+      currency: "GBP",
+      location: "Manchester, City Centre",
+      city: "Manchester",
+      latitude: 53.4808,
+      longitude: -2.2426,
+      images: ["/assets/CONVERTIBLES.png"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner1.id,
-      title: "Peugeot 208 - Compacte Élégante",
-      description: "Compacte élégante avec finitions soignées. Parfaite pour les déplacements urbains.",
-      make: "Peugeot",
-      model: "208",
-      year: 2020,
-      fuelType: "diesel",
-      transmission: "manual",
-      seats: 4,
-      pricePerDay: "280.00",
-      location: "Marrakech, Guéliz",
-      city: "Marrakech",
-      images: ["https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    await this.createCar({
-      ownerId: owner3.id,
-      title: "Hyundai Tucson - SUV Confortable",
-      description: "SUV spacieux et confortable pour vos voyages. 4x4, climatisation automatique.",
-      make: "Hyundai",
-      model: "Tucson",
-      year: 2021,
-      fuelType: "diesel",
+      title: "Tesla Model X - Electric SUV",
+      description: "Revolutionary Tesla Model X electric SUV with falcon-wing doors, autopilot capabilities, and zero emissions. Experience the future of automotive technology.",
+      make: "Tesla",
+      model: "Model X",
+      year: 2023,
+      fuelType: "electric",
       transmission: "automatic",
       seats: 7,
-      pricePerDay: "480.00",
-      location: "Fès, Centre-ville",
-      city: "Fès",
-      images: ["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&h=600&fit=crop&auto=format"],
+      pricePerDay: "110.00",
+      currency: "GBP",
+      location: "Edinburgh, New Town",
+      city: "Edinburgh",
+      latitude: 55.9533,
+      longitude: -3.1883,
+      images: ["/assets/ELECTRIC.png"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner2.id,
-      title: "Volkswagen Golf - Compacte Premium",
-      description: "Compacte premium avec finitions haut de gamme. Conduite sportive et confortable.",
-      make: "Volkswagen",
-      model: "Golf",
-      year: 2021,
+      title: "Jaguar F-Pace Sport - Performance SUV",
+      description: "Dynamic Jaguar F-Pace Sport combining SUV practicality with sports car performance. Featuring advanced technology and luxurious interior finishes.",
+      make: "Jaguar",
+      model: "F-Pace Sport",
+      year: 2023,
       fuelType: "essence",
       transmission: "automatic",
       seats: 5,
-      pricePerDay: "380.00",
-      location: "Tanger, Centre",
-      city: "Tanger",
-      images: ["https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop&auto=format"],
+      pricePerDay: "85.00",
+      currency: "GBP",
+      location: "Birmingham, City Centre",
+      city: "Birmingham",
+      latitude: 52.4862,
+      longitude: -1.8904,
+      images: ["/assets/Sport car.png"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner3.id,
-      title: "Ford Focus - Berline Sportive",
-      description: "Berline sportive avec excellent rapport qualité-prix. Conduite dynamique assurée.",
-      make: "Ford",
-      model: "Focus",
-      year: 2020,
+      title: "Range Rover Evoque Sport - Premium SUV",
+      description: "Sophisticated Range Rover Evoque Sport with commanding presence and refined luxury. Perfect for urban adventures and countryside escapes.",
+      make: "Range Rover",
+      model: "Evoque Sport",
+      year: 2023,
       fuelType: "essence",
-      transmission: "manual",
+      transmission: "automatic",
       seats: 5,
-      pricePerDay: "300.00",
-      location: "Agadir, Secteur Touristique",
-      city: "Agadir",
-      images: ["https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&h=600&fit=crop&auto=format"],
+      pricePerDay: "75.00",
+      currency: "GBP",
+      location: "Liverpool, City Centre",
+      city: "Liverpool",
+      latitude: 53.4084,
+      longitude: -2.9916,
+      images: ["/assets/SUV.png"],
       isAvailable: true
     });
 
     await this.createCar({
       ownerId: owner1.id,
-      title: "Nissan Qashqai - Crossover Familial",
-      description: "Crossover familial alliant confort et praticité. Position de conduite surélevée.",
-      make: "Nissan",
-      model: "Qashqai",
-      year: 2022,
+      title: "Ferrari LaFerrari - Hybrid Hypercar",
+      description: "Ferrari LaFerrari is a hybrid hypercar, the first in Ferrari's history, featuring a V12 engine and an electric motor for a combined output of 963 horsepower, enabling a top speed of over 217 mph and 0-60 mph in about 2.4 seconds",
+      make: "Ferrari",
+      model: "LaFerrari",
+      year: 2013,
       fuelType: "hybrid",
       transmission: "automatic",
-      seats: 5,
-      pricePerDay: "420.00",
-      location: "Casablanca, Ain Diab",
-      city: "Casablanca",
-      images: ["https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800&h=600&fit=crop&auto=format"],
+      seats: 2,
+      pricePerDay: "500.00",
+      currency: "GBP",
+      location: "London, Mayfair",
+      city: "London",
+      latitude: 51.5074,
+      longitude: -0.1278,
+      images: ["/assets/Ferrari.jpg", "/assets/ferrari 2.jpg", "/assets/ferrari 3.jpg", "/assets/ferrari 4.jpg"],
       isAvailable: true
     });
 
-    await this.createCar({
-      ownerId: owner2.id,
-      title: "Kia Picanto - Mini Citadine",
-      description: "Mini citadine parfaite pour se faufiler en ville. Économique et facile à garer.",
-      make: "Kia",
-      model: "Picanto",
-      year: 2021,
-      fuelType: "essence",
-      transmission: "manual",
-      seats: 4,
-      pricePerDay: "220.00",
-      location: "Rabat, Hassan",
-      city: "Rabat",
-      images: ["https://images.unsplash.com/photo-1494905998402-395d579af36f?w=800&h=600&fit=crop&auto=format"],
-      isAvailable: true
-    });
-
-    console.log('Sample data initialized successfully');
+    console.log('✅ Created 6 UK luxury cars for ShareWheelz platform');
   }
 }
