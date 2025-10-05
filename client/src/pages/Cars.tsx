@@ -332,7 +332,7 @@ export default function Cars() {
             </div>
             
             {/* Search Bar */}
-            <div className="max-w-4xl mx-auto relative z-10 px-4">
+            <div className="max-w-4xl mx-auto relative z-10 px-4 mb-8">
               <div className="card-modern bg-white/95 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-2xl border border-white/20">
                 <div className="space-y-4 sm:space-y-6">
                   {/* First Row - Location and Dates */}
@@ -420,7 +420,7 @@ export default function Cars() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 mt-8">
+      <div className="container mx-auto px-4 py-12 mt-8 min-h-screen">
         {/* Results Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
           <div className="mb-6 md:mb-0">

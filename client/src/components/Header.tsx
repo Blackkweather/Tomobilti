@@ -13,7 +13,7 @@ import {
 } from './ui/dropdown-menu';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin, ChevronDown, Crown, MessageCircle, HelpCircle, Headphones, PoundSterling, Phone } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Clock, Star, MapPin, ChevronDown, Crown, MessageCircle, HelpCircle, Headphones, PoundSterling, Phone, AlertTriangle, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
@@ -102,6 +102,29 @@ export default function Header() {
   }
 
   const navItems = [
+    // Company Section
+    { 
+      href: '/about', 
+      label: 'About Us',
+      description: 'Learn about ShareWheelz and our mission.',
+      icon: User,
+      subItems: [
+        { href: '/about', label: 'Our Story', description: 'Learn about ShareWheelz' },
+        { href: '/how-it-works', label: 'How It Works', description: 'See how our platform works' }
+      ]
+    },
+    { 
+      href: '/how-it-works', 
+      label: 'How It Works',
+      description: 'Understand how ShareWheelz works for you.',
+      icon: HelpCircle,
+      subItems: [
+        { href: '/how-it-works', label: 'For Renters', description: 'How to rent a car' },
+        { href: '/how-it-works', label: 'For Owners', description: 'How to list your car' }
+      ]
+    },
+    
+    // Services Section
     { 
       href: '/cars', 
       label: 'Rent a Car',
@@ -110,19 +133,6 @@ export default function Header() {
       subItems: [
         { href: '/cars', label: 'Browse Cars', description: 'Search our wide selection', isFilterable: true },
         { href: '/favorites', label: 'My Favorites', description: 'Saved vehicles' }
-      ]
-    },
-    { 
-      href: '/add-car-dynamic', 
-      label: 'Make Your Car Work For You',
-      description: 'List your vehicle and earn money with ease.',
-      icon: PoundSterling,
-      subItems: [
-        { href: '/add-car-dynamic', label: 'List Your Car', description: 'Start earning today' },
-        { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
-        { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' },
-        { href: '/host-guide', label: 'Host Guide', description: 'Tips for successful hosting' },
-        { href: '/car-management', label: 'Manage Cars', description: 'Track your listings' }
       ]
     },
     { 
@@ -137,20 +147,79 @@ export default function Header() {
       ]
     },
     { 
-      href: '/support', 
-      label: 'Customer Support',
-      description: 'Get help, roadside assistance and customer service.',
-      icon: Headphones,
+      href: '/add-car-dynamic', 
+      label: 'Fleet Management',
+      description: 'Manage your vehicle fleet and maximize earnings.',
+      icon: PoundSterling,
       subItems: [
-        { href: '/roadside-assistance', label: 'Roadside Assistance', description: '24/7 emergency help' },
-        { href: '/live-chat', label: 'Live Chat', description: 'Chat with our support team' },
-        { href: '/support', label: 'Help Center', description: 'Find answers to common questions' },
-        { href: '/faq', label: 'FAQ', description: 'Frequently asked questions' },
-        { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
-        { href: '/safety', label: 'Safety Info', description: 'Important safety guidelines' },
-        { href: '/quality-guarantee', label: 'Quality Guarantee', description: 'Our quality promise' }
+        { href: '/add-car-dynamic', label: 'List Your Car', description: 'Start earning today' },
+        { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
+        { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' },
+        { href: '/car-management', label: 'Manage Cars', description: 'Track your listings' }
       ]
     },
+    { 
+      href: '/business', 
+      label: 'Business Solutions',
+      description: 'Enterprise solutions for businesses.',
+      icon: Shield,
+      subItems: [
+        { href: '/business', label: 'Corporate Accounts', description: 'Business solutions' },
+        { href: '/business', label: 'Fleet Services', description: 'Fleet management' }
+      ]
+    },
+    
+    // Support Section
+    { 
+      href: '/support', 
+      label: 'Help Center',
+      description: 'Find answers to common questions.',
+      icon: HelpCircle,
+      subItems: [
+        { href: '/support', label: 'Help Center', description: 'Find answers to common questions' },
+        { href: '/faq', label: 'FAQ', description: 'Frequently asked questions' }
+      ]
+    },
+    { 
+      href: '/contact', 
+      label: 'Contact Us',
+      description: 'Get in touch with our team.',
+      icon: Phone,
+      subItems: [
+        { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
+        { href: '/live-chat', label: 'Live Chat', description: 'Chat with our support team' }
+      ]
+    },
+    { 
+      href: '/safety', 
+      label: 'Safety Center',
+      description: 'Safety guidelines and emergency assistance.',
+      icon: Shield,
+      subItems: [
+        { href: '/safety', label: 'Safety Guidelines', description: 'Safety best practices' },
+        { href: '/roadside-assistance', label: 'Roadside Assistance', description: '24/7 emergency help' }
+      ]
+    },
+    { 
+      href: '/guidelines', 
+      label: 'Community Guidelines',
+      description: 'Community rules and guidelines.',
+      icon: Users,
+      subItems: [
+        { href: '/guidelines', label: 'Community Guidelines', description: 'Community rules' },
+        { href: '/terms', label: 'Terms of Service', description: 'Terms and conditions' }
+      ]
+    },
+    { 
+      href: '/report', 
+      label: 'Report a Problem',
+      description: 'Report issues or concerns.',
+      icon: AlertTriangle,
+      subItems: [
+        { href: '/report', label: 'Report a Problem', description: 'Report issues or concerns' },
+        { href: '/support', label: 'Get Help', description: 'Additional support options' }
+      ]
+    }
   ];
 
   const secondaryNavItems: never[] = [];
@@ -165,12 +234,12 @@ export default function Header() {
         {/* Left Section - Logo + Navigation */}
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Brand Logo */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center">
               <img 
                 src="/assets/MAIN LOGO.png?v=5" 
                 alt="ShareWheelz" 
-                className="h-8 sm:h-12 lg:h-16 w-auto hover:scale-105 transition-transform duration-200"
+                className="h-8 sm:h-10 lg:h-12 w-auto hover:scale-105 transition-transform duration-200"
               />
             </Link>
           </div>
@@ -264,7 +333,7 @@ export default function Header() {
           <Button 
             onClick={handleSearch} 
             data-testid="button-search" 
-            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-3 h-10"
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg px-3 h-10 flex items-center justify-center"
             size="sm"
           >
             <Search className="h-4 w-4" />
@@ -447,14 +516,14 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 text-xs sm:text-sm px-2 sm:px-3 h-7 sm:h-8">
+                <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 text-sm px-3 h-9 flex items-center justify-center">
                   Login
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md text-xs sm:text-sm px-2 sm:px-3 h-7 sm:h-8">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md text-sm px-4 h-9 flex items-center justify-center">
                   Sign Up
                 </Button>
               </Link>
