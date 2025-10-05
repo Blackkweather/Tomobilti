@@ -1414,6 +1414,36 @@ export async function registerRoutes(app: Express): Promise<Express> {
     res.json({ status: "ok", message: "Tomobilto API is running" });
   });
 
+  // Database status check
+  app.get("/api/debug/database", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      const cars = await storage.getAllCars();
+      
+      res.json({
+        status: "ok",
+        users: users.length,
+        cars: cars.length,
+        sampleCars: cars.slice(0, 3).map(car => ({
+          id: car.id,
+          title: car.title,
+          make: car.make,
+          model: car.model,
+          pricePerDay: car.pricePerDay,
+          city: car.city,
+          isAvailable: car.isAvailable
+        }))
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        status: "error", 
+        message: error.message,
+        users: 0,
+        cars: 0
+      });
+    }
+  });
+
   // Routes registered successfully
   return app;
 }
