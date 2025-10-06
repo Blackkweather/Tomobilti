@@ -67,13 +67,13 @@ export default function Footer() {
     <footer className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 text-white">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
-        {/* Logo Section - Top Left */}
-        <div className="mb-8">
+        {/* Logo Section - Centered */}
+        <div className="mb-8 flex justify-center">
           <Link href="/" className="flex items-center">
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-20 w-auto hover:scale-105 transition-transform duration-200"
+              className="h-60 w-auto hover:scale-105 transition-transform duration-200"
             />
           </Link>
         </div>
