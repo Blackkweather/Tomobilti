@@ -12,7 +12,7 @@ import {
 } from './ui/dropdown-menu';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown, ChevronDown, HelpCircle, Phone, AlertTriangle, Users, PoundSterling, Headphones, MessageCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
@@ -87,6 +87,55 @@ export default function Header() {
     setLocation('/');
   };
 
+  const navItems = [
+    // Main Navigation Items with Dropdowns
+    { 
+      href: '/cars', 
+      label: 'Rent a Car',
+      description: 'Find and book a car easily near you.',
+      icon: Car,
+      subItems: [
+        { href: '/cars', label: 'Browse Cars', description: 'Search our wide selection' },
+        { href: '/favorites', label: 'My Favorites', description: 'Saved vehicles' }
+      ]
+    },
+    { 
+      href: '/become-member', 
+      label: 'Become a Member',
+      description: 'Get access to exclusive benefits and a secure community.',
+      icon: Crown,
+      subItems: [
+        { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
+        { href: '/membership-benefits', label: 'Benefits', description: 'See all perks' },
+        { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' }
+      ]
+    },
+    { 
+      href: '/add-car-dynamic', 
+      label: 'Make Car Work for You',
+      description: 'Manage your vehicle fleet and maximize earnings.',
+      icon: PoundSterling,
+      subItems: [
+        { href: '/add-car-dynamic', label: 'List Your Car', description: 'Start earning today' },
+        { href: '/become-host', label: 'Become a Host', description: 'Learn how to earn' },
+        { href: '/earnings-calculator', label: 'Earnings Calculator', description: 'Calculate your potential' },
+        { href: '/car-management', label: 'Manage Cars', description: 'Track your listings' }
+      ]
+    },
+    { 
+      href: '/support', 
+      label: 'Customer Support',
+      description: 'Find answers to common questions.',
+      icon: Shield,
+      subItems: [
+        { href: '/support', label: 'Help Center', description: 'Find answers to common questions' },
+        { href: '/faq', label: 'FAQ', description: 'Frequently asked questions' },
+        { href: '/contact', label: 'Contact Us', description: 'Get in touch with our team' },
+        { href: '/live-chat', label: 'Live Chat', description: 'Chat with our support team' }
+      ]
+    }
+  ];
+
   if (loading) {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
@@ -100,8 +149,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-7xl">
-        {/* Left Section - Logo */}
-        <div className="flex items-center">
+        {/* Left Section - Logo + Navigation */}
+        <div className="flex items-center gap-4">
+          {/* Brand Logo */}
           <Link href="/" className="flex items-center">
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
@@ -109,6 +159,51 @@ export default function Header() {
               className="h-10 w-auto hover:scale-105 transition-transform duration-200"
             />
           </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <DropdownMenu key={item.href}>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant={location === item.href ? 'default' : 'ghost'} 
+                      className={`hover:scale-105 transition-all duration-200 flex items-center gap-1 text-sm px-3 ${
+                        location === item.href 
+                          ? 'bg-blue-600 text-white shadow-md' 
+                          : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {item.label}
+                      <ChevronDown className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-80" align="start" sideOffset={8} avoidCollisions={true}>
+                    <div className="p-3">
+                      <DropdownMenuLabel className="flex items-center gap-2 text-base font-semibold">
+                        <Icon className="h-5 w-5 text-blue-600" />
+                        {item.label}
+                      </DropdownMenuLabel>
+                      <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                    </div>
+                    <DropdownMenuSeparator />
+                    <div className="p-2">
+                      {item.subItems.map((subItem) => (
+                        <DropdownMenuItem key={subItem.href} asChild>
+                          <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
+                            <div className="font-medium text-gray-900">{subItem.label}</div>
+                            <div className="text-sm text-gray-600">{subItem.description}</div>
+                          </Link>
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              );
+            })}
+          </nav>
         </div>
 
         {/* Center Section - Search Bar */}
