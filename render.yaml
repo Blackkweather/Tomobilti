@@ -3,7 +3,7 @@ services:
     name: tomobilti-platform
     env: node
     plan: starter  # Updated to match your $7/month plan
-    buildCommand: npm ci && npm uninstall better-sqlite3 && npm install better-sqlite3 && npm run build
+    buildCommand: npm ci && npm run build
     startCommand: npm start
     nodeVersion: "20"
     envVars:
