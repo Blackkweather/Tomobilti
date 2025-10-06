@@ -297,8 +297,8 @@ export default function Header() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[350px]">
-                <div className="flex flex-col space-y-4">
+              <SheetContent side="right" className="w-[280px] sm:w-[350px] overflow-y-auto">
+                <div className="flex flex-col space-y-4 h-full">
                   {/* Mobile Brand Logo */}
                   <div className="flex items-center justify-center pb-4 border-b">
                     <img 
@@ -323,56 +323,57 @@ export default function Header() {
                   </div>
 
                   {/* Mobile Navigation */}
-                  <nav className="space-y-2">
+                  <nav className="space-y-2 flex-1">
+                    <div className="text-sm font-semibold text-gray-700 mb-3">Navigation</div>
                     <Link href="/cars">
                       <Button 
                         variant={location === '/cars' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
+                        className={`w-full justify-start h-12 ${
                           location === '/cars' 
                             ? 'bg-blue-600 text-white' 
                             : 'hover:bg-blue-50 hover:text-blue-600'
                         }`}
                       >
-                        <Car className="h-4 w-4 mr-2" />
+                        <Car className="h-5 w-5 mr-3" />
                         Rent a Car
                       </Button>
                     </Link>
                     <Link href="/become-member">
                       <Button 
                         variant={location === '/become-member' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
+                        className={`w-full justify-start h-12 ${
                           location === '/become-member' 
                             ? 'bg-blue-600 text-white' 
                             : 'hover:bg-blue-50 hover:text-blue-600'
                         }`}
                       >
-                        <Crown className="h-4 w-4 mr-2" />
+                        <Crown className="h-5 w-5 mr-3" />
                         Become a Member
                       </Button>
                     </Link>
                     <Link href="/support">
                       <Button 
                         variant={location === '/support' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
+                        className={`w-full justify-start h-12 ${
                           location === '/support' 
                             ? 'bg-blue-600 text-white' 
                             : 'hover:bg-blue-50 hover:text-blue-600'
                         }`}
                       >
-                        <Shield className="h-4 w-4 mr-2" />
+                        <Shield className="h-5 w-5 mr-3" />
                         Customer Support
                       </Button>
                     </Link>
                     <Link href="/add-car-dynamic">
                       <Button 
                         variant={location === '/add-car-dynamic' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
+                        className={`w-full justify-start h-12 ${
                           location === '/add-car-dynamic' 
                             ? 'bg-blue-600 text-white' 
                             : 'hover:bg-blue-50 hover:text-blue-600'
                         }`}
                       >
-                        <Plus className="h-4 w-4 mr-2" />
+                        <Plus className="h-5 w-5 mr-3" />
                         Make Car Work for You
                       </Button>
                     </Link>
