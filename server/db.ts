@@ -654,4 +654,58 @@ export class DatabaseStorage implements IStorage {
     // Messages table not implemented yet
     return true;
   }
+
+  // Admin methods
+  async getAllUsers(): Promise<any[]> {
+    return await db.select().from(users);
+  }
+
+  async getUserById(id: string): Promise<any | null> {
+    const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllCars(): Promise<any[]> {
+    return await db.select().from(cars);
+  }
+
+  async getCarById(id: string): Promise<any | null> {
+    const result = await db.select().from(cars).where(eq(cars.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllBookings(): Promise<any[]> {
+    return await db.select().from(bookings);
+  }
+
+  async getBookingById(id: string): Promise<any | null> {
+    const result = await db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async getAllMessages(): Promise<any[]> {
+    // Messages table not implemented yet
+    return [];
+  }
+
+  async getAllSupportTickets(): Promise<any[]> {
+    // Support tickets table not implemented yet
+    return [];
+  }
+
+  async createSupportTicket(data: any): Promise<any> {
+    // Mock implementation
+    return {
+      id: randomUUID(),
+      ...data,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
+  async updateSupportTicket(id: string, updates: Partial<any>): Promise<boolean> {
+    // Mock implementation
+    console.log(`Updating support ticket ${id} with:`, updates);
+    return true;
+  }
 }
