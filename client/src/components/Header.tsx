@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'wouter';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -24,6 +25,7 @@ export default function Header() {
   const { user, logout, loading, isAuthenticated } = useAuth();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
 
   // Fetch notifications when user is authenticated
   useEffect(() => {
@@ -31,6 +33,24 @@ export default function Header() {
       fetchNotifications();
     }
   }, [isAuthenticated]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showUserDropdown) {
+        const target = event.target as HTMLElement;
+        // Check if click is outside both the profile button and the dropdown
+        if (!target.closest('.user-dropdown-container') && !target.closest('[data-dropdown-portal]')) {
+          setShowUserDropdown(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showUserDropdown]);
 
   const fetchNotifications = async () => {
     try {
@@ -293,82 +313,83 @@ export default function Header() {
 
           {/* User Menu */}
           {isAuthenticated ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-blue-50 transition-colors duration-200">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.profileImage || undefined} alt={user?.firstName || 'User'} />
-                    <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold text-sm">
-                      {user?.firstName?.[0]}{user?.lastName?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent 
-                className="w-56" 
-                align="end" 
-                side="bottom"
-                sideOffset={8} 
-                avoidCollisions={true}
+            <div className="relative user-dropdown-container">
+              <Button 
+                variant="ghost" 
+                className="relative h-10 w-10 rounded-full hover:bg-blue-50 transition-colors duration-200"
+                onClick={() => {
+                  console.log('Profile clicked, current state:', showUserDropdown);
+                  setShowUserDropdown(!showUserDropdown);
+                }}
               >
-                <div className="flex flex-col space-y-1 p-2">
-                  <p className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="flex items-center cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="flex items-center cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/become-member" className="flex items-center cursor-pointer">
-                    <Crown className="mr-2 h-4 w-4" />
-                    <span>Membership</span>
-                    {user?.membershipTier && (
-                      <Badge className="ml-auto bg-gradient-to-r from-purple-500 to-blue-600 text-white text-xs">
-                        {user.membershipTier === 'purple' ? 'Starter' : 
-                         user.membershipTier === 'black' ? 'Elite' : 'Gold'}
-                      </Badge>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user?.profileImage || undefined} alt={user?.firstName || 'User'} />
+                  <AvatarFallback className="bg-blue-100 text-blue-600 font-semibold text-sm">
+                    {user?.firstName?.[0]}{user?.lastName?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+              
+              {/* Portal dropdown - renders outside header */}
+              {showUserDropdown && createPortal(
+                <div className="fixed right-4 top-20 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-[99999]" data-dropdown-portal>
+                  <div className="flex flex-col space-y-1 p-2">
+                    <p className="text-sm font-medium leading-none">{user?.firstName} {user?.lastName}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                  </div>
+                  <div className="border-t border-gray-200"></div>
+                  <div className="p-1">
+                    <Link href="/dashboard" onClick={() => setShowUserDropdown(false)} className="flex items-center px-2 py-2 text-sm hover:bg-gray-100 rounded cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                    <Link href="/settings" onClick={() => setShowUserDropdown(false)} className="flex items-center px-2 py-2 text-sm hover:bg-gray-100 rounded cursor-pointer">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                    <Link href="/become-member" onClick={() => setShowUserDropdown(false)} className="flex items-center px-2 py-2 text-sm hover:bg-gray-100 rounded cursor-pointer">
+                      <Crown className="mr-2 h-4 w-4" />
+                      <span>Membership</span>
+                      {user?.membershipTier && (
+                        <Badge className="ml-auto bg-gradient-to-r from-purple-500 to-blue-600 text-white text-xs">
+                          {user.membershipTier === 'purple' ? 'Starter' : 
+                           user.membershipTier === 'black' ? 'Elite' : 'Gold'}
+                        </Badge>
+                      )}
+                    </Link>
+                    <Link href="/security" onClick={() => setShowUserDropdown(false)} className="flex items-center px-2 py-2 text-sm hover:bg-gray-100 rounded cursor-pointer">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Security</span>
+                    </Link>
+                    {(user?.userType === 'owner' || user?.userType === 'both') && (
+                      <>
+                        <div className="border-t border-gray-200 my-1"></div>
+                        <Link href="/car-management" onClick={() => setShowUserDropdown(false)} className="flex items-center px-2 py-2 text-sm hover:bg-gray-100 rounded cursor-pointer">
+                          <Car className="mr-2 h-4 w-4" />
+                          <span>My Cars</span>
+                        </Link>
+                        <Link href="/add-car" onClick={() => setShowUserDropdown(false)} className="flex items-center px-2 py-2 text-sm hover:bg-gray-100 rounded cursor-pointer">
+                          <Plus className="mr-2 h-4 w-4" />
+                          <span>Add Car</span>
+                        </Link>
+                      </>
                     )}
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/security" className="flex items-center cursor-pointer">
-                    <Shield className="mr-2 h-4 w-4" />
-                    <span>Security</span>
-                  </Link>
-                </DropdownMenuItem>
-                {(user?.userType === 'owner' || user?.userType === 'both') && (
-                  <>
-                    <DropdownMenuItem asChild>
-                      <Link href="/car-management" className="flex items-center cursor-pointer">
-                        <Car className="mr-2 h-4 w-4" />
-                        <span>My Cars</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/add-car" className="flex items-center cursor-pointer">
-                        <Plus className="mr-2 h-4 w-4" />
-                        <span>Add Car</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                    <div className="border-t border-gray-200 my-1"></div>
+                    <button 
+                      onClick={() => {
+                        setShowUserDropdown(false);
+                        handleLogout();
+                      }}
+                      className="flex items-center w-full px-2 py-2 text-sm hover:bg-gray-100 rounded cursor-pointer text-left text-red-600"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </button>
+                  </div>
+                </div>,
+                document.body
+              )}
+            </div>
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login">

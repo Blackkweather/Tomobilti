@@ -53,11 +53,8 @@ export const db = drizzle(sql);
 export class DatabaseStorage implements IStorage {
   // User operations
   async createUser(insertUser: InsertUser): Promise<User> {
-    // Hash password before storing
-    const hashedPassword = await bcrypt.hash(insertUser.password, 12);
-    const userWithHashedPassword: any = {
+    const userData: any = {
       email: insertUser.email,
-      password: hashedPassword,
       firstName: insertUser.firstName,
       lastName: insertUser.lastName,
       phone: insertUser.phone,
@@ -65,8 +62,13 @@ export class DatabaseStorage implements IStorage {
       userType: insertUser.userType || 'renter',
       id: randomUUID(),
     };
+
+    // Only hash password if provided (for regular registration)
+    if (insertUser.password) {
+      userData.password = await bcrypt.hash(insertUser.password, 12);
+    }
     
-    const [user] = await db.insert(users).values(userWithHashedPassword).returning();
+    const [user] = await db.insert(users).values(userData).returning();
     return user;
   }
 

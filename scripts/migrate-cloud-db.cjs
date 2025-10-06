@@ -37,7 +37,8 @@ async function runCloudMigrations() {
   };
 
   const sql = postgres(config.connectionString, {
-    max: 20,
+    // Use a single connection so we can run multi-statement SQL safely
+    max: 1,
     idle_timeout: 20,
     connect_timeout: 10,
     ssl: config.ssl,
@@ -53,10 +54,16 @@ async function runCloudMigrations() {
     await sql`SELECT 1 as test`;
     console.log('✅ Database connection successful!\n');
 
-    // Read and execute migration files
+    // Prefer the Postgres-compatible complete schema if present
+    const completeSchemaPath = path.join(__dirname, 'complete-schema.sql');
     const migrationsDir = path.join(__dirname, '..', 'migrations');
-    
-    if (fs.existsSync(migrationsDir)) {
+
+    if (fs.existsSync(completeSchemaPath)) {
+      console.log('📋 Using Postgres complete schema: scripts/complete-schema.sql');
+      const migrationSQL = fs.readFileSync(completeSchemaPath, 'utf8');
+      await sql.unsafe(migrationSQL);
+      console.log('✅ Complete schema applied');
+    } else if (fs.existsSync(migrationsDir)) {
       const migrationFiles = fs.readdirSync(migrationsDir)
         .filter(file => file.endsWith('.sql'))
         .sort();
@@ -67,20 +74,17 @@ async function runCloudMigrations() {
         console.log(`🔄 Running migration: ${file}`);
         const migrationPath = path.join(migrationsDir, file);
         const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
-        
         // Split by semicolon and execute each statement
         const statements = migrationSQL.split(';').filter(stmt => stmt.trim());
-        
         for (const statement of statements) {
           if (statement.trim()) {
             await sql.unsafe(statement.trim());
           }
         }
-        
         console.log(`✅ Migration ${file} completed`);
       }
     } else {
-      console.log('⚠️  No migrations directory found, creating basic schema...');
+      console.log('⚠️  No migrations found, creating basic schema...');
       
       // Create basic tables if no migrations exist
       await sql`

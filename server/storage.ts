@@ -20,6 +20,7 @@ export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  verifyPassword(email: string, password: string): Promise<User | null>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined>;
   updateUserPassword(id: string, newPassword: string): Promise<boolean>;
@@ -244,8 +245,12 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
     const now = new Date();
+    // Hash password before storing (keep behavior aligned with DB storage)
+    const bcrypt = await import('bcrypt');
+    const hashedPassword = await bcrypt.hash(insertUser.password, 10);
     const user: User = { 
       ...insertUser,
+      password: hashedPassword,
       phone: insertUser.phone ?? null,
       profileImage: insertUser.profileImage ?? null,
       userType: insertUser.userType ?? "renter",
@@ -281,7 +286,7 @@ export class MemStorage implements IStorage {
     if (!user) return false;
     
     // Hash the new password
-    const bcrypt = await import('bcryptjs');
+    const bcrypt = await import('bcrypt');
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     
     const updatedUser = { 
@@ -291,6 +296,14 @@ export class MemStorage implements IStorage {
     };
     this.users.set(id, updatedUser);
     return true;
+  }
+
+  async verifyPassword(email: string, password: string): Promise<User | null> {
+    const user = await this.getUserByEmail(email);
+    if (!user) return null;
+    const bcrypt = await import('bcrypt');
+    const isMatch = await bcrypt.compare(password, user.password);
+    return isMatch ? user : null;
   }
 
   async deleteUser(id: string): Promise<boolean> {
@@ -776,7 +789,18 @@ async function createStorageInstance() {
       return new MemStorage();
     }
   } else {
-    return new MemStorage();
+    // In development, use PostgreSQL if DATABASE_URL is set, otherwise use MemStorage
+    if (process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('file:')) {
+      try {
+        const { DatabaseStorage } = await import('./db');
+        return new DatabaseStorage();
+      } catch (error) {
+        console.error('Failed to create DatabaseStorage in dev:', error);
+        return new MemStorage();
+      }
+    } else {
+      return new MemStorage();
+    }
   }
 }
 

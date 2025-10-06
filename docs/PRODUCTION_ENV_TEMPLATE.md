@@ -12,9 +12,9 @@ FRONTEND_URL=https://yourdomain.com
 DATABASE_URL=postgresql://user:password@host:port/database
 
 # Security (Generate new secrets for production!)
-JWT_SECRET=CPrRdIYh5k9vYN1cb0DqGTeOYSGo+VJ2yhDLRcdZtrqpyuogkV1zVmyG7CufkL1sLbJ2orSfzRfgUUcVLBIncg==
-SESSION_SECRET=f720a6b65b4b2540cea68e94c6c7c088e6cac5db4c8bab4a5711dcd9b913e309
-CSRF_SECRET=6946e7fab50f668f9db518480b0c9efd1b7a504839be1a4d7a024a1bcc22fa95
+JWT_SECRET=N4FoSaiTH+xuOVjOWdc98MoBU9kA8pie/Tfzf3CjFjZK79Vt0QkWtWsl6sKzxueRRkHmlnn2exfOaKNyXPG3ZQ==
+SESSION_SECRET=62266419b4d555b57519f6367e3ac834db4db8c21a2e8ec700ac80d32570e119
+CSRF_SECRET=7317c41c12a0a1a6d3ccb5e5499b269a5ceb94c1102e75e01ce4435bd49d57d7
 
 # Email Service (Required)
 SMTP_HOST=smtp.gmail.com
