@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { authApi, getAuthToken } from '../lib/api';
+import { authApi, getAuthToken, setAuthToken } from '../lib/api';
 import type { User } from '@shared/schema';
 
 interface AuthContextType {
@@ -28,6 +28,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const initAuth = async () => {
+      // Check for token in URL first (OAuth callback)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlToken = urlParams.get('token');
+      
+      if (urlToken) {
+        // Store the token and clear URL
+        setAuthToken(urlToken);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Immediately fetch user data with the new token
+        try {
+          const response = await authApi.getCurrentUser();
+          setUser(response.user);
+          setLoading(false);
+          return;
+        } catch (error) {
+          console.error('Failed to get current user with URL token:', error);
+          // Clear invalid token
+          await authApi.logout();
+        }
+      }
+
       const token = getAuthToken();
       if (token) {
         try {
@@ -81,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const data = await response.json();
       setUser(data.user);
-      localStorage.setItem('authToken', data.token);
+      setAuthToken(data.token);
       return data;
     } catch (error) {
       throw error;

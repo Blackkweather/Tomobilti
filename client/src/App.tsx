@@ -57,7 +57,8 @@ import Accessibility from "./pages/Accessibility";
 import EarningsCalculator from "./pages/EarningsCalculator";
 import RoadsideAssistance from "./pages/RoadsideAssistance";
 import QualityGuarantee from "./pages/QualityGuarantee";
-import GitHubCallback from "./pages/GitHubCallback";
+import MicrosoftCallback from "./pages/MicrosoftCallback";
+import GoogleCallback from "./pages/GoogleCallback";
 import FAQ from "./pages/FAQ";
 import LiveChat from "./pages/LiveChat";
 import HostGuide from "./pages/HostGuide";
@@ -142,7 +143,8 @@ function App() {
               <Route path="/insurance" component={Insurance} />
               <Route path="/roadside-assistance" component={RoadsideAssistance} />
               <Route path="/quality-guarantee" component={QualityGuarantee} />
-              <Route path="/auth/github/callback" component={GitHubCallback} />
+              <Route path="/auth/microsoft/callback" component={MicrosoftCallback} />
+              <Route path="/auth/google/callback" component={GoogleCallback} />
               <Route path="/faq" component={FAQ} />
               <Route path="/live-chat" component={LiveChat} />
               <Route path="/host-guide" component={HostGuide} />

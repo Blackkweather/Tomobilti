@@ -1,230 +1,196 @@
-// Simple script to add cars using JSON (no file uploads)
-const API_BASE = 'http://localhost:5000/api';
+import postgres from 'postgres';
+import bcrypt from 'bcrypt';
 
-async function addCars() {
+// Database configuration
+const config = {
+  connectionString: process.env.DATABASE_URL || 'postgresql://demo_user:demo_password@localhost:5432/tomobilti_db',
+  ssl: process.env.DB_SSL === 'true' ? {
+    rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true'
+  } : false
+};
+
+const sql = postgres(config.connectionString, {
+  max: 20,
+  idle_timeout: 20,
+  connect_timeout: 10,
+  ssl: config.ssl,
+});
+
+async function addCarsToProduction() {
   try {
-    console.log('🚗 Adding cars to database...');
+    console.log('🚗 Adding cars to production database...');
     
-    // Try to login first, if fails, create user
-    console.log('🔐 Trying to login...');
-    let loginResponse = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: 'owner.test@example.com',
-        password: 'password123'
-      })
-    });
+    // Check if we have any users
+    const users = await sql`SELECT * FROM users`;
+    console.log(`Found ${users.length} users in database`);
     
-    if (!loginResponse.ok) {
-      console.log('👤 User not found, creating new user...');
-      const userResponse = await fetch(`${API_BASE}/auth/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: 'owner.test@example.com',
-          password: 'password123',
-          firstName: 'John',
-          lastName: 'Smith',
-          phone: '+44 20 1234 5678',
-          userType: 'owner'
-        })
-      });
+    if (users.length === 0) {
+      console.log('❌ No users found. Creating sample users first...');
       
-      if (!userResponse.ok) {
-        const error = await userResponse.text();
-        console.log('❌ Failed to create user:', error);
-        return;
-      } else {
-        const user = await userResponse.json();
-        console.log(`✅ Created user: ${user.user.firstName} ${user.user.lastName}`);
-      }
+      // Create sample users
+      const hashedPassword = await bcrypt.hash('demo_password_123', 12);
       
-      // Try login again
-      loginResponse = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: 'owner.test@example.com',
-          password: 'password123'
-        })
-      });
+      const owner1 = await sql`
+        INSERT INTO users (id, email, password, first_name, last_name, phone, user_type, created_at, updated_at)
+        VALUES (gen_random_uuid(), 'ahmed.bennani@example.com', ${hashedPassword}, 'Ahmed', 'Bennani', '+212 6 12 34 56 78', 'owner', NOW(), NOW())
+        RETURNING id, email, first_name, last_name, user_type
+      `;
+      
+      const owner2 = await sql`
+        INSERT INTO users (id, email, password, first_name, last_name, phone, user_type, created_at, updated_at)
+        VALUES (gen_random_uuid(), 'youssef.alami@example.com', ${hashedPassword}, 'Youssef', 'Alami', '+212 6 23 45 67 89', 'owner', NOW(), NOW())
+        RETURNING id, email, first_name, last_name, user_type
+      `;
+      
+      const owner3 = await sql`
+        INSERT INTO users (id, email, password, first_name, last_name, phone, user_type, created_at, updated_at)
+        VALUES (gen_random_uuid(), 'sara.idrissi@example.com', ${hashedPassword}, 'Sara', 'Idrissi', '+212 6 45 67 89 01', 'owner', NOW(), NOW())
+        RETURNING id, email, first_name, last_name, user_type
+      `;
+      
+      console.log('✅ Created sample users');
+      users.push(...owner1, ...owner2, ...owner3);
     }
     
-    if (!loginResponse.ok) {
-      console.error('❌ Login failed');
-      return;
-    }
+    // Get owners
+    const owners = users.filter(user => user.user_type === 'owner');
+    console.log(`Found ${owners.length} car owners`);
     
-    const loginData = await loginResponse.json();
-    const token = loginData.token;
-    console.log('✅ Logged in successfully');
+    // Check if we have cars
+    const existingCars = await sql`SELECT * FROM cars`;
+    console.log(`Found ${existingCars.length} cars in database`);
     
-    // Sample cars data
-    const sampleCars = [
-      {
-        title: 'BMW 3 Series - Premium Sedan',
-        description: 'Luxury sedan perfect for business trips and city driving. Features leather seats, navigation, and premium sound system.',
-        make: 'BMW',
-        model: '3 Series',
-        year: 2022,
-        fuelType: 'essence',
-        transmission: 'automatic',
-        seats: 5,
-        pricePerDay: '45.00',
-        currency: 'GBP',
-        location: 'London, Westminster',
-        city: 'London',
-        latitude: '51.5074',
-        longitude: '-0.1278',
-        images: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format'],
-        isAvailable: true,
-        features: ['Bluetooth', 'GPS', 'Air Conditioning', 'Leather Seats']
-      },
-      {
-        title: 'Ford Focus - Family Car',
-        description: 'Reliable family car with excellent fuel economy. Perfect for city driving and weekend trips.',
-        make: 'Ford',
-        model: 'Focus',
-        year: 2021,
-        fuelType: 'essence',
-        transmission: 'manual',
-        seats: 5,
-        pricePerDay: '28.00',
-        currency: 'GBP',
-        location: 'Manchester, City Centre',
-        city: 'Manchester',
-        latitude: '53.4808',
-        longitude: '-2.2426',
-        images: ['https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format'],
-        isAvailable: true,
-        features: ['Bluetooth', 'Air Conditioning', 'Parking Sensors']
-      },
-      {
-        title: 'Tesla Model 3 - Electric',
-        description: 'Premium electric vehicle with autopilot features. Zero emissions and cutting-edge technology.',
-        make: 'Tesla',
-        model: 'Model 3',
-        year: 2023,
-        fuelType: 'electric',
-        transmission: 'automatic',
-        seats: 5,
-        pricePerDay: '65.00',
-        currency: 'GBP',
-        location: 'Edinburgh, New Town',
-        city: 'Edinburgh',
-        latitude: '55.9533',
-        longitude: '-3.1883',
-        images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format'],
-        isAvailable: true,
-        features: ['Autopilot', 'Supercharging', 'Premium Sound', 'Glass Roof']
-      },
-      {
-        title: 'Mercedes A-Class - Compact Luxury',
-        description: 'Compact luxury car perfect for city driving. Features premium interior and advanced safety systems.',
-        make: 'Mercedes',
-        model: 'A-Class',
-        year: 2022,
-        fuelType: 'essence',
-        transmission: 'automatic',
-        seats: 5,
-        pricePerDay: '52.00',
-        currency: 'GBP',
-        location: 'Birmingham, City Centre',
-        city: 'Birmingham',
-        latitude: '52.4862',
-        longitude: '-1.8904',
-        images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop&auto=format'],
-        isAvailable: true,
-        features: ['Premium Interior', 'Safety Systems', 'Bluetooth', 'GPS']
-      },
-      {
-        title: 'Volkswagen Golf - Reliable Hatchback',
-        description: 'Popular hatchback known for reliability and efficiency. Great for both city and highway driving.',
-        make: 'Volkswagen',
-        model: 'Golf',
-        year: 2021,
-        fuelType: 'diesel',
-        transmission: 'manual',
-        seats: 5,
-        pricePerDay: '32.00',
-        currency: 'GBP',
-        location: 'Liverpool, City Centre',
-        city: 'Liverpool',
-        latitude: '53.4084',
-        longitude: '-2.9916',
-        images: ['https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop&auto=format'],
-        isAvailable: true,
-        features: ['Fuel Efficient', 'Reliable', 'Air Conditioning', 'Bluetooth']
-      },
-      {
-        title: 'Audi A4 - Executive Sedan',
-        description: 'Executive sedan with premium features and excellent driving dynamics. Perfect for business trips.',
-        make: 'Audi',
-        model: 'A4',
-        year: 2023,
-        fuelType: 'essence',
-        transmission: 'automatic',
-        seats: 5,
-        pricePerDay: '58.00',
-        currency: 'GBP',
-        location: 'Glasgow, City Centre',
-        city: 'Glasgow',
-        latitude: '55.8642',
-        longitude: '-4.2518',
-        images: ['https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&h=600&fit=crop&auto=format'],
-        isAvailable: true,
-        features: ['Executive Features', 'Premium Sound', 'Navigation', 'Leather Seats']
-      }
-    ];
-    
-    // Add each car using JSON
-    console.log('🚗 Adding cars...');
-    for (const carData of sampleCars) {
-      try {
-        const carResponse = await fetch(`${API_BASE}/cars`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(carData)
-        });
-        
-        if (carResponse.ok) {
-          const car = await carResponse.json();
-          console.log(`✅ Added: ${car.car.title} - £${car.car.pricePerDay}/day`);
-        } else {
-          const error = await carResponse.text();
-          console.error(`❌ Failed to add ${carData.title}:`, error);
+    if (existingCars.length === 0) {
+      console.log('🚗 Creating sample cars...');
+      
+      // Create sample cars
+      const cars = [
+        {
+          owner_id: owners[0].id,
+          title: "BMW 3 Series - Luxe et Performance",
+          description: "Berline allemande haut de gamme avec un design élégant et des performances exceptionnelles. Parfaite pour les déplacements professionnels.",
+          make: "BMW",
+          model: "3 Series",
+          year: 2022,
+          fuel_type: "essence",
+          transmission: "automatic",
+          seats: 5,
+          price_per_day: "800.00",
+          location: "Casablanca, Centre Ville",
+          city: "Casablanca",
+          images: ["https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format"],
+          is_available: true
+        },
+        {
+          owner_id: owners[1].id,
+          title: "Mercedes C-Class - Confort Premium",
+          description: "Berline de luxe avec intérieur cuir et technologies avancées. Idéale pour les voyages d'affaires.",
+          make: "Mercedes",
+          model: "C-Class",
+          year: 2021,
+          fuel_type: "essence",
+          transmission: "automatic",
+          seats: 5,
+          price_per_day: "900.00",
+          location: "Rabat, Agdal",
+          city: "Rabat",
+          images: ["https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&h=600&fit=crop&auto=format"],
+          is_available: true
+        },
+        {
+          owner_id: owners[2].id,
+          title: "Audi A4 - Élégance et Technologie",
+          description: "Berline sportive avec Quattro et technologies Audi. Conduite dynamique garantie.",
+          make: "Audi",
+          model: "A4",
+          year: 2023,
+          fuel_type: "essence",
+          transmission: "automatic",
+          seats: 5,
+          price_per_day: "750.00",
+          location: "Marrakech, Guéliz",
+          city: "Marrakech",
+          images: ["https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop&auto=format"],
+          is_available: true
+        },
+        {
+          owner_id: owners[0].id,
+          title: "Tesla Model 3 - Électrique Moderne",
+          description: "Véhicule électrique haute technologie avec Autopilot. Écologique et performant.",
+          make: "Tesla",
+          model: "Model 3",
+          year: 2023,
+          fuel_type: "electric",
+          transmission: "automatic",
+          seats: 5,
+          price_per_day: "1000.00",
+          location: "Casablanca, Anfa",
+          city: "Casablanca",
+          images: ["https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop&auto=format"],
+          is_available: true
+        },
+        {
+          owner_id: owners[1].id,
+          title: "Range Rover Evoque - SUV de Luxe",
+          description: "SUV premium avec capacités tout-terrain. Parfait pour explorer le Maroc.",
+          make: "Range Rover",
+          model: "Evoque",
+          year: 2022,
+          fuel_type: "diesel",
+          transmission: "automatic",
+          seats: 5,
+          price_per_day: "1200.00",
+          location: "Rabat, Hay Riad",
+          city: "Rabat",
+          images: ["https://images.unsplash.com/photo-1549317336-206569e8475c?w=800&h=600&fit=crop&auto=format"],
+          is_available: true
+        },
+        {
+          owner_id: owners[2].id,
+          title: "Ford Focus - Berline Sportive",
+          description: "Berline sportive avec excellent rapport qualité-prix. Conduite dynamique assurée.",
+          make: "Ford",
+          model: "Focus",
+          year: 2020,
+          fuel_type: "essence",
+          transmission: "manual",
+          seats: 5,
+          price_per_day: "300.00",
+          location: "Agadir, Secteur Touristique",
+          city: "Agadir",
+          images: ["https://images.unsplash.com/photo-1502877338535-766e1452684a?w=800&h=600&fit=crop&auto=format"],
+          is_available: true
         }
-      } catch (error) {
-        console.error(`❌ Error adding ${carData.title}:`, error.message);
+      ];
+      
+      for (const carData of cars) {
+        const car = await sql`
+          INSERT INTO cars (id, owner_id, title, description, make, model, year, fuel_type, transmission, seats, price_per_day, location, city, images, is_available, created_at, updated_at)
+          VALUES (gen_random_uuid(), ${carData.owner_id}, ${carData.title}, ${carData.description}, ${carData.make}, ${carData.model}, ${carData.year}, ${carData.fuel_type}, ${carData.transmission}, ${carData.seats}, ${carData.price_per_day}, ${carData.location}, ${carData.city}, ${carData.images}, ${carData.is_available}, NOW(), NOW())
+          RETURNING id, title, make, model, price_per_day, city
+        `;
+        console.log(`✅ Created car: ${car[0].title}`);
       }
+      
+      console.log(`🎉 Successfully created ${cars.length} cars!`);
+    } else {
+      console.log('✅ Cars already exist in database');
     }
     
-    // Check final count
-    console.log('\n📊 Checking final car count...');
-    const carsResponse = await fetch(`${API_BASE}/cars`);
-    if (carsResponse.ok) {
-      const carsData = await carsResponse.json();
-      console.log(`🎉 Total cars in database: ${carsData.cars.length}`);
-      
-      console.log('\n📋 Cars now available:');
-      carsData.cars.forEach((car, index) => {
-        console.log(`${index + 1}. ${car.title} - ${car.location} (£${car.pricePerDay}/day)`);
-      });
+    // Final check
+    const finalCars = await sql`SELECT * FROM cars`;
+    console.log(`📊 Total cars in database: ${finalCars.length}`);
+    
+    if (finalCars.length > 0) {
+      console.log('🎉 Cars are now available on the website!');
+      console.log('🌐 Visit your website to see the cars: https://sharewheelz.uk');
     }
     
   } catch (error) {
     console.error('❌ Error adding cars:', error);
+  } finally {
+    await sql.end();
   }
 }
 
-addCars();
+addCarsToProduction();

@@ -28,7 +28,7 @@
     "security:audit-fix": "npm audit fix",
     "setup-cloud-db": "node scripts/setup-cloud-db.js",
     "setup-render-db": "node scripts/setup-render-db.js",
-    "migrate-cloud": "node scripts/migrate-cloud-db.js",
+    "migrate-cloud": "node scripts/migrate-cloud-db.cjs",
     "deploy:staging": "npm run build && echo 'Deploy to staging server'",
     "deploy:production": "npm run build && echo 'Deploy to production server'"
   },

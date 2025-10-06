@@ -157,56 +157,35 @@ router.post('/facebook', async (req, res) => {
   }
 });
 
-// GitHub OAuth callback
-router.post('/github/callback', async (req, res) => {
+// Microsoft OAuth (for UK users who prefer Microsoft accounts)
+router.post('/microsoft', async (req, res) => {
   try {
-    const { code } = req.body;
+    const { accessToken } = req.body;
     
-    if (!code) {
-      return res.status(400).json({ error: 'Authorization code is required' });
+    if (!accessToken) {
+      return res.status(400).json({ error: 'Microsoft access token is required' });
     }
 
-    // Exchange code for access token
-    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
-        code: code,
-      }),
-    });
-
-    const tokenData = await tokenResponse.json();
-
-    if (tokenData.error) {
-      throw new Error(`GitHub token error: ${tokenData.error_description}`);
-    }
-
-    // Get user info from GitHub
-    const userResponse = await fetch('https://api.github.com/user', {
-      headers: {
-        'Authorization': `Bearer ${tokenData.access_token}`,
-        'Accept': 'application/vnd.github.v3+json',
-      },
-    });
-
-    const githubUser = await userResponse.json();
+    // In a real implementation, you would verify the Microsoft token
+    // For now, we'll create a mock response
+    const mockUser = {
+      id: 'microsoft_user_' + Date.now(),
+      email: `microsoft_${Date.now()}@outlook.com`,
+      name: 'Microsoft User',
+      picture: null,
+    };
 
     // Check if user exists
-    let user = await db.select().from(users).where(eq(users.email, githubUser.email)).get();
+    let user = await db.select().from(users).where(eq(users.email, mockUser.email)).get();
 
     if (!user) {
       const newUser = {
         id: crypto.randomUUID(),
-        email: githubUser.email || `github_${githubUser.id}@example.com`,
-        firstName: githubUser.name?.split(' ')[0] || githubUser.login,
-        lastName: githubUser.name?.split(' ').slice(1).join(' ') || '',
-        profileImage: githubUser.avatar_url,
-        githubId: githubUser.id.toString(),
+        email: mockUser.email,
+        firstName: mockUser.name.split(' ')[0],
+        lastName: mockUser.name.split(' ').slice(1).join(' '),
+        profileImage: mockUser.picture,
+        microsoftId: mockUser.id,
         userType: 'renter' as const,
         isVerified: true,
         createdAt: new Date().toISOString(),
@@ -234,13 +213,12 @@ router.post('/github/callback', async (req, res) => {
         isVerified: user.isVerified,
       },
       token: jwtToken,
-      access_token: tokenData.access_token,
-      message: 'Successfully authenticated with GitHub'
+      message: 'Successfully authenticated with Microsoft'
     });
 
   } catch (error) {
-    console.error('GitHub OAuth error:', error);
-    res.status(500).json({ error: 'GitHub authentication failed' });
+    console.error('Microsoft OAuth error:', error);
+    res.status(500).json({ error: 'Microsoft authentication failed' });
   }
 });
 
