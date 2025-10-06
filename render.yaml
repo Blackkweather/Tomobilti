@@ -26,7 +26,7 @@ services:
 
 databases:
   - name: tomobilti-db
-    plan: starter
+    plan: free
     databaseName: tomobilti
     user: tomobilti_user
 
