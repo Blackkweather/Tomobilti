@@ -350,6 +350,19 @@ export default function Header() {
                         Become a Member
                       </Button>
                     </Link>
+                    <Link href="/support">
+                      <Button 
+                        variant={location === '/support' ? 'default' : 'ghost'} 
+                        className={`w-full justify-start ${
+                          location === '/support' 
+                            ? 'bg-blue-600 text-white' 
+                            : 'hover:bg-blue-50 hover:text-blue-600'
+                        }`}
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Customer Support
+                      </Button>
+                    </Link>
                     <Link href="/add-car-dynamic">
                       <Button 
                         variant={location === '/add-car-dynamic' ? 'default' : 'ghost'} 
@@ -360,33 +373,7 @@ export default function Header() {
                         }`}
                       >
                         <Plus className="h-4 w-4 mr-2" />
-                        List Your Car
-                      </Button>
-                    </Link>
-                    <Link href="/about">
-                      <Button 
-                        variant={location === '/about' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === '/about' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        About Us
-                      </Button>
-                    </Link>
-                    <Link href="/contact">
-                      <Button 
-                        variant={location === '/contact' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start ${
-                          location === '/contact' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
-                        }`}
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        Contact Us
+                        Make Car Work for You
                       </Button>
                     </Link>
                   </nav>
