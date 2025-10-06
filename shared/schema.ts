@@ -187,27 +187,65 @@ export const membershipBenefits = pgTable("membership_benefits", {
 });
 
 // Insert schemas
-export const insertUserSchema = createInsertSchema(users).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertUserSchema = z.object({
+  email: z.string().email(),
+  password: z.string().optional(),
+  firstName: z.string(),
+  lastName: z.string(),
+  phone: z.string().optional(),
+  profileImage: z.string().optional(),
+  userType: z.enum(["owner", "renter", "both"]).default("renter"),
+  membershipTier: z.string().optional(),
+  subscriptionId: z.string().optional(),
+  subscriptionStatus: z.string().default("inactive"),
+  isVerified: z.boolean().default(false),
+  googleId: z.string().optional(),
+  facebookId: z.string().optional(),
+  microsoftId: z.string().optional(),
+  appleId: z.string().optional(),
+  isActive: z.boolean().default(true),
 });
 
-export const insertCarSchema = createInsertSchema(cars).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertCarSchema = z.object({
+  ownerId: z.string(),
+  make: z.string(),
+  model: z.string(),
+  year: z.number(),
+  color: z.string(),
+  licensePlate: z.string(),
+  location: z.string(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  pricePerDay: z.number(),
+  currency: z.string().default("USD"),
+  images: z.array(z.string()).default([]),
+  features: z.array(z.string()).default([]),
+  description: z.string().optional(),
+  isAvailable: z.boolean().default(true),
+  isActive: z.boolean().default(true),
 });
 
-export const insertBookingSchema = createInsertSchema(bookings).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertBookingSchema = z.object({
+  carId: z.string(),
+  renterId: z.string(),
+  startDate: z.string(),
+  endDate: z.string(),
+  totalPrice: z.number(),
+  currency: z.string().default("USD"),
+  status: z.enum(["pending", "confirmed", "cancelled", "completed"]).default("pending"),
+  paymentStatus: z.enum(["pending", "paid", "failed", "refunded"]).default("pending"),
+  paymentId: z.string().optional(),
+  notes: z.string().optional(),
 });
 
-export const insertReviewSchema = createInsertSchema(reviews).omit({
-  id: true,
-  createdAt: true,
+export const insertReviewSchema = z.object({
+  bookingId: z.string(),
+  carId: z.string(),
+  renterId: z.string(),
+  ownerId: z.string(),
+  rating: z.number().min(1).max(5),
+  comment: z.string().optional(),
+  isActive: z.boolean().default(true),
 });
 
 // Types
