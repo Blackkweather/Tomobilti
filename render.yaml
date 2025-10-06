@@ -3,7 +3,7 @@ services:
     name: tomobilti-platform
     env: node
     plan: starter
-    buildCommand: npm ci && npm run build
+    buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -22,7 +22,7 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         value: https://tomobilti-platform.onrender.com
-    healthCheckPath: /api/cars
+    healthCheckPath: /api/health
 
 databases:
   - name: tomobilti-db
