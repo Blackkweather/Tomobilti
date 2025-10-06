@@ -720,34 +720,31 @@ export class MemStorage implements IStorage {
 
   // Admin methods - enhanced versions of existing methods
   async getAllUsers(): Promise<any[]> {
-    return await this.db.select().from(users);
+    return Array.from(this.users.values());
   }
 
   async getUserById(id: string): Promise<any | null> {
-    const result = await this.db.select().from(users).where(eq(users.id, id)).limit(1);
-    return result[0] || null;
+    return this.users.get(id) || null;
   }
 
   async getAllCars(): Promise<any[]> {
-    return await this.db.select().from(cars);
+    return Array.from(this.cars.values());
   }
 
   async getCarById(id: string): Promise<any | null> {
-    const result = await this.db.select().from(cars).where(eq(cars.id, id)).limit(1);
-    return result[0] || null;
+    return this.cars.get(id) || null;
   }
 
   async getAllBookings(): Promise<any[]> {
-    return await this.db.select().from(bookings);
+    return Array.from(this.bookings.values());
   }
 
   async getBookingById(id: string): Promise<any | null> {
-    const result = await this.db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
-    return result[0] || null;
+    return this.bookings.get(id) || null;
   }
 
   async getAllMessages(): Promise<any[]> {
-    return await this.db.select().from(conversations);
+    return Array.from(this.messages.values());
   }
 
   async getAllSupportTickets(): Promise<any[]> {
