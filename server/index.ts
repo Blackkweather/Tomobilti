@@ -118,35 +118,58 @@ app.use((req, res, next) => {
   
   // Initialize sample data in production if database is empty
   if (process.env.NODE_ENV === 'production') {
-    try {
-      // Starting production database initialization
-      const { DatabaseStorage } = await import('./db');
-      const dbStorage = new DatabaseStorage();
-      
-      // Checking database connection
-      const testUsers = await dbStorage.getAllUsers();
-      console.log(`Database connected with ${testUsers.length} users`);
-      
-      // Check if cars already exist
-      const existingCars = await dbStorage.getAllCars();
-      console.log(`Found ${existingCars.length} existing cars`);
-      
-      // Only initialize cars if none exist
-      if (existingCars.length === 0) {
-        console.log('No cars found, initializing cars...');
-        await dbStorage.forceInitializeCars();
+    // Use setTimeout to defer database initialization after server starts
+    setTimeout(async () => {
+      try {
+        console.log('Starting production database initialization...');
+        const { DatabaseStorage } = await import('./db');
+        const dbStorage = new DatabaseStorage();
         
-        // Verify cars were created
-        const finalCars = await dbStorage.getAllCars();
-        console.log(`Successfully created ${finalCars.length} cars`);
-      } else {
-        console.log('Cars already exist, skipping initialization');
+        // Retry logic for database connection
+        let retries = 3;
+        let connected = false;
+        
+        while (retries > 0 && !connected) {
+          try {
+            // Test database connection
+            const testUsers = await dbStorage.getAllUsers();
+            console.log(`Database connected with ${testUsers.length} users`);
+            connected = true;
+          } catch (error) {
+            retries--;
+            console.log(`Database connection failed, retries left: ${retries}`);
+            if (retries > 0) {
+              await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+            }
+          }
+        }
+        
+        if (!connected) {
+          console.error('Failed to connect to database after retries');
+          return;
+        }
+        
+        // Check if cars already exist
+        const existingCars = await dbStorage.getAllCars();
+        console.log(`Found ${existingCars.length} existing cars`);
+        
+        // Only initialize cars if none exist
+        if (existingCars.length === 0) {
+          console.log('No cars found, initializing cars...');
+          await dbStorage.forceInitializeCars();
+          
+          // Verify cars were created
+          const finalCars = await dbStorage.getAllCars();
+          console.log(`Successfully created ${finalCars.length} cars`);
+        } else {
+          console.log('Cars already exist, skipping initialization');
+        }
+        
+      } catch (error) {
+        console.error('CRITICAL: Failed to initialize production database:', error);
+        // Don't throw - let the server start even if initialization fails
       }
-      
-    } catch (error) {
-      console.error('CRITICAL: Failed to initialize production database:', error);
-      // Don't throw - let the server start even if initialization fails
-    }
+    }, 10000); // Wait 10 seconds after server starts
   }
   
   // Create HTTP server and WebSocket server
