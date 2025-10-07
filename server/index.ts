@@ -147,7 +147,93 @@ app.use((req, res, next) => {
         
         if (!connected) {
           console.error('Failed to connect to database after retries - using in-memory storage');
-          // Don't return - let the server continue with in-memory storage
+          console.log('Initializing in-memory storage with sample data...');
+          
+          // Initialize in-memory storage with sample data
+          const { MemStorage } = await import('./storage');
+          const memStorage = new MemStorage();
+          
+          // Create sample users and cars in memory
+          const owner1 = await memStorage.createUser({
+            email: "john.smith@example.com",
+            password: "demo_password_123",
+            firstName: "John",
+            lastName: "Smith",
+            phone: "+44 20 1234 5678",
+            userType: "owner"
+          });
+          
+          const owner2 = await memStorage.createUser({
+            email: "sarah.jones@example.com",
+            password: "demo_password_123",
+            firstName: "Sarah",
+            lastName: "Jones",
+            phone: "+44 20 8765 4321",
+            userType: "owner"
+          });
+          
+          // Create sample cars
+          await memStorage.createCar({
+            ownerId: owner1.id,
+            title: "Porsche 911 F Model - Classic Sports Car",
+            description: "Iconic classic Porsche 911 F Model with timeless design and exceptional performance.",
+            make: "Porsche",
+            model: "911 F",
+            year: 1973,
+            fuelType: "essence",
+            transmission: "manual",
+            seats: 2,
+            pricePerDay: "120.00",
+            currency: "GBP",
+            location: "London, Westminster",
+            city: "London",
+            latitude: 51.5074,
+            longitude: -0.1278,
+            images: ["/assets/CLASSIC.png"],
+            isAvailable: true
+          });
+          
+          await memStorage.createCar({
+            ownerId: owner2.id,
+            title: "Jaguar F-Type Convertible - Luxury Sports Car",
+            description: "Stunning Jaguar F-Type Convertible with breathtaking design and exhilarating performance.",
+            make: "Jaguar",
+            model: "F-Type",
+            year: 2023,
+            fuelType: "essence",
+            transmission: "automatic",
+            seats: 2,
+            pricePerDay: "95.00",
+            currency: "GBP",
+            location: "Manchester, City Centre",
+            city: "Manchester",
+            latitude: 53.4808,
+            longitude: -2.2426,
+            images: ["/assets/CONVERTIBLES.png"],
+            isAvailable: true
+          });
+          
+          await memStorage.createCar({
+            ownerId: owner1.id,
+            title: "Tesla Model X - Electric SUV",
+            description: "Revolutionary Tesla Model X electric SUV with falcon-wing doors and zero emissions.",
+            make: "Tesla",
+            model: "Model X",
+            year: 2023,
+            fuelType: "electric",
+            transmission: "automatic",
+            seats: 7,
+            pricePerDay: "110.00",
+            currency: "GBP",
+            location: "Edinburgh, New Town",
+            city: "Edinburgh",
+            latitude: 55.9533,
+            longitude: -3.1883,
+            images: ["/assets/ELECTRIC.png"],
+            isAvailable: true
+          });
+          
+          console.log('In-memory storage initialized with sample data');
           return;
         }
         
