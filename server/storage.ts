@@ -905,10 +905,11 @@ let storageInstance: any = null;
 // Initialize storage
 createStorageInstance().then(instance => {
   storageInstance = instance;
-  // Storage instance created
+  console.log('Storage instance created successfully');
 }).catch(error => {
-  // Failed to create storage instance
+  console.error('Failed to create storage instance, using in-memory storage:', error.message);
   storageInstance = new MemStorage();
+  console.log('Fallback to in-memory storage completed');
 });
 
 // Export storage with getter
