@@ -118,31 +118,28 @@ app.use((req, res, next) => {
   
   // Initialize sample data in production if database is empty
   if (process.env.NODE_ENV === 'production') {
-    // Use setTimeout to defer initialization after server is fully started
-    setTimeout(async () => {
-      try {
-        // Starting production database initialization
-        const { DatabaseStorage } = await import('./db');
-        const dbStorage = new DatabaseStorage();
-        
-        // Checking database connection
-        const testUsers = await dbStorage.getAllUsers();
-        // Database connected with users count
-        
-        // Initializing cars
-        await dbStorage.forceInitializeCars();
-        // Cars initialized for production
-        
-        // Verify cars were created
-        const finalCars = await dbStorage.getAllCars();
-        // Production ready with cars count
-        
-      } catch (error) {
-        // CRITICAL: Failed to initialize production database
-        // Stack trace logged internally
-        // Don't throw - let the server start even if initialization fails
-      }
-    }, 5000); // Wait 5 seconds after server start
+    try {
+      // Starting production database initialization
+      const { DatabaseStorage } = await import('./db');
+      const dbStorage = new DatabaseStorage();
+      
+      // Checking database connection
+      const testUsers = await dbStorage.getAllUsers();
+      // Database connected with users count
+      
+      // Initializing cars
+      await dbStorage.forceInitializeCars();
+      // Cars initialized for production
+      
+      // Verify cars were created
+      const finalCars = await dbStorage.getAllCars();
+      // Production ready with cars count
+      
+    } catch (error) {
+      // CRITICAL: Failed to initialize production database
+      // Stack trace logged internally
+      // Don't throw - let the server start even if initialization fails
+    }
   }
   
   // Create HTTP server and WebSocket server
