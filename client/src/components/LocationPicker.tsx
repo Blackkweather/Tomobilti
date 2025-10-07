@@ -215,7 +215,7 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
     <div className={cn("relative w-full overflow-visible", className)}>
       <div className="relative overflow-visible">
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
-          <MapPin className="h-4 w-4 text-gray-400" />
+          <MapPin className={cn("h-4 w-4", className?.includes('text-white') ? "text-white/70" : "text-gray-400")} />
         </div>
         
         <input
@@ -227,10 +227,13 @@ export const LocationPicker: React.FC<LocationPickerProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
-          className={`w-full pl-10 pr-10 text-sm border border-gray-300 rounded-lg 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                     bg-white shadow-sm transition-all duration-200
-                     placeholder:text-gray-400 hover:border-gray-400 ${className || ''}`}
+          className={cn(
+            "w-full pl-10 pr-10 text-sm border border-gray-300 rounded-lg",
+            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
+            "bg-white shadow-sm transition-all duration-200",
+            "placeholder:text-gray-400 hover:border-gray-400",
+            className
+          )}
         />
         
         {inputValue && (

@@ -353,6 +353,7 @@ export default function Cars() {
                           value={filters.location}
                           onChange={(location) => setFilters(prev => ({ ...prev, location }))}
                           placeholder="Enter city or location"
+                          className="h-14 text-lg bg-white/20 border-white/30 text-white placeholder:text-gray-300 focus:bg-white/30 focus:border-blue-400 transition-all duration-300"
                         />
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                       </div>
