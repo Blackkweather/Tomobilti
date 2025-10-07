@@ -361,7 +361,7 @@ export default function Cars() {
                     {/* Start Date */}
                     <div className="relative group">
                       <label className="text-lg font-semibold text-white mb-3 block group-hover:text-blue-300 transition-colors">
-                        📅 Pick-up Date
+                        Pick-up Date
                       </label>
                       <div className="relative">
                         <Input
@@ -377,7 +377,7 @@ export default function Cars() {
                     {/* End Date */}
                     <div className="relative group">
                       <label className="text-lg font-semibold text-white mb-3 block group-hover:text-blue-300 transition-colors">
-                        📅 Return Date
+                        Return Date
                       </label>
                       <div className="relative">
                         <Input
@@ -396,7 +396,7 @@ export default function Cars() {
                     {/* Price Range */}
                     <div className="lg:col-span-2">
                       <label className="text-lg font-semibold text-white mb-3 block">
-                        💰 Price Range (£ per day)
+                        Price Range (£ per day)
                       </label>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="relative group">
