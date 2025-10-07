@@ -45,6 +45,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log('OAuth user data received:', response.user);
           setUser(response.user);
           setLoading(false);
+          
+          // Redirect based on user type
+          setTimeout(() => {
+            if (response.user.userType === 'owner') {
+              window.location.href = '/dashboard/owner';
+            } else if (response.user.userType === 'renter') {
+              window.location.href = '/dashboard/renter';
+            } else {
+              window.location.href = '/dashboard';
+            }
+          }, 100);
           return;
         } catch (error) {
           console.error('Failed to get current user with URL token:', error);

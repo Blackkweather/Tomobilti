@@ -50,7 +50,14 @@ export default function GoogleCallback() {
           
           // Redirect to dashboard after 2 seconds
           setTimeout(() => {
-            setLocation('/dashboard');
+            // Redirect based on user type
+            if (userData.user?.userType === 'owner') {
+              setLocation('/dashboard/owner');
+            } else if (userData.user?.userType === 'renter') {
+              setLocation('/dashboard/renter');
+            } else {
+              setLocation('/dashboard');
+            }
           }, 2000);
           return;
         }
@@ -84,7 +91,14 @@ export default function GoogleCallback() {
         
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
-          setLocation('/dashboard');
+          // Redirect based on user type
+          if (tokenData.user?.userType === 'owner') {
+            setLocation('/dashboard/owner');
+          } else if (tokenData.user?.userType === 'renter') {
+            setLocation('/dashboard/renter');
+          } else {
+            setLocation('/dashboard');
+          }
         }, 2000);
 
       } catch (error) {
