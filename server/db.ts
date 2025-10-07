@@ -39,6 +39,37 @@ const getDatabaseConfig = () => {
     };
   }
   
+  // For Render production, try to use Render's PostgreSQL if available
+  if (process.env.NODE_ENV === 'production') {
+    console.log('Production environment detected, checking for Render PostgreSQL...');
+    
+    // Check for Render PostgreSQL environment variables
+    const renderDbUrl = process.env.RENDER_POSTGRES_URL || process.env.POSTGRES_URL;
+    if (renderDbUrl) {
+      console.log('Using Render PostgreSQL URL');
+      return {
+        connectionString: renderDbUrl,
+        ssl: { rejectUnauthorized: false }
+      };
+    }
+    
+    // If no Render DB, try to construct from Render environment variables
+    const renderDbHost = process.env.RENDER_POSTGRES_HOST || process.env.POSTGRES_HOST;
+    const renderDbPort = process.env.RENDER_POSTGRES_PORT || process.env.POSTGRES_PORT || '5432';
+    const renderDbName = process.env.RENDER_POSTGRES_DB || process.env.POSTGRES_DB;
+    const renderDbUser = process.env.RENDER_POSTGRES_USER || process.env.POSTGRES_USER;
+    const renderDbPassword = process.env.RENDER_POSTGRES_PASSWORD || process.env.POSTGRES_PASSWORD;
+    
+    if (renderDbHost && renderDbName && renderDbUser && renderDbPassword) {
+      const connectionString = `postgresql://${renderDbUser}:${renderDbPassword}@${renderDbHost}:${renderDbPort}/${renderDbName}`;
+      console.log('Using Render PostgreSQL parameters');
+      return {
+        connectionString,
+        ssl: { rejectUnauthorized: false }
+      };
+    }
+  }
+  
   // Default local PostgreSQL
   console.log('Using localhost fallback for connection');
   return {
