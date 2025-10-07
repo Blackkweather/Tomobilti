@@ -125,19 +125,26 @@ app.use((req, res, next) => {
       
       // Checking database connection
       const testUsers = await dbStorage.getAllUsers();
-      // Database connected with users count
+      console.log(`Database connected with ${testUsers.length} users`);
       
-      // Initializing cars
-      await dbStorage.forceInitializeCars();
-      // Cars initialized for production
+      // Check if cars already exist
+      const existingCars = await dbStorage.getAllCars();
+      console.log(`Found ${existingCars.length} existing cars`);
       
-      // Verify cars were created
-      const finalCars = await dbStorage.getAllCars();
-      // Production ready with cars count
+      // Only initialize cars if none exist
+      if (existingCars.length === 0) {
+        console.log('No cars found, initializing cars...');
+        await dbStorage.forceInitializeCars();
+        
+        // Verify cars were created
+        const finalCars = await dbStorage.getAllCars();
+        console.log(`Successfully created ${finalCars.length} cars`);
+      } else {
+        console.log('Cars already exist, skipping initialization');
+      }
       
     } catch (error) {
-      // CRITICAL: Failed to initialize production database
-      // Stack trace logged internally
+      console.error('CRITICAL: Failed to initialize production database:', error);
       // Don't throw - let the server start even if initialization fails
     }
   }
