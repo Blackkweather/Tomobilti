@@ -11,8 +11,14 @@ import { randomUUID } from 'crypto';
 const getDatabaseConfig = () => {
   const databaseUrl = process.env.DATABASE_URL;
   
+  console.log('Database configuration check:');
+  console.log('DATABASE_URL:', databaseUrl ? 'SET' : 'NOT SET');
+  console.log('DB_HOST:', process.env.DB_HOST || 'NOT SET');
+  console.log('NODE_ENV:', process.env.NODE_ENV);
+  
   // If DATABASE_URL is provided, use it (cloud or local PostgreSQL)
   if (databaseUrl && !databaseUrl.startsWith('file:')) {
+    console.log('Using DATABASE_URL for connection');
     return {
       connectionString: databaseUrl,
       ssl: process.env.DB_SSL === 'true' ? {
@@ -24,6 +30,7 @@ const getDatabaseConfig = () => {
   // Fallback to individual parameters for cloud providers
   if (process.env.DB_HOST && process.env.DB_HOST !== 'localhost') {
     const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
+    console.log('Using individual DB parameters for connection');
     return {
       connectionString,
       ssl: process.env.DB_SSL === 'true' ? {
@@ -33,6 +40,7 @@ const getDatabaseConfig = () => {
   }
   
   // Default local PostgreSQL
+  console.log('Using localhost fallback for connection');
   return {
     connectionString: databaseUrl || 'postgresql://demo_user:demo_password@localhost:5432/tomobilti_db',
     ssl: false
