@@ -332,7 +332,7 @@ export default function Cars() {
             </div>
             
             {/* Search Bar */}
-            <div className="max-w-4xl mx-auto relative z-10 px-4 mb-8">
+            <div className="max-w-4xl mx-auto relative z-10 px-4 mb-12">
               <div className="card-modern bg-white/95 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-2xl border border-white/20">
                 <div className="space-y-4 sm:space-y-6">
                   {/* First Row - Location and Dates */}
@@ -402,10 +402,10 @@ export default function Cars() {
                     </div>
 
                     {/* Search Button */}
-                    <div className="sm:mt-0 mt-4">
+                    <div className="flex justify-center lg:justify-start">
                       <button
                         onClick={applyFilters}
-                        className="btn-primary w-full h-10 sm:h-12 px-4 sm:px-6 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                        className="btn-primary w-full max-w-xs h-10 sm:h-12 px-4 sm:px-6 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
                       >
                         <Search className="w-4 h-4 sm:w-5 sm:h-5" />
                         <span className="hidden sm:inline">Search Cars</span>
@@ -420,7 +420,7 @@ export default function Cars() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 mt-8 min-h-screen">
+      <div className="container mx-auto px-4 py-12 mt-16 min-h-screen">
         {/* Results Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
           <div className="mb-6 md:mb-0">

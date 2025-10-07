@@ -59,6 +59,7 @@ import RoadsideAssistance from "./pages/RoadsideAssistance";
 import QualityGuarantee from "./pages/QualityGuarantee";
 import MicrosoftCallback from "./pages/MicrosoftCallback";
 import GoogleCallback from "./pages/GoogleCallback";
+import FacebookCallback from "./pages/FacebookCallback";
 import FAQ from "./pages/FAQ";
 import LiveChat from "./pages/LiveChat";
 import HostGuide from "./pages/HostGuide";
@@ -145,6 +146,7 @@ function App() {
               <Route path="/quality-guarantee" component={QualityGuarantee} />
               <Route path="/auth/microsoft/callback" component={MicrosoftCallback} />
               <Route path="/auth/google/callback" component={GoogleCallback} />
+              <Route path="/auth/facebook/callback" component={FacebookCallback} />
               <Route path="/faq" component={FAQ} />
               <Route path="/live-chat" component={LiveChat} />
               <Route path="/host-guide" component={HostGuide} />

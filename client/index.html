@@ -81,6 +81,20 @@
         console.log('✅ WebSocket Fix: Global override installed successfully');
       })();
     </script>
+    
+    <!-- Facebook SDK -->
+    <script>
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId: '879130531438151',
+          cookie: true,
+          xfbml: true,
+          version: 'v18.0'
+        });
+        console.log('Facebook SDK initialized from HTML');
+      };
+    </script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
   </head>
   <body>
     <div id="root"></div>

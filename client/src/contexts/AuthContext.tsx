@@ -33,13 +33,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const urlToken = urlParams.get('token');
       
       if (urlToken) {
+        console.log('OAuth callback detected, processing token:', urlToken);
         // Store the token and clear URL
         setAuthToken(urlToken);
         window.history.replaceState({}, document.title, window.location.pathname);
         
         // Immediately fetch user data with the new token
         try {
+          console.log('Fetching user data with OAuth token...');
           const response = await authApi.getCurrentUser();
+          console.log('OAuth user data received:', response.user);
           setUser(response.user);
           setLoading(false);
           return;

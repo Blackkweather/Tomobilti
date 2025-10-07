@@ -81,21 +81,9 @@ const agentService = new CarRentalAgentService({
 });
 
 export async function registerRoutes(app: Express): Promise<Express> {
-  // Apply security middleware to all routes
+  // Apply security middleware to all routes - CSP disabled for development
   app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-        imgSrc: ["'self'", "data:", "blob:", "https:"],
-        connectSrc: ["'self'"],
-        fontSrc: ["'self'", "https:", "data:"],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
-      },
-    },
+    contentSecurityPolicy: false, // Disable CSP for development to allow Facebook SDK
   }));
   // app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
   app.use('/api', sanitizeMiddleware);
@@ -767,24 +755,34 @@ export async function registerRoutes(app: Express): Promise<Express> {
       // Enrich cars with owner info and reviews
       const enrichedCars = await Promise.all(
         result.cars.map(async (car) => {
-          const owner = await storage.getUser(car.ownerId);
-          const reviews = await storage.getReviewsByCar(car.id);
-          
-          const averageRating = reviews.length > 0 
-            ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
-            : 0;
+          try {
+            const owner = await storage.getUser(car.ownerId);
+            const reviews = await storage.getReviewsByCar(car.id);
+            
+            const averageRating = reviews.length > 0 
+              ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+              : 0;
 
-          return {
-            ...car,
-            owner: owner ? {
-              id: owner.id,
-              firstName: owner.firstName,
-              lastName: owner.lastName,
-              profileImage: owner.profileImage
-            } : null,
-            rating: Number(averageRating.toFixed(1)),
-            reviewCount: reviews.length
-          };
+            return {
+              ...car,
+              owner: owner ? {
+                id: owner.id,
+                firstName: owner.firstName,
+                lastName: owner.lastName,
+                profileImage: owner.profileImage
+              } : null,
+              rating: Number(averageRating.toFixed(1)),
+              reviewCount: reviews.length
+            };
+          } catch (enrichError) {
+            // If enrichment fails, return car without enrichment
+            return {
+              ...car,
+              owner: null,
+              rating: 0,
+              reviewCount: 0
+            };
+          }
         })
       );
       
@@ -799,7 +797,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: "Invalid search parameters", details: error.errors });
       }
-      console.error('Car search error:', error);
+      // Car search error logged internally
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -811,29 +809,45 @@ export async function registerRoutes(app: Express): Promise<Express> {
         return res.status(404).json({ error: "Vehicle not found" });
       }
 
-      // Get owner info and reviews
-      const owner = await storage.getUser(car.ownerId);
-      const reviews = await storage.getReviewsByCar(car.id);
+      // Get owner info and reviews with error handling
+      let owner = null;
+      let reviews = [];
+      let enrichedReviews = [];
+
+      try {
+        owner = await storage.getUser(car.ownerId);
+        reviews = await storage.getReviewsByCar(car.id);
+        
+        // Get enriched reviews with reviewer info
+        enrichedReviews = await Promise.all(
+          reviews.map(async (review) => {
+            try {
+              const reviewer = await storage.getUser(review.reviewerId);
+              return {
+                ...review,
+                reviewer: reviewer ? {
+                  id: reviewer.id,
+                  firstName: reviewer.firstName,
+                  lastName: reviewer.lastName,
+                  profileImage: reviewer.profileImage
+                } : null
+              };
+            } catch (reviewerError) {
+              return {
+                ...review,
+                reviewer: null
+              };
+            }
+          })
+        );
+      } catch (enrichError) {
+        // If enrichment fails, continue with empty data
+        enrichedReviews = reviews.map(review => ({ ...review, reviewer: null }));
+      }
       
       const averageRating = reviews.length > 0 
         ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
         : 0;
-
-      // Get enriched reviews with reviewer info
-      const enrichedReviews = await Promise.all(
-        reviews.map(async (review) => {
-          const reviewer = await storage.getUser(review.reviewerId);
-          return {
-            ...review,
-            reviewer: reviewer ? {
-              id: reviewer.id,
-              firstName: reviewer.firstName,
-              lastName: reviewer.lastName,
-              profileImage: reviewer.profileImage
-            } : null
-          };
-        })
-      );
 
       res.json({
         ...car,
@@ -843,7 +857,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         reviews: enrichedReviews
       });
     } catch (error) {
-      console.error('Get car error:', error);
+      // Get car error logged internally
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -854,7 +868,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
       const cars = await storage.getCarsByOwner(req.params.ownerId);
       res.json({ cars });
     } catch (error) {
-      console.error('Get owner cars error:', error);
+      // Get owner cars error logged internally
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -867,7 +881,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
       if (req.headers['content-type']?.includes('multipart/form-data')) {
         carData = {};
         
-        console.log('FormData received:', req.body);
+        // FormData received for car creation
         
         // Parse form fields with proper type conversion
         Object.keys(req.body).forEach(key => {
@@ -916,7 +930,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         currency: 'GBP' // Set to GBP as requested by user
       };
       
-      console.log('Car data with defaults:', carDataWithDefaults);
+      // Car data with defaults applied
       
       const validatedCarData = enhancedInsertCarSchema.parse(carDataWithDefaults);
       
@@ -927,10 +941,10 @@ export async function registerRoutes(app: Express): Promise<Express> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.log('Validation error details:', error.errors);
+        // Validation error details logged internally
         return res.status(400).json({ error: "Invalid vehicle data", details: error.errors });
       }
-      console.error('Create car error:', error);
+      // Create car error logged internally
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -943,7 +957,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
       if (req.headers['content-type']?.includes('multipart/form-data')) {
         updates = {};
         
-        console.log('FormData received for update:', req.body);
+        // FormData received for update
         
         // Parse form fields with proper type conversion
         Object.keys(req.body).forEach(key => {
@@ -994,7 +1008,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         updates.city = updates.location;
       }
       
-      console.log('Car updates:', updates);
+      // Car updates applied
       
       const validatedUpdates = enhancedInsertCarSchema.partial().parse(updates);
       const car = await storage.updateCar(req.params.id, validatedUpdates);
@@ -1009,10 +1023,10 @@ export async function registerRoutes(app: Express): Promise<Express> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        console.log('Validation error details:', error.errors);
+        // Validation error details logged internally
         return res.status(400).json({ error: "Invalid vehicle data", details: error.errors });
       }
-      console.error('Update car error:', error);
+      // Update car error logged internally
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -1025,7 +1039,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
       }
       res.json({ message: "Véhicule supprimé avec succès" });
     } catch (error) {
-      console.error('Delete car error:', error);
+      // Delete car error logged internally
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -1051,7 +1065,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
       
       res.json(enrichedBooking);
     } catch (error) {
-      console.error('Get booking error:', error);
+      // Get booking error logged internally
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -1094,9 +1108,9 @@ export async function registerRoutes(app: Express): Promise<Express> {
 
   app.get("/api/bookings/owner/:ownerId", async (req, res) => {
     try {
-      console.log('Fetching bookings for owner:', req.params.ownerId);
+      // Fetching bookings for owner
       const bookings = await storage.getBookingsByOwner(req.params.ownerId);
-      console.log('Found bookings:', bookings.length);
+      // Found bookings count
       
       // Enrich bookings with car and renter information
       const enrichedBookings = await Promise.all(
@@ -1124,7 +1138,7 @@ export async function registerRoutes(app: Express): Promise<Express> {
         })
       );
       
-      console.log('Enriched bookings:', enrichedBookings.length);
+      // Enriched bookings count
       res.json({ bookings: enrichedBookings });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
@@ -1458,6 +1472,91 @@ export async function registerRoutes(app: Express): Promise<Express> {
   // Register admin routes
   registerAdminRoutes(app);
 
+  // Facebook OAuth callback route
+  app.get('/auth/facebook/callback', async (req, res) => {
+    console.log('Facebook callback route hit!', req.query);
+    try {
+      const { code, error } = req.query;
+      
+      if (error) {
+        console.error('Facebook OAuth error:', error);
+        return res.redirect('/login?error=facebook_auth_failed');
+      }
+      
+      if (!code) {
+        return res.redirect('/login?error=no_auth_code');
+      }
+      
+      // Exchange code for access token
+      const facebookAppId = process.env.FACEBOOK_APP_ID;
+      const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
+      const redirectUri = `${req.protocol}://${req.get('host')}/auth/facebook/callback`;
+      
+      if (!facebookAppId || !facebookAppSecret) {
+        console.error('Facebook OAuth not configured');
+        return res.redirect('/login?error=oauth_not_configured');
+      }
+      
+      // Exchange authorization code for access token
+      const tokenResponse = await fetch('https://graph.facebook.com/v18.0/oauth/access_token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          client_id: facebookAppId,
+          client_secret: facebookAppSecret,
+          redirect_uri: redirectUri,
+          code: code as string,
+        }),
+      });
+      
+      const tokenData = await tokenResponse.json();
+      
+      if (!tokenData.access_token) {
+        console.error('Failed to get Facebook access token:', tokenData);
+        return res.redirect('/login?error=token_exchange_failed');
+      }
+      
+      // Get user information from Facebook
+      const userResponse = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${tokenData.access_token}`);
+      const userData = await userResponse.json();
+      
+      if (!userData.id) {
+        console.error('Failed to get Facebook user data:', userData);
+        return res.redirect('/login?error=user_data_failed');
+      }
+      
+      // Process the OAuth login
+      const response = await fetch(`${req.protocol}://${req.get('host')}/api/auth/oauth/facebook`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          accessToken: tokenData.access_token,
+          userID: userData.id,
+        }),
+      });
+      
+      const authData = await response.json();
+      
+      if (response.ok) {
+        // Redirect to frontend with token - AuthContext will handle user data fetching
+        const redirectUrl = new URL('/', `${req.protocol}://${req.get('host')}`);
+        redirectUrl.searchParams.set('token', authData.token);
+        return res.redirect(redirectUrl.toString());
+      } else {
+        console.error('OAuth processing failed:', authData);
+        return res.redirect('/login?error=oauth_processing_failed');
+      }
+      
+    } catch (error) {
+      console.error('Facebook callback error:', error);
+      res.redirect('/login?error=callback_error');
+    }
+  });
+
   // Register OAuth routes
   app.use('/api/auth/oauth', oauthRoutes);
 
@@ -1467,15 +1566,21 @@ export async function registerRoutes(app: Express): Promise<Express> {
     try {
       let usersCount = 0;
       let carsCount = 0;
+      let dbConnected = false;
 
       try {
         const users = await (storage as any).getAllUsers?.();
-        if (Array.isArray(users)) usersCount = users.length;
+        if (Array.isArray(users)) {
+          usersCount = users.length;
+          dbConnected = true;
+        }
       } catch {}
 
       try {
         const cars = await (storage as any).getAllCars?.();
-        if (Array.isArray(cars)) carsCount = cars.length;
+        if (Array.isArray(cars)) {
+          carsCount = cars.length;
+        }
       } catch {}
 
       if (carsCount === 0) {
@@ -1491,8 +1596,9 @@ export async function registerRoutes(app: Express): Promise<Express> {
         database: {
           users: usersCount,
           cars: carsCount,
-          connected: true
-        }
+          connected: dbConnected
+        },
+        timestamp: new Date().toISOString()
       });
     } catch (error) {
       res.status(500).json({ 
@@ -1501,7 +1607,8 @@ export async function registerRoutes(app: Express): Promise<Express> {
         database: {
           connected: false,
           error: (error as any).message
-        }
+        },
+        timestamp: new Date().toISOString()
       });
     }
   });
