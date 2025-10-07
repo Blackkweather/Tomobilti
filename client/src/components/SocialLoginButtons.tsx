@@ -82,39 +82,28 @@ export default function SocialLoginButtons({
 
   const handleFacebookLogin = async () => {
     try {
-      // Load Facebook SDK
-      if (!window.FB) {
-        const script = document.createElement('script');
-        script.src = 'https://connect.facebook.net/en_US/sdk.js';
-        script.async = true;
-        script.defer = true;
-        document.head.appendChild(script);
-        
-        await new Promise((resolve) => {
-          script.onload = () => {
-            window.FB.init({
-              appId: 'your-facebook-app-id',
-              cookie: true,
-              xfbml: true,
-              version: 'v18.0'
-            });
-            resolve();
-          };
-        });
-      }
+      setLoading('Facebook');
+      setError('');
 
-      window.FB.login(async (response: any) => {
-        if (response.authResponse) {
-          await handleOAuthLogin('facebook', response.authResponse.accessToken, {
-            userID: response.authResponse.userID
-          });
-        } else {
-          setError('Facebook login was cancelled.');
-        }
-      }, { scope: 'email' });
+      console.log('Starting Facebook login process...');
+
+      // Use redirect-based Facebook login for HTTP compatibility
+      const facebookAppId = '879130531438151';
+      const redirectUri = encodeURIComponent(window.location.origin + '/auth/facebook/callback');
+      const scope = encodeURIComponent('email,public_profile');
+      
+      // Facebook OAuth URL
+      const facebookAuthUrl = `https://www.facebook.com/v18.0/dialog/oauth?client_id=${facebookAppId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=${Date.now()}`;
+      
+      console.log('Redirecting to Facebook:', facebookAuthUrl);
+      
+      // Redirect to Facebook for authentication
+      window.location.href = facebookAuthUrl;
 
     } catch (error) {
-      setError('Facebook login failed. Please try again.');
+      console.error('Facebook login error:', error);
+      setError(`Facebook login failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setLoading(null);
     }
   };
 
@@ -242,8 +231,13 @@ export default function SocialLoginButtons({
         {providers.map((provider) => (
           <Button
             key={provider.name}
+            type="button"
             variant="outline"
-            onClick={provider.onClick}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              provider.onClick();
+            }}
             disabled={loading === provider.name}
             className={`h-12 w-full transition-all duration-200 ${provider.color}`}
           >

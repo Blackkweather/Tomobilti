@@ -96,18 +96,18 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Three Main Sections Side by Side */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-
-          {/* Company Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Company</h4>
-            <ul className="space-y-3">
+        {/* Footer Navigation - Side by Side Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-8 max-w-6xl mx-auto">
+          
+          {/* Company Section */}
+          <div className="text-center md:text-left">
+            <h4 className="text-lg font-semibold text-white mb-6">Company</h4>
+            <ul className="space-y-4">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
                   <Link 
                     href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200"
+                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 text-sm leading-relaxed"
                   >
                     {link.label}
                   </Link>
@@ -116,15 +116,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Services Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Services</h4>
-            <ul className="space-y-3">
+          {/* Services Section */}
+          <div className="text-center md:text-left">
+            <h4 className="text-lg font-semibold text-white mb-6">Services</h4>
+            <ul className="space-y-4">
               {footerLinks.services.map((link, index) => (
                 <li key={index}>
                   <Link 
                     href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200"
+                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 text-sm leading-relaxed"
                   >
                     {link.label}
                   </Link>
@@ -133,15 +133,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Support Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Support</h4>
-            <ul className="space-y-3">
+          {/* Support Section */}
+          <div className="text-center md:text-left">
+            <h4 className="text-lg font-semibold text-white mb-6">Support</h4>
+            <ul className="space-y-4">
               {footerLinks.support.map((link, index) => (
                 <li key={index}>
                   <Link 
                     href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200"
+                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 text-sm leading-relaxed"
                   >
                     {link.label}
                   </Link>
@@ -172,32 +172,32 @@ export default function Footer() {
         {/* Contact Info */}
         <div className="border-t border-white/10 mt-12 pt-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <MapPin className="w-5 h-5 text-blue-400" />
               </div>
-              <div className="text-center">
-                <p className="font-semibold">Headquarters</p>
+              <div className="flex flex-col justify-center">
+                <p className="font-semibold text-white mb-1">Headquarters</p>
                 <p className="text-gray-300 text-sm">London, United Kingdom</p>
               </div>
             </div>
             
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-10 h-10 bg-green-600/20 rounded-full flex items-center justify-center">
-                <Phone className="w-5 h-5 text-green-400" />
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Phone className="w-5 h-5 text-blue-400" />
               </div>
-              <div className="text-center">
-                <p className="font-semibold">Phone</p>
+              <div className="flex flex-col justify-center">
+                <p className="font-semibold text-white mb-1">Phone</p>
                 <p className="text-gray-300 text-sm">+44 20 1234 5678</p>
               </div>
             </div>
             
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-10 h-10 bg-purple-600/20 rounded-full flex items-center justify-center">
-                <Mail className="w-5 h-5 text-purple-400" />
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 bg-blue-600/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Mail className="w-5 h-5 text-blue-400" />
               </div>
-              <div className="text-center">
-                <p className="font-semibold">Email</p>
+              <div className="flex flex-col justify-center">
+                <p className="font-semibold text-white mb-1">Email</p>
                 <p className="text-gray-300 text-sm">contact@sharewheelz.uk</p>
               </div>
             </div>

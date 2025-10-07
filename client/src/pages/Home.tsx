@@ -289,6 +289,7 @@ export default function Home() {
       {/* Hero Section with Promotional Bubbles */}
       <Hero />
 
+
       {/* Main Homepage Sections */}
       <section className="py-12 bg-white overflow-hidden">
         <div className="container mx-auto px-4">

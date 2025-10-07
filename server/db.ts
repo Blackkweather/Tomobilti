@@ -350,7 +350,7 @@ export class DatabaseStorage implements IStorage {
     // Check if data already exists
     const existingUsers = await db.select().from(users).limit(1);
     if (existingUsers.length > 0) {
-      console.log('Sample data already exists, skipping initialization');
+      // Sample data already exists, skipping initialization
       return;
     }
 
@@ -360,42 +360,42 @@ export class DatabaseStorage implements IStorage {
   // Force initialize cars even if users exist
   async forceInitializeCars() {
     try {
-      console.log('🚗 Force initializing cars...');
+      // Force initializing cars
       
       // Get existing users or create them
       let existingUsers = await db.select().from(users);
-      console.log(`Found ${existingUsers.length} users in database`);
+      // Found users in database
       
       let owners = existingUsers.filter(user => user.userType === 'owner');
-      console.log(`Found ${owners.length} car owners`);
+      // Found car owners
       
       if (owners.length === 0) {
-        console.log('No owners found, creating sample users...');
+        // No owners found, creating sample users
         await this.createSampleUsersAndCars();
         existingUsers = await db.select().from(users);
         owners = existingUsers.filter(user => user.userType === 'owner');
-        console.log(`Created ${owners.length} owners`);
+        // Created owners count
       }
       
       // Check if cars exist
       const existingCars = await db.select().from(cars);
-      console.log(`Found ${existingCars.length} cars in database`);
+      // Found cars in database
       
       if (existingCars.length > 0) {
-        console.log(`✅ ${existingCars.length} cars already exist`);
+        // Cars already exist
         return;
       }
       
       // Create cars
-      console.log('Creating sample cars...');
+      // Creating sample cars
       await this.createSampleCars(owners);
       
       // Verify cars were created
       const finalCars = await db.select().from(cars);
-      console.log(`✅ Successfully created ${finalCars.length} cars`);
+      // Successfully created cars
       
     } catch (error) {
-      console.error('❌ Error in forceInitializeCars:', error);
+      // Error in forceInitializeCars
       throw error;
     }
   }
@@ -558,7 +558,7 @@ export class DatabaseStorage implements IStorage {
       isAvailable: true
     });
 
-    console.log('✅ Created 6 UK luxury cars for ShareWheelz platform');
+    // Created UK luxury cars for ShareWheelz platform
   }
 
   // Missing methods to implement IStorage interface
@@ -571,7 +571,7 @@ export class DatabaseStorage implements IStorage {
         .where(eq(users.id, id));
       return true;
     } catch (error) {
-      console.error('Error updating user password:', error);
+      // Error updating user password
       return false;
     }
   }
@@ -581,7 +581,7 @@ export class DatabaseStorage implements IStorage {
       await db.delete(users).where(eq(users.id, id));
       return true;
     } catch (error) {
-      console.error('Error deleting user:', error);
+      // Error deleting user
       return false;
     }
   }
@@ -590,7 +590,7 @@ export class DatabaseStorage implements IStorage {
     try {
       return await db.select().from(notifications).where(eq(notifications.userId, userId));
     } catch (error) {
-      console.error('Error getting notifications:', error);
+      // Error getting notifications
       return [];
     }
   }
@@ -612,7 +612,7 @@ export class DatabaseStorage implements IStorage {
         .where(and(eq(notifications.id, notificationId), eq(notifications.userId, userId)));
       return true;
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      // Error marking notification as read
       return false;
     }
   }
@@ -625,7 +625,7 @@ export class DatabaseStorage implements IStorage {
         .where(eq(notifications.userId, userId));
       return true;
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      // Error marking all notifications as read
       return false;
     }
   }
@@ -705,7 +705,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateSupportTicket(id: string, updates: Partial<any>): Promise<boolean> {
     // Mock implementation
-    console.log(`Updating support ticket ${id} with:`, updates);
+    // Updating support ticket
     return true;
   }
 }

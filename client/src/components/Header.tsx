@@ -13,11 +13,12 @@ import {
 } from './ui/dropdown-menu';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown, ChevronDown, HelpCircle, Phone, AlertTriangle, Users, PoundSterling, Headphones, MessageCircle } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown, ChevronDown, HelpCircle, Phone, AlertTriangle, Users, PoundSterling, Headphones, MessageCircle, Filter } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';
 import { LocationPicker } from './LocationPicker';
+import CarFilterDropdown from './CarFilterDropdown';
 
 export default function Header() {
   const [location, setLocation] = useLocation();
@@ -26,6 +27,7 @@ export default function Header() {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [showCarFilters, setShowCarFilters] = useState(false);
 
   // Fetch notifications when user is authenticated
   useEffect(() => {
@@ -209,16 +211,57 @@ export default function Header() {
                       <p className="text-sm text-gray-600 mt-1">{item.description}</p>
                     </div>
                     <DropdownMenuSeparator />
-                    <div className="p-2">
-                      {item.subItems.map((subItem) => (
-                        <DropdownMenuItem key={subItem.href} asChild>
-                          <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
-                            <div className="font-medium text-gray-900">{subItem.label}</div>
-                            <div className="text-sm text-gray-600">{subItem.description}</div>
-                          </Link>
-                        </DropdownMenuItem>
-                      ))}
-                    </div>
+                    
+                    {/* Special handling for Rent a Car dropdown */}
+                    {item.label === 'Rent a Car' ? (
+                      <div className="p-3">
+                        {/* Search Filters Section */}
+                        <div className="mb-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Search Filters</span>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setShowCarFilters(!showCarFilters)}
+                              className="h-7 px-2 text-xs"
+                            >
+                              <Filter className="w-3 h-3 mr-1" />
+                              {showCarFilters ? 'Hide' : 'Show'} Filters
+                            </Button>
+                          </div>
+                          
+                          {/* Filter Dropdown */}
+                          {showCarFilters && (
+                            <div className="mb-3">
+                              <CarFilterDropdown onClose={() => setShowCarFilters(false)} />
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Quick Links */}
+                        <div className="space-y-1">
+                          {item.subItems.map((subItem) => (
+                            <DropdownMenuItem key={subItem.href} asChild>
+                              <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
+                                <div className="font-medium text-gray-900">{subItem.label}</div>
+                                <div className="text-sm text-gray-600">{subItem.description}</div>
+                              </Link>
+                            </DropdownMenuItem>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-2">
+                        {item.subItems.map((subItem) => (
+                          <DropdownMenuItem key={subItem.href} asChild>
+                            <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
+                              <div className="font-medium text-gray-900">{subItem.label}</div>
+                              <div className="text-sm text-gray-600">{subItem.description}</div>
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </div>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               );

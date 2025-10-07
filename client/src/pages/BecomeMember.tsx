@@ -636,11 +636,14 @@ export default function BecomeMember() {
                       {/* Monthly Price for Black Plan */}
                       {plan.monthlyPrice && (
                         <div className="mt-3 text-center">
-                          <div className="text-sm text-gray-800">
-                            <span className="font-semibold text-gray-900">£{plan.monthlyPrice}/{plan.monthlyPeriod}</span> - Pay monthly with flexibility, or
+                          <div className="text-sm text-gray-800 mb-2">
+                            <span className="text-lg font-bold text-blue-600">£{plan.monthlyPrice}</span>
+                            <span className="text-gray-600">/{plan.monthlyPeriod}</span> - Pay monthly with flexibility, or
                           </div>
-                          <div className="text-sm text-gray-800 mt-1">
-                            <span className="font-semibold text-gray-900">£{plan.price}/year</span> - Save £{plan.yearlySavings} annually (best value!)
+                          <div className="text-sm text-gray-800">
+                            <span className="text-lg font-bold text-green-600">£{plan.price}</span>
+                            <span className="text-gray-600">/year</span> - Save £{plan.yearlySavings} annually 
+                            <span className="block text-xs font-semibold text-yellow-600 mt-1">(best value!)</span>
                           </div>
                         </div>
                       )}
@@ -654,7 +657,7 @@ export default function BecomeMember() {
                         <PoundSterling className="h-4 w-4" />
                         For Hosts
                       </h4>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {plan.hostFeatures.map((feature, index) => (
                           <li key={index} className="flex items-start gap-2 text-sm">
                             <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -670,7 +673,7 @@ export default function BecomeMember() {
                         <Car className="h-4 w-4" />
                         For Renters
                       </h4>
-                      <ul className="space-y-2">
+                      <ul className="space-y-3">
                         {plan.renterFeatures.map((feature, index) => (
                           <li key={index} className="flex items-start gap-2 text-sm">
                             <CheckCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />

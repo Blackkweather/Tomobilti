@@ -44,7 +44,7 @@ const redirectBasedOnUserType = (userType: string, setLocation: (path: string) =
 
 export default function Register() {
   const [, setLocation] = useLocation();
-  const { register, isAuthenticated, loading } = useAuth();
+  const { register, isAuthenticated, loading, user } = useAuth();
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -61,12 +61,11 @@ export default function Register() {
 
   // Redirect if already authenticated
   useEffect(() => {
-    if (isAuthenticated && !loading) {
+    if (isAuthenticated && !loading && user) {
       // Smart redirection based on user type
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
       redirectBasedOnUserType(user.userType, setLocation);
     }
-  }, [isAuthenticated, loading, setLocation]);
+  }, [isAuthenticated, loading, user, setLocation]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -442,10 +441,18 @@ export default function Register() {
                     </div>
                   )}
                 </Button>
-
-                {/* Social Login Buttons */}
-                <SocialLoginButtons />
               </form>
+
+              {/* Social Login Buttons - Outside the form */}
+              <SocialLoginButtons 
+                onSuccess={(user) => {
+                  console.log('OAuth registration successful:', user);
+                  redirectBasedOnUserType(user.userType, setLocation);
+                }}
+                onError={(error) => {
+                  setError(error);
+                }}
+              />
 
               {/* Security Badges */}
               <div className="flex items-center justify-center gap-4 text-xs text-gray-500 pt-4 border-t">

@@ -33,7 +33,7 @@ router.post('/google', async (req, res) => {
     const { email, name, picture, sub: googleId } = payload;
 
     // Check if user already exists
-    let user = await db.select().from(users).where(eq(users.email, email)).get();
+    let user = await db.select().from(users).where(eq(users.email, email)).limit(1).then(rows => rows[0] || null);
 
     if (!user) {
       // Create new user
@@ -92,7 +92,7 @@ router.post('/google', async (req, res) => {
   }
 });
 
-// Facebook OAuth (mock implementation)
+// Facebook OAuth implementation
 router.post('/facebook', async (req, res) => {
   try {
     const { accessToken, userID } = req.body;
@@ -101,26 +101,44 @@ router.post('/facebook', async (req, res) => {
       return res.status(400).json({ error: 'Facebook token and user ID are required' });
     }
 
-    // In a real implementation, you would verify the Facebook token
-    // For now, we'll create a mock response
-    const mockUser = {
-      id: userID,
-      email: `facebook_${userID}@example.com`,
-      name: 'Facebook User',
-      picture: null,
-    };
+    // Verify the Facebook token with Facebook's API
+    const facebookAppId = process.env.FACEBOOK_APP_ID;
+    const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
+    
+    if (!facebookAppId || !facebookAppSecret) {
+      return res.status(500).json({ error: 'Facebook OAuth not configured' });
+    }
+
+    // Verify the access token with Facebook
+    const verifyUrl = `https://graph.facebook.com/debug_token?input_token=${accessToken}&access_token=${facebookAppId}|${facebookAppSecret}`;
+    
+    const verifyResponse = await fetch(verifyUrl);
+    const verifyData = await verifyResponse.json();
+    
+    if (!verifyData.data || !verifyData.data.is_valid) {
+      return res.status(400).json({ error: 'Invalid Facebook token' });
+    }
+
+    // Get user information from Facebook
+    const userInfoUrl = `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${accessToken}`;
+    const userResponse = await fetch(userInfoUrl);
+    const userData = await userResponse.json();
+    
+    if (!userData.id) {
+      return res.status(400).json({ error: 'Failed to get user information from Facebook' });
+    }
 
     // Check if user exists
-    let user = await db.select().from(users).where(eq(users.email, mockUser.email)).get();
+    let user = await db.select().from(users).where(eq(users.email, userData.email)).limit(1).then(rows => rows[0] || null);
 
     if (!user) {
       const newUser = {
         id: crypto.randomUUID(),
-        email: mockUser.email,
-        firstName: mockUser.name.split(' ')[0],
-        lastName: mockUser.name.split(' ').slice(1).join(' '),
-        profileImage: mockUser.picture,
-        facebookId: userID,
+        email: userData.email,
+        firstName: userData.name.split(' ')[0],
+        lastName: userData.name.split(' ').slice(1).join(' '),
+        profileImage: userData.picture?.data?.url || null,
+        facebookId: userData.id,
         userType: 'renter' as const,
         isVerified: true,
         createdAt: new Date().toISOString(),
@@ -129,6 +147,17 @@ router.post('/facebook', async (req, res) => {
 
       await db.insert(users).values(newUser);
       user = newUser;
+    } else {
+      // Update existing user with Facebook ID if not set
+      if (!user.facebookId) {
+        await db.update(users)
+          .set({ 
+            facebookId: userData.id,
+            profileImage: userData.picture?.data?.url || user.profileImage,
+            updatedAt: new Date().toISOString()
+          })
+          .where(eq(users.id, user.id));
+      }
     }
 
     const jwtToken = jwt.sign(
@@ -176,7 +205,7 @@ router.post('/microsoft', async (req, res) => {
     };
 
     // Check if user exists
-    let user = await db.select().from(users).where(eq(users.email, mockUser.email)).get();
+    let user = await db.select().from(users).where(eq(users.email, mockUser.email)).limit(1).then(rows => rows[0] || null);
 
     if (!user) {
       const newUser = {
@@ -238,7 +267,7 @@ router.post('/apple', async (req, res) => {
       name: user?.name || 'Apple User',
     };
 
-    let dbUser = await db.select().from(users).where(eq(users.email, mockUser.email)).get();
+    let dbUser = await db.select().from(users).where(eq(users.email, mockUser.email)).limit(1).then(rows => rows[0] || null);
 
     if (!dbUser) {
       const newUser = {
