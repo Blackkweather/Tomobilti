@@ -360,44 +360,173 @@ export class DatabaseStorage implements IStorage {
   // Force initialize cars even if users exist
   async forceInitializeCars() {
     try {
-      // Force initializing cars
+      console.log('Force initializing cars...');
       
       // Get existing users or create them
       let existingUsers = await db.select().from(users);
-      // Found users in database
+      console.log(`Found ${existingUsers.length} existing users`);
       
       let owners = existingUsers.filter(user => user.userType === 'owner');
-      // Found car owners
+      console.log(`Found ${owners.length} existing owners`);
       
       if (owners.length === 0) {
-        // No owners found, creating sample users
+        console.log('No owners found, creating sample users and cars...');
         await this.createSampleUsersAndCars();
-        existingUsers = await db.select().from(users);
-        owners = existingUsers.filter(user => user.userType === 'owner');
-        // Created owners count
+        console.log('Sample users and cars created successfully');
+        return; // createSampleUsersAndCars already creates cars
       }
       
       // Check if cars exist
       const existingCars = await db.select().from(cars);
-      // Found cars in database
+      console.log(`Found ${existingCars.length} existing cars`);
       
       if (existingCars.length > 0) {
-        // Cars already exist
+        console.log('Cars already exist, skipping creation');
         return;
       }
       
-      // Create cars
-      // Creating sample cars
-      await this.createSampleCars(owners);
+      // If we have owners but no cars, we need to create cars
+      console.log('Creating cars for existing owners...');
+      await this.createSampleCarsForOwners(owners);
       
       // Verify cars were created
       const finalCars = await db.select().from(cars);
-      // Successfully created cars
+      console.log(`Successfully created ${finalCars.length} cars`);
       
     } catch (error) {
-      // Error in forceInitializeCars
+      console.error('Error in forceInitializeCars:', error);
       throw error;
     }
+  }
+
+  private async createSampleCarsForOwners(owners: any[]) {
+    console.log(`Creating cars for ${owners.length} owners...`);
+    
+    const owner1 = owners[0];
+    const owner2 = owners[1] || owners[0]; // Use first owner if only one exists
+    
+    // Create YOUR UK luxury cars for ShareWheelz platform
+    await this.createCar({
+      ownerId: owner1.id,
+      title: "Porsche 911 F Model - Classic Sports Car",
+      description: "Iconic classic Porsche 911 F Model with timeless design and exceptional performance. Perfect for enthusiasts who appreciate automotive heritage and driving excellence.",
+      make: "Porsche",
+      model: "911 F",
+      year: 1973,
+      fuelType: "essence",
+      transmission: "manual",
+      seats: 2,
+      pricePerDay: "120.00",
+      currency: "GBP",
+      location: "London, Westminster",
+      city: "London",
+      latitude: 51.5074,
+      longitude: -0.1278,
+      images: ["/assets/CLASSIC.png"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner2.id,
+      title: "Jaguar F-Type Convertible - Luxury Sports Car",
+      description: "Stunning Jaguar F-Type Convertible with breathtaking design and exhilarating performance. Experience the thrill of open-top driving with British luxury and style.",
+      make: "Jaguar",
+      model: "F-Type",
+      year: 2023,
+      fuelType: "essence",
+      transmission: "automatic",
+      seats: 2,
+      pricePerDay: "95.00",
+      currency: "GBP",
+      location: "Manchester, City Centre",
+      city: "Manchester",
+      latitude: 53.4808,
+      longitude: -2.2426,
+      images: ["/assets/CONVERTIBLES.png"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner1.id,
+      title: "Tesla Model X - Electric SUV",
+      description: "Revolutionary Tesla Model X electric SUV with falcon-wing doors, autopilot capabilities, and zero emissions. Experience the future of automotive technology.",
+      make: "Tesla",
+      model: "Model X",
+      year: 2023,
+      fuelType: "electric",
+      transmission: "automatic",
+      seats: 7,
+      pricePerDay: "110.00",
+      currency: "GBP",
+      location: "Edinburgh, New Town",
+      city: "Edinburgh",
+      latitude: 55.9533,
+      longitude: -3.1883,
+      images: ["/assets/ELECTRIC.png"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner2.id,
+      title: "Jaguar F-Pace Sport - Performance SUV",
+      description: "Dynamic Jaguar F-Pace Sport combining SUV practicality with sports car performance. Featuring advanced technology and luxurious interior finishes.",
+      make: "Jaguar",
+      model: "F-Pace Sport",
+      year: 2023,
+      fuelType: "essence",
+      transmission: "automatic",
+      seats: 5,
+      pricePerDay: "85.00",
+      currency: "GBP",
+      location: "Birmingham, City Centre",
+      city: "Birmingham",
+      latitude: 52.4862,
+      longitude: -1.8904,
+      images: ["/assets/SUV.png"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner1.id,
+      title: "Ferrari LaFerrari - Hybrid Hypercar",
+      description: "Ferrari LaFerrari is a hybrid hypercar, the first in Ferrari's history, featuring a V12 engine and an electric motor for a combined output of 963 horsepower, enabling a top speed of over 217 mph and 0-60 mph in about 2.4 seconds",
+      make: "Ferrari",
+      model: "LaFerrari",
+      year: 2013,
+      fuelType: "essence",
+      transmission: "automatic",
+      seats: 2,
+      pricePerDay: "500.00",
+      currency: "GBP",
+      location: "London, Mayfair",
+      city: "London",
+      latitude: 51.5074,
+      longitude: -0.1278,
+      images: ["/assets/SPORTS.png"],
+      isAvailable: true
+    });
+
+    await this.createCar({
+      ownerId: owner2.id,
+      title: "Range Rover Evoque - Luxury Compact SUV",
+      description: "Sophisticated Range Rover Evoque combining compact dimensions with luxury and capability. Perfect for urban adventures with premium comfort and advanced technology.",
+      make: "Range Rover",
+      model: "Evoque",
+      year: 2023,
+      fuelType: "essence",
+      transmission: "automatic",
+      seats: 5,
+      pricePerDay: "75.00",
+      currency: "GBP",
+      location: "Liverpool, City Centre",
+      city: "Liverpool",
+      latitude: 53.4084,
+      longitude: -2.9916,
+      images: ["/assets/SUV.png"],
+      isAvailable: true
+    });
+
+    console.log('Sample cars created successfully');
   }
 
   private async createSampleUsersAndCars() {
