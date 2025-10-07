@@ -149,9 +149,13 @@ app.use((req, res, next) => {
           console.error('Failed to connect to database after retries - using in-memory storage');
           console.log('Initializing in-memory storage with sample data...');
           
-          // Initialize in-memory storage with sample data
-          const { MemStorage } = await import('./storage');
-          const memStorage = new MemStorage();
+          // Switch to in-memory storage
+          const { switchToInMemoryStorage } = await import('./storage');
+          switchToInMemoryStorage();
+          
+          // Get the storage instance
+          const { storage } = await import('./storage');
+          const memStorage = storage;
           
           // Create sample users and cars in memory
           const owner1 = await memStorage.createUser({
