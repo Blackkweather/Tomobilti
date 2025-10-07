@@ -902,15 +902,18 @@ async function createStorageInstance() {
 // Create storage instance
 let storageInstance: any = null;
 
-// Initialize storage
-createStorageInstance().then(instance => {
-  storageInstance = instance;
-  console.log('Storage instance created successfully');
-}).catch(error => {
-  console.error('Failed to create storage instance, using in-memory storage:', error.message);
-  storageInstance = new MemStorage();
-  console.log('Fallback to in-memory storage completed');
-});
+// Initialize storage immediately with in-memory fallback
+(async () => {
+  try {
+    const instance = await createStorageInstance();
+    storageInstance = instance;
+    console.log('Storage instance created successfully');
+  } catch (error) {
+    console.error('Failed to create storage instance, using in-memory storage:', error.message);
+    storageInstance = new MemStorage();
+    console.log('Fallback to in-memory storage completed');
+  }
+})();
 
 // Export storage with getter
 export const storage = new Proxy({} as any, {
@@ -922,5 +925,12 @@ export const storage = new Proxy({} as any, {
     return storageInstance[prop];
   }
 });
+
+// Function to force switch to in-memory storage
+export function switchToInMemoryStorage() {
+  console.log('Switching to in-memory storage...');
+  storageInstance = new MemStorage();
+  console.log('Switched to in-memory storage successfully');
+}
 
 // Sample data initialization removed
