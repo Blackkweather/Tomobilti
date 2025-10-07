@@ -294,7 +294,7 @@ export default function Cars() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-mauve-50 via-white to-bleu-50">
       {/* Hero Section with Attractive Image */}
-      <div className="relative h-[60vh] min-h-[400px] overflow-hidden group">
+      <div className="relative min-h-screen overflow-hidden group">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img
@@ -307,109 +307,130 @@ export default function Cars() {
               target.src = heroImages[(currentImageIndex + 1) % heroImages.length];
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-black/60"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70"></div>
         </div>
         
-        {/* Floating Elements */}
+        {/* Animated Background Elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 left-10 w-20 h-20 bg-mauve-500/20 rounded-full blur-xl animate-bounce-gentle"></div>
-          <div className="absolute bottom-20 right-10 w-32 h-32 bg-rose-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-bleu-500/20 rounded-full blur-xl animate-bounce-gentle" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-20 left-10 w-32 h-32 bg-blue-500/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-pink-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/3 right-1/3 w-20 h-20 bg-cyan-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }}></div>
         </div>
 
         {/* Content */}
-        <div className="relative z-10 h-full flex items-center">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center text-white mb-12">
+        <div className="relative z-10 min-h-screen flex flex-col justify-center">
+          <div className="container mx-auto px-4 py-20">
+            {/* Title Section */}
+            <div className="max-w-5xl mx-auto text-center text-white mb-16">
               <div className="animate-fade-in">
-                <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                <h1 className="text-6xl md:text-8xl font-bold mb-8 leading-tight">
                   Find Your Perfect
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-mauve-400 to-bleu-400">
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 animate-gradient">
                     Ride
                   </span>
                 </h1>
+                <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                  Discover luxury cars, electric vehicles, and classic rides across the UK
+                </p>
               </div>
             </div>
             
             {/* Search Bar */}
-            <div className="max-w-4xl mx-auto relative z-10 px-4 mb-12">
-              <div className="card-modern bg-white/95 backdrop-blur-sm p-4 sm:p-6 rounded-2xl shadow-2xl border border-white/20">
-                <div className="space-y-4 sm:space-y-6">
+            <div className="max-w-6xl mx-auto relative z-10 px-4">
+              <div className="bg-white/10 backdrop-blur-xl p-8 sm:p-10 rounded-3xl shadow-2xl border border-white/20 hover:bg-white/15 transition-all duration-500">
+                <div className="space-y-8">
                   {/* First Row - Location and Dates */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Location */}
-                    <div className="relative">
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    <div className="relative group">
+                      <label className="text-lg font-semibold text-white mb-3 block group-hover:text-blue-300 transition-colors">
+                        <MapPin className="inline w-5 h-5 mr-2" />
                         Where are you going?
                       </label>
-                      <LocationPicker
-                        value={filters.location}
-                        onChange={(location) => setFilters(prev => ({ ...prev, location }))}
-                        placeholder="Enter city or location"
-                      />
+                      <div className="relative">
+                        <LocationPicker
+                          value={filters.location}
+                          onChange={(location) => setFilters(prev => ({ ...prev, location }))}
+                          placeholder="Enter city or location"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                      </div>
                     </div>
 
                     {/* Start Date */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">
-                        Pick-up Date
+                    <div className="relative group">
+                      <label className="text-lg font-semibold text-white mb-3 block group-hover:text-blue-300 transition-colors">
+                        📅 Pick-up Date
                       </label>
-                      <Input
-                        type="date"
-                        value={filters.startDate}
-                        onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
-                        className="input-modern h-10 sm:h-12 text-sm sm:text-base"
-                      />
+                      <div className="relative">
+                        <Input
+                          type="date"
+                          value={filters.startDate}
+                          onChange={(e) => setFilters(prev => ({ ...prev, startDate: e.target.value }))}
+                          className="h-14 text-lg bg-white/20 border-white/30 text-white placeholder:text-gray-300 focus:bg-white/30 focus:border-blue-400 transition-all duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                      </div>
                     </div>
 
                     {/* End Date */}
-                    <div>
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">
-                        Return Date
+                    <div className="relative group">
+                      <label className="text-lg font-semibold text-white mb-3 block group-hover:text-blue-300 transition-colors">
+                        📅 Return Date
                       </label>
-                      <Input
-                        type="date"
-                        value={filters.endDate}
-                        onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
-                        className="input-modern h-10 sm:h-12 text-sm sm:text-base"
-                      />
+                      <div className="relative">
+                        <Input
+                          type="date"
+                          value={filters.endDate}
+                          onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
+                          className="h-14 text-lg bg-white/20 border-white/30 text-white placeholder:text-gray-300 focus:bg-white/30 focus:border-blue-400 transition-all duration-300"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                      </div>
                     </div>
                   </div>
 
                   {/* Second Row - Price Range and Search */}
-                  <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-1 lg:grid-cols-3 gap-4 items-end">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-end">
                     {/* Price Range */}
                     <div className="lg:col-span-2">
-                      <label className="text-sm font-medium text-gray-700 mb-2 block">
-                        Price Range (£ per day)
+                      <label className="text-lg font-semibold text-white mb-3 block">
+                        💰 Price Range (£ per day)
                       </label>
-                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                        <Input
-                          type="number"
-                          placeholder="Min Price"
-                          value={filters.minPrice}
-                          onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
-                          className="input-modern h-10 sm:h-12 text-sm sm:text-base"
-                        />
-                        <Input
-                          type="number"
-                          placeholder="Max Price"
-                          value={filters.maxPrice}
-                          onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
-                          className="input-modern h-10 sm:h-12 text-sm sm:text-base"
-                        />
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="relative group">
+                          <Input
+                            type="number"
+                            placeholder="Min Price"
+                            value={filters.minPrice}
+                            onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
+                            className="h-14 text-lg bg-white/20 border-white/30 text-white placeholder:text-gray-300 focus:bg-white/30 focus:border-blue-400 transition-all duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                        </div>
+                        <div className="relative group">
+                          <Input
+                            type="number"
+                            placeholder="Max Price"
+                            value={filters.maxPrice}
+                            onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
+                            className="h-14 text-lg bg-white/20 border-white/30 text-white placeholder:text-gray-300 focus:bg-white/30 focus:border-blue-400 transition-all duration-300"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Search Button */}
-                    <div className="flex justify-center lg:justify-start">
+                    <div className="flex justify-center lg:justify-end">
                       <button
                         onClick={applyFilters}
-                        className="btn-primary w-full max-w-xs h-10 sm:h-12 px-4 sm:px-6 text-base sm:text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                        className="group relative w-full lg:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-lg rounded-2xl shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-3"
                       >
-                        <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span className="hidden sm:inline">Search Cars</span>
-                        <span className="sm:hidden">Search</span>
+                        <Search className="w-6 h-6 group-hover:rotate-12 transition-transform duration-300" />
+                        <span>Search Cars</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                       </button>
                     </div>
                   </div>
