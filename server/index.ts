@@ -126,7 +126,7 @@ app.use((req, res, next) => {
         const dbStorage = new DatabaseStorage();
         
         // Retry logic for database connection
-        let retries = 3;
+        let retries = 5; // Increased retries
         let connected = false;
         
         while (retries > 0 && !connected) {
@@ -138,14 +138,16 @@ app.use((req, res, next) => {
           } catch (error) {
             retries--;
             console.log(`Database connection failed, retries left: ${retries}`);
+            console.log('Connection error:', error.message);
             if (retries > 0) {
-              await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+              await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
             }
           }
         }
         
         if (!connected) {
-          console.error('Failed to connect to database after retries');
+          console.error('Failed to connect to database after retries - using in-memory storage');
+          // Don't return - let the server continue with in-memory storage
           return;
         }
         
@@ -167,9 +169,10 @@ app.use((req, res, next) => {
         
       } catch (error) {
         console.error('CRITICAL: Failed to initialize production database:', error);
+        console.log('Server will continue with in-memory storage');
         // Don't throw - let the server start even if initialization fails
       }
-    }, 10000); // Wait 10 seconds after server starts
+    }, 15000); // Wait 15 seconds after server starts
   }
   
   // Create HTTP server and WebSocket server
