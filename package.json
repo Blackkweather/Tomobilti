@@ -30,7 +30,7 @@
     "setup-render-db": "node scripts/setup-render-db.js",
     "migrate-cloud": "node scripts/migrate-cloud-db.cjs",
     "deploy:staging": "npm run build && echo 'Deploy to staging server'",
-    "deploy:production": "npm run build && echo 'Deploy to production server'",
+    "deploy:production": "npm run deploy:auto && npm run build && npm start",
     "test:unit": "jest --testPathPattern=unit",
     "test:integration": "jest --testPathPattern=integration",
     "test:e2e:open": "cypress open",
@@ -56,7 +56,11 @@
     "cache:clear": "node scripts/clear-cache.cjs",
     "images:optimize": "node scripts/optimize-images.cjs",
     "images:convert": "node scripts/convert-images.cjs",
-    "images:resize": "node scripts/resize-images.cjs"
+    "images:resize": "node scripts/resize-images.cjs",
+    "deploy:auto": "node scripts/automated-deployment.cjs",
+    "deploy:check": "node scripts/check-deployment-readiness.cjs",
+    "perfection:test": "node scripts/performance-security-analysis.cjs",
+    "perfection:score": "node scripts/generate-perfection-score.cjs"
   },
   "engines": {
     "node": ">=20.18.0",
