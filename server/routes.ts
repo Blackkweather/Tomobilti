@@ -31,6 +31,7 @@ import {
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 
+export default function registerRoutes(app: Express) {
 // Helper function to validate images are local only
 const validateLocalImages = (images: string[]): string[] => {
   return images.filter(img => {
