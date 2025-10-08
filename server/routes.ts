@@ -44,6 +44,14 @@ const validateLocalImages = (images: string[]): string[] => {
   });
 };
 
+// Multer configuration for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  }
+});
+
 // Rate limiting configurations - ENABLED FOR PRODUCTION
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
