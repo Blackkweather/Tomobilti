@@ -8,6 +8,7 @@ import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import SocialLoginButtons from '../components/SocialLoginButtons';
+import { formatUKPhoneNumber, validateUKPhoneNumber, getUKPhonePlaceholder } from '../utils/ukPhone';
 import { 
   Mail, 
   Lock, 
@@ -294,7 +295,7 @@ export default function Register() {
                 {/* Phone Field */}
                 <div className="space-y-2">
                   <Label htmlFor="phone" className="text-sm font-medium text-gray-700">
-                    Phone Number (Optional)
+                    UK Phone Number (Optional)
                   </Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -305,11 +306,17 @@ export default function Register() {
                       autoComplete="tel"
                       disabled={isLoading}
                       value={form.phone}
-                      onChange={handleChange('phone')}
+                      onChange={(e) => {
+                        const formatted = formatUKPhoneNumber(e.target.value);
+                        setForm(prev => ({ ...prev, phone: formatted }));
+                      }}
                       className="pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                      placeholder="+44 7XXX XXX XXX"
+                      placeholder={getUKPhonePlaceholder()}
                     />
                   </div>
+                  <p className="text-xs text-gray-500">
+                    Enter UK mobile (+44 7XXX XXX XXX) or landline (+44 20X XXX XXXX)
+                  </p>
                 </div>
 
                 {/* User Type Selection */}
