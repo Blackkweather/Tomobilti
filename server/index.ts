@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import { createServer } from 'http';
-import { registerRoutes } from "./routes";
+import registerRoutes from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { EmailService } from "./services/email";
 import { CarRentalAgentService } from "./services/car-rental-agent";
