@@ -63,7 +63,8 @@
     "deploy:status": "node scripts/deployment-monitor.cjs check",
     "deploy:report": "node scripts/deployment-monitor.cjs report",
     "render:api": "node scripts/render-api.cjs",
-    "render:cli": "node scripts/render-cli.cjs",
+    "render:mcp": "node scripts/render-mcp.cjs",
+    "mcp:setup": "echo 'Copy cursor-mcp-config.json to ~/.cursor/mcp.json' && echo 'Your API key is already configured: rnd_cDC8pUcD1fxvbaOoFkW3FHd28FcK'",
     "perfection:test": "node scripts/performance-security-analysis.cjs",
     "perfection:score": "node scripts/generate-perfection-score.cjs"
   },
