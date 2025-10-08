@@ -9,8 +9,18 @@ import { setupVite, serveStatic, log } from "./vite";
 import { EmailService } from "./services/email";
 import { CarRentalAgentService } from "./services/car-rental-agent";
 import MessagingSocketServer from "./messaging";
+import MonitoringService from "./services/monitoring";
+import LoggingService from "./services/logging";
 
 const app = express();
+
+// Initialize monitoring and logging services
+const monitoringService = MonitoringService;
+const loggingService = LoggingService;
+
+// Add monitoring and logging middleware
+app.use(monitoringService.middleware());
+app.use(loggingService.requestLogger());
 
 // CORS configuration for development
 app.use(cors({
@@ -34,7 +44,16 @@ app.use(helmet({
       objectSrc: ["'none'"],
       upgradeInsecureRequests: []
     }
-  } : false, // Disable CSP for development to allow Facebook SDK
+  } : false,
+  crossOriginEmbedderPolicy: { policy: "credentialless" },
+  crossOriginOpenerPolicy: { policy: "same-origin" },
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  permissionsPolicy: {
+    camera: [],
+    microphone: [],
+    geolocation: ["self"],
+    payment: ["self"]
+  } // Disable CSP for development to allow Facebook SDK
   hsts: {
     maxAge: 31536000,
     includeSubDomains: true,
@@ -42,25 +61,25 @@ app.use(helmet({
   }
 }));
 
-// Rate limiting - Disabled for development
-// const generalLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // limit each IP to 100 requests per windowMs
-//   message: 'Too many requests from this IP, please try again later.',
-//   standardHeaders: true,
-//   legacyHeaders: false,
-// });
+// Rate limiting - ENABLED FOR PRODUCTION
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
-// const authLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 5, // limit each IP to 5 requests per windowMs for auth endpoints
-//   message: 'Too many authentication attempts, please try again later.',
-//   standardHeaders: true,
-//   legacyHeaders: false,
-// });
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs for auth endpoints
+  message: 'Too many authentication attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
-// app.use(generalLimiter);
-// app.use('/api/auth', authLimiter);
+app.use(generalLimiter);
+app.use('/api/auth', authLimiter);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
@@ -126,6 +145,23 @@ app.use((req, res, next) => {
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
   
+  // Add health check endpoint with monitoring
+  app.get('/api/health', (req, res) => {
+    const healthStatus = monitoringService.getHealthStatus();
+    const alerts = monitoringService.getAlerts();
+    
+    res.json({
+      status: healthStatus.status,
+      timestamp: new Date().toISOString(),
+      uptime: healthStatus.uptime,
+      memoryUsage: healthStatus.memoryUsage,
+      averageResponseTime: healthStatus.averageResponseTime,
+      activeAlerts: healthStatus.activeAlerts,
+      alerts: alerts.slice(-5), // Last 5 alerts
+      version: process.env.npm_package_version || '1.0.0'
+    });
+  });
+
   await registerRoutes(app);
   
   // Initialize sample data in production if database is empty
@@ -287,6 +323,13 @@ app.use((req, res, next) => {
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
+
+    // Log the error
+    loggingService.error('Unhandled error', {
+      error: err.stack,
+      status,
+      message
+    });
 
     res.status(status).json({ message });
     throw err;
