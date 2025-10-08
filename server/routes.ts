@@ -81,9 +81,21 @@ const agentService = new CarRentalAgentService({
 });
 
 export async function registerRoutes(app: Express): Promise<Express> {
-  // Apply security middleware to all routes - CSP disabled for development
+  // Apply security middleware to all routes - CSP enabled for production
   app.use(helmet({
-    contentSecurityPolicy: false, // Disable CSP for development to allow Facebook SDK
+    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        connectSrc: ["'self'", "https://api.stripe.com"],
+        frameSrc: ["'self'", "https://js.stripe.com"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: []
+      }
+    } : false, // Disable CSP for development to allow Facebook SDK
   }));
   // app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
   app.use('/api', sanitizeMiddleware);
