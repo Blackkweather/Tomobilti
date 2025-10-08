@@ -3,7 +3,7 @@ services:
     name: sharewheelz-platform
     env: node
     plan: starter
-    buildCommand: npm install && npm run build
+    buildCommand: npm install && npm run build && node scripts/perfect-database-migration.cjs
     startCommand: npm start
     envVars:
       - key: NODE_ENV
