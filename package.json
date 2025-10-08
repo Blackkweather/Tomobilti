@@ -59,6 +59,11 @@
     "images:resize": "node scripts/resize-images.cjs",
     "deploy:auto": "node scripts/automated-deployment.cjs",
     "deploy:check": "node scripts/check-deployment-readiness.cjs",
+    "deploy:monitor": "node scripts/deployment-monitor.cjs monitor",
+    "deploy:status": "node scripts/deployment-monitor.cjs check",
+    "deploy:report": "node scripts/deployment-monitor.cjs report",
+    "render:api": "node scripts/render-api.cjs",
+    "render:cli": "node scripts/render-cli.cjs",
     "perfection:test": "node scripts/performance-security-analysis.cjs",
     "perfection:score": "node scripts/generate-perfection-score.cjs"
   },
