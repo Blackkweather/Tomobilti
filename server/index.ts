@@ -53,7 +53,7 @@ app.use(helmet({
     microphone: [],
     geolocation: ["self"],
     payment: ["self"]
-  } // Disable CSP for development to allow Facebook SDK
+  }, // Disable CSP for development to allow Facebook SDK
   hsts: {
     maxAge: 31536000,
     includeSubDomains: true,
