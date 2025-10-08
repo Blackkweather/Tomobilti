@@ -43,61 +43,20 @@ const validateLocalImages = (images: string[]): string[] => {
   });
 };
 
-// Rate limiting configurations - DISABLED FOR DEVELOPMENT
-// const generalLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 100, // limit each IP to 100 requests per windowMs
-//   message: { error: 'Trop de requêtes, veuillez réessayer plus tard' }
-// });
-
-// const authLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 5, // limit each IP to 5 auth requests per windowMs
-//   message: { error: 'Too many login attempts, please try again later' }
-// });
-
-// Configure multer for file uploads
-const upload = multer({
-  storage: multer.memoryStorage(), // Store files in memory as buffers
-  limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB limit per file
-  },
-  fileFilter: (req, file, cb) => {
-    // Only allow image files
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed'), false);
-    }
-  }
+// Rate limiting configurations - ENABLED FOR PRODUCTION
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: 'Too many requests, please try again later' }
 });
 
-// Initialize Car Rental Agent Service
-const agentService = new CarRentalAgentService({
-  apiKey: process.env.OPENAI_API_KEY || '',
-  model: 'gpt-3.5-turbo',
-  temperature: 0.7,
-  maxTokens: 200,
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 auth requests per windowMs
+  message: { error: 'Too many login attempts, please try again later' }
 });
 
-export async function registerRoutes(app: Express): Promise<Express> {
-  // Apply security middleware to all routes - CSP enabled for production
-  app.use(helmet({
-    contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-      directives: {
-        defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "https:"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-        connectSrc: ["'self'", "https://api.stripe.com"],
-        frameSrc: ["'self'", "https://js.stripe.com"],
-        objectSrc: ["'none'"],
-        upgradeInsecureRequests: []
-      }
-    } : false, // Disable CSP for development to allow Facebook SDK
-  }));
-  // app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
+app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
   app.use('/api', sanitizeMiddleware);
   
   // Authentication routes (no auth required)
