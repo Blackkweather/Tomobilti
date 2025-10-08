@@ -41,8 +41,9 @@ export default function Footer() {
       { label: 'Report a Problem', href: '/report' }
     ],
     legal: [
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms-of-service' },
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'GDPR Compliance', href: '/gdpr-compliance' },
       { label: 'Cookie Policy', href: '/cookies' },
       { label: 'Insurance', href: '/insurance' },
       { label: 'Accessibility', href: '/accessibility' }
