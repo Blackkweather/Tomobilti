@@ -69,6 +69,9 @@ import MemberEvents from "./pages/MemberEvents";
 import Privacy from "./pages/Privacy";
 import Insurance from "./pages/Insurance";
 import AdminDashboard from "./pages/AdminDashboard";
+import GDPRCompliance from "./pages/GDPRCompliance";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/not-found";
 
 // Import components
@@ -153,6 +156,9 @@ function App() {
               <Route path="/membership-benefits" component={MembershipBenefits} />
               <Route path="/loyalty-program" component={LoyaltyProgram} />
               <Route path="/member-events" component={MemberEvents} />
+              <Route path="/gdpr-compliance" component={GDPRCompliance} />
+              <Route path="/privacy-policy" component={PrivacyPolicy} />
+              <Route path="/terms-of-service" component={TermsOfService} />
               <Route component={NotFound} />
             </Switch>
             
