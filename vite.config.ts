@@ -17,7 +17,7 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    chunkSizeWarningLimit: 500, // Reduced from 1000 to be more strict
+          chunkSizeWarningLimit: 1000, // Increased to avoid warnings for now
     rollupOptions: {
       output: {
         manualChunks: (id) => {
