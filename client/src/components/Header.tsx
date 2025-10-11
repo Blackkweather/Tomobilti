@@ -175,13 +175,11 @@ export default function Header() {
         <div className="flex items-center gap-4">
           {/* Brand Logo */}
           <Link href="/" className="flex items-center">
-            <div className="bg-white border-2 border-gray-200 rounded-lg p-2 shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200">
-              <img 
-                src="/assets/MAIN LOGO.png?v=5" 
-                alt="ShareWheelz" 
-                className="h-8 w-24"
-              />
-            </div>
+            <img 
+              src="/assets/MAIN LOGO.png?v=5" 
+              alt="ShareWheelz" 
+              className="h-12 w-48 hover:scale-105 transition-transform duration-200"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -462,13 +460,11 @@ export default function Header() {
                 <div className="flex flex-col space-y-4 h-full">
                   {/* Mobile Brand Logo */}
                   <div className="flex items-center justify-center pb-4 border-b">
-                    <div className="bg-white border-2 border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200">
-                      <img 
-                        src="/assets/MAIN LOGO.png?v=5" 
-                        alt="ShareWheelz" 
-                        className="h-12 w-auto"
-                      />
-                    </div>
+                    <img 
+                      src="/assets/MAIN LOGO.png?v=5" 
+                      alt="ShareWheelz" 
+                      className="h-20 w-auto hover:scale-105 transition-transform duration-200"
+                    />
                   </div>
 
                   {/* Mobile Search */}
