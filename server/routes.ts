@@ -334,8 +334,16 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
     }
   });
 
-  // ChatGPT API endpoint
-  app.post('/api/chatgpt/chat', async (req, res) => {
+  // ChatGPT API endpoint with specific rate limiting
+  const chatLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 chat requests per minute
+    message: 'Too many chat requests, please wait a moment before trying again.',
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  app.post('/api/chatgpt/chat', chatLimiter, async (req, res) => {
     try {
       const { message, context } = req.body;
       
@@ -653,8 +661,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
     }
   });
 
-  // ChatGPT conversation endpoint
-  app.post('/api/chatgpt/conversation', async (req, res) => {
+  // ChatGPT conversation endpoint with specific rate limiting
+  app.post('/api/chatgpt/conversation', chatLimiter, async (req, res) => {
     try {
       const { messages, context } = req.body;
       
