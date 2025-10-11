@@ -71,11 +71,13 @@ export default function Footer() {
         {/* Logo Section - Centered */}
         <div className="mb-8 flex justify-center">
           <Link href="/" className="flex items-center">
-            <img 
-              src="/assets/MAIN LOGO.png?v=5" 
-              alt="ShareWheelz" 
-              className="h-60 w-96 hover:scale-105 transition-transform duration-200"
-            />
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200">
+              <img 
+                src="/assets/MAIN LOGO.png?v=5" 
+                alt="ShareWheelz" 
+                className="h-48 w-auto"
+              />
+            </div>
           </Link>
         </div>
 
