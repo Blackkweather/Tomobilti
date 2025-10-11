@@ -172,6 +172,68 @@ async function addMissingColumns(sql) {
     { name: 'preferences', sql: 'JSONB' }
   ];
   
+  // Check if cars table exists and add vin column if needed
+  const carsTable = await sql`
+    SELECT table_name 
+    FROM information_schema.tables 
+    WHERE table_name = 'cars'
+  `;
+  
+  if (carsTable.length > 0) {
+    console.log('🔍 Checking cars table for missing columns...');
+    
+    const carsColumns = await sql`
+      SELECT column_name 
+      FROM information_schema.columns 
+      WHERE table_name = 'cars'
+    `;
+    
+    const carsColumnsToAdd = [
+      { name: 'vin', sql: 'VARCHAR(17)' },
+      { name: 'year', sql: 'INTEGER' },
+      { name: 'make', sql: 'VARCHAR(100)' },
+      { name: 'model', sql: 'VARCHAR(100)' },
+      { name: 'color', sql: 'VARCHAR(50)' },
+      { name: 'mileage', sql: 'INTEGER' },
+      { name: 'fuel_type', sql: 'VARCHAR(50)' },
+      { name: 'transmission', sql: 'VARCHAR(50)' },
+      { name: 'seats', sql: 'INTEGER' },
+      { name: 'doors', sql: 'INTEGER' },
+      { name: 'engine_size', sql: 'VARCHAR(50)' },
+      { name: 'features', sql: 'TEXT[]' },
+      { name: 'description', sql: 'TEXT' },
+      { name: 'daily_rate', sql: 'DECIMAL(10,2)' },
+      { name: 'weekly_rate', sql: 'DECIMAL(10,2)' },
+      { name: 'monthly_rate', sql: 'DECIMAL(10,2)' },
+      { name: 'deposit_amount', sql: 'DECIMAL(10,2)' },
+      { name: 'insurance_required', sql: 'BOOLEAN DEFAULT true' },
+      { name: 'minimum_age', sql: 'INTEGER DEFAULT 21' },
+      { name: 'license_required', sql: 'BOOLEAN DEFAULT true' },
+      { name: 'is_available', sql: 'BOOLEAN DEFAULT true' },
+      { name: 'location', sql: 'VARCHAR(255)' },
+      { name: 'latitude', sql: 'DECIMAL(10,8)' },
+      { name: 'longitude', sql: 'DECIMAL(11,8)' },
+      { name: 'images', sql: 'TEXT[]' },
+      { name: 'owner_id', sql: 'UUID REFERENCES users(id)' },
+      { name: 'created_at', sql: 'TIMESTAMP DEFAULT NOW()' },
+      { name: 'updated_at', sql: 'TIMESTAMP DEFAULT NOW()' }
+    ];
+    
+    for (const column of carsColumnsToAdd) {
+      const exists = carsColumns.some(c => c.column_name === column.name);
+      if (!exists) {
+        try {
+          await sql.unsafe(`ALTER TABLE cars ADD COLUMN ${column.name} ${column.sql}`);
+          console.log(`   ✅ Added ${column.name} to cars table`);
+        } catch (error) {
+          console.log(`   ⚠️  Failed to add ${column.name} to cars: ${error.message}`);
+        }
+      } else {
+        console.log(`   ✅ ${column.name} already exists in cars table`);
+      }
+    }
+  }
+  
   for (const column of columnsToAdd) {
     const exists = await sql`
       SELECT column_name 
