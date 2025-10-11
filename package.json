@@ -23,6 +23,7 @@
     "setup-env": "node scripts/setup-env.js",
     "db:push": "drizzle-kit push",
     "db:migrate": "tsx server/migrate.ts",
+    "db:migrate:perfect": "node scripts/run-database-migration.cjs",
     "db:seed": "node scripts/seed-database.js",
     "security:audit": "npm audit",
     "security:audit-fix": "npm audit fix",
