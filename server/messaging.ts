@@ -13,8 +13,11 @@ export class MessagingSocketServer {
   constructor(httpServer: HTTPServer) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: process.env.NODE_ENV === 'production' ? false : ["http://localhost:5000", "http://127.0.0.1:5000"],
-        methods: ["GET", "POST"]
+        origin: process.env.NODE_ENV === 'production' 
+          ? ["https://sharewheelz.uk", "https://www.sharewheelz.uk"]
+          : ["http://localhost:5000", "http://127.0.0.1:5000"],
+        methods: ["GET", "POST"],
+        credentials: true
       }
     });
 
