@@ -20,8 +20,11 @@ export class NotificationService {
   static initialize(httpServer: HTTPServer): SocketIOServer {
     this.io = new SocketIOServer(httpServer, {
       cors: {
-        origin: process.env.FRONTEND_URL || "http://localhost:5000",
-        methods: ["GET", "POST"]
+        origin: process.env.NODE_ENV === 'production' 
+          ? ["https://sharewheelz.uk", "https://www.sharewheelz.uk"]
+          : process.env.FRONTEND_URL || "http://localhost:5000",
+        methods: ["GET", "POST"],
+        credentials: true
       }
     });
 
@@ -211,6 +214,8 @@ export class NotificationService {
 }
 
 export default NotificationService;
+
+
 
 
 
