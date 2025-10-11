@@ -1,60 +1,84 @@
 import React from 'react';
 import { Switch, Route } from "wouter";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./lib/queryClient";
+import { AuthProvider } from "./contexts/AuthContext";
+import { Toaster } from "./components/ui/toaster";
+import SupportChat from "./components/SupportChat";
 
-// Minimal test App to isolate the issue
+// Import essential pages only
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Cars from "./pages/Cars";
+import CarDetails from "./pages/CarDetails";
+import DashboardSelector from "./components/DashboardSelector";
+import OwnerDashboard from "./pages/OwnerDashboard";
+import RenterDashboard from "./pages/RenterDashboard";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import AddCar from "./pages/AddCar";
+import BecomeMember from "./pages/BecomeMember";
+import About from "./pages/About";
+import Support from "./pages/Support";
+import Payment from "./pages/Payment";
+import BookingConfirmation from "./pages/BookingConfirmation";
+import NotFound from "./pages/not-found";
+
+// Import components
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+
 function App() {
-  console.log('🚀 Minimal App rendering...');
+  console.log('🚀 ShareWheelz App starting...');
   
   return (
-    <div style={{ 
-      padding: '20px', 
-      fontFamily: 'Arial, sans-serif',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      minHeight: '100vh',
-      color: 'white'
-    }}>
-      <h1>🚗 ShareWheelz - Minimal Test</h1>
-      <p>If you can see this, React is working!</p>
-      <p>Time: {new Date().toLocaleString()}</p>
-      
-      <Switch>
-        <Route path="/" component={() => (
-          <div>
-            <h2>Home Page</h2>
-            <p>Welcome to ShareWheelz!</p>
-            <p>This is a minimal test to verify React is working.</p>
-            <a href="/test" style={{ color: 'white', textDecoration: 'underline' }}>
-              Go to Test Page
-            </a>
-          </div>
-        )} />
-        <Route path="/test" component={() => (
-          <div>
-            <h2>Test Page</h2>
-            <p>This is a test page to verify routing works.</p>
-            <a href="/" style={{ color: 'white', textDecoration: 'underline' }}>
-              Go Back Home
-            </a>
-          </div>
-        )} />
-        <Route component={() => (
-          <div>
-            <h2>404 - Page Not Found</h2>
-            <p>The page you're looking for doesn't exist.</p>
-            <a href="/" style={{ color: 'white', textDecoration: 'underline' }}>
-              Go Home
-            </a>
-          </div>
-        )} />
-      </Switch>
-      
-      <div style={{ marginTop: '50px', fontSize: '0.9em', opacity: 0.8 }}>
-        <p>✅ React is working</p>
-        <p>✅ Routing is working</p>
-        <p>✅ Server is responding</p>
-        <p>✅ Assets are loading</p>
-      </div>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <div className="min-h-screen bg-white">
+          <Header />
+          
+          <main className="flex-1">
+            <Switch>
+              {/* Core Routes */}
+              <Route path="/" component={Home} />
+              <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
+              <Route path="/cars" component={Cars} />
+              <Route path="/cars/:id" component={CarDetails} />
+              
+              {/* Dashboard Routes */}
+              <Route path="/dashboard" component={DashboardSelector} />
+              <Route path="/owner-dashboard" component={OwnerDashboard} />
+              <Route path="/renter-dashboard" component={RenterDashboard} />
+              
+              {/* Profile & Settings */}
+              <Route path="/profile" component={Profile} />
+              <Route path="/settings" component={Settings} />
+              
+              {/* Car Management */}
+              <Route path="/add-car" component={AddCar} />
+              
+              {/* Membership */}
+              <Route path="/become-member" component={BecomeMember} />
+              
+              {/* Static Pages */}
+              <Route path="/about" component={About} />
+              <Route path="/support" component={Support} />
+              <Route path="/payment" component={Payment} />
+              <Route path="/booking-confirmation" component={BookingConfirmation} />
+              
+              {/* 404 */}
+              <Route component={NotFound} />
+            </Switch>
+          </main>
+          
+          <Footer />
+          <SupportChat />
+          <Toaster />
+        </div>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 

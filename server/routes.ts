@@ -345,10 +345,10 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
     }
   });
 
-  // ChatGPT API endpoint with specific rate limiting
+  // ChatGPT API endpoint with development-friendly rate limiting
   const chatLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minute
-    max: 10, // limit each IP to 10 chat requests per minute
+    max: process.env.NODE_ENV === 'production' ? 10 : 100, // Much higher limit for development
     message: 'Too many chat requests, please wait a moment before trying again.',
     standardHeaders: true,
     legacyHeaders: false,

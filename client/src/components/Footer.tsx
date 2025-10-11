@@ -74,7 +74,8 @@ export default function Footer() {
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-64 w-auto hover:scale-105 transition-transform duration-200"
+              className="h-80 w-auto hover:scale-105 transition-transform duration-200 object-contain"
+              style={{ width: 'auto' }}
             />
           </Link>
         </div>

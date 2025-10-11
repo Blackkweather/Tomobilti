@@ -20,3 +20,4 @@ console.log('🔧 Starting database schema fix...\n');
 
 // Import and run the database fix
 require('./fix-database-schema.cjs');
+
