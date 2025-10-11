@@ -32,6 +32,17 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 
 export default function registerRoutes(app: Express) {
+  // Test endpoint to verify server is working
+  app.get('/api/test', (req, res) => {
+    res.json({
+      status: 'success',
+      message: 'ShareWheelz server is working!',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV,
+      database: process.env.DATABASE_URL ? 'connected' : 'not configured',
+      openai: process.env.OPENAI_API_KEY ? 'configured' : 'not configured'
+    });
+  });
 // Helper function to validate images are local only
 const validateLocalImages = (images: string[]): string[] => {
   return images.filter(img => {
