@@ -188,8 +188,8 @@ app.use((req, res, next) => {
             console.log(`Database connection failed, retries left: ${retries}`);
             console.log('Connection error:', error.message);
             
-            // If it's a schema error, try to fix it with simple approach
-            if (error.message.includes('membership_tier') || error.message.includes('column') || error.message.includes('does not exist')) {
+            // If it's a schema error, try to fix it with comprehensive approach
+            if (error.message.includes('membership_tier') || error.message.includes('vin') || error.message.includes('column') || error.message.includes('does not exist')) {
               console.log('🔧 Detected database schema issue - attempting simple fix...');
               try {
                 const { exec } = await import('child_process');
