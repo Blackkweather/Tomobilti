@@ -188,33 +188,7 @@ app.use((req, res, next) => {
             console.log(`Database connection failed, retries left: ${retries}`);
             console.log('Connection error:', error.message);
             
-            // If it's a schema error, try to fix it
-            if (error.message.includes('membership_tier') || error.message.includes('column') || error.message.includes('does not exist')) {
-              console.log('🔧 Detected database schema issue - attempting to fix...');
-              try {
-                // Import the database fix directly
-                const { exec } = await import('child_process');
-                const { promisify } = await import('util');
-                const execAsync = promisify(exec);
-                
-                console.log('Running database schema fix...');
-                const result = await execAsync('node scripts/manual-db-fix.cjs');
-                console.log('✅ Database schema fix completed');
-                console.log('Fix output:', result.stdout);
-                
-                // Wait a moment for the fix to take effect
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                
-                // Try connecting again
-                const testUsers = await dbStorage.getAllUsers();
-                console.log(`Database connected with ${testUsers.length} users`);
-                connected = true;
-                break; // Exit the retry loop
-              } catch (fixError) {
-                console.log('❌ Database schema fix failed:', fixError.message);
-                console.log('Fix error output:', fixError.stdout || fixError.stderr);
-              }
-            }
+            // Skip database fix attempts - just retry connection
             
             if (retries > 0) {
               await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
