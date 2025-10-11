@@ -3,6 +3,10 @@ import OpenAI from 'openai';
 class OpenAIService {
   private client: OpenAI | null = null;
   private isInitialized = false;
+  private requestCount = 0;
+  private lastResetTime = Date.now();
+  private readonly maxRequestsPerMinute = 20; // Conservative limit
+  private readonly resetInterval = 60 * 1000; // 1 minute
 
   constructor() {
     this.initialize();
@@ -21,6 +25,7 @@ class OpenAIService {
     try {
       this.client = new OpenAI({
         apiKey: apiKey,
+        timeout: 10000, // 10 second timeout
       });
       this.isInitialized = true;
       console.log('✅ OpenAI service initialized successfully');
@@ -29,13 +34,60 @@ class OpenAIService {
     }
   }
 
+  private checkRateLimit(): boolean {
+    const now = Date.now();
+    
+    // Reset counter if a minute has passed
+    if (now - this.lastResetTime > this.resetInterval) {
+      this.requestCount = 0;
+      this.lastResetTime = now;
+    }
+    
+    // Check if we've exceeded the rate limit
+    if (this.requestCount >= this.maxRequestsPerMinute) {
+      console.warn(`⚠️ OpenAI rate limit exceeded: ${this.requestCount}/${this.maxRequestsPerMinute} requests per minute`);
+      return false;
+    }
+    
+    this.requestCount++;
+    return true;
+  }
+
+  private async handleOpenAIError(error: any): Promise<string> {
+    console.error('OpenAI API error:', error);
+    
+    if (error.status === 429) {
+      console.warn('🚫 OpenAI rate limit hit (429). Using fallback response.');
+      return 'I\'m experiencing high demand right now, but I can still help! Let me provide you with information about our services.';
+    }
+    
+    if (error.status === 401) {
+      console.error('🔑 OpenAI API key invalid (401)');
+      return 'I\'m having trouble accessing my AI features right now, but I can still assist you with our car rental services.';
+    }
+    
+    if (error.status === 500) {
+      console.error('🔥 OpenAI server error (500)');
+      return 'I\'m experiencing some technical difficulties, but I can still help you with ShareWheelz services.';
+    }
+    
+    // For any other error, use fallback
+    return 'I\'m having a moment of technical difficulty, but I\'m still here to help with ShareWheelz!';
+  }
+
   async generateChatResponse(messages: Array<{role: 'user' | 'assistant' | 'system', content: string}>, context?: string): Promise<string> {
     if (!this.isInitialized || !this.client) {
       return this.getFallbackResponse(messages[messages.length - 1]?.content);
     }
 
+    // Check rate limit before making request
+    if (!this.checkRateLimit()) {
+      console.warn('Rate limit exceeded, using fallback response');
+      return this.getFallbackResponse(messages[messages.length - 1]?.content);
+    }
+
     try {
-              const systemMessage = `You are Alanna from ShareWheelz Support. UK car rental platform. Answer ONLY ShareWheelz questions. Be direct and helpful. Sign as "Alanna from ShareWheelz Support".
+      const systemMessage = `You are Alanna from ShareWheelz Support. UK car rental platform. Answer ONLY ShareWheelz questions. Be direct and helpful. Sign as "Alanna from ShareWheelz Support".
 
 Services: Car rentals UK-wide, all fuel types, secure payments, insurance included.
 Booking: Search → Select dates → Choose car → Pay → Get confirmation.
@@ -63,8 +115,7 @@ ${context ? `Additional context: ${context}` : ''}`;
 
       return response.choices[0]?.message?.content || this.getFallbackResponse(messages[messages.length - 1]?.content);
     } catch (error) {
-      console.error('OpenAI API error:', error);
-      return this.getFallbackResponse(messages[messages.length - 1]?.content);
+      return await this.handleOpenAIError(error);
     }
   }
 
@@ -74,14 +125,20 @@ ${context ? `Additional context: ${context}` : ''}`;
       return this.getFallbackResponse(userMessage);
     }
 
+    // Check rate limit before making request
+    if (!this.checkRateLimit()) {
+      console.warn('Rate limit exceeded, using fallback response');
+      return this.getFallbackResponse(userMessage);
+    }
+
     console.log('Generating ChatGPT response for:', userMessage);
     try {
-              const response = await this.client.chat.completions.create({
-                model: 'gpt-3.5-turbo',
-                messages: [
-                  {
-                    role: 'system',
-                    content: `You are Alanna from ShareWheelz Support. UK car rental platform. Answer ONLY ShareWheelz questions. Be direct and helpful. Sign as "Alanna from ShareWheelz Support".
+      const response = await this.client.chat.completions.create({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: `You are Alanna from ShareWheelz Support. UK car rental platform. Answer ONLY ShareWheelz questions. Be direct and helpful. Sign as "Alanna from ShareWheelz Support".
 
 Services: Car rentals UK-wide, all fuel types, secure payments, insurance included.
 Booking: Search → Select dates → Choose car → Pay → Get confirmation.
@@ -94,20 +151,19 @@ Payment: Cards, PayPal, Apple/Google Pay.
 Support: 24/7, priority for Gold/Elite members.
 
 If unrelated question: "I'm here to help with ShareWheelz services. How can I assist you?"`
-                  },
-                  {
-                    role: 'user',
-                    content: userMessage
-                  }
-                ],
-                max_tokens: 150,
-                temperature: 0.7,
-              });
+          },
+          {
+            role: 'user',
+            content: userMessage
+          }
+        ],
+        max_tokens: 150,
+        temperature: 0.7,
+      });
 
       return response.choices[0]?.message?.content || this.getFallbackResponse(userMessage);
     } catch (error) {
-      console.error('OpenAI API error:', error);
-      return this.getFallbackResponse(userMessage);
+      return await this.handleOpenAIError(error);
     }
   }
 
