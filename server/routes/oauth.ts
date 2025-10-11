@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
 const router = Router();
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com');
 
 // Google OAuth callback
 router.post('/google', async (req, res) => {
@@ -22,7 +22,7 @@ router.post('/google', async (req, res) => {
     // Verify the Google token
     const ticket = await googleClient.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com',
     });
 
     const payload = ticket.getPayload();
@@ -102,8 +102,8 @@ router.post('/facebook', async (req, res) => {
     }
 
     // Verify the Facebook token with Facebook's API
-    const facebookAppId = process.env.FACEBOOK_APP_ID;
-    const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
+    const facebookAppId = process.env.FACEBOOK_APP_ID || '879130531438151';
+    const facebookAppSecret = process.env.FACEBOOK_APP_SECRET || 'your-facebook-app-secret';
     
     if (!facebookAppId || !facebookAppSecret) {
       return res.status(500).json({ error: 'Facebook OAuth not configured' });

@@ -23,7 +23,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import Footer from '../components/Footer';
+
 import { formatCurrency } from '../utils/currency';
 
 // Admin API functions

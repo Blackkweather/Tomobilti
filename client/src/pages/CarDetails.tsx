@@ -44,7 +44,6 @@ import {
 import { Link, useLocation } from "wouter";
 import ReservationBar from "../components/ReservationBar";
 import LoadingSpinner from "../components/LoadingSpinner";
-import Footer from "../components/Footer";
 import { useAuth } from "../contexts/AuthContext";
 import { carApi } from "../lib/api";
 import { getSpecificCarImage } from "../utils/carImages";
@@ -754,10 +753,7 @@ export default function CarDetails() {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="relative z-0">
-        <Footer />
-      </div>
+      {/* Main content ends here - Footer is handled by App.tsx */}
     </div>
   );
 }

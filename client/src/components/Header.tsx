@@ -161,7 +161,7 @@ export default function Header() {
   if (loading) {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
-        <div className="container flex h-16 items-center justify-center px-4">
+        <div className="container flex h-20 items-center justify-center px-4">
           <LoadingSpinner size="sm" />
         </div>
       </header>
@@ -170,7 +170,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-lg">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4 max-w-7xl">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 max-w-7xl">
         {/* Left Section - Logo + Navigation */}
         <div className="flex items-center gap-4">
           {/* Brand Logo */}
@@ -178,13 +178,13 @@ export default function Header() {
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-16 hover:scale-105 transition-transform duration-200 object-contain"
+              className="h-20 hover:scale-105 transition-transform duration-200 object-contain"
               style={{ width: 'auto' }}
             />
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-3">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -192,10 +192,10 @@ export default function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button 
                       variant={location === item.href ? 'default' : 'ghost'} 
-                      className={`hover:scale-105 transition-all duration-200 flex items-center gap-1 text-sm px-3 ${
+                      className={`hover:scale-105 transition-all duration-200 flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg ${
                         location === item.href 
                           ? 'bg-blue-600 text-white shadow-md' 
-                          : 'hover:bg-blue-50 text-gray-700 hover:text-blue-600'
+                          : 'hover:bg-blue-50 text-slate-800 hover:text-blue-700 border border-transparent hover:border-blue-200'
                       }`}
                     >
                       <Icon className="h-4 w-4" />
@@ -203,13 +203,13 @@ export default function Header() {
                       <ChevronDown className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-80" align="start" sideOffset={8} avoidCollisions={true}>
-                    <div className="p-3">
-                      <DropdownMenuLabel className="flex items-center gap-2 text-base font-semibold">
-                        <Icon className="h-5 w-5 text-blue-600" />
+                  <DropdownMenuContent className="w-96" align="start" sideOffset={8} avoidCollisions={true}>
+                    <div className="p-4">
+                      <DropdownMenuLabel className="flex items-center gap-3 text-lg font-bold text-slate-900">
+                        <Icon className="h-6 w-6 text-blue-600" />
                         {item.label}
                       </DropdownMenuLabel>
-                      <p className="text-sm text-gray-600 mt-1">{item.description}</p>
+                      <p className="text-sm text-slate-600 mt-2 leading-relaxed">{item.description}</p>
                     </div>
                     <DropdownMenuSeparator />
                     
@@ -219,7 +219,7 @@ export default function Header() {
                         {/* Search Filters Section */}
                         <div className="mb-4">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">Search Filters</span>
+                            <span className="text-sm font-semibold text-slate-800">Search Filters</span>
                             <Button 
                               variant="outline" 
                               size="sm"
@@ -243,9 +243,9 @@ export default function Header() {
                         <div className="space-y-1">
                           {item.subItems.map((subItem) => (
                             <DropdownMenuItem key={subItem.href} asChild>
-                              <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
-                                <div className="font-medium text-gray-900">{subItem.label}</div>
-                                <div className="text-sm text-gray-600">{subItem.description}</div>
+                              <Link href={subItem.href} className="flex flex-col items-start p-4 cursor-pointer hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                                <div className="font-bold text-slate-900 text-base">{subItem.label}</div>
+                                <div className="text-sm text-slate-600 mt-1 leading-relaxed">{subItem.description}</div>
                               </Link>
                             </DropdownMenuItem>
                           ))}
@@ -255,9 +255,9 @@ export default function Header() {
                       <div className="p-2">
                         {item.subItems.map((subItem) => (
                           <DropdownMenuItem key={subItem.href} asChild>
-                            <Link href={subItem.href} className="flex flex-col items-start p-3 cursor-pointer hover:bg-blue-50 rounded-md">
-                              <div className="font-medium text-gray-900">{subItem.label}</div>
-                              <div className="text-sm text-gray-600">{subItem.description}</div>
+                            <Link href={subItem.href} className="flex flex-col items-start p-4 cursor-pointer hover:bg-blue-50 rounded-lg transition-colors duration-200">
+                              <div className="font-bold text-slate-900 text-base">{subItem.label}</div>
+                              <div className="text-sm text-slate-600 mt-1 leading-relaxed">{subItem.description}</div>
                             </Link>
                           </DropdownMenuItem>
                         ))}
@@ -437,12 +437,12 @@ export default function Header() {
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200 text-sm px-4 h-9">
+                <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200 text-sm font-medium px-4 h-9">
                   Login
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md text-sm px-4 h-9">
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-md text-sm font-medium px-4 h-9">
                   Sign Up
                 </Button>
               </Link>
@@ -464,7 +464,7 @@ export default function Header() {
                     <img 
                       src="/assets/MAIN LOGO.png?v=5" 
                       alt="ShareWheelz" 
-                      className="h-24 w-auto hover:scale-105 transition-transform duration-200 object-contain"
+                      className="h-28 w-auto hover:scale-105 transition-transform duration-200 object-contain"
                       style={{ width: 'auto' }}
                     />
                   </div>
@@ -484,15 +484,15 @@ export default function Header() {
                   </div>
 
                   {/* Mobile Navigation */}
-                  <nav className="space-y-2 flex-1">
-                    <div className="text-sm font-semibold text-gray-700 mb-3">Navigation</div>
+                  <nav className="space-y-3 flex-1">
+                    <div className="text-sm font-semibold text-slate-800 mb-3">Navigation</div>
                     <Link href="/cars">
                       <Button 
                         variant={location === '/cars' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start h-12 ${
+                        className={`w-full justify-start h-14 font-semibold rounded-lg ${
                           location === '/cars' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'hover:bg-blue-50 hover:text-blue-700 text-slate-800 border border-transparent hover:border-blue-200'
                         }`}
                       >
                         <Car className="h-5 w-5 mr-3" />
@@ -502,10 +502,10 @@ export default function Header() {
                     <Link href="/become-member">
                       <Button 
                         variant={location === '/become-member' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start h-12 ${
+                        className={`w-full justify-start h-14 font-semibold rounded-lg ${
                           location === '/become-member' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'hover:bg-blue-50 hover:text-blue-700 text-slate-800 border border-transparent hover:border-blue-200'
                         }`}
                       >
                         <Crown className="h-5 w-5 mr-3" />
@@ -515,10 +515,10 @@ export default function Header() {
                     <Link href="/support">
                       <Button 
                         variant={location === '/support' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start h-12 ${
+                        className={`w-full justify-start h-14 font-semibold rounded-lg ${
                           location === '/support' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'hover:bg-blue-50 hover:text-blue-700 text-slate-800 border border-transparent hover:border-blue-200'
                         }`}
                       >
                         <Shield className="h-5 w-5 mr-3" />
@@ -528,10 +528,10 @@ export default function Header() {
                     <Link href="/add-car-dynamic">
                       <Button 
                         variant={location === '/add-car-dynamic' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start h-12 ${
+                        className={`w-full justify-start h-14 font-semibold rounded-lg ${
                           location === '/add-car-dynamic' 
-                            ? 'bg-blue-600 text-white' 
-                            : 'hover:bg-blue-50 hover:text-blue-600'
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'hover:bg-blue-50 hover:text-blue-700 text-slate-800 border border-transparent hover:border-blue-200'
                         }`}
                       >
                         <Plus className="h-5 w-5 mr-3" />

@@ -81,8 +81,8 @@ async function addSampleData() {
         currency: 'GBP',
         location: 'London, Westminster',
         city: 'London',
-        latitude: '51.5074',
-        longitude: '-0.1278',
+        latitude: 51.5074,
+        longitude: -0.1278,
         images: ['https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop&auto=format'],
         isAvailable: true,
         features: ['Bluetooth', 'GPS', 'Air Conditioning', 'Leather Seats']
@@ -100,8 +100,8 @@ async function addSampleData() {
         currency: 'GBP',
         location: 'Manchester, City Centre',
         city: 'Manchester',
-        latitude: '53.4808',
-        longitude: '-2.2426',
+        latitude: 53.4808,
+        longitude: -2.2426,
         images: ['https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=800&h=600&fit=crop&auto=format'],
         isAvailable: true,
         features: ['Bluetooth', 'Air Conditioning', 'Parking Sensors']
@@ -138,8 +138,8 @@ async function addSampleData() {
         currency: 'GBP',
         location: 'Birmingham, City Centre',
         city: 'Birmingham',
-        latitude: '52.4862',
-        longitude: '-1.8904',
+        latitude: 52.4862,
+        longitude: -1.8904,
         images: ['https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop&auto=format'],
         isAvailable: true,
         features: ['Premium Interior', 'Safety Systems', 'Bluetooth', 'GPS']
@@ -157,8 +157,8 @@ async function addSampleData() {
         currency: 'GBP',
         location: 'Liverpool, City Centre',
         city: 'Liverpool',
-        latitude: '53.4084',
-        longitude: '-2.9916',
+        latitude: 53.4084,
+        longitude: -2.9916,
         images: ['https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=600&fit=crop&auto=format'],
         isAvailable: true,
         features: ['Fuel Efficient', 'Reliable', 'Air Conditioning', 'Bluetooth']
@@ -176,8 +176,8 @@ async function addSampleData() {
         currency: 'GBP',
         location: 'Glasgow, City Centre',
         city: 'Glasgow',
-        latitude: '55.8642',
-        longitude: '-4.2518',
+        latitude: 55.8642,
+        longitude: -4.2518,
         images: ['https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?w=800&h=600&fit=crop&auto=format'],
         isAvailable: true,
         features: ['Executive Features', 'Premium Sound', 'Navigation', 'Leather Seats']
@@ -204,8 +204,8 @@ async function addSampleData() {
         formData.append('currency', carData.currency);
         formData.append('location', carData.location);
         formData.append('city', carData.city);
-        formData.append('latitude', carData.latitude);
-        formData.append('longitude', carData.longitude);
+        formData.append('latitude', carData.latitude.toString());
+        formData.append('longitude', carData.longitude.toString());
         formData.append('images', JSON.stringify(carData.images));
         formData.append('isAvailable', carData.isAvailable.toString());
         

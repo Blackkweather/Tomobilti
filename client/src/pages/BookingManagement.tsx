@@ -40,7 +40,6 @@ import {
   Zap
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
-import Footer from "../components/Footer";
 
 interface Booking {
   id: string;
@@ -664,7 +663,7 @@ export default function BookingManagement() {
           </Tabs>
         </div>
       </div>
-      <Footer />
+      {/* Main content ends here - Footer is handled by App.tsx */}
     </div>
   );
 }

@@ -1,44 +1,40 @@
-import 'dotenv/config';
-import postgres from 'postgres';
+import Database from 'better-sqlite3';
+import path from 'path';
 
-async function testConnection() {
-  const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:brams324brams@localhost:5432/tomobilti';
-  
+// Test database connection and data
+async function testDatabase() {
   console.log('🔍 Testing database connection...');
-  console.log('📊 Connection string:', connectionString.replace(/:[^:@]*@/, ':***@'));
+  
+  const dbPath = path.join(process.cwd(), 'tomobilti.db');
+  const db = new Database(dbPath);
   
   try {
-    const sql = postgres(connectionString);
+    // Test users
+    const users = db.prepare('SELECT COUNT(*) as count FROM users').get();
+    console.log('Users in database:', users.count);
     
-    // Test basic connection
-    const result = await sql`SELECT version()`;
-    console.log('✅ Database connection successful!');
-    console.log('📋 PostgreSQL version:', result[0].version);
+    // Test cars
+    const cars = db.prepare('SELECT COUNT(*) as count FROM cars').get();
+    console.log('Cars in database:', cars.count);
     
-    // Test if database exists and is accessible
-    const dbInfo = await sql`SELECT current_database(), current_user`;
-    console.log('🗄️ Current database:', dbInfo[0].current_database);
-    console.log('👤 Current user:', dbInfo[0].current_user);
+    // Get sample cars
+    const sampleCars = db.prepare('SELECT id, title, price_per_day FROM cars LIMIT 5').all();
+    console.log('Sample cars:', sampleCars);
     
-    await sql.end();
-    console.log('🎉 Connection test completed successfully!');
+    // Test the exact query the API uses
+    const apiQuery = db.prepare(`
+      SELECT * FROM cars 
+      WHERE is_available = 1 
+      ORDER BY created_at DESC 
+      LIMIT 12 OFFSET 0
+    `).all();
+    console.log('API query result:', apiQuery.length, 'cars');
+    
   } catch (error) {
-    console.error('❌ Database connection failed:');
-    console.error('Error code:', error.code);
-    console.error('Error message:', error.message);
-    
-    if (error.code === '3D000') {
-      console.log('💡 The database "tomobilti" does not exist. Please create it with:');
-      console.log('   psql -U postgres -c "CREATE DATABASE tomobilti;"');
-    } else if (error.code === '28P01') {
-      console.log('💡 Authentication failed. Please check your username and password.');
-    } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
-      console.log('💡 Cannot connect to PostgreSQL server. Please check if:');
-      console.log('   - PostgreSQL is running');
-      console.log('   - The host and port are correct');
-      console.log('   - Firewall is not blocking the connection');
-    }
+    console.error('Database error:', error);
+  } finally {
+    db.close();
   }
 }
 
-testConnection();
+testDatabase();

@@ -30,7 +30,7 @@ import {
   Zap
 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
-import Footer from '../components/Footer';
+
 
 export default function CarManagement() {
   const [, setLocation] = useLocation();

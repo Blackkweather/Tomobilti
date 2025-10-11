@@ -10,7 +10,6 @@ import { Badge } from '../components/ui/badge';
 import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List, Car } from 'lucide-react';
 import CarCard from '../components/CarCard';
 import LoadingSpinner from '../components/LoadingSpinner';
-import Footer from '../components/Footer';
 import { LocationPicker } from '../components/LocationPicker';
 import { carApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -614,8 +613,7 @@ export default function Cars() {
         )}
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Main content ends here - Footer is handled by App.tsx */}
     </div>
   );
 }
