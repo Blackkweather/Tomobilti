@@ -178,7 +178,7 @@ export default function Header() {
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-10 w-auto hover:scale-105 transition-transform duration-200"
+              className="h-10 w-32 hover:scale-105 transition-transform duration-200"
             />
           </Link>
 
