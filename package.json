@@ -31,6 +31,7 @@
     "fix:db:manual": "node scripts/manual-db-fix.cjs",
     "fix:db:simple": "node scripts/simple-db-fix.cjs",
     "fix:db:complete": "node scripts/complete-db-fix.cjs",
+    "diagnostic": "node scripts/platform-diagnostic.cjs",
     "security:audit": "npm audit",
     "security:audit-fix": "npm audit fix",
     "setup-cloud-db": "node scripts/setup-cloud-db.js",
