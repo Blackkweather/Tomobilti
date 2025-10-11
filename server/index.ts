@@ -196,8 +196,8 @@ app.use((req, res, next) => {
                 const { promisify } = await import('util');
                 const execAsync = promisify(exec);
                 
-                console.log('Running complete database fix...');
-                const result = await execAsync('node scripts/complete-db-fix.cjs');
+                console.log('Running ultimate database fix...');
+                const result = await execAsync('node scripts/ultimate-db-fix.cjs');
                 console.log('✅ Simple database fix completed');
                 console.log('Fix output:', result.stdout);
                 
