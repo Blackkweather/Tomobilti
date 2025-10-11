@@ -179,6 +179,7 @@ export default function SupportChat() {
   const [showFAQ, setShowFAQ] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
+  const [showTestingPanel, setShowTestingPanel] = useState(false);
   const [testResults, setTestResults] = useState<{ [key: string]: 'pass' | 'fail' | 'pending' }>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -470,6 +471,15 @@ Be helpful, informative, and encourage bookings.
                 <Button
                   variant="ghost"
                   size="icon"
+                  onClick={() => setShowTestingPanel(!showTestingPanel)}
+                  className="text-gray-400 hover:text-gray-600"
+                  title="Toggle testing panel"
+                >
+                  <TestTube className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => setIsOpen(false)}
                 >
                   <X className="h-4 w-4" />
@@ -478,31 +488,41 @@ Be helpful, informative, and encourage bookings.
             </CardHeader>
             
             <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
-              {/* Test Controls */}
-              <div className="border-b p-2 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <TestTube className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm font-medium">AI Testing</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {totalTests > 0 && (
-                      <div className="text-xs text-gray-600">
-                        {passCount}/{totalTests} passed
-                      </div>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={runAutomatedTests}
-                      disabled={isTesting}
-                      className="text-xs"
-                    >
-                      {isTesting ? 'Testing...' : 'Run Tests'}
-                    </Button>
+              {/* Test Controls - Hidden by default, only show when testing */}
+              {showTestingPanel && (
+                <div className="border-b p-2 bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <TestTube className="h-4 w-4 text-blue-600" />
+                      <span className="text-sm font-medium">AI Testing</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {totalTests > 0 && (
+                        <div className="text-xs text-gray-600">
+                          {passCount}/{totalTests} passed
+                        </div>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={runAutomatedTests}
+                        disabled={isTesting}
+                        className="text-xs"
+                      >
+                        {isTesting ? 'Testing...' : 'Run Tests'}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setShowTestingPanel(false)}
+                        className="text-xs"
+                      >
+                        Hide
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
               
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
@@ -512,7 +532,7 @@ Be helpful, informative, and encourage bookings.
                       <span className="text-blue-600 font-semibold text-lg">A</span>
                     </div>
                     <p className="font-medium text-gray-700">Hi! I'm Alanna from ShareWheelz Support</p>
-                    <p className="text-sm">I'm trained on all car data and can answer any question!</p>
+                    <p className="text-sm">I can help you find the perfect car for your journey!</p>
                     <p className="text-xs text-gray-400 mt-2">Try: "What cars in Manchester?" or "Show me luxury cars"</p>
                   </div>
                 )}
@@ -592,7 +612,7 @@ Be helpful, informative, and encourage bookings.
                   </Button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2 text-center">
-                  AI trained on all car data • Instant responses
+                  Ask me anything about our cars • Instant responses
                 </p>
               </div>
             </CardContent>
