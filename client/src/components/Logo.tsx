@@ -8,10 +8,10 @@ interface LogoProps {
 }
 
 const sizeClasses = {
-  sm: 'h-6 w-20',
-  md: 'h-8 w-24', 
-  lg: 'h-10 w-32',
-  xl: 'h-12 w-40'
+  sm: 'h-8',
+  md: 'h-12',
+  lg: 'h-16',
+  xl: 'h-20'
 };
 
 export default function Logo({ 
@@ -22,11 +22,12 @@ export default function Logo({
 }: LogoProps) {
   const logoElement = (
     <div className={`flex items-center ${className}`}>
-      <img 
-        src="/assets/MAIN LOGO.png?v=5" 
-        alt="Share Wheelz" 
-        className={`${sizeClasses[size]} mr-3`}
-      />
+        <img
+          src="/assets/MAIN LOGO.png?v=5"
+          alt="Share Wheelz"
+          className={`${sizeClasses[size]} mr-3 object-contain`}
+          style={{ width: 'auto' }}
+        />
       {showText && (
         <span className="text-2xl font-bold gradient-text">
           Share Wheelz

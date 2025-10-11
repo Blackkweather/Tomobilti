@@ -178,7 +178,8 @@ export default function Header() {
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-12 w-48 hover:scale-105 transition-transform duration-200"
+              className="h-16 hover:scale-105 transition-transform duration-200 object-contain"
+              style={{ width: 'auto' }}
             />
           </Link>
 
@@ -463,7 +464,8 @@ export default function Header() {
                     <img 
                       src="/assets/MAIN LOGO.png?v=5" 
                       alt="ShareWheelz" 
-                      className="h-20 w-auto hover:scale-105 transition-transform duration-200"
+                      className="h-24 w-auto hover:scale-105 transition-transform duration-200 object-contain"
+                      style={{ width: 'auto' }}
                     />
                   </div>
 

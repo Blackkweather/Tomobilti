@@ -30,3 +30,4 @@ try {
   console.log('3. Verify database is accessible from deployment environment');
   process.exit(1);
 }
+
