@@ -231,7 +231,8 @@ async function addMissingColumns(sql) {
     
     if (exists.length === 0) {
       try {
-        await sql`ALTER TABLE users ADD COLUMN ${sql(column)}`;
+        // Use raw SQL for ALTER TABLE statements
+        await sql.unsafe(`ALTER TABLE users ADD COLUMN ${column}`);
         console.log(`   ✅ Added ${columnName}`);
       } catch (error) {
         console.log(`   ⚠️  Failed to add ${columnName}: ${error.message}`);
