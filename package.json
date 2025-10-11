@@ -33,6 +33,7 @@
     "fix:db:complete": "node scripts/complete-db-fix.cjs",
     "fix:db:ultimate": "node scripts/ultimate-db-fix.cjs",
     "diagnostic": "node scripts/platform-diagnostic.cjs",
+    "emergency": "node scripts/emergency-diagnostic.cjs",
     "security:audit": "npm audit",
     "security:audit-fix": "npm audit fix",
     "setup-cloud-db": "node scripts/setup-cloud-db.js",
