@@ -6,7 +6,6 @@ import { carApi } from '../lib/api';
 import CarCard from '../components/CarCard';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import LoadingSpinner from '../components/LoadingSpinner';
-import Footer from '../components/Footer';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -605,8 +604,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <Footer />
+      {/* Main content ends here - Footer is handled by App.tsx */}
 
       {/* Membership Popup */}
       {showMembershipPopup && (

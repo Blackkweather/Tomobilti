@@ -35,7 +35,7 @@ import {
   EyeOff
 } from 'lucide-react';
 import { useLocation, Link } from 'wouter';
-import Footer from '../components/Footer';
+
 
 const Notifications: React.FC = () => {
   const [, setLocation] = useLocation();

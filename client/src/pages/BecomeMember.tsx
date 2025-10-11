@@ -33,7 +33,7 @@ import {
   ThumbsUp,
   Star as StarIcon
 } from 'lucide-react';
-import Footer from '../components/Footer';
+
 import { formatCurrency } from '../utils/currency';
 import { useAuth } from '../contexts/AuthContext';
 

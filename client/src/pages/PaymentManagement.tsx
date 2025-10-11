@@ -78,7 +78,7 @@ import {
 } from 'lucide-react';
 import { bookingApi, paymentApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
-import Footer from '../components/Footer';
+
 
 interface PaymentData {
   id: string;

@@ -66,8 +66,8 @@ export default function SocialLoginButtons({
 
   const handleGoogleLogin = async () => {
     try {
-      // For now, let's use a simple redirect approach
-      const clientId = '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com';
+      // Use environment variable or fallback to hardcoded value
+      const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com';
       const redirectUri = encodeURIComponent(window.location.origin + '/auth/google/callback');
       const scope = encodeURIComponent('openid email profile');
       
@@ -87,8 +87,8 @@ export default function SocialLoginButtons({
 
       console.log('Starting Facebook login process...');
 
-      // Use redirect-based Facebook login for HTTP compatibility
-      const facebookAppId = '879130531438151';
+      // Use environment variable or fallback to hardcoded value
+      const facebookAppId = process.env.REACT_APP_FACEBOOK_APP_ID || '879130531438151';
       const redirectUri = encodeURIComponent(window.location.origin + '/auth/facebook/callback');
       const scope = encodeURIComponent('email,public_profile');
       

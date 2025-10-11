@@ -24,6 +24,14 @@ import Support from "./pages/Support";
 import Payment from "./pages/Payment";
 import BookingConfirmation from "./pages/BookingConfirmation";
 import NotFound from "./pages/not-found";
+import OAuthTest from './pages/OAuthTest';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+import TermsPolicies from './pages/TermsPolicies';
+import Privacy from './pages/Privacy';
+import Legal from './pages/Legal';
+import FAQ from './pages/FAQ';
+import Help from './pages/Help';
 
 // Import components
 import Header from "./components/Header";
@@ -68,7 +76,18 @@ function App() {
               <Route path="/payment" component={Payment} />
               <Route path="/booking-confirmation" component={BookingConfirmation} />
               
-              {/* 404 */}
+              {/* Legal Pages */}
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/privacy-policy" component={PrivacyPolicy} />
+              <Route path="/terms" component={TermsOfService} />
+              <Route path="/terms-of-service" component={TermsOfService} />
+              <Route path="/terms-policies" component={TermsPolicies} />
+              <Route path="/legal" component={Legal} />
+              <Route path="/faq" component={FAQ} />
+              <Route path="/help" component={Help} />
+              
+              {/* OAuth Test Route */}
+              <Route path="/oauth-test" component={OAuthTest} />
               <Route component={NotFound} />
             </Switch>
           </main>

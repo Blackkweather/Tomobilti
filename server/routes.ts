@@ -587,8 +587,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-          client_id: process.env.GOOGLE_CLIENT_ID!,
-          client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+          client_id: process.env.GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com',
+          client_secret: process.env.GOOGLE_CLIENT_SECRET || 'your-google-client-secret',
           code: code as string,
           grant_type: 'authorization_code',
           redirect_uri: `${req.protocol}://${req.get('host')}/auth/google/callback`,
@@ -895,6 +895,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
             // Don't process blob URLs from form data, use actual uploaded files instead
           } else if (key === 'year' || key === 'seats' || key === 'mileage') {
                   carData[key] = parseInt(req.body[key]);
+                } else if (key === 'latitude' || key === 'longitude') {
+                  carData[key] = parseFloat(req.body[key]);
                 } else if (key === 'pricePerDay') {
                   carData[key] = req.body[key]; // Keep as string for database
           } else if (key === 'isAvailable') {
@@ -1487,8 +1489,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       }
       
       // Exchange code for access token
-      const facebookAppId = process.env.FACEBOOK_APP_ID;
-      const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
+      const facebookAppId = process.env.FACEBOOK_APP_ID || '879130531438151';
+      const facebookAppSecret = process.env.FACEBOOK_APP_SECRET || 'your-facebook-app-secret';
       const redirectUri = `${req.protocol}://${req.get('host')}/auth/facebook/callback`;
       
       if (!facebookAppId || !facebookAppSecret) {

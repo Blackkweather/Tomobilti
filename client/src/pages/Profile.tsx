@@ -66,7 +66,7 @@ import {
   Target,
   Award as AwardIcon
 } from 'lucide-react';
-import Footer from '../components/Footer';
+
 
 interface UserProfile {
   id: string;

@@ -873,19 +873,22 @@ export class MemStorage implements IStorage {
 
 // Storage factory function
 async function createStorageInstance() {
-  // Check if we have a valid database URL
+  // Check if we have a valid database URL or if we're in development
   const hasValidDatabase = process.env.DATABASE_URL && 
     !process.env.DATABASE_URL.startsWith('file:') && 
     process.env.DATABASE_URL.includes('://');
 
-  if (hasValidDatabase) {
+  // In development, always try to use SQLite database
+  const isDevelopment = process.env.NODE_ENV === 'development';
+
+  if (hasValidDatabase || isDevelopment) {
     try {
       // Attempting to connect to database
-      const { DatabaseStorage } = await import('./db');
+      const { DatabaseStorage } = await import('./db_sqlite_simple');
       const dbStorage = new DatabaseStorage();
       
       // Test the connection
-      await dbStorage.getAllUsers();
+      await dbStorage.searchCars({ page: 1, limit: 1 });
       // Database connection successful
       return dbStorage;
     } catch (error) {
