@@ -26,6 +26,7 @@
     "db:migrate:perfect": "node scripts/run-database-migration.cjs",
     "db:seed": "node scripts/seed-database.js",
     "fix:cars": "node scripts/fix-car-data-complete.cjs",
+    "fix:all": "node scripts/complete-fix.cjs",
     "security:audit": "npm audit",
     "security:audit-fix": "npm audit fix",
     "setup-cloud-db": "node scripts/setup-cloud-db.js",
