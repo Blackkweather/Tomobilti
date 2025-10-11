@@ -28,6 +28,7 @@
     "fix:cars": "node scripts/fix-car-data-complete.cjs",
     "fix:all": "node scripts/complete-fix.cjs",
     "fix:database": "node scripts/fix-database-schema.cjs",
+    "fix:db:manual": "node scripts/manual-db-fix.cjs",
     "security:audit": "npm audit",
     "security:audit-fix": "npm audit fix",
     "setup-cloud-db": "node scripts/setup-cloud-db.js",
