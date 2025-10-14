@@ -321,7 +321,7 @@ export default function Help() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

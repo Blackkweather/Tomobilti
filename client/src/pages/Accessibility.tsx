@@ -524,7 +524,7 @@ export default function Accessibility() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

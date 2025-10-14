@@ -476,7 +476,7 @@ export default function Services() {
         </div>
       </section>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

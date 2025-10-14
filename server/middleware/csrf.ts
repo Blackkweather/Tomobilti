@@ -12,6 +12,8 @@ export const csrfProtection = (req: any, res: any, next: any) => {
     '/api/auth/login',
     '/api/auth/register',
     '/api/auth/logout',
+    // OAuth token exchange and processing endpoints
+    '/api/auth/oauth/',
     '/api/oauth/',
     '/api/webhooks/',
     '/api/chatgpt/'

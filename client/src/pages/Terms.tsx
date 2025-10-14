@@ -375,7 +375,7 @@ export default function Terms() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

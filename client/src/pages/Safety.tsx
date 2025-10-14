@@ -291,7 +291,7 @@ export default function Safety() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

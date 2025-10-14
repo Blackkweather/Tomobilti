@@ -312,7 +312,7 @@ export default function Business() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

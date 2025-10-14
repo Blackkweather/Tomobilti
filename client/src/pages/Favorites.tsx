@@ -216,7 +216,7 @@ export default function Favorites() {
         )}
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App; avoid duplicate */}
     </div>
   );
 }

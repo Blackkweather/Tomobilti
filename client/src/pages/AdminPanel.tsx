@@ -436,7 +436,7 @@ export default function AdminPanel() {
         </Tabs>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

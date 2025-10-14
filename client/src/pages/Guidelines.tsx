@@ -464,7 +464,7 @@ export default function Guidelines() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

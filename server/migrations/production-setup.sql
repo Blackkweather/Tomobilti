@@ -249,11 +249,7 @@ INSERT INTO users (id, email, password, first_name, last_name, phone, user_type,
 ON CONFLICT (email) DO NOTHING;
 
 -- Insert sample cars
-INSERT INTO cars (id, owner_id, title, description, make, model, year, fuel_type, transmission, seats, price_per_day, location, city, latitude, longitude, images) VALUES
-('660e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001', 'BMW 3 Series - Premium Sedan', 'Luxury sedan perfect for business trips', 'BMW', '3 Series', 2022, 'essence', 'automatic', 5, 450.00, 'Casablanca, Morocco', 'Casablanca', 33.5731, -7.5898, '["/api/placeholder/400/300"]'),
-('660e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440001', 'Mercedes A-Class - Compact Luxury', 'Elegant compact car for city driving', 'Mercedes-Benz', 'A-Class', 2023, 'essence', 'automatic', 5, 380.00, 'Rabat, Morocco', 'Rabat', 34.0209, -6.8416, '["/api/placeholder/400/300"]'),
-('660e8400-e29b-41d4-a716-446655440002', '550e8400-e29b-41d4-a716-446655440001', 'Tesla Model 3 - Electric', 'Eco-friendly electric vehicle', 'Tesla', 'Model 3', 2023, 'electric', 'automatic', 5, 550.00, 'Marrakech, Morocco', 'Marrakech', 31.6295, -7.9811, '["/api/placeholder/400/300"]')
-ON CONFLICT (id) DO NOTHING;
+-- Removed example cars: BMW 3 Series, Mercedes A-Class, Tesla Model 3
 
 COMMIT;
 
