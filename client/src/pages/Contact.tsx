@@ -326,7 +326,7 @@ export default function Contact() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

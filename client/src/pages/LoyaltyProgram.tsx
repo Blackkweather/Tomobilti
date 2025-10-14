@@ -475,7 +475,7 @@ export default function LoyaltyProgram() {
         </Card>
       </div>
       
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

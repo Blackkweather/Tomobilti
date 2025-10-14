@@ -410,7 +410,7 @@ export default function Cookies() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

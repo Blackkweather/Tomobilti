@@ -146,3 +146,5 @@ max: 10                   // 10 requests per IP per minute
 
 **The chat support will now work smoothly even during peak usage times!** 🚀
 
+
+

@@ -32,6 +32,28 @@ import Privacy from './pages/Privacy';
 import Legal from './pages/Legal';
 import FAQ from './pages/FAQ';
 import Help from './pages/Help';
+import Favorites from './pages/Favorites';
+import HowItWorks from './pages/HowItWorks';
+import Careers from './pages/Careers';
+import Press from './pages/Press';
+import GoogleCallback from './pages/GoogleCallback';
+import FacebookCallback from './pages/FacebookCallback';
+import MicrosoftCallback from './pages/MicrosoftCallback';
+import GitHubCallback from './pages/GitHubCallback';
+import Fleet from './pages/Fleet';
+import Business from './pages/Business';
+import Contact from './pages/Contact';
+import Safety from './pages/Safety';
+import Guidelines from './pages/Guidelines';
+import Cookies from './pages/Cookies';
+import Insurance from './pages/Insurance';
+import Accessibility from './pages/Accessibility';
+import GDPRCompliance from './pages/GDPRCompliance';
+import Report from './pages/Report';
+import AddCarDynamic from './pages/AddCarDynamic';
+import BecomeHost from './pages/BecomeHost';
+import CarManagement from './pages/CarManagement';
+import EarningsCalculator from './pages/EarningsCalculator';
 
 // Import components
 import Header from "./components/Header";
@@ -66,15 +88,20 @@ function App() {
               
               {/* Car Management */}
               <Route path="/add-car" component={AddCar} />
+              <Route path="/add-car-dynamic" component={AddCarDynamic} />
+              <Route path="/car-management" component={CarManagement} />
+              <Route path="/earnings-calculator" component={EarningsCalculator} />
               
               {/* Membership */}
               <Route path="/become-member" component={BecomeMember} />
+              <Route path="/become-host" component={BecomeHost} />
               
               {/* Static Pages */}
               <Route path="/about" component={About} />
               <Route path="/support" component={Support} />
               <Route path="/payment" component={Payment} />
               <Route path="/booking-confirmation" component={BookingConfirmation} />
+              <Route path="/favorites" component={Favorites} />
               
               {/* Legal Pages */}
               <Route path="/privacy" component={Privacy} />
@@ -86,8 +113,29 @@ function App() {
               <Route path="/faq" component={FAQ} />
               <Route path="/help" component={Help} />
               
+              {/* Footer-linked informational routes */}
+              <Route path="/how-it-works" component={HowItWorks} />
+              <Route path="/careers" component={Careers} />
+              <Route path="/press" component={Press} />
+              <Route path="/fleet" component={Fleet} />
+              <Route path="/business" component={Business} />
+              <Route path="/contact" component={Contact} />
+              <Route path="/safety" component={Safety} />
+              <Route path="/guidelines" component={Guidelines} />
+              <Route path="/cookies" component={Cookies} />
+              <Route path="/insurance" component={Insurance} />
+              <Route path="/accessibility" component={Accessibility} />
+              <Route path="/gdpr-compliance" component={GDPRCompliance} />
+              <Route path="/report" component={Report} />
+              
               {/* OAuth Test Route */}
               <Route path="/oauth-test" component={OAuthTest} />
+              
+              {/* OAuth callback routes */}
+              <Route path="/auth/google/callback" component={GoogleCallback} />
+              <Route path="/auth/facebook/callback" component={FacebookCallback} />
+              <Route path="/auth/microsoft/callback" component={MicrosoftCallback} />
+              <Route path="/auth/github/callback" component={GitHubCallback} />
               <Route component={NotFound} />
             </Switch>
           </main>

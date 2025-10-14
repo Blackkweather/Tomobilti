@@ -1,0 +1,4 @@
+[2025-10-14T19:40:10.904Z] [ERROR] Request failed: POST /api/auth/login {"requestId":"srvbbp0c6","method":"POST","endpoint":"/api/auth/login","statusCode":401,"responseTime":362}
+[2025-10-14T19:40:19.190Z] [ERROR] Request failed: POST /api/auth/register {"requestId":"owmrctth2","method":"POST","endpoint":"/api/auth/register","statusCode":400,"responseTime":25}
+[2025-10-14T19:41:01.094Z] [ERROR] Request failed: POST /api/auth/login {"requestId":"zkq7ddoeo","method":"POST","endpoint":"/api/auth/login","statusCode":401,"responseTime":325}
+[2025-10-14T19:42:56.434Z] [ERROR] Request failed: POST /api/auth/login {"requestId":"ijmaxhg06","method":"POST","endpoint":"/api/auth/login","statusCode":401,"responseTime":349}

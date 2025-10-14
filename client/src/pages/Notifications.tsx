@@ -573,7 +573,7 @@ const Notifications: React.FC = () => {
           </Tabs>
         </div>
       </div>
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 };

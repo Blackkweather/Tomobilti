@@ -852,7 +852,7 @@ export default function PaymentManagement() {
           </Tabs>
         </div>
       </div>
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

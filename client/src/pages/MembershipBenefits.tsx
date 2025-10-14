@@ -452,7 +452,7 @@ export default function MembershipBenefits(props: any) {
         </Card>
       </div>
       
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

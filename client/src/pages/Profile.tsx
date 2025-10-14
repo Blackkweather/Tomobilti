@@ -896,7 +896,7 @@ export default function Profile() {
           </Tabs>
         </div>
       </div>
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

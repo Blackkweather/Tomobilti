@@ -251,9 +251,29 @@ app.use((req, res, next) => {
             userType: "owner"
           });
           
-          // Create sample cars
+          // Create only the 6 initial cars
           await memStorage.createCar({
             ownerId: owner1.id,
+            title: "Ferrari - Supercar",
+            description: "High-performance Ferrari with stunning design and exhilarating drive.",
+            make: "Ferrari",
+            model: "",
+            year: 2022,
+            fuelType: "essence",
+            transmission: "automatic",
+            seats: 2,
+            pricePerDay: "150.00",
+            currency: "GBP",
+            location: "London, Westminster",
+            city: "London",
+            latitude: 51.5074,
+            longitude: -0.1278,
+            images: ["/assets/Ferrari.jpg"],
+            isAvailable: true
+          });
+
+          await memStorage.createCar({
+            ownerId: owner2.id,
             title: "Porsche 911 F Model - Classic Sports Car",
             description: "Iconic classic Porsche 911 F Model with timeless design and exceptional performance.",
             make: "Porsche",
@@ -264,20 +284,80 @@ app.use((req, res, next) => {
             seats: 2,
             pricePerDay: "120.00",
             currency: "GBP",
-            location: "London, Westminster",
-            city: "London",
-            latitude: 51.5074,
-            longitude: -0.1278,
+            location: "Manchester, City Centre",
+            city: "Manchester",
+            latitude: 53.4808,
+            longitude: -2.2426,
             images: ["/assets/CLASSIC.png"],
             isAvailable: true
           });
-          
+
+          await memStorage.createCar({
+            ownerId: owner1.id,
+            title: "Range Rover - Luxury SUV",
+            description: "Premium Range Rover SUV offering luxury and capability.",
+            make: "Land Rover",
+            model: "Range Rover",
+            year: 2021,
+            fuelType: "essence",
+            transmission: "automatic",
+            seats: 5,
+            pricePerDay: "100.00",
+            currency: "GBP",
+            location: "Birmingham, City Centre",
+            city: "Birmingham",
+            latitude: 52.4862,
+            longitude: -1.8904,
+            images: ["/assets/Range Rover.jpg"],
+            isAvailable: true
+          });
+
+          await memStorage.createCar({
+            ownerId: owner2.id,
+            title: "Tesla - Electric",
+            description: "Modern Tesla electric car with zero emissions.",
+            make: "Tesla",
+            model: "",
+            year: 2023,
+            fuelType: "electric",
+            transmission: "automatic",
+            seats: 5,
+            pricePerDay: "110.00",
+            currency: "GBP",
+            location: "Edinburgh, New Town",
+            city: "Edinburgh",
+            latitude: 55.9533,
+            longitude: -3.1883,
+            images: ["/assets/Tesla.jpg"],
+            isAvailable: true
+          });
+
+          await memStorage.createCar({
+            ownerId: owner1.id,
+            title: "Jaguar F-Pace - SUV",
+            description: "Luxury Jaguar F-Pace SUV with refined comfort and performance.",
+            make: "Jaguar",
+            model: "F-Pace",
+            year: 2022,
+            fuelType: "essence",
+            transmission: "automatic",
+            seats: 5,
+            pricePerDay: "90.00",
+            currency: "GBP",
+            location: "Leeds, City Centre",
+            city: "Leeds",
+            latitude: 53.8008,
+            longitude: -1.5491,
+            images: ["/assets/Jaguar F pace.jpg"],
+            isAvailable: true
+          });
+
           await memStorage.createCar({
             ownerId: owner2.id,
             title: "Jaguar F-Type Convertible - Luxury Sports Car",
             description: "Stunning Jaguar F-Type Convertible with breathtaking design and exhilarating performance.",
             make: "Jaguar",
-            model: "F-Type",
+            model: "F-Type Convertible",
             year: 2023,
             fuelType: "essence",
             transmission: "automatic",
@@ -288,27 +368,7 @@ app.use((req, res, next) => {
             city: "Manchester",
             latitude: 53.4808,
             longitude: -2.2426,
-            images: ["/assets/CONVERTIBLES.png"],
-            isAvailable: true
-          });
-          
-          await memStorage.createCar({
-            ownerId: owner1.id,
-            title: "Tesla Model X - Electric SUV",
-            description: "Revolutionary Tesla Model X electric SUV with falcon-wing doors and zero emissions.",
-            make: "Tesla",
-            model: "Model X",
-            year: 2023,
-            fuelType: "electric",
-            transmission: "automatic",
-            seats: 7,
-            pricePerDay: "110.00",
-            currency: "GBP",
-            location: "Edinburgh, New Town",
-            city: "Edinburgh",
-            latitude: 55.9533,
-            longitude: -3.1883,
-            images: ["/assets/ELECTRIC.png"],
+            images: ["/assets/jaguar f type convertible 1.jpg"],
             isAvailable: true
           });
           

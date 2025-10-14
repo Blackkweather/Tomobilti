@@ -443,7 +443,7 @@ export default function CarManagement() {
         )}
       </div>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
     </div>
   );
 }

@@ -893,7 +893,7 @@ export default function BecomeMember() {
         </div>
       </section>
 
-      <Footer />
+      {/* Footer is rendered globally in App */}
 
       {/* Payment Confirmation Modal */}
       {showPaymentModal && (
