@@ -13,7 +13,7 @@ async function testBooking() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: 'renter.test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123'
       })
     });
@@ -28,7 +28,7 @@ async function testBooking() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: 'renter.test@example.com',
+          email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
           password: 'password123',
           firstName: 'Jane',
           lastName: 'Doe',

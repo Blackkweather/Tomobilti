@@ -19,7 +19,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
-import LocationPicker from './LocationPicker';
+import { LocationPicker } from './LocationPicker';
 
 interface AdvancedSearchProps {
   onSearch: (filters: SearchFilters) => void;

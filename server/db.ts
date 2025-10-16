@@ -96,14 +96,15 @@ export class DatabaseStorage implements IStorage {
       email: insertUser.email,
       firstName: insertUser.firstName,
       lastName: insertUser.lastName,
-      phone: insertUser.phone,
-      profileImage: insertUser.profileImage,
+      phone: insertUser.phone || null,
+      profileImage: insertUser.profileImage || null,
       userType: insertUser.userType || 'renter',
       id: randomUUID(),
+      password: null, // Default to null for OAuth users
     };
 
     // Only hash password if provided (for regular registration)
-    if (insertUser.password) {
+    if (insertUser.password && insertUser.password.trim() !== '') {
       userData.password = await bcrypt.hash(insertUser.password, 12);
     }
     

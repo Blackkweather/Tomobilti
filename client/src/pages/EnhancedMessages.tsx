@@ -11,161 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Separator } from "../components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { 
-  MessageCircle, 
-  Send, 
-  Phone, 
-  Mail, 
-  Clock, 
-  User, 
-  CheckCircle,
-  AlertCircle,
-  Info,
-  Star,
-  ThumbsUp,
-  ThumbsDown,
-  ArrowRight,
-  Minimize2,
-  Maximize2,
-  Search,
-  Filter,
-  Settings,
-  Archive,
-  Pin,
-  Image as ImageIcon,
-  Paperclip,
-  Smile,
-  Mic,
-  Video,
-  Users,
-  Shield,
-  Zap,
-  RefreshCw,
-  Download,
-  Upload,
-  Eye,
-  EyeOff,
-  Trash2,
-  Edit,
-  Copy,
-  Share2,
-  Flag,
-  AlertTriangle,
-  HelpCircle,
-  ExternalLink,
-  ChevronDown,
-  ChevronRight,
-  Plus,
-  Minus,
-  X,
-  Menu,
-  Bell,
-  BellOff,
-  Volume2,
-  VolumeX,
-  Wifi,
-  WifiOff,
-  Battery,
-  BatteryLow,
-  Signal,
-  SignalHigh,
-  SignalLow,
-  SignalZero,
-  Activity,
-  TrendingUp,
-  BarChart3,
-  PieChart,
-  LineChart,
-  Target,
-  Award,
-  Gift,
-  Heart,
-  MessageSquare,
-  MessageSquarePlus,
-  MessageSquareText,
-  MessageSquareX,
-  MessageSquareCheck,
-  MessageSquareWarning,
-  MessageSquareInfo,
-  MessageSquareQuestion,
-  MessageSquareReply,
-  MessageSquareForward,
-  MessageSquareEdit,
-  MessageSquareDelete,
-  MessageSquarePin,
-  MessageSquareUnpin,
-  MessageSquareArchive,
-  MessageSquareUnarchive,
-  MessageSquareStar,
-  MessageSquareUnstar,
-  MessageSquareFlag,
-  MessageSquareUnflag,
-  MessageSquareReport,
-  MessageSquareBlock,
-  MessageSquareUnblock,
-  MessageSquareMute,
-  MessageSquareUnmute,
-  MessageSquareHide,
-  MessageSquareShow,
-  MessageSquareLock,
-  MessageSquareUnlock,
-  MessageSquareKey,
-  MessageSquareShield,
-  MessageSquareShieldCheck,
-  MessageSquareShieldX,
-  MessageSquareShieldAlert,
-  MessageSquareShieldQuestion,
-  MessageSquareShieldInfo,
-  MessageSquareShieldPlus,
-  MessageSquareShieldMinus,
-  MessageSquareShieldEdit,
-  MessageSquareShieldDelete,
-  MessageSquareShieldPin,
-  MessageSquareShieldUnpin,
-  MessageSquareShieldArchive,
-  MessageSquareShieldUnarchive,
-  MessageSquareShieldStar,
-  MessageSquareShieldUnstar,
-  MessageSquareShieldFlag,
-  MessageSquareShieldUnflag,
-  MessageSquareShieldReport,
-  MessageSquareShieldBlock,
-  MessageSquareShieldUnblock,
-  MessageSquareShieldMute,
-  MessageSquareShieldUnmute,
-  MessageSquareShieldHide,
-  MessageSquareShieldShow,
-  MessageSquareShieldLock,
-  MessageSquareShieldUnlock,
-  MessageSquareShieldKey,
-  MessageSquareShieldCheck,
-  MessageSquareShieldX,
-  MessageSquareShieldAlert,
-  MessageSquareShieldQuestion,
-  MessageSquareShieldInfo,
-  MessageSquareShieldPlus,
-  MessageSquareShieldMinus,
-  MessageSquareShieldEdit,
-  MessageSquareShieldDelete,
-  MessageSquareShieldPin,
-  MessageSquareShieldUnpin,
-  MessageSquareShieldArchive,
-  MessageSquareShieldUnarchive,
-  MessageSquareShieldStar,
-  MessageSquareShieldUnstar,
-  MessageSquareShieldFlag,
-  MessageSquareShieldUnflag,
-  MessageSquareShieldReport,
-  MessageSquareShieldBlock,
-  MessageSquareShieldUnblock,
-  MessageSquareShieldMute,
-  MessageSquareShieldUnmute,
-  MessageSquareShieldHide,
-  MessageSquareShieldShow,
-  MessageSquareShieldLock,
-  MessageSquareShieldUnlock,
-  MessageSquareShieldKey
-} from "lucide-react";
+import { MessageSquare } from "lucide-react";
 import Footer from "../components/Footer";
 
 interface Message {
@@ -197,13 +43,11 @@ export default function Messages() {
   const [newMessage, setNewMessage] = useState("");
 
   const { data: conversations = [] } = useQuery<Conversation[]>({
-    queryKey: ["/api/messages/conversations"],
-  });
+    queryKey: ["/api/messages/conversations"]});
 
   const { data: messages = [] } = useQuery<Message[]>({
     queryKey: ["/api/messages", selectedConversation],
-    enabled: !!selectedConversation,
-  });
+    enabled: !!selectedConversation});
 
   const sendMessageMutation = useMutation({
     mutationFn: async ({ conversationId, content }: { conversationId: string; content: string }) => {
@@ -213,8 +57,7 @@ export default function Messages() {
       queryClient.invalidateQueries({ queryKey: ["/api/messages", selectedConversation] });
       queryClient.invalidateQueries({ queryKey: ["/api/messages/conversations"] });
       setNewMessage("");
-    },
-  });
+    }});
 
   const markAsReadMutation = useMutation({
     mutationFn: async (conversationId: string) => {
@@ -222,16 +65,14 @@ export default function Messages() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/messages/conversations"] });
-    },
-  });
+    }});
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim() && selectedConversation) {
       sendMessageMutation.mutate({
         conversationId: selectedConversation,
-        content: newMessage.trim(),
-      });
+        content: newMessage.trim()});
     }
   };
 

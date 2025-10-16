@@ -40,5 +40,8 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    headers: {
+      'Content-Security-Policy': "script-src 'self' 'sha256-Z2/iFzh9VMlVkEOar1f/oSHWwQk3ve1qk/C2WdsC4Xk=' https://connect.facebook.net; object-src 'none';"
+    }
   },
 });

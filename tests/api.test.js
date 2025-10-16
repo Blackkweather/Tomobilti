@@ -26,7 +26,7 @@ describe('API Tests', () => {
   describe('Authentication', () => {
     it('should register a new user', async () => {
       const userData = {
-        email: 'test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123',
         name: 'Test User'
       };
@@ -43,7 +43,7 @@ describe('API Tests', () => {
 
     it('should login with valid credentials', async () => {
       const loginData = {
-        email: 'test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123'
       };
 
@@ -57,7 +57,7 @@ describe('API Tests', () => {
 
     it('should reject invalid credentials', async () => {
       const loginData = {
-        email: 'test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'wrongpassword'
       };
 
@@ -76,7 +76,7 @@ describe('API Tests', () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'test@example.com',
+          email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
           password: 'password123'
         });
       
@@ -138,7 +138,7 @@ describe('API Tests', () => {
       const response = await request(app)
         .post('/api/auth/login')
         .send({
-          email: 'test@example.com',
+          email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
           password: 'password123'
         });
       

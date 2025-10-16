@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { config } from 'dotenv';
+import { sanitizeInput } from '../middleware/sanitize';
 
 config();
 
@@ -206,18 +207,33 @@ export class PaymentService {
    */
   static async createPaymentIntent(data: PaymentIntentData): Promise<PaymentResult> {
     try {
+      // Validate and sanitize input data
+      const sanitizedData = sanitizeInput(data);
+      
+      if (!sanitizedData.amount || sanitizedData.amount <= 0) {
+        throw new Error('Invalid payment amount');
+      }
+      
+      if (!sanitizedData.currency || !/^[a-z]{3}$/i.test(sanitizedData.currency)) {
+        throw new Error('Invalid currency code');
+      }
+      
+      if (!sanitizedData.customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(sanitizedData.customerEmail)) {
+        throw new Error('Invalid email address');
+      }
+      
       const paymentService = stripe || mockPaymentService;
       
       const paymentIntent = await paymentService.paymentIntents.create({
-        amount: Math.round(data.amount * 100), // Convert to cents
-        currency: data.currency.toLowerCase(),
+        amount: Math.round(sanitizedData.amount * 100), // Convert to cents
+        currency: sanitizedData.currency.toLowerCase(),
         metadata: {
-          bookingId: data.bookingId,
-          customerEmail: data.customerEmail,
-          carTitle: data.carTitle,
+          bookingId: sanitizedData.bookingId,
+          customerEmail: sanitizedData.customerEmail,
+          carTitle: sanitizedData.carTitle,
         },
-        description: `Payment for ${data.carTitle} booking`,
-        receipt_email: data.customerEmail,
+        description: `Payment for ${sanitizedData.carTitle} booking`,
+        receipt_email: sanitizedData.customerEmail,
       });
 
       return {

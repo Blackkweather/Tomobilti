@@ -67,7 +67,7 @@ export default function CarComparison({ cars, onRemoveCar, onBookCar, onAddToFav
     if (cars.length === 0) return null;
 
     const data = {
-      prices: cars.map(car => car.pricePerDay),
+      prices: cars.map(car => typeof car.pricePerDay === 'string' ? parseFloat(car.pricePerDay) : car.pricePerDay),
       ratings: cars.map(car => car.rating || 0),
       fuelTypes: cars.map(car => car.fuelType),
       transmissions: cars.map(car => car.transmission),
@@ -137,8 +137,9 @@ export default function CarComparison({ cars, onRemoveCar, onBookCar, onAddToFav
       <div className={`grid gap-6 ${cars.length === 1 ? 'grid-cols-1' : cars.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
         {cars.map((car, index) => {
           const FuelIcon = fuelTypeIcons[car.fuelType as keyof typeof fuelTypeIcons] || Fuel;
-          const isCheapest = comparisonData && car.pricePerDay === comparisonData.cheapest;
-          const isHighestRated = comparisonData && car.rating === comparisonData.highestRated;
+          const carPrice = typeof car.pricePerDay === 'string' ? parseFloat(car.pricePerDay) : car.pricePerDay;
+          const isCheapest = comparisonData && carPrice === comparisonData.cheapest;
+          const isHighestRated = comparisonData && (car.rating || 0) === comparisonData.highestRated;
           
           return (
             <Card key={car.id} className="modern-card hover:scale-105 transition-all duration-300 relative group">
@@ -172,7 +173,7 @@ export default function CarComparison({ cars, onRemoveCar, onBookCar, onAddToFav
 
               <div className="relative">
                 <img 
-                  src={car.image || '/api/placeholder/400/300'} 
+                  src={(car.images && car.images[0]) || '/api/placeholder/400/300'} 
                   alt={car.title}
                   className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
                 />

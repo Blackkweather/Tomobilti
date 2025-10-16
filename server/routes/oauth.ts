@@ -6,23 +6,51 @@ import { users } from '@shared/sqlite-schema';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { sanitizeInput, validateUrl } from '../middleware/sanitize';
 
 const router = Router();
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com');
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Google OAuth callback
 router.post('/google', async (req, res) => {
   try {
-    const { token } = req.body;
-    
-    if (!token) {
-      return res.status(400).json({ error: 'Google token is required' });
+    const sanitizedBody = sanitizeInput(req.body);
+    const { accessToken } = sanitizedBody;
+
+    if (!accessToken) {
+      return res.status(400).json({ error: 'Google authorization code is required' });
     }
 
-    // Verify the Google token
+    // Exchange authorization code for tokens
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        code: accessToken,
+        grant_type: 'authorization_code',
+        redirect_uri: `${req.protocol}://${req.get('host')}/auth/google/callback`,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      return res.status(400).json({ error: 'Failed to exchange code for tokens' });
+    }
+
+    const tokenData = await tokenResponse.json();
+    const { id_token } = tokenData;
+
+    if (!id_token) {
+      return res.status(400).json({ error: 'No ID token received from Google' });
+    }
+
+    // Verify the Google ID token
     const ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com',
+      idToken: id_token,
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -34,8 +62,10 @@ router.post('/google', async (req, res) => {
 
     // Check if user already exists
     let user = await db.select().from(users).where(eq(users.email, email)).limit(1).then(rows => rows[0] || null);
+    let isNewUser = false;
 
     if (!user) {
+      isNewUser = true;
       // Create new user
       const newUser = {
         id: crypto.randomUUID(),
@@ -83,6 +113,7 @@ router.post('/google', async (req, res) => {
         isVerified: user.isVerified,
       },
       token: jwtToken,
+      isNewUser,
       message: 'Successfully authenticated with Google'
     });
 
@@ -95,22 +126,27 @@ router.post('/google', async (req, res) => {
 // Facebook OAuth implementation
 router.post('/facebook', async (req, res) => {
   try {
-    const { accessToken, userID } = req.body;
+    const sanitizedBody = sanitizeInput(req.body);
+    const { accessToken, userID } = sanitizedBody;
     
     if (!accessToken || !userID) {
       return res.status(400).json({ error: 'Facebook token and user ID are required' });
     }
 
     // Verify the Facebook token with Facebook's API
-    const facebookAppId = process.env.FACEBOOK_APP_ID || '879130531438151';
-    const facebookAppSecret = process.env.FACEBOOK_APP_SECRET || 'your-facebook-app-secret';
+    const facebookAppId = process.env.FACEBOOK_APP_ID;
+    const facebookAppSecret = process.env.FACEBOOK_APP_SECRET;
     
     if (!facebookAppId || !facebookAppSecret) {
       return res.status(500).json({ error: 'Facebook OAuth not configured' });
     }
 
     // Verify the access token with Facebook
-    const verifyUrl = `https://graph.facebook.com/debug_token?input_token=${accessToken}&access_token=${facebookAppId}|${facebookAppSecret}`;
+    const verifyUrl = `https://graph.facebook.com/debug_token?input_token=${encodeURIComponent(accessToken)}&access_token=${encodeURIComponent(facebookAppId)}|${encodeURIComponent(facebookAppSecret)}`;
+    
+    if (!validateUrl(verifyUrl)) {
+      return res.status(400).json({ error: 'Invalid verification URL' });
+    }
     
     const verifyResponse = await fetch(verifyUrl);
     const verifyData = await verifyResponse.json();
@@ -120,7 +156,12 @@ router.post('/facebook', async (req, res) => {
     }
 
     // Get user information from Facebook
-    const userInfoUrl = `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${accessToken}`;
+    const userInfoUrl = `https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${encodeURIComponent(accessToken)}`;
+    
+    if (!validateUrl(userInfoUrl)) {
+      return res.status(400).json({ error: 'Invalid user info URL' });
+    }
+    
     const userResponse = await fetch(userInfoUrl);
     const userData = await userResponse.json();
     
@@ -189,7 +230,8 @@ router.post('/facebook', async (req, res) => {
 // Microsoft OAuth (for UK users who prefer Microsoft accounts)
 router.post('/microsoft', async (req, res) => {
   try {
-    const { accessToken } = req.body;
+    const sanitizedBody = sanitizeInput(req.body);
+    const { accessToken } = sanitizedBody;
     
     if (!accessToken) {
       return res.status(400).json({ error: 'Microsoft access token is required' });
@@ -254,7 +296,8 @@ router.post('/microsoft', async (req, res) => {
 // Apple Sign-In (mock implementation)
 router.post('/apple', async (req, res) => {
   try {
-    const { identityToken, user } = req.body;
+    const sanitizedBody = sanitizeInput(req.body);
+    const { identityToken, user } = sanitizedBody;
     
     if (!identityToken) {
       return res.status(400).json({ error: 'Apple identity token is required' });

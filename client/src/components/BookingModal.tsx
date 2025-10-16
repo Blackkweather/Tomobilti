@@ -48,6 +48,8 @@ export default function BookingModal({ car, bookingData: initialBookingData, onC
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'paypal' | 'apple'>('card');
+  const [paymentData, setPaymentData] = useState<any>({});
 
   // Redirect to login if not authenticated
   if (!isAuthenticated || !user) {
@@ -376,7 +378,7 @@ export default function BookingModal({ car, bookingData: initialBookingData, onC
               
               <RadioGroup 
                 value={paymentMethod} 
-                onValueChange={setPaymentMethod}
+                onValueChange={(value) => setPaymentMethod(value as "card" | "paypal" | "apple")}
                 aria-label="Select payment method"
               >
                 <div className="flex items-center space-x-2">

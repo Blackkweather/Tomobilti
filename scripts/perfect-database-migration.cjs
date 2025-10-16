@@ -377,7 +377,7 @@ async function initializePerfectData(sql) {
   // Create sample users with UK names and membership tiers
   const users = [
     {
-      email: 'james.smith@example.com',
+      email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
       first_name: 'James',
       last_name: 'Smith',
       phone: '+44 20 7946 0958',
@@ -396,7 +396,7 @@ async function initializePerfectData(sql) {
       })
     },
     {
-      email: 'oliver.johnson@example.com',
+      email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
       first_name: 'Oliver',
       last_name: 'Johnson',
       phone: '+44 161 234 5678',
@@ -415,7 +415,7 @@ async function initializePerfectData(sql) {
       })
     },
     {
-      email: 'emma.williams@example.com',
+      email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
       first_name: 'Emma',
       last_name: 'Williams',
       phone: '+44 131 234 5678',

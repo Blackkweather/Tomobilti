@@ -40,6 +40,7 @@ import { useAuth } from '../contexts/AuthContext';
 export default function BecomeMember() {
   const [selectedPlan, setSelectedPlan] = useState<'purple' | 'gold' | 'black'>('gold');
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
   const [paymentStep, setPaymentStep] = useState<'confirm' | 'processing' | 'success' | 'failed'>('confirm');
   const [activeTab, setActiveTab] = useState<'owners' | 'renters'>('owners');
   const [, setLocation] = useLocation();
@@ -106,18 +107,7 @@ export default function BecomeMember() {
 
   // Handle contact support
   const handleContactSupport = () => {
-    // Show contact options
-    const contactMethod = prompt(
-      'How would you like to contact support?\n\n1. Email: admin@sharewheelz.uk\n2. Phone: +44 20 7946 0958\n3. Live Chat (coming soon)\n\nEnter 1, 2, or 3:'
-    );
-    
-    if (contactMethod === '1') {
-      window.open('mailto:admin@sharewheelz.uk?subject=Membership Inquiry', '_blank');
-    } else if (contactMethod === '2') {
-      window.open('tel:+442079460958', '_blank');
-    } else if (contactMethod === '3') {
-      alert('Live chat feature coming soon! Please use email or phone for now.');
-    }
+    setShowContactModal(true);
   };
 
   // Handle learn more
@@ -448,13 +438,13 @@ export default function BecomeMember() {
           {/* Tabs for Owners vs Renters */}
           <div className="max-w-7xl mx-auto">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'owners' | 'renters')} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-12 bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto">
-                <TabsTrigger value="owners" className="text-lg py-4 px-8 flex items-center justify-center whitespace-nowrap">
-                  <PoundSterling className="w-5 h-5 mr-3" />
+              <TabsList className="grid w-full grid-cols-2 mb-12 bg-white shadow-lg rounded-lg overflow-hidden max-w-4xl mx-auto min-h-20">
+                <TabsTrigger value="owners" className="text-xl py-6 px-10 flex items-center justify-center whitespace-nowrap font-semibold">
+                  <PoundSterling className="w-6 h-6 mr-3" />
                   For Car Owners
                 </TabsTrigger>
-                <TabsTrigger value="renters" className="text-lg py-4 px-8 flex items-center justify-center whitespace-nowrap">
-                  <Car className="w-5 h-5 mr-3" />
+                <TabsTrigger value="renters" className="text-xl py-6 px-10 flex items-center justify-center whitespace-nowrap font-semibold">
+                  <Car className="w-6 h-6 mr-3" />
                   For Renters
                 </TabsTrigger>
               </TabsList>
@@ -902,7 +892,7 @@ export default function BecomeMember() {
           onClick={handleCloseModal}
         >
           <div 
-            className="bg-white rounded-xl sm:rounded-2xl max-w-xs sm:max-w-sm md:max-w-md w-full max-h-[90vh] sm:max-h-[85vh] md:max-h-[90vh] overflow-y-auto shadow-xl"
+            className="bg-white rounded-xl sm:rounded-2xl max-w-xs sm:max-w-sm md:max-w-md w-full shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {paymentStep === 'confirm' && (
@@ -1081,6 +1071,65 @@ export default function BecomeMember() {
               </div>
             )}
 
+          </div>
+        </div>
+      )}
+
+      {/* Contact Support Modal */}
+      {showContactModal && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowContactModal(false)}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b">
+              <h3 className="text-2xl font-bold text-gray-900">Contact Support</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowContactModal(false)}
+                className="h-10 w-10 p-0 hover:bg-gray-100 rounded-full"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            
+            <div className="p-6 space-y-3">
+              <p className="text-gray-600 text-center mb-4">
+                Choose how you'd like to get in touch with our support team
+              </p>
+
+              <a
+                href="mailto:admin@sharewheelz.uk?subject=Membership Inquiry"
+                className="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group"
+              >
+                <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500 transition-colors duration-200">
+                  <Mail className="w-7 h-7 text-blue-600 group-hover:text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-900 text-lg">Email Us</div>
+                  <div className="text-sm text-gray-600">admin@sharewheelz.uk</div>
+                </div>
+              </a>
+
+              <a
+                href="tel:+442079460958"
+                className="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl hover:border-green-500 hover:bg-green-50 transition-all duration-200 group"
+              >
+                <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-green-500 transition-colors duration-200">
+                  <Phone className="w-7 h-7 text-green-600 group-hover:text-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-gray-900 text-lg">Call Us</div>
+                  <div className="text-sm text-gray-600">+44 20 7946 0958</div>
+                </div>
+              </a>
+
+
+            </div>
           </div>
         </div>
       )}

@@ -5,19 +5,30 @@
 /* ===== GLOBAL TOUCH FIXES ===== */
 html {
   overflow-x: hidden;
-  /* Prevent viewport changes */
-  height: 100%;
-  width: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   overflow-x: hidden;
   background-color: white;
-  /* Prevent viewport changes */
-  height: 100%;
-  width: 100%;
   margin: 0;
   padding: 0;
+}
+
+/* Hide all tooltips globally */
+[role="tooltip"],
+[data-radix-tooltip-content],
+.tooltip {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Remove overflow from containers */
+.overflow-y-auto,
+.overflow-auto {
+  overflow-y: visible !important;
+  overflow: visible !important;
+  max-height: none !important;
 }
 
 /* Ensure header is always visible */

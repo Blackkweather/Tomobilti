@@ -1,4 +1,5 @@
-import { randomBytes } from 'crypto';
+import { randomBytes, timingSafeEqual } from 'crypto';
+import { secureLog } from './sanitize';
 
 // Enhanced CSRF protection middleware
 export const csrfProtection = (req: any, res: any, next: any) => {
@@ -7,39 +8,23 @@ export const csrfProtection = (req: any, res: any, next: any) => {
     return next();
   }
 
-  // Skip CSRF for certain API endpoints that use other security measures
+  // Only skip CSRF for essential auth endpoints
   const skipCSRFPaths = [
     '/api/auth/login',
-    '/api/auth/register',
-    '/api/auth/logout',
-    // OAuth token exchange and processing endpoints
-    '/api/auth/oauth/',
-    '/api/oauth/',
-    '/api/webhooks/',
-    '/api/chatgpt/'
+    '/api/auth/register'
   ];
 
   if (skipCSRFPaths.some(path => req.path.startsWith(path))) {
     return next();
   }
 
-  // For development, be more lenient
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🔒 CSRF check skipped in development mode');
-    return next();
-  }
+  // CSRF protection enabled in all environments for security
 
   const token = req.headers['x-csrf-token'] || req.body._csrf;
   const sessionToken = req.session?.csrfToken;
 
-  if (!token || !sessionToken || token !== sessionToken) {
-    console.warn('🚫 CSRF token validation failed:', {
-      path: req.path,
-      method: req.method,
-      hasToken: !!token,
-      hasSessionToken: !!sessionToken,
-      ip: req.ip
-    });
+  if (!token || !sessionToken || !timingSafeEqual(Buffer.from(token), Buffer.from(sessionToken))) {
+    secureLog('warn', 'CSRF token validation failed', { path: req.path });
     return res.status(403).json({ 
       error: 'Invalid CSRF token',
       code: 'CSRF_TOKEN_INVALID'

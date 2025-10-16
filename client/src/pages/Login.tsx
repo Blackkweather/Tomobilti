@@ -29,13 +29,13 @@ import LoadingSpinner from '../components/LoadingSpinner';
 // Helper function for smart redirection based on user type
 const redirectBasedOnUserType = (userType: string, setLocation: (path: string) => void) => {
   if (userType === 'owner') {
-    setLocation('/dashboard/owner');
+    setLocation('/owner-dashboard');
   } else if (userType === 'renter') {
-    setLocation('/dashboard/renter');
+    setLocation('/renter-dashboard');
   } else if (userType === 'both') {
     setLocation('/dashboard'); // Show dashboard selector for users with both capabilities
   } else {
-    setLocation('/dashboard/renter'); // Fallback to renter dashboard
+    setLocation('/renter-dashboard'); // Fallback to renter dashboard
   }
 };
 

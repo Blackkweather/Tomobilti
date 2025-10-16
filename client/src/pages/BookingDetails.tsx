@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { carApi, bookingApi } from '../lib/api';
 
 export default function BookingDetails() {
-  const { bookingId } = useParams();
+  const { bookingId } = useParams<{ bookingId: string }>();
   const [, setLocation] = useLocation();
 
   const { data: booking, isLoading, error } = useQuery({

@@ -15,7 +15,10 @@ export const db = drizzle(sqlite);
 export class DatabaseStorage implements IStorage {
   // User operations
   async createUser(insertUser: InsertUser): Promise<User> {
-    const hashedPassword = await bcrypt.hash(insertUser.password, 12);
+    let hashedPassword = null;
+    if (insertUser.password && insertUser.password.trim() !== '') {
+      hashedPassword = await bcrypt.hash(insertUser.password, 12);
+    }
     const userWithHashedPassword = {
       ...insertUser,
       password: hashedPassword,

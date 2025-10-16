@@ -135,7 +135,7 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
       };
       
       // Also override any existing Socket.IO WebSocket connections
-      if (window.io) {
+      if ((window as any).io) {
         console.log('🔧 MessagingContext: Socket.IO found, ensuring proper configuration');
       }
       
@@ -185,9 +185,9 @@ export const MessagingProvider: React.FC<MessagingProviderProps> = ({ children }
           console.error('🔌 MessagingContext: Connection error:', error);
           console.error('🔌 MessagingContext: Error details:', {
             message: error.message,
-            description: error.description,
-            context: error.context,
-            type: error.type
+            description: (error as any).description,
+            context: (error as any).context,
+            type: (error as any).type
           });
           setIsConnected(false);
         });

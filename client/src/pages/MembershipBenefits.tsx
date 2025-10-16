@@ -265,8 +265,8 @@ export default function MembershipBenefits(props: any) {
               <CardContent>
                 {/* Host Features */}
                 <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                    <Car className="h-4 w-4 mr-2 text-blue-600" />
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center text-base">
+                    <PoundSterling className="h-5 w-5 mr-2 text-blue-600" />
                     For Car Owners
                   </h4>
                   <ul className="space-y-2">
@@ -281,8 +281,8 @@ export default function MembershipBenefits(props: any) {
                 
                 {/* Renter Features */}
                 <div className="mb-6">
-                  <h4 className="font-semibold text-gray-900 mb-2 flex items-center">
-                    <Users className="h-4 w-4 mr-2 text-green-600" />
+                  <h4 className="font-semibold text-gray-900 mb-3 flex items-center text-base">
+                    <Car className="h-5 w-5 mr-2 text-green-600" />
                     For Renters
                   </h4>
                   <ul className="space-y-2">

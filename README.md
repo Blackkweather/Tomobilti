@@ -1,7 +1,7 @@
 
-# 🚗 Tomobilti - Plateforme de Location de Voitures au Maroc
+# 🚗 ShareWheelz - Car Sharing Platform for the UK
 
-Une plateforme moderne de location de voitures entre particuliers adaptée au marché marocain.
+A modern peer-to-peer car rental platform tailored for the UK market.
 
 ## ✨ Fonctionnalités
 
@@ -21,7 +21,7 @@ Une plateforme moderne de location de voitures entre particuliers adaptée au ma
 
 ### 🎨 **UX/UI Moderne**
 - ✅ Design responsive mobile-first
-- ✅ Interface en français adaptée au Maroc
+- ✅ English interface adapted for the UK
 - ✅ Système de composants cohérent
 - ✅ Gestion des états de chargement et d'erreur
 - ✅ Navigation accessible avec ARIA labels
@@ -64,7 +64,7 @@ Cela créera un fichier `.env` avec :
 
 Mettez à jour le `DATABASE_URL` dans `.env` :
 ```
-DATABASE_URL=postgresql://username:password@localhost:5432/tomobilti
+DATABASE_URL=postgresql://username:password@localhost:5432/sharewheelz
 ```
 
 ### 5. Initialiser la base de données
@@ -73,7 +73,7 @@ DATABASE_URL=postgresql://username:password@localhost:5432/tomobilti
 npm run db:push
 
 # Optionnel: Appliquer les indexes optimisés
-psql -d tomobilti -f scripts/init-db.sql
+psql -d sharewheelz -f scripts/init-db.sql
 ```
 
 ### 6. Lancer l'application
@@ -155,9 +155,9 @@ POST /api/reviews                # Créer avis
 ## 🎨 Design System
 
 ### Couleurs
-- **Primaire** : Vert Morocco (`hsl(150 60% 35%)`)
+- **Primary** : British Green (`hsl(150 60% 35%)`)
 - **Accent** : Rouge chaleureux (`hsl(0 70% 45%)`)
-- **Monnaie** : MAD (Dirham Marocain)
+- **Currency** : GBP (British Pound Sterling)
 
 ### Composants
 - Système de composants Radix UI
@@ -240,10 +240,10 @@ MIT License - voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ## 📞 Support
 
-- 📧 Email: support@tomobilti.ma
+- 📧 Email: support@sharewheelz.uk
 - 🐛 Issues: [GitHub Issues](https://github.com/your-username/tomobilti/issues)
 - 📚 Documentation: [Wiki](https://github.com/your-username/tomobilti/wiki)
 
 ---
 
-**Développé avec ❤️ pour le marché marocain** 🇲🇦
+**Developed with ❤️ for the UK market** 🇬🇧

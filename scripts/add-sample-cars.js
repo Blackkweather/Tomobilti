@@ -15,7 +15,7 @@ async function addSampleCars() {
       
       // Create a sample user
       const sampleUser = await storage.createUser({
-        email: 'john.owner@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123',
         firstName: 'John',
         lastName: 'Smith',

@@ -31,7 +31,7 @@ const FEATURES = [
 ];
 
 export default function EditCar() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { isAuthenticated, user } = useAuth();

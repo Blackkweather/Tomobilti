@@ -8,9 +8,11 @@
  */
 
 const express = require('express');
-const crypto = require('crypto');
+const nodeCrypto = require('crypto');
 
 class MockPaymentService {
+  private payments = new Map();
+  private subscriptions = new Map();
   constructor() {
     this.payments = new Map();
     this.subscriptions = new Map();
@@ -18,7 +20,7 @@ class MockPaymentService {
 
   // Mock payment processing
   async createPaymentIntent(amount, currency = 'GBP', metadata = {}) {
-    const paymentIntentId = `pi_mock_${crypto.randomBytes(16).toString('hex')}`;
+    const paymentIntentId = `pi_mock_${nodeCrypto.randomBytes(16).toString('hex')}`;
     
     const paymentIntent = {
       id: paymentIntentId,
@@ -27,7 +29,7 @@ class MockPaymentService {
       status: 'requires_payment_method',
       metadata,
       created: Math.floor(Date.now() / 1000),
-      client_secret: `${paymentIntentId}_secret_${crypto.randomBytes(16).toString('hex')}`
+      client_secret: `${paymentIntentId}_secret_${nodeCrypto.randomBytes(16).toString('hex')}`
     };
 
     this.payments.set(paymentIntentId, paymentIntent);
@@ -55,7 +57,7 @@ class MockPaymentService {
 
   // Mock subscription creation
   async createSubscription(customerId, priceId, metadata = {}) {
-    const subscriptionId = `sub_mock_${crypto.randomBytes(16).toString('hex')}`;
+    const subscriptionId = `sub_mock_${nodeCrypto.randomBytes(16).toString('hex')}`;
     
     const subscription = {
       id: subscriptionId,
@@ -65,7 +67,7 @@ class MockPaymentService {
       current_period_end: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days
       items: {
         data: [{
-          id: `si_mock_${crypto.randomBytes(16).toString('hex')}`,
+          id: `si_mock_${nodeCrypto.randomBytes(16).toString('hex')}`,
           price: {
             id: priceId,
             unit_amount: priceId.includes('basic') ? 999 : 1999, // £9.99 or £19.99
@@ -84,7 +86,7 @@ class MockPaymentService {
 
   // Mock customer creation
   async createCustomer(email, name, metadata = {}) {
-    const customerId = `cus_mock_${crypto.randomBytes(16).toString('hex')}`;
+    const customerId = `cus_mock_${nodeCrypto.randomBytes(16).toString('hex')}`;
     
     const customer = {
       id: customerId,

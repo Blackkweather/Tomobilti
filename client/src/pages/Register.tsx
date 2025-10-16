@@ -33,13 +33,13 @@ import LoadingSpinner from '../components/LoadingSpinner';
 // Helper function for smart redirection based on user type
 const redirectBasedOnUserType = (userType: string, setLocation: (path: string) => void) => {
   if (userType === 'owner') {
-    setLocation('/dashboard/owner');
+    setLocation('/owner-dashboard');
   } else if (userType === 'renter') {
-    setLocation('/dashboard/renter');
+    setLocation('/renter-dashboard');
   } else if (userType === 'both') {
     setLocation('/dashboard'); // Show dashboard selector for users with both capabilities
   } else {
-    setLocation('/dashboard/renter'); // Fallback to renter dashboard
+    setLocation('/renter-dashboard'); // Fallback to renter dashboard
   }
 };
 
@@ -94,6 +94,7 @@ export default function Register() {
         phone: form.phone || undefined,
         userType: form.userType
       });
+      
       // Smart redirection based on user type
       redirectBasedOnUserType(response.user.userType, setLocation);
     } catch (err: any) {
@@ -320,22 +321,42 @@ export default function Register() {
                 </div>
 
                 {/* User Type Selection */}
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Label htmlFor="userType" className="text-sm font-medium text-gray-700">
-                    Account Type
+                    I want to: <span className="text-red-500">*</span>
                   </Label>
-                  <select
-                    id="userType"
-                    name="userType"
-                    disabled={isLoading}
-                    value={form.userType}
-                    onChange={handleChange('userType')}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <option value="renter">Renter - I want to rent cars</option>
-                    <option value="owner">Owner - I want to rent out my car</option>
-                    <option value="both">Both - I want to rent and rent out cars</option>
-                  </select>
+                  <div className="space-y-3">
+                    <label className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-blue-300 has-[:checked]:border-blue-500 has-[:checked]:bg-blue-50">
+                      <input
+                        type="radio"
+                        name="userType"
+                        value="renter"
+                        checked={form.userType === 'renter'}
+                        onChange={handleChange('userType')}
+                        disabled={isLoading}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500"
+                      />
+                      <div className="ml-3 flex-1">
+                        <div className="font-semibold text-gray-900">Rent a Car</div>
+                        <div className="text-sm text-gray-600">Browse and rent cars from local owners</div>
+                      </div>
+                    </label>
+                    <label className="flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all hover:border-green-300 has-[:checked]:border-green-500 has-[:checked]:bg-green-50">
+                      <input
+                        type="radio"
+                        name="userType"
+                        value="owner"
+                        checked={form.userType === 'owner'}
+                        onChange={handleChange('userType')}
+                        disabled={isLoading}
+                        className="h-4 w-4 text-green-600 focus:ring-green-500"
+                      />
+                      <div className="ml-3 flex-1">
+                        <div className="font-semibold text-gray-900">Become a Car Owner</div>
+                        <div className="text-sm text-gray-600">List your car and earn money</div>
+                      </div>
+                    </label>
+                  </div>
                   <p className="text-xs text-gray-500">
                     You can change this later in your profile settings.
                   </p>

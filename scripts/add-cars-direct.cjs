@@ -8,7 +8,7 @@ async function addCarsDirectly() {
     
     // First create a user
     const user = await storage.createUser({
-      email: 'demo@sharewheelz.uk',
+      email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
       password: 'demo123',
       firstName: 'Demo',
       lastName: 'User',

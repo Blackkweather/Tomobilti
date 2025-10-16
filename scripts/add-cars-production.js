@@ -25,8 +25,8 @@ async function addCarsToProduction() {
       
       // Create sample owners
       const owner1 = await storage.createUser({
-        email: "ahmed.bennani@example.com",
-        password: "demo_password_123",
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
+        password: process.env.DEMO_USER_PASSWORD || 'SecureDemo123!',
         firstName: "Ahmed",
         lastName: "Bennani",
         phone: "+212 6 12 34 56 78",
@@ -34,8 +34,8 @@ async function addCarsToProduction() {
       });
       
       const owner2 = await storage.createUser({
-        email: "youssef.alami@example.com", 
-        password: "demo_password_123",
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk', 
+        password: process.env.DEMO_USER_PASSWORD || 'SecureDemo123!',
         firstName: "Youssef",
         lastName: "Alami",
         phone: "+212 6 23 45 67 89",
@@ -43,8 +43,8 @@ async function addCarsToProduction() {
       });
       
       const owner3 = await storage.createUser({
-        email: "sara.idrissi@example.com", 
-        password: "demo_password_123",
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk', 
+        password: process.env.DEMO_USER_PASSWORD || 'SecureDemo123!',
         firstName: "Sara",
         lastName: "Idrissi",
         phone: "+212 6 45 67 89 01",
