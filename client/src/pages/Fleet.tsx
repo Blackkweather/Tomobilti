@@ -126,12 +126,12 @@ export default function Fleet() {
               Streamline your fleet operations with our comprehensive management platform. 
               Track, maintain, and optimize your vehicles for maximum efficiency.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 w-full sm:w-auto">
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 w-full sm:w-auto">
                 Schedule Demo
               </Button>
             </div>
@@ -204,21 +204,21 @@ export default function Fleet() {
             {plans.map((plan) => (
               <Card 
                 key={plan.id} 
-                className={`p-8 relative ${plan.popular ? 'ring-2 ring-blue-500 shadow-xl' : ''}`}
+                className={`p-8 relative flex flex-col ${plan.popular ? 'ring-2 ring-blue-500 shadow-xl' : ''}`}
               >
                 {plan.popular && (
                   <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
                     Most Popular
                   </Badge>
                 )}
-                <CardContent className="p-0 text-center">
+                <CardContent className="p-0 text-center flex flex-col flex-1">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                   <p className="text-gray-600 mb-6">{plan.description}</p>
                   <div className="mb-8">
                     <span className="text-5xl font-bold text-gray-900">{plan.price}</span>
                     <span className="text-gray-600">{plan.period}</span>
                   </div>
-                  <ul className="space-y-4 mb-8 text-left">
+                  <ul className="space-y-4 mb-8 text-left flex-1">
                     {plan.features.map((feature, index) => (
                       <li key={index} className="flex items-center">
                         <CheckCircle className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
@@ -227,7 +227,7 @@ export default function Fleet() {
                     ))}
                   </ul>
                   <Button 
-                    className={`w-full ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'}`}
+                    className={`w-full mt-auto ${plan.popular ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-600 hover:bg-gray-700'}`}
                     onClick={() => setSelectedPlan(plan.id)}
                   >
                     {plan.id === 'enterprise' ? 'Contact Sales' : 'Get Started'}
@@ -248,11 +248,11 @@ export default function Fleet() {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join thousands of businesses already using our fleet management platform.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 w-full sm:w-auto">
               Start Free Trial
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 w-full sm:w-auto">
               <Phone className="mr-2 h-5 w-5" />
               Call +44 20 1234 5678
             </Button>

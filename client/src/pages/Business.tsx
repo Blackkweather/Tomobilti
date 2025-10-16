@@ -111,12 +111,12 @@ export default function Business() {
               Tailored car rental solutions for businesses of all sizes. 
               Streamline your corporate travel and transportation needs.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 w-full sm:w-auto">
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 w-full sm:w-auto">
                 Schedule Demo
               </Button>
             </div>
@@ -282,7 +282,7 @@ export default function Business() {
                 <p className="text-gray-600 mb-6">
                   Contact our business team to discuss your specific needs and get a custom quote.
                 </p>
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
                   Contact Business Team
                 </Button>
               </div>
@@ -300,11 +300,11 @@ export default function Business() {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join hundreds of businesses already using our platform to streamline their transportation needs.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 w-full sm:w-auto">
               Get Started Today
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 w-full sm:w-auto">
               <Phone className="mr-2 h-5 w-5" />
               Call +44 20 1234 5678
             </Button>
