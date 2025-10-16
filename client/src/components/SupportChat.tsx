@@ -272,10 +272,11 @@ Be helpful, informative, and encourage bookings.
         const data = await response.json();
         return data.response;
       } else {
-        throw new Error('AI API failed');
+        // API not available, use fallback
+        return getFallbackResponse(userMessage);
       }
     } catch (error) {
-      console.error('AI API error:', error);
+      // API not available, use fallback silently
       return getFallbackResponse(userMessage);
     }
   };

@@ -10,6 +10,7 @@ import SupportChat from "./components/SupportChat";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import SelectRole from "./pages/SelectRole";
 import Cars from "./pages/Cars";
 import CarDetails from "./pages/CarDetails";
 import DashboardSelector from "./components/DashboardSelector";
@@ -54,10 +55,14 @@ import AddCarDynamic from './pages/AddCarDynamic';
 import BecomeHost from './pages/BecomeHost';
 import CarManagement from './pages/CarManagement';
 import EarningsCalculator from './pages/EarningsCalculator';
+import MembershipBenefits from './pages/MembershipBenefits';
+import LoyaltyProgram from './pages/LoyaltyProgram';
+import LiveChat from './pages/LiveChat';
 
 // Import components
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   console.log('🚀 ShareWheelz App starting...');
@@ -65,6 +70,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <ScrollToTop />
         <div className="min-h-screen bg-white">
           <Header />
           
@@ -74,6 +80,7 @@ function App() {
               <Route path="/" component={Home} />
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
+              <Route path="/select-role" component={SelectRole} />
               <Route path="/cars" component={Cars} />
               <Route path="/cars/:id" component={CarDetails} />
               
@@ -94,8 +101,11 @@ function App() {
               
               {/* Membership */}
               <Route path="/become-member" component={BecomeMember} />
+              <Route path="/membership-benefits" component={MembershipBenefits} />
+              <Route path="/loyalty-program" component={LoyaltyProgram} />
+              <Route path="/live-chat" component={LiveChat} />
               <Route path="/become-host" component={BecomeHost} />
-              
+
               {/* Static Pages */}
               <Route path="/about" component={About} />
               <Route path="/support" component={Support} />

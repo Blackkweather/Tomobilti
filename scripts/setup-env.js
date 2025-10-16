@@ -29,7 +29,7 @@ const environments = {
     NODE_ENV: 'development',
     PORT: '5000',
     FRONTEND_URL: 'http://localhost:5000',
-    DATABASE_URL: 'file:./tomobilti.db',
+    DATABASE_URL: process.env.DATABASE_URL || 'file:./sharewheelz.db',
     JWT_SECRET: generateJWTSecret(),
     JWT_EXPIRES_IN: '7d',
     BCRYPT_ROUNDS: '12',
@@ -47,10 +47,10 @@ const environments = {
     SMTP_HOST: 'localhost',
     SMTP_PORT: '587',
     SMTP_SECURE: 'false',
-    SMTP_USER: 'dev@tomobilti.com',
-    SMTP_PASS: 'dev-password',
+    SMTP_USER: process.env.SMTP_USER || 'dev@sharewheelz.uk',
+    SMTP_PASS: process.env.SMTP_PASS || 'secure-dev-password',
     // OpenAI (optional)
-    OPENAI_API_KEY: 'sk-dev-placeholder',
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY || 'sk-dev-placeholder',
     // Mock services enabled
     ENABLE_MOCK_SERVICES: 'true'
   },
@@ -60,7 +60,7 @@ const environments = {
     PORT: '${PORT}',
     FRONTEND_URL: '${FRONTEND_URL}',
     DATABASE_URL: '${DATABASE_URL}',
-    JWT_SECRET: '${JWT_SECRET}',
+    JWT_SECRET: process.env.JWT_SECRET,
     JWT_EXPIRES_IN: '1d',
     BCRYPT_ROUNDS: '12',
     SESSION_SECRET: '${SESSION_SECRET}',
@@ -95,12 +95,12 @@ const environments = {
     NODE_ENV: 'test',
     PORT: '5001',
     FRONTEND_URL: 'http://localhost:5001',
-    DATABASE_URL: 'file:./test.db',
-    JWT_SECRET: 'test-jwt-secret-do-not-use-in-production',
+    DATABASE_URL: process.env.DATABASE_URL || 'file:./test.db',
+    JWT_SECRET: generateJWTSecret(),
     JWT_EXPIRES_IN: '1h',
     BCRYPT_ROUNDS: '4',
-    SESSION_SECRET: 'test-session-secret',
-    CSRF_SECRET: 'test-csrf-secret',
+    SESSION_SECRET: generateSecureSecret(),
+    CSRF_SECRET: generateSecureSecret(),
     RATE_LIMIT_WINDOW_MS: '60000',
     RATE_LIMIT_MAX_REQUESTS: '1000',
     AUTH_RATE_LIMIT_MAX_REQUESTS: '100',
@@ -111,7 +111,7 @@ const environments = {
     LOG_LEVEL: 'error',
     // Mock everything for tests
     ENABLE_MOCK_SERVICES: 'true',
-    OPENAI_API_KEY: 'sk-test-placeholder'
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY || 'sk-test-placeholder'
   }
 };
 

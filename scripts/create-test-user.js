@@ -8,7 +8,7 @@ async function createTestUser() {
     console.log('Creating test user...');
     
     const testUser = await storage.createUser({
-      email: 'test@example.com',
+      email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
       password: 'password123',
       firstName: 'Test',
       lastName: 'User',

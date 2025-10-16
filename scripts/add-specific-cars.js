@@ -114,7 +114,7 @@ async function addSpecificCars() {
       const testUser = await storage.createUser({
         firstName: 'John',
         lastName: 'Smith',
-        email: 'john.smith@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123',
         phone: '+44 20 1234 5678'
       });

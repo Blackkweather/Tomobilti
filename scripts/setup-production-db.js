@@ -16,7 +16,7 @@ console.log('✅ Production database setup completed');
 const sampleUsers = [
   {
     id: 'admin-user-001',
-    email: 'admin@tomobilti.com',
+    email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
     password: '$2b$10$rQZ8K9mN2pL3vX4wY5zA6eB7cD8fE9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9a',
     firstName: 'Admin',
     lastName: 'User',
@@ -27,7 +27,7 @@ const sampleUsers = [
   },
   {
     id: 'demo-owner-001',
-    email: 'owner@tomobilti.com',
+    email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
     password: '$2b$10$rQZ8K9mN2pL3vX4wY5zA6eB7cD8fE9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9a',
     firstName: 'Demo',
     lastName: 'Owner',
@@ -38,7 +38,7 @@ const sampleUsers = [
   },
   {
     id: 'demo-renter-001',
-    email: 'renter@tomobilti.com',
+    email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
     password: '$2b$10$rQZ8K9mN2pL3vX4wY5zA6eB7cD8fE9gH0iJ1kL2mN3oP4qR5sT6uV7wX8yZ9a',
     firstName: 'Demo',
     lastName: 'Renter',

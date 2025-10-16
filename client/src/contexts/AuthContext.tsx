@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { authApi, getAuthToken, setAuthToken } from '../lib/api';
 import type { User } from '@shared/schema';
 
@@ -22,7 +22,7 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,12 +46,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(response.user);
           setLoading(false);
           
+          // Check if we're on the select-role page
+          if (window.location.pathname === '/select-role') {
+            // Don't redirect, let user select their role
+            return;
+          }
+          
           // Redirect based on user type
           setTimeout(() => {
             if (response.user.userType === 'owner') {
-              window.location.href = '/dashboard/owner';
+              window.location.href = '/owner-dashboard';
             } else if (response.user.userType === 'renter') {
-              window.location.href = '/dashboard/renter';
+              window.location.href = '/renter-dashboard';
             } else {
               window.location.href = '/dashboard';
             }

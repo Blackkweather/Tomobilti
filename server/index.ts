@@ -3,6 +3,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
+import { applySecurity } from './middleware/security';
 import { createServer } from 'http';
 import registerRoutes from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -30,56 +31,8 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
-// Security middleware - CSP enabled for production
-app.use(helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "https:"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://connect.facebook.net", "https://js.stripe.com"],
-      connectSrc: ["'self'", "https://api.stripe.com"],
-      frameSrc: ["'self'", "https://js.stripe.com"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: []
-    }
-  } : false,
-  crossOriginEmbedderPolicy: { policy: "credentialless" },
-  crossOriginOpenerPolicy: { policy: "same-origin" },
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  permissionsPolicy: {
-    camera: [],
-    microphone: [],
-    geolocation: ["self"],
-    payment: ["self"]
-  }, // Disable CSP for development to allow Facebook SDK
-  hsts: {
-    maxAge: 31536000,
-    includeSubDomains: true,
-    preload: true
-  }
-}));
-
-// Rate limiting - VERY DEVELOPMENT FRIENDLY SETTINGS
-const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 10000, // Very high limit for development
-  message: 'Too many requests from this IP, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 5 : 500, // Very high limit for development
-  message: 'Too many authentication attempts, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-app.use(generalLimiter);
-app.use('/api/auth', authLimiter);
+// Apply comprehensive security middleware
+applySecurity(app);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
@@ -163,7 +116,7 @@ app.use((req, res, next) => {
   });
 
   await registerRoutes(app);
-  
+
   // Initialize sample data in production if database is empty
   if (process.env.NODE_ENV === 'production') {
     // Use setTimeout to defer database initialization after server starts
@@ -234,8 +187,8 @@ app.use((req, res, next) => {
           
           // Create sample users and cars in memory
           const owner1 = await memStorage.createUser({
-            email: "john.smith@example.com",
-            password: "demo_password_123",
+            email: process.env.DEMO_USER_EMAIL || "demo@sharewheelz.uk",
+            password: process.env.DEMO_USER_PASSWORD || "SecureDemo123!",
             firstName: "John",
             lastName: "Smith",
             phone: "+44 20 1234 5678",
@@ -243,8 +196,8 @@ app.use((req, res, next) => {
           });
           
           const owner2 = await memStorage.createUser({
-            email: "sarah.jones@example.com",
-            password: "demo_password_123",
+            email: process.env.DEMO_USER2_EMAIL || "demo2@sharewheelz.uk",
+            password: process.env.DEMO_USER_PASSWORD || "SecureDemo123!",
             firstName: "Sarah",
             lastName: "Jones",
             phone: "+44 20 8765 4321",

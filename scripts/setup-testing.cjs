@@ -417,7 +417,7 @@ describe('API Integration Tests', () => {
   describe('Authentication API', () => {
     it('should register a new user', async () => {
       const userData = {
-        email: 'test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
@@ -435,7 +435,7 @@ describe('API Integration Tests', () => {
 
     it('should login with valid credentials', async () => {
       const loginData = {
-        email: 'test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123'
       };
 
@@ -450,7 +450,7 @@ describe('API Integration Tests', () => {
 
     it('should reject invalid credentials', async () => {
       const loginData = {
-        email: 'test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'wrongpassword'
       };
 

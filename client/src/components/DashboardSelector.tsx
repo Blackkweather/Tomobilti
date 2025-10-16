@@ -1,21 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Car, User, ArrowRight } from 'lucide-react';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function DashboardSelector() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [selectedType, setSelectedType] = useState<'owner' | 'renter' | null>(null);
 
+  // Auto-redirect based on user role
+  useEffect(() => {
+    if (user) {
+      if (user.userType === 'owner') {
+        setLocation('/owner-dashboard');
+      } else if (user.userType === 'renter') {
+        setLocation('/renter-dashboard');
+      }
+      // If userType is 'both', show the selector
+    }
+  }, [user, setLocation]);
+
   const handleSelectDashboard = (type: 'owner' | 'renter') => {
     setSelectedType(type);
     setTimeout(() => {
-      setLocation(`/dashboard/${type}`);
+      if (type === 'owner') {
+        setLocation('/owner-dashboard');
+      } else {
+        setLocation('/renter-dashboard');
+      }
     }, 300);
   };
+
+  // Show loading while checking user type
+  if (!user || (user.userType !== 'both')) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-12">

@@ -13,7 +13,7 @@ async function addSampleData() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: 'owner.test@example.com',
+        email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
         password: 'password123'
       })
     });
@@ -26,7 +26,7 @@ async function addSampleData() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: 'owner.test@example.com',
+          email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
           password: 'password123',
           firstName: 'John',
           lastName: 'Smith',
@@ -51,7 +51,7 @@ async function addSampleData() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: 'owner.test@example.com',
+          email: process.env.DEMO_USER_EMAIL || 'demo@sharewheelz.uk',
           password: 'password123'
         })
       });

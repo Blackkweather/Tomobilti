@@ -90,8 +90,7 @@ export default function AddCar() {
     if (!form.description.trim()) newErrors.description = "Description is required";
     if (!form.licensePlate.trim()) newErrors.licensePlate = "License plate is required";
     if (form.images.length === 0) {
-      setErrors(prev => ({ ...prev, images: "At least one image is required" }));
-      return false;
+      newErrors.images = "At least one image is required" as any;
     }
 
     setErrors(newErrors);
@@ -102,11 +101,12 @@ export default function AddCar() {
     e.preventDefault();
     if (validateForm()) {
       const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) => {
+      (Object.entries(form) as [string, any][]).forEach(([key, value]) => {
         if (key === "features") {
           formData.append(key, JSON.stringify(value));
         } else if (key === "images") {
           // Skip images here, we'll add them separately
+          return;
         } else {
           formData.append(key, value.toString());
         }
@@ -129,9 +129,9 @@ export default function AddCar() {
       e.target.value;
     
     if (field === 'year' || field === 'pricePerDay' || field === 'seats' || field === 'mileage') {
-      setForm(prev => ({ ...prev, [field]: Number(value) }));
+      setForm(prev => ({ ...prev, [field]: Number(value) || 0 }));
     } else {
-      setForm(prev => ({ ...prev, [field]: value }));
+      setForm(prev => ({ ...prev, [field]: value as string }));
     }
     
     // Clear error when user starts typing
@@ -480,7 +480,7 @@ export default function AddCar() {
                   )}
                 </div>
 
-                {errors.images && <p className="mt-2 text-sm text-red-600 font-medium">{errors.images}</p>}
+                {(errors as any).images && <p className="mt-2 text-sm text-red-600 font-medium">{(errors as any).images}</p>}
               </div>
             </div>
 

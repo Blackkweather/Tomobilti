@@ -85,7 +85,6 @@ const resources = {
         seats: 'Seats',
         year: 'Year',
         mileage: 'Mileage',
-        features: 'Features',
         safety: 'Safety',
         entertainment: 'Entertainment',
         convenience: 'Convenience',
@@ -323,7 +322,6 @@ const resources = {
         seats: 'Sièges',
         year: 'Année',
         mileage: 'Kilométrage',
-        features: 'Caractéristiques',
         safety: 'Sécurité',
         entertainment: 'Divertissement',
         convenience: 'Confort',
@@ -480,123 +478,7 @@ const resources = {
     }
   },
   
-  ar: {
-    translation: {
-      // Navigation
-      nav: {
-        home: 'الرئيسية',
-        vehicles: 'المركبات',
-        about: 'حول',
-        becomeHost: 'كن مضيفاً',
-        security: 'الأمان',
-        login: 'تسجيل الدخول',
-        register: 'التسجيل',
-        dashboard: 'لوحة التحكم',
-        profile: 'الملف الشخصي',
-        settings: 'الإعدادات',
-        logout: 'تسجيل الخروج'
-      },
-      
-      // Authentication
-      auth: {
-        login: 'تسجيل الدخول',
-        register: 'التسجيل',
-        email: 'البريد الإلكتروني',
-        password: 'كلمة المرور',
-        confirmPassword: 'تأكيد كلمة المرور',
-        firstName: 'الاسم الأول',
-        lastName: 'اسم العائلة',
-        phone: 'الهاتف',
-        userType: 'نوع المستخدم',
-        renter: 'مستأجر',
-        owner: 'مالك',
-        both: 'كلاهما',
-        loginSuccess: 'تم تسجيل الدخول بنجاح!',
-        registerSuccess: 'تم إنشاء الحساب بنجاح!',
-        loginError: 'فشل تسجيل الدخول. تحقق من بياناتك.',
-        registerError: 'فشل التسجيل. يرجى المحاولة مرة أخرى.',
-        emailRequired: 'البريد الإلكتروني مطلوب',
-        passwordRequired: 'كلمة المرور مطلوبة',
-        passwordMinLength: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
-        passwordMatch: 'كلمات المرور يجب أن تتطابق',
-        firstNameRequired: 'الاسم الأول مطلوب',
-        lastNameRequired: 'اسم العائلة مطلوب',
-        phoneRequired: 'رقم الهاتف مطلوب'
-      },
 
-      // Car listings
-      cars: {
-        title: 'المركبات المتاحة',
-        searchPlaceholder: 'البحث حسب الموقع أو العلامة التجارية أو النموذج...',
-        filters: 'المرشحات',
-        priceRange: 'نطاق السعر',
-        fuelType: 'نوع الوقود',
-        transmission: 'ناقل الحركة',
-        seats: 'المقاعد',
-        available: 'متاح',
-        unavailable: 'غير متاح',
-        perDay: 'في اليوم',
-        bookNow: 'احجز الآن',
-        viewDetails: 'عرض التفاصيل',
-        addToFavorites: 'إضافة للمفضلة',
-        removeFromFavorites: 'إزالة من المفضلة',
-        popular: 'شائع',
-        verified: 'متحقق',
-        newListing: 'إعلان جديد',
-        lowPrice: 'سعر ممتاز',
-        highRating: 'تقييم عالي'
-      },
-
-      // Common
-      common: {
-        loading: 'جاري التحميل...',
-        error: 'خطأ',
-        success: 'نجح',
-        cancel: 'إلغاء',
-        confirm: 'تأكيد',
-        save: 'حفظ',
-        edit: 'تعديل',
-        delete: 'حذف',
-        close: 'إغلاق',
-        back: 'رجوع',
-        next: 'التالي',
-        previous: 'السابق',
-        search: 'بحث',
-        filter: 'تصفية',
-        sort: 'ترتيب',
-        clear: 'مسح',
-        apply: 'تطبيق',
-        reset: 'إعادة تعيين',
-        yes: 'نعم',
-        no: 'لا',
-        ok: 'موافق',
-        retry: 'إعادة المحاولة',
-        refresh: 'تحديث',
-        more: 'المزيد',
-        less: 'أقل',
-        show: 'إظهار',
-        hide: 'إخفاء',
-        view: 'عرض',
-        download: 'تحميل',
-        upload: 'رفع',
-        select: 'اختيار',
-        choose: 'اختر',
-        browse: 'تصفح',
-        submit: 'إرسال',
-        continue: 'متابعة',
-        finish: 'إنهاء',
-        complete: 'إكمال',
-        pending: 'في الانتظار',
-        active: 'نشط',
-        completed: 'مكتمل',
-        cancelled: 'ملغي',
-        available: 'متاح',
-        unavailable: 'غير متاح',
-        verified: 'متحقق',
-        unverified: 'غير متحقق'
-      }
-    }
-  }
 };
 
 // Initialize i18n

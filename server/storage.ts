@@ -246,8 +246,11 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const now = new Date();
     // Hash password before storing (keep behavior aligned with DB storage)
-    const bcrypt = await import('bcrypt');
-    const hashedPassword = await bcrypt.hash(insertUser.password, 10);
+    let hashedPassword = null;
+    if (insertUser.password && insertUser.password.trim() !== '') {
+      const bcrypt = await import('bcrypt');
+      hashedPassword = await bcrypt.hash(insertUser.password, 10);
+    }
     const user: User = { 
       ...insertUser,
       password: hashedPassword,

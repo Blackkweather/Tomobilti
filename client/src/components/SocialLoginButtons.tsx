@@ -49,6 +49,12 @@ export default function SocialLoginButtons({
       // Store token and update auth context
       setAuthToken(data.token);
       
+      // Check if this is a new user who needs to select a role
+      if (data.isNewUser) {
+        window.location.href = '/select-role';
+        return;
+      }
+      
       if (onSuccess) {
         onSuccess(data.user);
       }
@@ -66,13 +72,14 @@ export default function SocialLoginButtons({
 
   const handleGoogleLogin = async () => {
     try {
-      // Use environment variable or fallback to hardcoded value
-      const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com';
+      // Google Client ID from environment or default
+      const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '865011521891-jnj5e09u8qc2hed7h6gnbgj4flscucf2.apps.googleusercontent.com';
       const redirectUri = encodeURIComponent(window.location.origin + '/auth/google/callback');
       const scope = encodeURIComponent('openid email profile');
       
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&access_type=offline`;
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&access_type=offline&prompt=select_account`;
       
+      console.log('Redirecting to Google OAuth:', authUrl);
       window.location.href = authUrl;
     } catch (error) {
       console.error('Google Sign-In error:', error);
@@ -87,8 +94,8 @@ export default function SocialLoginButtons({
 
       console.log('Starting Facebook login process...');
 
-      // Use environment variable or fallback to hardcoded value
-      const facebookAppId = process.env.REACT_APP_FACEBOOK_APP_ID || '879130531438151';
+      // Facebook App ID from environment or default
+      const facebookAppId = import.meta.env.VITE_FACEBOOK_APP_ID || '879130531438151';
       const redirectUri = encodeURIComponent(window.location.origin + '/auth/facebook/callback');
       const scope = encodeURIComponent('email,public_profile');
       
@@ -118,14 +125,19 @@ export default function SocialLoginButtons({
         
         await new Promise((resolve) => {
           script.onload = () => {
+            const appleClientId = import.meta.env.VITE_APPLE_CLIENT_ID;
+            if (!appleClientId) {
+              setError('Apple Sign-In is not configured');
+              return;
+            }
             window.AppleID.auth.init({
-              clientId: process.env.REACT_APP_APPLE_CLIENT_ID || 'your-apple-client-id',
+              clientId: appleClientId,
               scope: 'name email',
               redirectURI: window.location.origin,
               state: 'apple-signin',
               usePopup: true
             });
-            resolve();
+            resolve(void 0);
           };
         });
       }
@@ -143,8 +155,12 @@ export default function SocialLoginButtons({
 
   const handleMicrosoftLogin = async () => {
     try {
-      // Microsoft OAuth redirect
-      const clientId = process.env.REACT_APP_MICROSOFT_CLIENT_ID || 'your-microsoft-client-id';
+      // Microsoft Client ID from environment
+      const clientId = import.meta.env.VITE_MICROSOFT_CLIENT_ID;
+      if (!clientId) {
+        setError('Microsoft login is not configured');
+        return;
+      }
       const redirectUri = encodeURIComponent(window.location.origin + '/auth/microsoft/callback');
       const scope = encodeURIComponent('openid profile email');
       

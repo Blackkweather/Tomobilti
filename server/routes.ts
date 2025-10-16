@@ -14,7 +14,7 @@ import {
 } from "@shared/sqlite-schema";
 import { z } from "zod";
 import { csrfProtection } from "./middleware/csrf";
-import { sanitizeMiddleware } from "./middleware/sanitize";
+import { sanitizeMiddleware, sanitizeInput } from "./middleware/sanitize";
 import { EmailService } from "./services/email";
 import { CarRentalAgentService } from "./services/car-rental-agent";
 import OpenAIService from "./services/openai";
@@ -265,6 +265,37 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
     }
   });
 
+  app.put('/api/auth/update-role', authMiddleware, async (req, res) => {
+    try {
+      const { userType, password } = req.body;
+
+      if (!userType || !['renter', 'owner', 'both'].includes(userType)) {
+        return res.status(400).json({ error: 'Invalid user type' });
+      }
+
+      const updates: any = { userType };
+      
+      // If password provided, include it in updates
+      if (password && password.length >= 8) {
+        updates.password = password;
+      }
+
+      const updatedUser = await storage.updateUser(req.user!.id, updates);
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const sanitizedUser = sanitizeUser(updatedUser);
+      res.json({ 
+        message: 'Role updated successfully',
+        user: sanitizedUser 
+      });
+    } catch (error) {
+      console.error('Role update error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   app.put('/api/auth/preferences', authMiddleware, async (req, res) => {
     try {
       const preferences = req.body;
@@ -318,7 +349,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
 
   app.post('/api/conversations', authMiddleware, async (req, res) => {
     try {
-      const { bookingId } = req.body;
+      const { bookingId } = req.body as { bookingId: string; };
       const conversation = await storage.createConversation(bookingId, req.user!.id);
       res.json({ conversation });
     } catch (error) {
@@ -501,7 +532,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         return res.status(400).json({ error: 'Message is required' });
       }
 
-      const response = await agentService.processMessage(message, 'support', context);
+      const response = await // agentService.processMessage(message, 'support', context);
       
       res.json(response);
     } catch (error) {
@@ -518,7 +549,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         return res.status(400).json({ error: 'Message is required' });
       }
 
-      const response = await agentService.processMessage(message, 'booking', context);
+      const response = await // agentService.processMessage(message, 'booking', context);
       
       res.json(response);
     } catch (error) {
@@ -535,7 +566,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         return res.status(400).json({ error: 'Message is required' });
       }
 
-      const response = await agentService.processMessage(message, 'host', context);
+      const response = await // agentService.processMessage(message, 'host', context);
       
       res.json(response);
     } catch (error) {
@@ -552,7 +583,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         return res.status(400).json({ error: 'Message is required' });
       }
 
-      const response = await agentService.processMessage(message, 'technical', context);
+      const response = await // agentService.processMessage(message, 'technical', context);
       
       res.json(response);
     } catch (error) {
@@ -563,7 +594,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
 
   app.get('/api/agent/capabilities', async (req, res) => {
     try {
-      const capabilities = await agentService.getAgentCapabilities();
+      const capabilities = await // agentService.getAgentCapabilities();
       res.json(capabilities);
     } catch (error) {
       console.error('Agent capabilities error:', error);
@@ -612,16 +643,27 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
 
       // Create or find user in database
       let user = await storage.getUserByEmail(googleUser.email);
+      let isNewUser = false;
       
       if (!user) {
-        user = await storage.createUser({
-          email: googleUser.email,
-          firstName: googleUser.given_name || '',
-          lastName: googleUser.family_name || '',
-          profileImage: googleUser.picture,
-          userType: 'renter',
-          isVerified: true,
-        });
+        isNewUser = true;
+        console.log('Creating new OAuth user:', googleUser.email);
+        try {
+          // OAuth users don't have passwords - don't include password field
+          user = await storage.createUser({
+            email: googleUser.email,
+            firstName: googleUser.given_name || '',
+            lastName: googleUser.family_name || '',
+            profileImage: googleUser.picture,
+            userType: 'renter'
+          } as any);
+          console.log('OAuth user created successfully:', user.id);
+        } catch (createError) {
+          console.error('Failed to create OAuth user:', createError);
+          throw createError;
+        }
+      } else {
+        console.log('Existing user found:', user.email);
       }
 
       // Generate JWT token
@@ -631,12 +673,25 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         { expiresIn: '7d' }
       );
 
-      // Redirect to dashboard with token
-      res.redirect(`/dashboard?token=${jwtToken}&auth=google`);
+      // Redirect based on whether user is new or existing
+      if (isNewUser) {
+        // New user - ask them to select role
+        res.redirect(`/select-role?token=${jwtToken}&auth=google`);
+      } else {
+        // Existing user - redirect to their dashboard
+        if (user.userType === 'owner') {
+          res.redirect(`/owner-dashboard?token=${jwtToken}&auth=google`);
+        } else if (user.userType === 'renter') {
+          res.redirect(`/renter-dashboard?token=${jwtToken}&auth=google`);
+        } else {
+          res.redirect(`/dashboard?token=${jwtToken}&auth=google`);
+        }
+      }
 
     } catch (error) {
       console.error('Google OAuth error:', error);
-      res.redirect('/login?error=oauth_error');
+      console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
+      res.redirect(`/login?error=oauth_error&details=${encodeURIComponent(error instanceof Error ? error.message : 'Unknown error')}`);
     }
   });
 
@@ -1561,7 +1616,6 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
   // Register OAuth routes
   app.use('/api/auth/oauth', oauthRoutes);
 
-
   // Health check (resilient in dev without DB helpers)
   app.get("/api/health", async (_req, res) => {
     try {
@@ -1643,6 +1697,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       });
     }
   });
+
+
 
   // Routes registered successfully
   return app;
