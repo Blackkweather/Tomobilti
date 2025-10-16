@@ -1,327 +1,192 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Separator } from '../components/ui/separator';
-import { FileText, Shield, AlertTriangle, Car, CreditCard, User } from 'lucide-react';
+import { useEffect } from "react";
 
 export default function TermsOfService() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="text-center mb-8">
-          <FileText className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Terms of Service</h1>
-          <p className="text-gray-600">Last updated: {new Date().toLocaleDateString('en-GB')}</p>
+    <div className="min-h-screen bg-gray-50">
+      <header className="bg-primary text-white py-4 px-6 shadow-md">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-sm">ShareWheelz Ltd — Peer-to-Peer Car-Sharing Platform | Registered in England &amp; Wales</p>
         </div>
+      </header>
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-blue-600" />
-                1. Acceptance of Terms
-              </CardTitle>
-              <CardDescription>By using ShareWheelz, you agree to these terms</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600 mb-4">
-                Welcome to ShareWheelz, the UK's premier peer-to-peer car rental platform. 
-                These Terms of Service ("Terms") govern your use of our website, mobile application, 
-                and services (collectively, the "Service") operated by ShareWheelz Ltd ("we", "us", or "our").
-              </p>
-              <p className="text-sm text-gray-600">
-                By accessing or using our Service, you agree to be bound by these Terms. 
-                If you disagree with any part of these terms, you may not access the Service.
-              </p>
-            </CardContent>
-          </Card>
+      <main className="max-w-4xl mx-auto px-6 py-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">SHAREWHEELZ LTD — TERMS OF SERVICE</h1>
+        <p className="text-lg text-gray-600 mb-8">(LEGAL PROTECTION EDITION)</p>
+        <p className="text-sm text-gray-500 mb-12">Effective Date: 14 October 2025</p>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Car className="h-5 w-5 text-green-600" />
-                2. Service Description
-              </CardTitle>
-              <CardDescription>What ShareWheelz provides</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Platform Services</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li>Connect car owners with renters across the UK</li>
-                  <li>Facilitate secure bookings and payments</li>
-                  <li>Provide insurance coverage for rentals</li>
-                  <li>Offer customer support and dispute resolution</li>
-                  <li>Enable user verification and safety checks</li>
-                </ul>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h4 className="font-medium mb-2">User Types</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li><strong>Renters:</strong> Individuals seeking to rent vehicles</li>
-                  <li><strong>Owners:</strong> Individuals offering their vehicles for rent</li>
-                  <li><strong>Both:</strong> Users who both rent and offer vehicles</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-12 p-6 bg-blue-50 border-l-4 border-blue-600">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">GOVERNING FRAMEWORK NOTICE</h2>
+          <p className="mb-4">ShareWheelz Ltd ("ShareWheelz") is a United Kingdom-based peer-to-peer car-sharing platform registered under the Companies Act 2006. These Terms of Service ("Terms") are issued pursuant to UK law, including the Consumer Rights Act 2015, the Unfair Contract Terms Act 1977, the Financial Services and Markets Act 2000, and the Data Protection Act 2018 / UK GDPR.</p>
+          <p className="mb-4">ShareWheelz operates in full compliance with UK consumer-protection and financial-services regulations. Our appointed insurance partner is an FCA-authorised insurer providing comprehensive vehicle-sharing coverage.</p>
+          <p className="font-semibold">By using our website, mobile application, or related services (collectively the "Service"), you agree to be bound by these Terms.</p>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-purple-600" />
-                3. User Responsibilities
-              </CardTitle>
-              <CardDescription>Your obligations when using our service</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-medium mb-2">Account Requirements</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                    <li>Provide accurate and complete information</li>
-                    <li>Maintain up-to-date contact details</li>
-                    <li>Keep login credentials secure</li>
-                    <li>Verify identity and driving credentials</li>
-                    <li>Be at least 18 years old</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium mb-2">Conduct Requirements</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                    <li>Use vehicles responsibly and legally</li>
-                    <li>Return vehicles in the same condition</li>
-                    <li>Report any accidents or damage immediately</li>
-                    <li>Comply with UK driving laws</li>
-                    <li>Respect other users and their property</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">1. INTRODUCTION AND ACCEPTANCE</h2>
+          <p className="mb-3"><strong>1.1 Purpose.</strong> ShareWheelz provides a secure digital marketplace connecting verified vehicle owners ("Owners") with qualified renters ("Renters") throughout the United Kingdom.</p>
+          <p className="mb-3"><strong>1.2 Binding Agreement.</strong> Accessing or using the Service constitutes acceptance of these Terms and all incorporated policies.</p>
+          <p><strong>1.3 Transparency Commitment.</strong> ShareWheelz upholds principles of legality, fairness, and transparency and is subject to oversight by UK regulatory bodies including the Financial Conduct Authority (FCA), Information Commissioner's Office (ICO), and Trading Standards.</p>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5 text-orange-600" />
-                4. Payments and Fees
-              </CardTitle>
-              <CardDescription>How payments work on our platform</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Payment Structure</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li><strong>Rental Fee:</strong> Paid to the vehicle owner</li>
-                  <li><strong>Service Fee:</strong> 5-10% of rental fee (paid to ShareWheelz)</li>
-                  <li><strong>Insurance Fee:</strong> 3-5% of rental fee (for coverage)</li>
-                  <li><strong>Processing Fee:</strong> Small fee for payment processing</li>
-                </ul>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h4 className="font-medium mb-2">Payment Terms</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li>Payments are processed securely via Stripe</li>
-                  <li>Rental fees are held until completion</li>
-                  <li>Refunds processed within 5-10 business days</li>
-                  <li>All prices are in British Pounds (GBP)</li>
-                  <li>VAT is included in all displayed prices</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">2. DEFINITIONS</h2>
+          <ul className="list-disc pl-6 space-y-2">
+            <li><strong>Owner:</strong> A user listing a vehicle for rent on the platform.</li>
+            <li><strong>Renter:</strong> A user hiring a listed vehicle.</li>
+            <li><strong>Rental Period:</strong> The time from vehicle collection to return.</li>
+            <li><strong>Platform Insurance:</strong> The commercial insurance policy arranged by ShareWheelz through an FCA-authorised partner.</li>
+            <li><strong>Excess:</strong> The portion of a claim payable by the Renter.</li>
+            <li><strong>Service Fee:</strong> A fee retained by ShareWheelz for use of the platform.</li>
+            <li><strong>Damage or Loss:</strong> Any physical or financial harm, theft, accident, or loss arising from a rental.</li>
+            <li><strong>Third-Party Claim:</strong> A claim by any person other than the Owner, Renter, or ShareWheelz.</li>
+          </ul>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
-                5. Insurance and Liability
-              </CardTitle>
-              <CardDescription>Coverage and responsibility for damages</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Insurance Coverage</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li>Comprehensive insurance included in rental fee</li>
-                  <li>Coverage up to £1,000,000 for third-party claims</li>
-                  <li>Excess of £500 for damage claims</li>
-                  <li>Coverage valid throughout the UK</li>
-                  <li>24/7 roadside assistance included</li>
-                </ul>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h4 className="font-medium mb-2">User Responsibilities</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li>Report accidents immediately to us and police</li>
-                  <li>Do not drive under the influence of alcohol/drugs</li>
-                  <li>Ensure all passengers wear seatbelts</li>
-                  <li>Do not use vehicles for commercial purposes</li>
-                  <li>Follow all UK traffic laws and regulations</li>
-                </ul>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h4 className="font-medium mb-2">Limitation of Liability</h4>
-                <p className="text-sm text-gray-600">
-                  ShareWheelz's liability is limited to the insurance coverage provided. 
-                  Users are responsible for any damages exceeding the insurance limits 
-                  and for violations of these terms.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">3. USER ELIGIBILITY AND VERIFICATION</h2>
+          <p className="mb-3"><strong>3.1 Eligibility Requirements.</strong> Users must:</p>
+          <ul className="list-disc pl-6 mb-4 space-y-1">
+            <li>be at least 21 years old;</li>
+            <li>hold a full, valid UK or approved international driving licence;</li>
+            <li>pass identity, address, and licence verification;</li>
+            <li>consent to background and fraud-prevention checks.</li>
+          </ul>
+          <p className="mb-3"><strong>3.2 Owner Duties.</strong> Owners must ensure each listed vehicle is road-taxed, MOT-certified, insured, and roadworthy. Vehicles with unresolved safety recalls are strictly prohibited.</p>
+          <p className="mb-3"><strong>3.3 Renter Duties.</strong> Renters must disclose any driving-licence suspensions or restrictions and may not authorise unverified drivers to operate the vehicle.</p>
+          <p><strong>3.4 Duty of Accuracy.</strong> Supplying false or incomplete information constitutes a material breach and may result in immediate termination and potential legal action.</p>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>6. Prohibited Activities</CardTitle>
-              <CardDescription>Activities not allowed on our platform</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-medium mb-2">General Prohibitions</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                    <li>Fraudulent or misleading information</li>
-                    <li>Harassment or abuse of other users</li>
-                    <li>Violation of UK laws or regulations</li>
-                    <li>Commercial use without permission</li>
-                    <li>Attempting to circumvent our systems</li>
-                  </ul>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium mb-2">Vehicle-Specific Prohibitions</h4>
-                  <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                    <li>Smoking in vehicles</li>
-                    <li>Transporting pets without permission</li>
-                    <li>Off-road driving</li>
-                    <li>Racing or reckless driving</li>
-                    <li>Transporting illegal substances</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">4. PLATFORM SERVICES AND RESPONSIBILITIES</h2>
+          <p className="mb-3"><strong>4.1 ShareWheelz provides:</strong></p>
+          <ul className="list-disc pl-6 mb-4 space-y-1">
+            <li>secure booking, payment, and messaging systems;</li>
+            <li>user verification;</li>
+            <li>insurance facilitation;</li>
+            <li>24/7 customer support;</li>
+            <li>mediation and dispute resolution.</li>
+          </ul>
+          <p><strong>4.2</strong> ShareWheelz acts as a facilitating intermediary and is not a party to the rental contract between Owner and Renter except for insurance and payment processing obligations.</p>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>7. Account Suspension and Termination</CardTitle>
-              <CardDescription>When and how accounts may be suspended</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Grounds for Suspension</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li>Violation of these Terms of Service</li>
-                  <li>Fraudulent or illegal activity</li>
-                  <li>Non-payment of fees or damages</li>
-                  <li>Repeated complaints from other users</li>
-                  <li>Providing false information</li>
-                </ul>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h4 className="font-medium mb-2">Suspension Process</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li>Written notice of violation</li>
-                  <li>Opportunity to respond and appeal</li>
-                  <li>Temporary suspension pending investigation</li>
-                  <li>Permanent termination for serious violations</li>
-                  <li>Right to data portability upon termination</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">5. PAYMENTS, FEES, AND REFUNDS</h2>
+          <p className="mb-3"><strong>5.1 Structure.</strong></p>
+          <ul className="list-disc pl-6 mb-4 space-y-1">
+            <li>Rental Fee → paid to Owner.</li>
+            <li>Service Fee (5–10 %) → retained by ShareWheelz.</li>
+            <li>Insurance Fee (3–5 %) → forwarded to insurance partner.</li>
+            <li>Processing Fee → payment-gateway cost.</li>
+          </ul>
+          <p className="mb-3"><strong>5.2 Security Deposits.</strong> A pre-authorisation may be held on the Renter's payment method. ShareWheelz may deduct authorised amounts to cover verified losses.</p>
+          <p className="mb-3"><strong>5.3 Refunds.</strong> Refunds are processed within 5–10 business days and are subject to completion of any ongoing dispute procedure.</p>
+          <p><strong>5.4 Regulatory Compliance.</strong> All payment activities comply with the Payment Services Regulations 2017 and are executed through FCA-regulated processors (e.g., Stripe Payments UK Ltd).</p>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>8. Dispute Resolution</CardTitle>
-              <CardDescription>How we handle disputes between users</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Resolution Process</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-gray-600">
-                  <li>Direct communication between users encouraged</li>
-                  <li>ShareWheelz mediation available</li>
-                  <li>Evidence collection and review</li>
-                  <li>Fair resolution based on platform policies</li>
-                  <li>Appeal process for disputed decisions</li>
-                </ul>
-              </div>
-              
-              <Separator />
-              
-              <div>
-                <h4 className="font-medium mb-2">Legal Jurisdiction</h4>
-                <p className="text-sm text-gray-600">
-                  These Terms are governed by English law. Any disputes will be subject to 
-                  the exclusive jurisdiction of the English courts. For EU residents, 
-                  you may also have the right to use the European Commission's Online 
-                  Dispute Resolution platform.
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">6. INSURANCE AND LIABILITY</h2>
+          <p className="mb-3"><strong>6.1 Insurance Partner.</strong> All rentals are covered by ShareWheelz's appointed FCA-authorised insurance partner providing:</p>
+          <ul className="list-disc pl-6 mb-4 space-y-1">
+            <li>comprehensive third-party liability up to £1 million;</li>
+            <li>vehicle damage and theft protection;</li>
+            <li>roadside assistance across the UK;</li>
+            <li>standard £500 excess per claim (subject to optional waiver).</li>
+          </ul>
+          <p className="mb-3"><strong>6.2 Primary Coverage.</strong> During each Rental Period, the Platform Insurance serves as the primary insurance; personal Owner policies remain suspended for that period.</p>
+          <p className="mb-3"><strong>6.3 Owner's Disclosure.</strong> Owners must notify their private insurer that vehicles are listed for peer-to-peer rental to prevent policy invalidation.</p>
+          <p><strong>6.4 Limitation of Liability.</strong> ShareWheelz's liability is limited strictly to the coverage provided under its Platform Insurance. We are not liable for indirect, consequential, or punitive damages.</p>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>9. Changes to Terms</CardTitle>
-              <CardDescription>How we notify you of updates</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-gray-600">
-                We reserve the right to modify these Terms at any time. We will notify users 
-                of significant changes via email and by posting the updated Terms on our website. 
-                Continued use of the Service after changes constitutes acceptance of the new Terms.
-              </p>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">7. USER CONDUCT AND PROHIBITED USES</h2>
+          <p className="mb-3">Users must operate vehicles lawfully and responsibly. The following are strictly prohibited: reckless driving, intoxication, racing, towing, off-road use, commercial carriage, transport of prohibited goods, smoking, or falsifying information.</p>
+          <p>Violations may result in termination, forfeiture of deposits, reporting to authorities, and permanent platform bans.</p>
+        </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>10. Contact Information</CardTitle>
-              <CardDescription>How to reach us with questions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-medium mb-2">General Inquiries</h4>
-                  <p className="text-sm text-gray-600">Email: support@sharewheelz.uk</p>
-                  <p className="text-sm text-gray-600">Phone: +44 20 7946 0958</p>
-                </div>
-                
-                <div>
-                  <h4 className="font-medium mb-2">Legal Matters</h4>
-                  <p className="text-sm text-gray-600">Email: legal@sharewheelz.uk</p>
-                  <p className="text-sm text-gray-600">Address: London, United Kingdom</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">8. AUDIT, COMPLIANCE, AND REGULATORY OVERSIGHT</h2>
+          <p className="mb-3"><strong>8.1</strong> ShareWheelz conducts annual internal audits and maintains full transparency with UK regulators.</p>
+          <p className="mb-3"><strong>8.2</strong> We cooperate with the FCA, DVLA, ICO, and Trading Standards on lawful requests while preserving user confidentiality.</p>
+          <p className="mb-3"><strong>8.3</strong> Such cooperation shall never constitute an admission of liability.</p>
+          <p><strong>8.4</strong> ShareWheelz reserves the right to inspect listings, review claims, and suspend accounts pending investigation.</p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">9. DISPUTE RESOLUTION AND LEGAL IMMUNITY</h2>
+          <p className="mb-3"><strong>9.1 Internal Mediation (Mandatory)</strong></p>
+          <p className="mb-4">All disputes must first be submitted through ShareWheelz's internal resolution portal. The company shall have 30 days to review and propose settlement.</p>
+          <p className="mb-3"><strong>9.2 Arbitration (Primary Mechanism)</strong></p>
+          <p className="mb-2">Unresolved disputes shall be referred to confidential binding arbitration administered by the London Court of International Arbitration (LCIA).</p>
+          <ul className="list-disc pl-6 mb-4 space-y-1">
+            <li>Seat: London, England</li>
+            <li>Language: English</li>
+            <li>Decision: final and enforceable</li>
+            <li>Costs: each party bears own legal fees unless otherwise ordered.</li>
+          </ul>
+          <p className="mb-3"><strong>9.3 Limited Court Access</strong></p>
+          <p className="mb-4">Only for enforcement of arbitral awards or statutory rights may proceedings be brought in the High Court of Justice (London).</p>
+          <p className="mb-3"><strong>9.4 Limitation of Claims</strong></p>
+          <p className="mb-4">Any claim must be filed within six months of the event giving rise to it.</p>
+          <p className="mb-3"><strong>9.5 Class-Action Waiver</strong></p>
+          <p className="mb-4">Users waive the right to bring or join collective or representative actions.</p>
+          <p className="mb-3"><strong>9.6 Indemnity</strong></p>
+          <p>Each User indemnifies ShareWheelz, its directors, employees, and partners against all losses or claims arising from the User's negligence, breach, or unlawful acts. This obligation survives account termination.</p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">10. CONSUMER AND DATA PROTECTION</h2>
+          <p className="mb-3"><strong>10.1</strong> ShareWheelz processes personal data under the UK GDPR and Data Protection Act 2018 solely for verification, bookings, insurance, and compliance.</p>
+          <p className="mb-3"><strong>10.2</strong> Data is securely stored within the UK and retained only as required by law. Users may access, rectify, or request deletion of their data by contacting privacy@sharewheelz.uk.</p>
+          <p><strong>10.3</strong> We maintain registration with the ICO and uphold lawful processing, transparency, and user-rights policies.</p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">11. FORCE MAJEURE</h2>
+          <p>Neither party is liable for failure to perform obligations due to events beyond reasonable control, including natural disasters, strikes, network outages, or government actions.</p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">12. ASSIGNMENT AND SEVERABILITY</h2>
+          <p>Users may not assign rights or obligations under these Terms without written consent. If any clause is held invalid, the remainder shall continue in effect.</p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">13. GOVERNING LAW AND JURISDICTION</h2>
+          <p>These Terms are governed by English law. Subject to Clause 9, the courts of England and Wales have exclusive jurisdiction for enforcement or appeal.</p>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">14. CONTACT INFORMATION</h2>
+          <div className="space-y-2">
+            <p><strong>General Support:</strong> support@sharewheelz.uk | +44 20 7946 0958</p>
+            <p><strong>Legal &amp; Compliance:</strong> legal@sharewheelz.uk</p>
+            <p><strong>Insurance Partner:</strong> [Official FCA-Authorised Insurance Partner]</p>
+            <p><strong>Registered Office:</strong> London, United Kingdom</p>
+          </div>
+        </section>
+
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">15. SIGNATURE</h2>
+          <p className="mb-2">For and on behalf of ShareWheelz Ltd</p>
+          <p className="mb-2">Authorised Representative: ________________________</p>
+          <p>Date: 14 October 2025</p>
+        </section>
+
+        <section className="p-6 bg-green-50 border-l-4 border-green-600">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">TRANSPARENCY AND ACCOUNTABILITY STATEMENT</h2>
+          <p>ShareWheelz Ltd is committed to lawful, transparent, and responsible operations within the UK sharing-mobility sector. We maintain comprehensive compliance frameworks, annual insurance audits, user-protection mechanisms, and transparent cooperation with regulators to ensure the safety and trust of every participant.</p>
+        </section>
+      </main>
+
+      <footer className="bg-gray-900 text-white py-6 px-6 mt-12">
+        <div className="max-w-6xl mx-auto text-center">
+          <p className="text-sm">© 2025 ShareWheelz Ltd. All rights reserved.</p>
         </div>
-
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            These Terms of Service are effective as of {new Date().toLocaleDateString('en-GB')} 
-            and comply with UK consumer protection laws.
-          </p>
-        </div>
-      </div>
+      </footer>
     </div>
   );
 }
