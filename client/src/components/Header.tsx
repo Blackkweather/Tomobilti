@@ -122,20 +122,9 @@ export default function Header() {
       ]
     },
     { 
-      href: '/become-member', 
-      label: 'Become a Member',
-      description: 'Get access to exclusive benefits and a secure community.',
-      icon: Crown,
-      subItems: [
-        { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
-        { href: '/membership-benefits', label: 'Benefits', description: 'See all perks' },
-        { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' }
-      ]
-    },
-    { 
       href: '/add-car-dynamic', 
-      label: 'Make Car Work for You',
-      description: 'Manage your vehicle fleet and maximize earnings.',
+      label: 'List Your Car',
+      description: 'Earn money by renting out your vehicle.',
       icon: PoundSterling,
       subItems: [
         { href: '/add-car-dynamic', label: 'List Your Car', description: 'Start earning today' },
@@ -145,9 +134,20 @@ export default function Header() {
       ]
     },
     { 
+      href: '/become-member', 
+      label: 'Membership',
+      description: 'Get access to exclusive benefits and rewards.',
+      icon: Crown,
+      subItems: [
+        { href: '/become-member', label: 'Join Now', description: 'Start your membership' },
+        { href: '/membership-benefits', label: 'Benefits', description: 'See all perks' },
+        { href: '/loyalty-program', label: 'Loyalty Program', description: 'Earn points' }
+      ]
+    },
+    { 
       href: '/support', 
-      label: 'Customer Support',
-      description: 'Find answers to common questions.',
+      label: 'Support',
+      description: 'Get help and find answers.',
       icon: Shield,
       subItems: [
         { href: '/support', label: 'Help Center', description: 'Find answers to common questions' },
@@ -156,7 +156,7 @@ export default function Header() {
         { href: '/live-chat', label: 'Live Chat', description: 'Chat with our support team' }
       ]
     }
-  ];
+  ]
 
   if (loading) {
     return (
@@ -499,6 +499,19 @@ export default function Header() {
                         Rent a Car
                       </Button>
                     </Link>
+                    <Link href="/add-car-dynamic">
+                      <Button 
+                        variant={location === '/add-car-dynamic' ? 'default' : 'ghost'} 
+                        className={`w-full justify-start h-14 font-semibold rounded-lg ${
+                          location === '/add-car-dynamic' 
+                            ? 'bg-blue-600 text-white shadow-md' 
+                            : 'hover:bg-blue-50 hover:text-blue-700 text-slate-800 border border-transparent hover:border-blue-200'
+                        }`}
+                      >
+                        <PoundSterling className="h-5 w-5 mr-3" />
+                        List Your Car
+                      </Button>
+                    </Link>
                     <Link href="/become-member">
                       <Button 
                         variant={location === '/become-member' ? 'default' : 'ghost'} 
@@ -509,7 +522,7 @@ export default function Header() {
                         }`}
                       >
                         <Crown className="h-5 w-5 mr-3" />
-                        Become a Member
+                        Membership
                       </Button>
                     </Link>
                     <Link href="/support">
@@ -522,20 +535,7 @@ export default function Header() {
                         }`}
                       >
                         <Shield className="h-5 w-5 mr-3" />
-                        Customer Support
-                      </Button>
-                    </Link>
-                    <Link href="/add-car-dynamic">
-                      <Button 
-                        variant={location === '/add-car-dynamic' ? 'default' : 'ghost'} 
-                        className={`w-full justify-start h-14 font-semibold rounded-lg ${
-                          location === '/add-car-dynamic' 
-                            ? 'bg-blue-600 text-white shadow-md' 
-                            : 'hover:bg-blue-50 hover:text-blue-700 text-slate-800 border border-transparent hover:border-blue-200'
-                        }`}
-                      >
-                        <Plus className="h-5 w-5 mr-3" />
-                        Make Car Work for You
+                        Support
                       </Button>
                     </Link>
                   </nav>

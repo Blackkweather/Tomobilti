@@ -8,11 +8,7 @@ import { Link } from "wouter";
 export default function BecomeHost() {
   const [showCalculator, setShowCalculator] = useState(false);
 
-  const handleCalculateEarnings = () => {
-    setShowCalculator(true);
-    // Scroll to calculator section or open modal
-    document.getElementById('earnings-calculator')?.scrollIntoView({ behavior: 'smooth' });
-  };
+
   const benefits = [
     {
       icon: PoundSterling,
@@ -77,14 +73,15 @@ export default function BecomeHost() {
                 Start Now
               </Button>
             </Link>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-blue-600"
-              onClick={handleCalculateEarnings}
-            >
-              Calculate My Earnings
-            </Button>
+            <Link href="/earnings-calculator">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white hover:text-blue-600"
+              >
+                Calculate My Earnings
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -126,33 +123,7 @@ export default function BecomeHost() {
       </section>
 
 
-      {/* Earnings Calculator */}
-      {showCalculator && (
-        <section id="earnings-calculator" className="py-16 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Earnings Calculator</h2>
-            <Card className="max-w-2xl mx-auto">
-              <CardContent className="p-8">
-                <div className="text-center">
-                  <h3 className="text-2xl font-semibold mb-4">Estimated Monthly Earnings</h3>
-                  <div className="bg-blue-100 p-6 rounded-lg mb-6">
-                    <div className="text-4xl font-bold text-blue-600 mb-2">£240</div>
-                    <p className="text-gray-600">Estimated Monthly Earnings</p>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    *Estimation based on average rental of 15 days per month at £16/day
-                  </p>
-                  <Link href="/login">
-                    <Button size="lg">
-                      Start Now
-                    </Button>
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-      )}
+
 
       {/* CTA Section */}
       <section className="py-16 bg-blue-600 text-white">

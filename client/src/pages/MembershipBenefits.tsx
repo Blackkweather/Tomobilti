@@ -80,13 +80,19 @@ export default function MembershipBenefits(props: any) {
       yearlySavings: 20,
       hostFeatures: [
         '+10% boost in search visibility',
-        '"Starter Member" badge (increases renter trust)'
+        '"Starter Member" badge (increases renter trust)',
+        'Basic analytics dashboard',
+        'Standard customer support'
       ],
       renterFeatures: [
         '5% discount on all rentals',
         '5% discount on insurance fees per booking',
         'Earn 1 loyalty point per £1 spent',
-        'Access to weekend-only deals'
+        'Access to weekend-only deals',
+        'Email support within 24 hours',
+        'Basic booking protection',
+        'Standard cancellation policy',
+        'Monthly newsletter with tips'
       ],
       popular: false,
       color: 'from-purple-500 to-purple-600',
@@ -106,7 +112,9 @@ export default function MembershipBenefits(props: any) {
       yearlySavings: 60,
       hostFeatures: [
         '5% lower commission on each booking (higher net earnings)',
-        '"Gold Verified Host" badge + premium placement in listings'
+        '"Gold Verified Host" badge + premium placement in listings',
+        'Advanced analytics & insights',
+        'Priority listing in search results'
       ],
       renterFeatures: [
         '15% discount on all rentals',
@@ -114,7 +122,9 @@ export default function MembershipBenefits(props: any) {
         '1 free rental day after 5 booked days',
         'Priority customer support',
         'Double loyalty points (2 per £1 spent)',
-        'Free cancellation up to 24h before trip'
+        'Free cancellation up to 24h before trip',
+        'Access to premium vehicle selection',
+        'Flexible booking modifications'
       ],
       popular: true,
       color: 'from-yellow-500 to-yellow-600',
@@ -244,7 +254,7 @@ export default function MembershipBenefits(props: any) {
         </div>
 
         {/* Membership Plans */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 items-start">
           {membershipPlans.map((plan, index) => (
             <Card key={index} className={`shadow-lg ${plan.popular ? 'ring-2 ring-yellow-500 scale-105 bg-gradient-to-br from-yellow-50 to-orange-50' : plan.bgColor} relative`}>
               {plan.popular && (

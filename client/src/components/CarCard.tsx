@@ -131,26 +131,25 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
   };
 
   return (
-    <Card className="card-modern group hover:shadow-2xl transition-all duration-300 border-0 bg-white overflow-hidden hover-lift w-full h-full flex flex-col">
-      <div className="relative flex flex-col h-full">
+  <Card className="group hover:shadow-2xl transition-all duration-200 border-0 bg-white overflow-hidden h-full flex flex-col relative z-10">
+      <div className="relative flex flex-col h-full overflow-hidden">
         {/* Car Image Gallery */}
-        <div className="relative">
+          <div className="relative w-full h-56 sm:h-64 md:h-72 overflow-hidden">
           <ImageGallery 
             images={carImages} 
             alt={`${make} ${model}`}
-            className="rounded-t-lg"
+            className="w-full h-full"
           />
-          
 
-          {/* Right side overlays - properly spaced */}
-          <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+          {/* Right side overlays */}
+          <div className="absolute top-4 right-4 flex items-center gap-2 z-10">
             {/* Favorite button */}
             {isAuthenticated && (
               <Button
                 variant="ghost"
                 size="icon"
                 aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-                className="bg-white/90 hover:bg-white text-gray-600 hover:text-red-500 transition-colors duration-200"
+                className="bg-white/95 hover:bg-white shadow-lg text-gray-600 hover:text-red-500 transition-all duration-200"
                 onClick={onToggleFavorite}
               >
                 <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
@@ -160,67 +159,66 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
         </div>
 
         {/* Action Buttons - Below Image */}
-        <div className="p-3 sm:p-4 border-b border-gray-100">
-          <div className="flex gap-2 sm:gap-3">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100">
+          <div className="flex gap-3">
             <Button 
               type="button"
               onClick={handleMoreDetails}
               variant="outline"
               size="sm"
-              className="flex-1 text-mauve-600 border-mauve-600 hover:bg-mauve-50 px-2 sm:px-3 py-2 text-xs sm:text-sm min-w-0"
+              className="flex-1 text-gray-700 border-gray-300 hover:bg-gray-50 text-sm font-medium"
             >
-              <Info className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">More Details</span>
-              <span className="sm:hidden">Details</span>
+              <Info className="w-4 h-4 mr-2" />
+              <span>More Details</span>
             </Button>
             <Button 
               type="button"
               onClick={handleBooking}
               size="sm"
-              className="flex-1 bg-mauve-600 hover:bg-mauve-700 text-white px-2 sm:px-3 py-2 text-xs sm:text-sm shadow-sm hover:shadow-md transition-all duration-200 min-w-0"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
             >
-              <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Book Now</span>
-              <span className="sm:hidden">Book</span>
+              <BookOpen className="w-4 h-4 mr-2" />
+              <span>Book Now</span>
             </Button>
           </div>
         </div>
 
-        <CardContent className="p-4 sm:p-6 flex-grow flex flex-col justify-between">
+        <CardContent className="p-4 sm:p-6 flex flex-col flex-1">
           {/* Car Title and Location */}
-          <div className="mb-3 sm:mb-4">
-            <h3 className="font-semibold text-base sm:text-lg text-gray-900 mb-1 line-clamp-1">
+          {/* Title and Location */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-1">
               {title || `${make} ${model}`}
             </h3>
-            <div className="flex items-center text-gray-700 text-xs sm:text-sm font-medium">
-              <MapPin className="w-3 h-3 sm:w-4 sm:h-4 mr-1 flex-shrink-0" />
+            <div className="flex items-center text-gray-600 text-sm">
+              <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
               <span className="truncate">{city || location}</span>
             </div>
           </div>
 
           {/* Car Details */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
-            <div className="flex items-center text-xs sm:text-sm text-gray-700 font-medium">
-              <Fuel className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-blue-600 flex-shrink-0" />
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-6">
+            <div className="flex items-center text-sm text-gray-600">
+              <Fuel className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0" />
               <span className="capitalize truncate">{fuelTypeLabels[fuelType as keyof typeof fuelTypeLabels] || fuelType}</span>
             </div>
-            <div className="flex items-center text-xs sm:text-sm text-gray-700 font-medium">
-              <Settings className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-blue-600 flex-shrink-0" />
+            <div className="flex items-center text-sm text-gray-600">
+              <Settings className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0" />
               <span className="capitalize truncate">{transmission}</span>
             </div>
-            <div className="flex items-center text-xs sm:text-sm text-gray-700 font-medium">
-              <Users className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-blue-600 flex-shrink-0" />
+            <div className="flex items-center text-sm text-gray-600">
+              <Users className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0" />
               <span className="truncate">{seats} seats</span>
             </div>
-            <div className="flex items-center text-xs sm:text-sm text-gray-700 font-medium">
-              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 text-blue-600 flex-shrink-0" />
+            <div className="flex items-center text-sm text-gray-600">
+              <Calendar className="w-4 h-4 mr-2 text-blue-600 flex-shrink-0" />
               <span className="truncate">{year}</span>
             </div>
           </div>
 
           {/* Rating */}
           {rating > 0 && (
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-6">
               <div className="flex items-center">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -233,38 +231,39 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-700 ml-2 font-medium">
+              <span className="text-sm text-gray-600 ml-2">
                 {rating.toFixed(1)} ({reviewCount} reviews)
               </span>
             </div>
           )}
 
+          {/* Spacer */}
+          <div className="flex-1"></div>
+
           {/* Owner Info */}
-          <div className="flex items-center justify-between mb-4 pt-3 sm:pt-4 border-t border-gray-100">
-            <div className="flex items-center min-w-0 flex-1">
-              <Avatar className="h-6 w-6 sm:h-8 sm:w-8 mr-2 sm:mr-3 flex-shrink-0">
-                <AvatarImage src={ownerImage} alt={ownerName} />
-                <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
-                  {ownerName.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">{ownerName}</p>
-                <div className="flex items-center text-xs text-gray-600 font-medium">
-                  <Shield className="w-3 h-3 mr-1 flex-shrink-0" />
-                  <span className="truncate">Verified Owner</span>
-                </div>
+          <div className="flex items-center mb-6 pt-4 border-t border-gray-100">
+            <Avatar className="h-8 w-8 mr-3 flex-shrink-0">
+              <AvatarImage src={ownerImage} alt={ownerName} />
+              <AvatarFallback className="text-xs bg-blue-100 text-blue-600">
+                {ownerName.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-gray-900 truncate">{ownerName}</p>
+              <div className="flex items-center text-xs text-gray-500">
+                <Shield className="w-3 h-3 mr-1 flex-shrink-0" />
+                <span className="truncate">Verified Owner</span>
               </div>
             </div>
           </div>
 
           {/* Price */}
-          <div className="flex items-center justify-between mt-auto">
+          <div className="flex items-center justify-between">
             <div>
-              <div className="text-lg sm:text-2xl font-bold text-gray-900">
+              <div className="text-2xl font-bold text-gray-900">
                 {formatCurrency(pricePerDay)}
               </div>
-              <div className="text-xs sm:text-sm text-gray-700 font-medium">per day</div>
+              <div className="text-sm text-gray-600">per day</div>
             </div>
           </div>
         </CardContent>
