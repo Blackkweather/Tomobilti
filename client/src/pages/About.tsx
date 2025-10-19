@@ -16,19 +16,19 @@ export default function About() {
 
   const team = [
     {
-      name: "James Smith",
-      role: "CEO & Founder",
-      description: "Expert in shared mobility with 10 years of experience in the automotive sector."
+      name: "Brahim El Kettani",
+      role: "CEO, CFO & Founder",
+      description: "Visionary leader with expertise in business strategy and financial management in the mobility sector."
     },
     {
-      name: "Sarah Johnson",
-      role: "CTO",
-      description: "Software engineer passionate about innovative technological solutions."
+      name: "Mohammed Henna",
+      role: "CTO, COO & Founder",
+      description: "Technology innovator and operations expert driving platform development and operational excellence."
     },
     {
-      name: "Michael Brown",
-      role: "Commercial Director",
-      description: "Specialist in business development and strategic partnerships."
+      name: "Olivia V",
+      role: "CCO & CMO",
+      description: "Chief Commercial Officer and Chief Marketing Officer driving brand growth and customer acquisition in the UK mobility market."
     }
   ];
 
