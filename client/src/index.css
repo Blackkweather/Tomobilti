@@ -278,6 +278,246 @@ header .container {
   @apply border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-medium px-6 py-3 rounded-xl transition-all duration-200;
 }
 
+/* Animated Border Button Effect */
+.btn-animated-border {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.btn-animated-border::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-animated-border:hover::before {
+  left: 0;
+}
+
+/* Blue variant */
+.btn-blue {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+  color: #2563eb;
+  border: 2px solid #2563eb;
+  background: white;
+}
+
+.btn-blue::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #2563eb;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-blue:hover::before {
+  left: 0;
+}
+
+.btn-blue:hover {
+  color: white;
+}
+
+/* Purple variant */
+.btn-purple {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+  color: #7c3aed;
+  border: 2px solid #7c3aed;
+  background: white;
+}
+
+.btn-purple::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #7c3aed;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-purple:hover::before {
+  left: 0;
+}
+
+.btn-purple:hover {
+  color: white;
+}
+
+/* Gold variant */
+.btn-gold {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+  color: #ca8a04;
+  border: 2px solid #ca8a04;
+  background: white;
+}
+
+.btn-gold::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #ca8a04;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-gold:hover::before {
+  left: 0;
+}
+
+.btn-gold:hover {
+  color: white;
+}
+
+/* Black variant */
+.btn-black {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+  color: #1f2937;
+  border: 2px solid #1f2937;
+  background: white;
+}
+
+.btn-black::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #1f2937;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-black:hover::before {
+  left: 0;
+}
+
+.btn-black:hover {
+  color: white;
+}
+
+/* Gray variant */
+.btn-gray {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+  color: #4b5563;
+  border: 2px solid #4b5563;
+  background: white;
+}
+
+.btn-gray::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #4b5563;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-gray:hover::before {
+  left: 0;
+}
+
+.btn-gray:hover {
+  color: white;
+}
+
+/* White variant */
+.btn-white {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+  color: white;
+  border: 2px solid white;
+  background: transparent;
+}
+
+.btn-white::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: white;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-white:hover::before {
+  left: 0;
+}
+
+.btn-white:hover {
+  color: #2563eb;
+}
+
+/* Green variant */
+.btn-green {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  font-weight: 600;
+  color: #16a34a;
+  border: 2px solid #16a34a;
+  background: white;
+}
+
+.btn-green::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #16a34a;
+  z-index: -1;
+  transition: left 0.4s ease;
+}
+
+.btn-green:hover::before {
+  left: 0;
+}
+
+.btn-green:hover {
+  color: white;
+}
+
 /* Modern Card Styles */
 .card-modern {
   @apply bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden;
