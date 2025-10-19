@@ -1,3 +1,264 @@
+// Featured cars pulled from server sample/demos - enriched to match the Car type
+const featuredCars = [
+  {
+    id: 'porsche-911',
+    ownerId: 'system-owner',
+    title: 'Porsche 911 F Model - Classic Sports Car',
+    description: 'Iconic classic Porsche 911 F Model with timeless design and exceptional performance.',
+    make: 'Porsche',
+    model: '911 F',
+    year: 1973,
+    fuelType: 'essence',
+    transmission: 'manual',
+    seats: 2,
+    pricePerDay: '120.00',
+    currency: 'GBP',
+    location: 'Westminster',
+    city: 'London',
+  latitude: '51.4975',
+  longitude: '-0.1357',
+    images: ['/assets/CLASSIC.png'],
+    features: ['Air Conditioning', 'Classic Interior'],
+    isAvailable: true,
+    vin: '',
+    registrationNumber: '',
+    motExpiry: null,
+    insuranceExpiry: null,
+    isInsured: false,
+    insuranceProvider: '',
+    insurancePolicyNumber: '',
+    hasAirbags: true,
+    hasAbs: true,
+    hasEsp: false,
+    hasBluetooth: false,
+    hasGps: false,
+    hasParkingSensors: false,
+    hasAlarm: false,
+    hasImmobilizer: false,
+    hasTrackingDevice: false,
+    mileage: 0,
+    lastServiceDate: null,
+    nextServiceDue: null,
+    condition: 'good',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'jaguar-f-type',
+    ownerId: 'system-owner',
+    title: 'Jaguar F-Type Convertible - Luxury Sports Car',
+    description: 'Stunning Jaguar F-Type Convertible with breathtaking design and exhilarating performance.',
+    make: 'Jaguar',
+    model: 'F-Type',
+    year: 2023,
+    fuelType: 'essence',
+    transmission: 'automatic',
+    seats: 2,
+    pricePerDay: '95.00',
+    currency: 'GBP',
+    location: 'City Centre',
+    city: 'Manchester',
+  latitude: '53.4808',
+  longitude: '-2.2426',
+    images: ['/assets/CONVERTIBLES.png'],
+    features: ['Convertible', 'Premium Sound'],
+    isAvailable: true,
+    vin: '',
+    registrationNumber: '',
+    motExpiry: null,
+    insuranceExpiry: null,
+    isInsured: false,
+    insuranceProvider: '',
+    insurancePolicyNumber: '',
+    hasAirbags: true,
+    hasAbs: true,
+    hasEsp: false,
+    hasBluetooth: false,
+    hasGps: false,
+    hasParkingSensors: false,
+    hasAlarm: false,
+    hasImmobilizer: false,
+    hasTrackingDevice: false,
+    mileage: 0,
+    lastServiceDate: null,
+    nextServiceDue: null,
+    condition: 'good',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'tesla-model-x',
+    ownerId: 'system-owner',
+    title: 'Tesla Model X - Electric SUV',
+    description: 'Revolutionary Tesla Model X electric SUV with falcon-wing doors and autopilot capabilities.',
+    make: 'Tesla',
+    model: 'Model X',
+    year: 2023,
+    fuelType: 'electric',
+    transmission: 'automatic',
+    seats: 7,
+    pricePerDay: '110.00',
+    currency: 'GBP',
+    location: 'New Town',
+    city: 'Edinburgh',
+  latitude: '55.9533',
+  longitude: '-3.1883',
+    images: ['/assets/ELECTRIC.png'],
+    features: ['Autopilot', 'Falcon Wing Doors'],
+    isAvailable: true,
+    vin: '',
+    registrationNumber: '',
+    motExpiry: null,
+    insuranceExpiry: null,
+    isInsured: false,
+    insuranceProvider: '',
+    insurancePolicyNumber: '',
+    hasAirbags: true,
+    hasAbs: true,
+    hasEsp: false,
+    hasBluetooth: true,
+    hasGps: true,
+    hasParkingSensors: false,
+    hasAlarm: false,
+    hasImmobilizer: false,
+    hasTrackingDevice: false,
+    mileage: 5000,
+    lastServiceDate: null,
+    nextServiceDue: null,
+    condition: 'excellent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'jaguar-f-pace',
+    ownerId: 'system-owner',
+    title: 'Jaguar F-Pace Sport - Performance SUV',
+    description: 'Dynamic Jaguar F-Pace Sport combining SUV practicality with sports car performance.',
+    make: 'Jaguar',
+    model: 'F-Pace Sport',
+    year: 2023,
+    fuelType: 'essence',
+    transmission: 'automatic',
+    seats: 5,
+    pricePerDay: '85.00',
+    currency: 'GBP',
+    location: 'City Centre',
+    city: 'Birmingham',
+  latitude: '52.4862',
+  longitude: '-1.8904',
+    images: ['/assets/SUV.png'],
+    features: ['All Wheel Drive', 'Spacious Cargo'],
+    isAvailable: true,
+    vin: '',
+    registrationNumber: '',
+    motExpiry: null,
+    insuranceExpiry: null,
+    isInsured: false,
+    insuranceProvider: '',
+    insurancePolicyNumber: '',
+    hasAirbags: true,
+    hasAbs: true,
+    hasEsp: false,
+    hasBluetooth: false,
+    hasGps: false,
+    hasParkingSensors: false,
+    hasAlarm: false,
+    hasImmobilizer: false,
+    hasTrackingDevice: false,
+    mileage: 1000,
+    lastServiceDate: null,
+    nextServiceDue: null,
+    condition: 'good',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'ferrari-laferrari',
+    ownerId: 'system-owner',
+    title: 'Ferrari LaFerrari - Hybrid Hypercar',
+    description: 'Ferrari LaFerrari is a hybrid hypercar with V12 power and electric assist for extreme performance.',
+    make: 'Ferrari',
+    model: 'LaFerrari',
+    year: 2013,
+    fuelType: 'essence',
+    transmission: 'automatic',
+    seats: 2,
+    pricePerDay: '500.00',
+    currency: 'GBP',
+    location: 'Mayfair',
+    city: 'London',
+  latitude: '51.5098',
+  longitude: '-0.1337',
+    images: ['/assets/SPORTS.png'],
+    features: ['Hybrid', 'Track Performance'],
+    isAvailable: true,
+    vin: '',
+    registrationNumber: '',
+    motExpiry: null,
+    insuranceExpiry: null,
+    isInsured: false,
+    insuranceProvider: '',
+    insurancePolicyNumber: '',
+    hasAirbags: true,
+    hasAbs: true,
+    hasEsp: false,
+    hasBluetooth: false,
+    hasGps: false,
+    hasParkingSensors: false,
+    hasAlarm: false,
+    hasImmobilizer: false,
+    hasTrackingDevice: false,
+    mileage: 200,
+    lastServiceDate: null,
+    nextServiceDue: null,
+    condition: 'excellent',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
+  {
+    id: 'range-rover-evoque',
+    ownerId: 'system-owner',
+    title: 'Range Rover Evoque - Luxury Compact SUV',
+    description: 'Sophisticated Range Rover Evoque combining compact dimensions with luxury and capability.',
+    make: 'Range Rover',
+    model: 'Evoque',
+    year: 2023,
+    fuelType: 'diesel',
+    transmission: 'automatic',
+    seats: 5,
+    pricePerDay: '75.00',
+    currency: 'GBP',
+    location: 'City Centre',
+    city: 'Liverpool',
+  latitude: '53.4084',
+  longitude: '-2.9916',
+    images: ['/assets/SUV.png'],
+    features: ['Luxury Interior', 'Comfort Suspension'],
+    isAvailable: true,
+    vin: '',
+    registrationNumber: '',
+    motExpiry: null,
+    insuranceExpiry: null,
+    isInsured: false,
+    insuranceProvider: '',
+    insurancePolicyNumber: '',
+    hasAirbags: true,
+    hasAbs: true,
+    hasEsp: false,
+    hasBluetooth: false,
+    hasGps: false,
+    hasParkingSensors: false,
+    hasAlarm: false,
+    hasImmobilizer: false,
+    hasTrackingDevice: false,
+    mileage: 800,
+    lastServiceDate: null,
+    nextServiceDue: null,
+    condition: 'good',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+];
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -13,29 +274,23 @@ import {
   MapPin, 
   Shield, 
   Users, 
-  Star, 
-  Car as CarIcon, 
-  Clock, 
-  CheckCircle,
-  ArrowRight,
-  TrendingUp,
-  Heart,
-  Award,
-  Zap,
-  Mountain,
+  Target,
+  Lock,
   PoundSterling,
   Crown,
-  Phone,
-  Mail,
-  MessageCircle,
-  X,
-  Sparkles,
-  Target,
-  Lock
+  CarIcon,
+  CheckCircle,
+  ArrowRight,
+  Zap,
+  Star,
+  Award,
+  Heart,
+  Mountain
 } from 'lucide-react';
 import { getFeaturedCarImages } from '../utils/carImages';
 import { useAuth } from '../contexts/AuthContext';
 import type { Car } from '@shared/schema';
+import EmailBanner from '../components/EmailBanner';
 
 export default function Home() {
   // Initialize scroll animations
@@ -48,30 +303,7 @@ export default function Home() {
     end: null
   });
 
-  // State for membership popup
-  const [showMembershipPopup, setShowMembershipPopup] = useState(false);
-  const [popupTriggered, setPopupTriggered] = useState(false);
 
-  // Trigger membership popup after 4 seconds
-  useEffect(() => {
-    if (!isAuthenticated && !popupTriggered) {
-      const timer = setTimeout(() => {
-        setShowMembershipPopup(true);
-        setPopupTriggered(true);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, popupTriggered]);
-
-  // Handle membership popup close
-  const handleCloseMembershipPopup = () => {
-    setShowMembershipPopup(false);
-  };
-
-  // Handle membership popup open
-  const handleOpenMembershipPopup = () => {
-    setShowMembershipPopup(true);
-  };
 
   // Fetch featured cars
   const { data: carsData, isLoading: carsLoading } = useQuery({
@@ -131,11 +363,13 @@ export default function Home() {
       title: 'Rent a Car',
       description: 'Find and book a car easily near you.',
       icon: CarIcon,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'bg-blue-50',
+      bgColor: 'bg-blue-100',
       textColor: 'text-blue-600',
       link: '/cars',
       buttonText: 'Browse Cars',
+      buttonBg: 'bg-blue-600',
+      buttonColor: '#3b82f6',
+      buttonColorLight: '#60a5fa',
       features: [
         'Wide selection of vehicles',
         'Easy booking process',
@@ -145,14 +379,16 @@ export default function Home() {
     },
     {
       id: 'make-car-work',
-      title: 'Make Your Car Work For You',
+      title: 'List Your Car',
       description: 'List your vehicle and earn money with ease.',
       icon: PoundSterling,
-      color: 'from-green-500 to-green-600',
-      bgColor: 'bg-green-50',
+      bgColor: 'bg-green-100',
       textColor: 'text-green-600',
-      link: '/add-car',
+      link: '/become-host',
       buttonText: 'List Your Car',
+      buttonBg: 'bg-green-600',
+      buttonColor: '#16a34a',
+      buttonColorLight: '#34d399',
       features: [
         'Earn passive income',
         'Full insurance coverage',
@@ -165,11 +401,13 @@ export default function Home() {
       title: 'Become a Member',
       description: 'Get access to exclusive benefits and a secure community.',
       icon: Crown,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'bg-purple-50',
+      bgColor: 'bg-purple-100',
       textColor: 'text-purple-600',
       link: '/become-member',
       buttonText: 'Join Now',
+      buttonBg: 'bg-purple-600',
+      buttonColor: '#7c3aed',
+      buttonColorLight: '#a78bfa',
       features: [
         'Exclusive discounts',
         'Priority support',
@@ -182,11 +420,13 @@ export default function Home() {
       title: 'Our Quality Services',
       description: 'Insurance, assistance, and support included for a hassle-free experience.',
       icon: Shield,
-      color: 'from-indigo-500 to-indigo-600',
-      bgColor: 'bg-indigo-50',
-      textColor: 'text-indigo-600',
+      bgColor: 'bg-blue-100',
+      textColor: 'text-blue-600',
       link: '/help',
       buttonText: 'Learn More',
+      buttonBg: 'bg-blue-600',
+      buttonColor: '#2563eb',
+      buttonColorLight: '#60a5fa',
       features: [
         'Discount on the selected insurance package',
         'Roadside assistance',
@@ -285,52 +525,80 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-x-hidden">
+      {/* Email Banner */}
+      <EmailBanner />
+      
       {/* Hero Section with Promotional Bubbles */}
       <Hero />
 
 
-      {/* Main Homepage Sections */}
-      <section className="py-12 bg-white overflow-hidden">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8 scroll-animate">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+      {/* Main Homepage Sections - Polished, centered, responsive */}
+      <section className="py-16 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight mb-3">
               Everything You Need for Car Sharing
             </h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
               From renting to earning, we provide comprehensive solutions for all your car sharing needs.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {homepageSections.map((section, index) => {
               const Icon = section.icon;
               return (
-                <Card key={section.id} className={`group hover:shadow-xl transition-all duration-300 border-0 bg-white/80 backdrop-blur-sm hover:scale-105`}>
-                  <CardContent className="p-6 text-center">
-                    <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br ${section.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                      <Icon className="h-8 w-8 text-white" />
+                <div
+                  key={section.id}
+                  className="group flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm border border-gray-100 min-h-[18rem] md:min-h-[16rem] lg:min-h-[18rem]"
+                  aria-labelledby={`section-${section.id}`}
+                >
+                  <div className="flex-shrink-0 mb-4">
+                    <div className={`w-16 h-16 rounded-full flex items-center justify-center bg-white border border-gray-100 shadow-sm transition-transform duration-300 group-hover:scale-[1.02]`}>
+                      <div className={`w-11 h-11 rounded-full flex items-center justify-center ${section.bgColor}`}>
+                        <Icon className={`h-6 w-6 ${section.textColor}`} aria-hidden />
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">{section.title}</h3>
-                    <p className="text-gray-700 leading-relaxed font-medium mb-4 text-sm">{section.description}</p>
-                    
-                    {/* Features List */}
-                    <div className="space-y-1 mb-4">
-                      {section.features.map((feature, featureIndex) => (
-                        <div key={featureIndex} className="flex items-center justify-center gap-2 text-xs text-gray-600">
-                          <CheckCircle className="h-3 w-3 text-green-500" />
-                          <span>{feature}</span>
-                        </div>
-                      ))}
-                    </div>
+                  </div>
 
-                    <Link href={section.link}>
-                      <Button className={`w-full ${section.bgColor} ${section.textColor} hover:opacity-90 border-0 shadow-lg hover:shadow-xl transition-all duration-300 group text-sm py-2`}>
-                        {section.buttonText}
-                        <ArrowRight className="h-3 w-3 ml-2 group-hover:translate-x-1 transition-transform duration-200" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                  <h3 id={`section-${section.id}`} className="text-2xl md:text-2xl font-semibold text-gray-900 mb-2">
+                    {section.title}
+                  </h3>
+
+                  <p className="text-gray-600 text-sm md:text-base mb-6 max-w-xs mx-auto">
+                    {section.description}
+                  </p>
+
+                  <div className="mb-6 flex-1 flex items-center justify-center">
+                    <ul className="space-y-3 w-full max-w-[240px]">
+                      {section.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-start gap-4">
+                          <div className="w-6 flex-shrink-0">
+                            <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-green-100 shadow-sm">
+                              <CheckCircle className="h-3 w-3 text-green-500" />
+                            </div>
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="text-gray-600 text-sm leading-snug">{feature}</span>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <Link href={section.link} className="w-full mt-auto">
+                    <button
+                      className={`w-full py-2.5 px-4 rounded-md text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2`} 
+                      style={{
+                        background: `linear-gradient(180deg, ${section.buttonColorLight || '#ffffff'} 0%, ${section.buttonColor || '#3b82f6'} 100%)`,
+                        boxShadow: `0 6px 18px ${section.buttonColor}33`,
+                      }}
+                      aria-label={section.buttonText}
+                    >
+                      {section.buttonText}
+                    </button>
+                  </Link>
+                </div>
               );
             })}
           </div>
@@ -389,7 +657,7 @@ export default function Home() {
       </section>
 
       {/* Featured Cars Section */}
-      <section className="py-20 bg-white overflow-hidden">
+      <section className="py-20 bg-white overflow-visible pb-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -403,44 +671,19 @@ export default function Home() {
             </p>
           </div>
 
-          {carsLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className="rounded-lg bg-gray-100 h-72 sm:h-80 animate-pulse" />
-              ))}
-            </div>
-          ) : carsData?.cars?.length ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12">
-              {carsData.cars.slice(0, 6).map((car: Car) => (
-                <div key={car.id}>
-                  <CarCard car={car} />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 auto-rows-fr items-stretch">
+              {(carsData && carsData.cars && carsData.cars.length > 0 ? carsData.cars.slice(0, 6) : featuredCars).map((car: any) => (
+                // CarCard expects a full Car shape; API items should match. We pass through as-is.
+                <div className="h-full">
+                  <CarCard key={car.id} car={car} />
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12 mb-12">
-              <p className="text-gray-700 mb-4 text-lg">No cars found right now.</p>
-              <Link href="/cars">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow">
-                  Browse All Cars
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          <div className="text-center">
-            <Link href="/cars">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                View All Vehicles
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-50 to-blue-50 overflow-hidden">
+  {/* How It Works Section */}
+  <section className="py-20 bg-gradient-to-r from-purple-50 to-blue-50 overflow-hidden">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -592,143 +835,20 @@ export default function Home() {
               </Button>
             </Link>
             {!isAuthenticated && (
-              <Button 
-                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg rounded-lg transition-all duration-300"
-                onClick={handleOpenMembershipPopup}
-              >
-                <Crown className="mr-2 h-5 w-5" />
-                Become a Member
-              </Button>
+              <Link href="/become-member">
+                <Button 
+                  className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3 text-lg rounded-lg transition-all duration-300"
+                >
+                  <Crown className="mr-2 h-5 w-5" />
+                  Become a Member
+                </Button>
+              </Link>
             )}
           </div>
         </div>
       </section>
 
       {/* Main content ends here - Footer is handled by App.tsx */}
-
-      {/* Membership Popup */}
-      {showMembershipPopup && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-[60] p-2 sm:p-4 animate-in fade-in duration-300"
-          onClick={handleCloseMembershipPopup}
-        >
-          <div 
-            className="bg-white rounded-xl sm:rounded-2xl max-w-sm sm:max-w-md w-full max-h-[85vh] sm:max-h-[80vh] overflow-y-auto shadow-2xl animate-in zoom-in-95 duration-300 mt-20 sm:mt-24 scrollbar-hide"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="relative p-3 sm:p-6 text-center border-b border-gray-100">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleCloseMembershipPopup}
-                className="absolute top-2 right-2 sm:top-3 sm:right-3 h-6 w-6 p-0 hover:bg-gray-100"
-              >
-                <X className="h-3 w-3" />
-              </Button>
-              
-              <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-2 sm:mb-3">
-                <Crown className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-              </div>
-              
-              <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-1">
-                Unlock Exclusive Benefits
-              </h2>
-              <h3 className="text-base sm:text-lg font-semibold text-blue-600 mb-2 sm:mb-3">
-                Become a Member Today!
-              </h3>
-              <p className="text-xs sm:text-sm text-gray-600">
-                Join our secure community and enjoy premium perks designed for both car owners and renters.
-              </p>
-            </div>
-
-            {/* Content */}
-            <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
-              {/* For Car Owners */}
-              <div className="bg-green-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-green-200">
-                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center">
-                    <PoundSterling className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </div>
-                  <h4 className="text-base sm:text-lg font-semibold text-green-800">For Car Owners</h4>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span className="text-xs sm:text-sm">Earn passive income</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span className="text-xs sm:text-sm">Full insurance coverage</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-700">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span className="text-xs sm:text-sm">Verified renters only</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* For Renters */}
-              <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 border border-blue-200">
-                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                    <CarIcon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                  </div>
-                  <h4 className="text-base sm:text-lg font-semibold text-blue-800">For Renters</h4>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-blue-700">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span className="text-xs sm:text-sm">Affordable prices</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-blue-700">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span className="text-xs sm:text-sm">Nearby cars</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-blue-700">
-                    <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span className="text-xs sm:text-sm">24/7 support & discount on insurance</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Trust Badges */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 py-2 sm:py-3 border-t border-b border-gray-200">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                  <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
-                  <span>Discount on Insurance</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                  <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
-                  <span>24/7 Support</span>
-                </div>
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                  <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500" />
-                  <span>Secure Community</span>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <Link href="/become-member">
-                <Button 
-                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                  onClick={handleCloseMembershipPopup}
-                >
-                  <Crown className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  Join Now
-                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
-                </Button>
-              </Link>
-
-              {/* Additional Info */}
-              <div className="text-center text-sm text-gray-500">
-                <p>Join our growing community of satisfied members</p>
-                <p className="mt-1">Cancel anytime • No hidden fees</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

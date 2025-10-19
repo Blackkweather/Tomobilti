@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
-import { users, cars, bookings, reviews, conversations, messages, notifications } from '@shared/sqlite-schema';
-import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch, Notification, InsertNotification } from '@shared/schema';
+import { users, cars, bookings, reviews, conversations, messages, notifications, emailLeads } from '@shared/sqlite-schema';
+import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch, Notification, InsertNotification, EmailLead, InsertEmailLead } from '@shared/schema';
 import { eq, and, gte, lte, inArray, like, sql as sqlOp, count, desc, asc, or } from 'drizzle-orm';
 import type { IStorage } from './storage';
 import bcrypt from 'bcrypt';
@@ -516,5 +516,32 @@ export class DatabaseStorage implements IStorage {
     return true;
   }
 
-  // Sample data initialization removed
+  // Email leads operations
+  async createEmailLead(insertLead: InsertEmailLead & { discountCode: string }): Promise<EmailLead> {
+    const leadWithId = {
+      ...insertLead,
+      id: randomUUID(),
+    };
+    
+    const [lead] = await db.insert(emailLeads).values(leadWithId).returning();
+    return lead;
+  }
+
+  async getEmailLeadByEmail(email: string): Promise<EmailLead | undefined> {
+    const [lead] = await db.select().from(emailLeads).where(eq(emailLeads.email, email));
+    return lead;
+  }
+
+  async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    const result = await db.update(users)
+      .set({ password: hashedPassword })
+      .where(eq(users.id, id));
+    return result.changes > 0;
+  }
+
+  async deleteUser(id: string): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    return result.changes > 0;
+  }
 }

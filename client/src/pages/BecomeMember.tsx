@@ -288,13 +288,19 @@ export default function BecomeMember() {
       yearlySavings: 20,
       hostFeatures: [
         '+10% boost in search visibility',
-        '"Starter Member" badge (increases renter trust)'
+        '"Starter Member" badge (increases renter trust)',
+        'Basic analytics dashboard',
+        'Standard customer support'
       ],
       renterFeatures: [
         '5% discount on all rentals',
         '5% discount on insurance fees per booking',
         'Earn 1 loyalty point per £1 spent',
-        'Access to weekend-only deals'
+        'Access to weekend-only deals',
+        'Email support within 24 hours',
+        'Basic booking protection',
+        'Standard cancellation policy',
+        'Monthly newsletter with tips'
       ],
       popular: false,
       color: 'from-purple-500 to-purple-600',
@@ -314,7 +320,9 @@ export default function BecomeMember() {
       yearlySavings: 60,
       hostFeatures: [
         '5% lower commission on each booking (higher net earnings)',
-        '"Gold Verified Host" badge + premium placement in listings'
+        '"Gold Verified Host" badge + premium placement in listings',
+        'Advanced analytics & insights',
+        'Priority listing in search results'
       ],
       renterFeatures: [
         '15% discount on all rentals',
@@ -322,7 +330,9 @@ export default function BecomeMember() {
         '1 free rental day after 5 booked days',
         'Priority customer support',
         'Double loyalty points (2 per £1 spent)',
-        'Free cancellation up to 24h before trip'
+        'Free cancellation up to 24h before trip',
+        'Access to premium vehicle selection',
+        'Flexible booking modifications'
       ],
       popular: true,
       color: 'from-yellow-500 to-yellow-600',
@@ -519,7 +529,7 @@ export default function BecomeMember() {
           
 
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
               {membershipPlans.map((plan) => (
                 <Card 
                   key={plan.id} 
@@ -640,16 +650,16 @@ export default function BecomeMember() {
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="space-y-6 px-6 pb-8 flex-grow">
+                  <CardContent className="space-y-5 px-6 pb-6">
                     {/* Host Features */}
                     <div>
-                      <h4 className="font-semibold text-green-700 mb-3 flex items-center gap-2">
+                      <h4 className="font-semibold text-green-700 mb-2.5 flex items-center gap-2">
                         <PoundSterling className="h-4 w-4" />
                         For Hosts
                       </h4>
-                      <ul className="space-y-3">
+                      <ul className="space-y-2">
                         {plan.hostFeatures.map((feature, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm">
+                          <li key={index} className="flex items-start gap-2 text-sm leading-snug">
                             <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
                             <span className="text-gray-700">{feature}</span>
                           </li>
@@ -659,13 +669,13 @@ export default function BecomeMember() {
 
                     {/* Renter Features */}
                     <div>
-                      <h4 className="font-semibold text-blue-700 mb-3 flex items-center gap-2">
+                      <h4 className="font-semibold text-blue-700 mb-2.5 flex items-center gap-2">
                         <Car className="h-4 w-4" />
                         For Renters
                       </h4>
-                      <ul className="space-y-3">
+                      <ul className="space-y-2">
                         {plan.renterFeatures.map((feature, index) => (
-                          <li key={index} className="flex items-start gap-2 text-sm">
+                          <li key={index} className="flex items-start gap-2 text-sm leading-snug">
                             <CheckCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                             <span className="text-gray-700">{feature}</span>
                           </li>
@@ -674,7 +684,7 @@ export default function BecomeMember() {
                     </div>
                     
                     <Button 
-                      className={`w-full mt-auto py-4 text-lg font-semibold transition-all duration-300 bg-gradient-to-r ${plan.color} hover:shadow-xl text-white`}
+                      className={`w-full py-4 text-lg font-semibold transition-all duration-300 bg-gradient-to-r ${plan.color} hover:shadow-xl text-white mt-4`}
                       size="lg"
                       onClick={(e) => {
                         e.stopPropagation();

@@ -240,6 +240,20 @@ export const messages = sqliteTable("messages", {
   createdAtIdx: sql`CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at)`,
 }));
 
+// Email Leads table
+export const emailLeads = sqliteTable("email_leads", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  email: text("email").notNull().unique(),
+  source: text("source").notNull(), // "welcome_popup", "pricing_access", "brochure_download"
+  discountCode: text("discount_code"),
+  isUsed: integer("is_used", { mode: 'boolean' }).notNull().default(false),
+  usedAt: text("used_at"),
+  createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
+}, (table) => ({
+  emailIdx: sql`CREATE INDEX IF NOT EXISTS idx_email_leads_email ON email_leads(email)`,
+  sourceIdx: sql`CREATE INDEX IF NOT EXISTS idx_email_leads_source ON email_leads(source)`,
+}));
+
 // Types for messaging
 export type Conversation = typeof conversations.$inferSelect;
 export type InsertConversation = typeof conversations.$inferInsert;
@@ -247,3 +261,12 @@ export type Message = typeof messages.$inferSelect;
 export type InsertMessage = typeof messages.$inferInsert;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
+
+// Email leads types and schema
+export type EmailLead = typeof emailLeads.$inferSelect;
+export type InsertEmailLead = typeof emailLeads.$inferInsert;
+
+export const insertEmailLeadSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  source: z.enum(['welcome_popup', 'pricing_access', 'brochure_download']),
+});

@@ -186,6 +186,17 @@ export const membershipBenefits = pgTable("membership_benefits", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Email Leads table (for marketing & retargeting)
+export const emailLeads = pgTable("email_leads", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  source: text("source").notNull(), // "welcome_popup", "pricing_access", "brochure_download"
+  discountCode: text("discount_code"), // 10% discount code
+  isUsed: boolean("is_used").notNull().default(false),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = z.object({
   email: z.string().email(),
@@ -265,6 +276,15 @@ export type LoyaltyPointsTransaction = typeof loyaltyPointsTransactions.$inferSe
 export type InsertLoyaltyPointsTransaction = typeof loyaltyPointsTransactions.$inferInsert;
 export type MembershipBenefit = typeof membershipBenefits.$inferSelect;
 export type InsertMembershipBenefit = typeof membershipBenefits.$inferInsert;
+
+export type EmailLead = typeof emailLeads.$inferSelect;
+export type InsertEmailLead = typeof emailLeads.$inferInsert;
+
+// Email lead schema
+export const insertEmailLeadSchema = z.object({
+  email: z.string().email('Invalid email address'),
+  source: z.enum(['welcome_popup', 'pricing_access', 'brochure_download']),
+});
 
 // Search and filter types
 export const carSearchSchema = z.object({

@@ -1,10 +1,11 @@
-import React from 'react';
-import { Switch, Route } from "wouter";
+import React, { useEffect } from 'react';
+import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import SupportChat from "./components/SupportChat";
+import { initGA, trackPageView } from "./lib/analytics";
 
 // Import essential pages only
 import Home from "./pages/Home";
@@ -63,9 +64,21 @@ import LiveChat from './pages/LiveChat';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
+import EmailCaptureModal from "./components/EmailCaptureModal";
 
 function App() {
   console.log('🚀 ShareWheelz App starting...');
+  const [location] = useLocation();
+
+  // Initialize Google Analytics
+  useEffect(() => {
+    initGA();
+  }, []);
+
+  // Track page views
+  useEffect(() => {
+    trackPageView(location);
+  }, [location]);
   
   return (
     <QueryClientProvider client={queryClient}>
@@ -152,6 +165,7 @@ function App() {
           
           <Footer />
           <SupportChat />
+          <EmailCaptureModal />
           <Toaster />
         </div>
       </AuthProvider>

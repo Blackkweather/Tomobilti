@@ -65,8 +65,8 @@ export default function Hero() {
       setTimeout(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroImages.length);
         setIsTransitioning(false);
-      }, 300);
-    }, 5000);
+      }, 400);
+    }, 8000); // slower rotation to be less jarring
 
     return () => clearInterval(interval);
   }, [heroImages.length]);
@@ -126,7 +126,7 @@ export default function Hero() {
             <div className="grid grid-cols-4 gap-4 max-w-2xl mx-auto mb-6">
               {/* Insurance Paid Off Bubble */}
               <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-110">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-[1.02]">
                   <span className="text-xl font-bold text-white drop-shadow-lg">£</span>
                 </div>
                 <div className="text-lg font-bold text-white mb-1">No Hidden</div>
@@ -135,7 +135,7 @@ export default function Hero() {
 
               {/* Car Sitting Idle Bubble */}
               <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-110">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-[1.02]">
                   <Car className="h-6 w-6 text-white drop-shadow-lg" />
                 </div>
                 <div className="text-lg font-bold text-white mb-1">Instant</div>
@@ -144,7 +144,7 @@ export default function Hero() {
 
               {/* 100% Secure Payments */}
               <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-110">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-[1.02]">
                   <Shield className="h-6 w-6 text-white drop-shadow-lg" />
                 </div>
                 <div className="text-lg font-bold text-white mb-1">100% Secure</div>
@@ -153,7 +153,7 @@ export default function Hero() {
               
               {/* 24/7 Support */}
               <div className="text-center group">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-110">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-white/30 rounded-full mb-2 group-hover:bg-white/40 transition-all duration-300 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/40 group-hover:scale-[1.02]">
                   <Clock className="h-6 w-6 text-white drop-shadow-lg" />
                 </div>
                 <div className="text-lg font-bold text-white mb-1">24/7</div>

@@ -14,7 +14,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
 
   if (!images || images.length === 0) {
     return (
-      <div className={`aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center ${className}`}>
+      <div className={`w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center ${className}`}>
         <span className="text-gray-400 text-sm">No images available</span>
       </div>
     );
@@ -36,11 +36,11 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
     <>
       {/* Main Gallery */}
       <div className={`relative group ${className}`}>
-        <div className="aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg">
+        <div className="w-full h-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg">
           <img
             src={images[currentIndex]}
             alt={`${alt} - Image ${currentIndex + 1}`}
-            className="w-full h-full object-contain transition-transform duration-300"
+            className="w-full h-full object-cover transition-transform duration-400 ease-out"
             loading="lazy"
           />
           
@@ -50,7 +50,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 onClick={prevImage}
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -58,7 +58,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white text-gray-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 onClick={nextImage}
               >
                 <ChevronRight className="w-4 h-4" />
@@ -81,7 +81,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
               <button
                 key={index}
                 onClick={() => goToImage(index)}
-                className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                className={`flex-shrink-0 w-16 h-12 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
                   index === currentIndex 
                     ? 'border-mauve-500 ring-2 ring-mauve-200' 
                     : 'border-gray-200 hover:border-gray-300'
@@ -90,7 +90,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
                 <img
                   src={image}
                   alt={`${alt} thumbnail ${index + 1}`}
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-cover"
                   loading="lazy"
                 />
               </button>

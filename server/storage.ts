@@ -9,7 +9,9 @@ import {
   type InsertReview,
   type Notification,
   type InsertNotification,
-  type CarSearch
+  type CarSearch,
+  type EmailLead,
+  type InsertEmailLead
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 // Select storage backend per environment to avoid native sqlite in production
@@ -69,6 +71,10 @@ export interface IStorage {
     averageRating: number;
     activeListings: number;
   }>;
+  
+  // Email leads operations
+  createEmailLead(lead: InsertEmailLead & { discountCode: string }): Promise<EmailLead>;
+  getEmailLeadByEmail(email: string): Promise<EmailLead | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -79,6 +85,7 @@ export class MemStorage implements IStorage {
   private notifications: Map<string, Notification>;
   private conversations: Map<string, any>;
   private messages: Map<string, any>;
+  private emailLeads: Map<string, EmailLead>;
 
   constructor() {
     this.users = new Map();
@@ -88,6 +95,7 @@ export class MemStorage implements IStorage {
     this.notifications = new Map();
     this.conversations = new Map();
     this.messages = new Map();
+    this.emailLeads = new Map();
 
     // Sample data initialization removed
     this.initializeSampleNotifications();
@@ -866,6 +874,32 @@ export class MemStorage implements IStorage {
     // Mock implementation - you can implement this when you add the support tickets table
     // Updating support ticket
     return true;
+  }
+  
+  // Email leads operations
+  async createEmailLead(insertLead: InsertEmailLead & { discountCode: string }): Promise<EmailLead> {
+    // Check if email already exists
+    const existing = await this.getEmailLeadByEmail(insertLead.email);
+    if (existing) {
+      throw new Error('UNIQUE constraint failed: email_leads.email');
+    }
+    
+    const id = randomUUID();
+    const lead: EmailLead = {
+      id,
+      email: insertLead.email,
+      source: insertLead.source,
+      discountCode: insertLead.discountCode,
+      isUsed: false,
+      usedAt: null,
+      createdAt: new Date()
+    };
+    this.emailLeads.set(id, lead);
+    return lead;
+  }
+  
+  async getEmailLeadByEmail(email: string): Promise<EmailLead | undefined> {
+    return Array.from(this.emailLeads.values()).find(lead => lead.email === email);
   }
 }
 
