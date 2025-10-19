@@ -2,7 +2,6 @@ import { Link } from 'wouter';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { 
-  Car, 
   MapPin, 
   Phone, 
   Mail, 
@@ -14,44 +13,66 @@ import {
   Clock,
   Star,
   ArrowRight,
-  Heart,
-  Award,
   Zap
 } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
-  const footerLinks = {
-    company: [
-      { label: 'About Us', href: '/about' },
-      { label: 'How It Works', href: '/how-it-works' },
-      { label: 'Careers', href: '/careers' },
-      { label: 'Press', href: '/press' }
-    ],
-    services: [
-      { label: 'Rent a Car', href: '/cars' },
-      { label: 'Become a Member', href: '/become-member' },
-      { label: 'Fleet Management', href: '/fleet' },
-      { label: 'Business Solutions', href: '/business' }
-    ],
-    support: [
-      { label: 'Help Center', href: '/help' },
-      { label: 'Contact Us', href: '/contact' },
-      { label: 'Safety Center', href: '/safety' },
-      { label: 'Community Guidelines', href: '/guidelines' },
-      { label: 'Report a Problem', href: '/report' },
-      { label: 'FAQ', href: '/faq' }
-    ],
-    legal: [
-      { label: 'Terms of Service', href: '/terms-of-service' },
-      { label: 'Privacy Policy', href: '/privacy-policy' },
-      { label: 'GDPR Compliance', href: '/gdpr-compliance' },
-      { label: 'Cookie Policy', href: '/cookies' },
-      { label: 'Insurance', href: '/insurance' },
-      { label: 'Accessibility', href: '/accessibility' }
-    ]
-  };
+  const footerSections = [
+    {
+      icon: Shield,
+      iconText: '100% Secure',
+      iconDesc: 'Bank-level security',
+      title: 'Company',
+      links: [
+        { label: 'About Us', href: '/about' },
+        { label: 'How It Works', href: '/how-it-works' },
+        { label: 'Careers', href: '/careers' },
+        { label: 'Press', href: '/press' }
+      ]
+    },
+    {
+      icon: Clock,
+      iconText: '24/7 Support',
+      iconDesc: 'Always here to help',
+      title: 'Services',
+      links: [
+        { label: 'Rent a Car', href: '/cars' },
+        { label: 'Become a Member', href: '/become-member' },
+        { label: 'Fleet Management', href: '/fleet' },
+        { label: 'Business Solutions', href: '/business' }
+      ]
+    },
+    {
+      icon: Star,
+      iconText: 'Verified Owners',
+      iconDesc: 'Trusted community',
+      title: 'Support',
+      links: [
+        { label: 'Help Center', href: '/help' },
+        { label: 'Contact Us', href: '/contact' },
+        { label: 'Safety Center', href: '/safety' },
+        { label: 'Community Guidelines', href: '/guidelines' },
+        { label: 'Report a Problem', href: '/report' },
+        { label: 'FAQ', href: '/faq' }
+      ]
+    },
+    {
+      icon: Zap,
+      iconText: 'Instant Booking',
+      iconDesc: 'Book in seconds',
+      title: 'Legal',
+      links: [
+        { label: 'Terms of Service', href: '/terms-of-service' },
+        { label: 'Privacy Policy', href: '/privacy-policy' },
+        { label: 'GDPR Compliance', href: '/gdpr-compliance' },
+        { label: 'Cookie Policy', href: '/cookies' },
+        { label: 'Insurance', href: '/insurance' },
+        { label: 'Accessibility', href: '/accessibility' }
+      ]
+    }
+  ];
 
   const socialLinks = [
     { icon: Facebook, href: '#', label: 'Facebook', color: 'hover:text-blue-400' },
@@ -60,144 +81,76 @@ export default function Footer() {
     { icon: Linkedin, href: '#', label: 'LinkedIn', color: 'hover:text-blue-500' }
   ];
 
-  const features = [
-    { icon: Shield, text: '100% Secure', desc: 'Bank-level security' },
-    { icon: Clock, text: '24/7 Support', desc: 'Always here to help' },
-    { icon: Star, text: 'Verified Owners', desc: 'Trusted community' },
-    { icon: Zap, text: 'Instant Booking', desc: 'Book in seconds' }
-  ];
-
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white relative overflow-hidden">
+    <footer className="bg-gradient-to-br from-[#0a1440] via-[#1a237e] to-[#0a1440] text-white relative overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-20" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='1.5'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
       }}></div>
       
       {/* Main Footer Content */}
-      <div className="relative z-10 container mx-auto px-4 py-16">
-        {/* Top Section - Logo and Description */}
-        <div className="text-center mb-16">
-          <Link href="/" className="inline-block mb-6">
+      <div className="relative z-10 container mx-auto px-4 pt-16 pb-10">
+        {/* Logo */}
+        <div className="text-center mb-12">
+          <Link href="/" className="inline-block mb-4">
             <img 
               src="/assets/MAIN LOGO.png?v=5" 
               alt="ShareWheelz" 
-              className="h-32 w-auto hover:scale-105 transition-transform duration-300 object-contain"
-              style={{ width: 'auto' }}
+              className="h-32 w-auto hover:scale-105 transition-transform duration-300 object-contain mx-auto"
             />
           </Link>
-          
-          <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             The UK's Premier Car Sharing Platform
           </h3>
-          <p className="text-gray-300 text-lg max-w-3xl mx-auto leading-relaxed">
-            Connect with trusted car owners and rent amazing vehicles for your next adventure. 
-            Experience the future of car rental with our peer-to-peer platform.
+          <p className="text-gray-300 text-base max-w-2xl mx-auto">
+            Connect with trusted car owners and rent amazing vehicles for your next adventure.
           </p>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
-          {features.map((feature, index) => (
-            <div key={index} className="text-center group">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
-                <feature.icon className="w-6 h-6 text-white" />
+        {/* Aligned Grid: Icons + Links */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12 max-w-6xl mx-auto">
+          {footerSections.map((section, index) => {
+            const Icon = section.icon;
+            return (
+              <div key={index} className="flex flex-col items-center text-center">
+                {/* Icon Section */}
+                <div className="mb-8 flex flex-col items-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-3 shadow-lg shadow-purple-500/30 hover:scale-110 transition-transform duration-300 mx-auto">
+                    <Icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="font-semibold text-white text-base mb-1 text-center">{section.iconText}</h4>
+                  <p className="text-gray-400 text-sm text-center">{section.iconDesc}</p>
+                </div>
+
+                {/* Links Section - Centered under icon */}
+                <div className="w-full flex flex-col items-center">
+                  <h4 className="text-lg font-semibold text-white mb-4 text-center">
+                    {section.title}
+                  </h4>
+                  <ul className="space-y-2 flex flex-col items-center">
+                    {section.links.map((link, linkIndex) => (
+                      <li key={linkIndex}>
+                        <Link 
+                          href={link.href}
+                          className="text-gray-300 hover:text-white hover:underline transition-all duration-200 text-sm text-center"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <h4 className="font-semibold text-white mb-1">{feature.text}</h4>
-              <p className="text-gray-400 text-sm">{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Navigation Links */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-          {/* Company */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-6 relative">
-              Company
-              <div className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400"></div>
-            </h4>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link, index) => (
-                <li key={index}>
-                  <Link 
-                    href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 text-sm leading-relaxed block py-1"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-6 relative">
-              Services
-              <div className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400"></div>
-            </h4>
-            <ul className="space-y-3">
-              {footerLinks.services.map((link, index) => (
-                <li key={index}>
-                  <Link 
-                    href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 text-sm leading-relaxed block py-1"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-6 relative">
-              Support
-              <div className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400"></div>
-            </h4>
-            <ul className="space-y-3">
-              {footerLinks.support.map((link, index) => (
-                <li key={index}>
-                  <Link 
-                    href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 text-sm leading-relaxed block py-1"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h4 className="text-lg font-semibold text-white mb-6 relative">
-              Legal
-              <div className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400"></div>
-            </h4>
-            <ul className="space-y-3">
-              {footerLinks.legal.map((link, index) => (
-                <li key={index}>
-                  <Link 
-                    href={link.href}
-                    className="text-gray-300 hover:text-blue-400 transition-colors duration-200 text-sm leading-relaxed block py-1"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            );
+          })}
         </div>
 
         {/* Newsletter Section */}
-        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl p-8 mb-16 border border-white/10">
-          <div className="text-center max-w-2xl mx-auto">
+        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl p-8 mb-12 border border-purple-500/30 shadow-lg shadow-purple-500/20 max-w-2xl mx-auto">
+          <div className="text-center">
             <h4 className="text-2xl font-bold mb-3">Stay in the Loop</h4>
-            <p className="text-gray-300 mb-6">Get exclusive deals, new features, and community updates delivered to your inbox.</p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <p className="text-gray-300 mb-6">Get exclusive deals, new features, and community updates.</p>
+            <div className="flex flex-col sm:flex-row gap-3">
               <Input 
                 type="email" 
                 placeholder="Enter your email address" 
@@ -213,34 +166,36 @@ export default function Footer() {
         </div>
 
         {/* Contact Information */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-          <div className="flex items-center gap-4 text-center md:text-left">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
-              <MapPin className="w-6 h-6 text-white" />
+        <div className="max-w-2xl mx-auto mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <MapPin className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-white mb-1">Headquarters</p>
+                <p className="text-gray-300 text-sm">London, United Kingdom</p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold text-white mb-1">Headquarters</p>
-              <p className="text-gray-300 text-sm">London, United Kingdom</p>
+            
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <Phone className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-white mb-1">Phone Support</p>
+                <p className="text-gray-300 text-sm">+44 20 1234 5678</p>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-4 text-center md:text-left">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Phone className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="font-semibold text-white mb-1">Phone Support</p>
-              <p className="text-gray-300 text-sm">+44 20 1234 5678</p>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-4 text-center md:text-left">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Mail className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="font-semibold text-white mb-1">Email Support</p>
-              <p className="text-gray-300 text-sm">contact@sharewheelz.uk</p>
+            
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <Mail className="w-6 h-6 text-white" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-white mb-1">Email Support</p>
+                <p className="text-gray-300 text-sm">contact@sharewheelz.uk</p>
+              </div>
             </div>
           </div>
         </div>
@@ -250,21 +205,21 @@ export default function Footer() {
       <div className="relative z-10 border-t border-white/10 bg-black/30 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-6">
-            {/* Copyright and Legal Links */}
+            {/* Copyright */}
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <p className="text-gray-300 text-sm">
                 © {currentYear} ShareWheelz. All rights reserved.
               </p>
               <div className="flex gap-6">
-                {footerLinks.legal.slice(0, 3).map((link, index) => (
-                  <Link 
-                    key={index}
-                    href={link.href}
-                    className="text-gray-400 hover:text-white text-sm transition-colors duration-200"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                <Link href="/terms-of-service" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
+                  Terms of Service
+                </Link>
+                <Link href="/privacy-policy" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
+                  Privacy Policy
+                </Link>
+                <Link href="/gdpr-compliance" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
+                  GDPR Compliance
+                </Link>
               </div>
             </div>
             

@@ -684,7 +684,7 @@ export default function BecomeMember() {
                     </div>
                     
                     <Button 
-                      className={`w-full py-4 text-lg font-semibold transition-all duration-300 bg-gradient-to-r ${plan.color} hover:shadow-xl text-white mt-4`}
+                      className={`btn-animated-border ${plan.id === 'gold' ? 'btn-gold' : plan.id === 'black' ? 'btn-black' : 'btn-purple'} w-full py-4 text-lg font-semibold transition-all duration-300 border-2 mt-4`}
                       size="lg"
                       onClick={(e) => {
                         e.stopPropagation();

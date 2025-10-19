@@ -69,7 +69,7 @@ export default function BecomeHost() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/login">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Button size="lg" className="btn-animated-border btn-white border-2">
                 Start Now
               </Button>
             </Link>
@@ -77,7 +77,7 @@ export default function BecomeHost() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-blue-600"
+                className="btn-animated-border btn-white border-2"
               >
                 Calculate My Earnings
               </Button>

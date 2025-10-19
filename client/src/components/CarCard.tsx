@@ -159,14 +159,14 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
         </div>
 
         {/* Action Buttons - Below Image */}
-        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100">
-          <div className="flex gap-3">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 relative z-20">
+          <div className="flex gap-3 relative z-20">
             <Button 
               type="button"
               onClick={handleMoreDetails}
               variant="outline"
               size="sm"
-              className="flex-1 text-gray-700 border-gray-300 hover:bg-gray-50 text-sm font-medium"
+              className="flex-1 btn-gray text-sm font-semibold pointer-events-auto"
             >
               <Info className="w-4 h-4 mr-2" />
               <span>More Details</span>
@@ -175,7 +175,7 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
               type="button"
               onClick={handleBooking}
               size="sm"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium shadow-sm hover:shadow-md transition-all duration-200"
+              className="flex-1 btn-blue text-sm font-semibold pointer-events-auto"
             >
               <BookOpen className="w-4 h-4 mr-2" />
               <span>Book Now</span>

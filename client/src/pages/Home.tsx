@@ -588,11 +588,12 @@ export default function Home() {
 
                   <Link href={section.link} className="w-full mt-auto">
                     <button
-                      className={`w-full py-2.5 px-4 rounded-md text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2`} 
-                      style={{
-                        background: `linear-gradient(180deg, ${section.buttonColorLight || '#ffffff'} 0%, ${section.buttonColor || '#3b82f6'} 100%)`,
-                        boxShadow: `0 6px 18px ${section.buttonColor}33`,
-                      }}
+                      className={`btn-animated-border w-full py-2.5 px-4 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 border-2 transition-all duration-300 ${
+                        section.id === 'rent-car' ? 'btn-blue' :
+                        section.id === 'make-car-work' ? 'btn-green' :
+                        section.id === 'become-member' ? 'btn-purple' :
+                        'btn-blue'
+                      }`}
                       aria-label={section.buttonText}
                     >
                       {section.buttonText}
@@ -800,13 +801,13 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/cars">
-                  <Button className="btn-primary">
+                  <Button className="btn-blue px-6 py-3">
                     View All Cars
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/become-host">
-                  <Button variant="outline" className="btn-outline">
+                  <Button variant="outline" className="btn-gray px-6 py-3">
                     List Your Car
                   </Button>
                 </Link>
