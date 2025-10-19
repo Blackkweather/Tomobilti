@@ -529,12 +529,12 @@ export default function BecomeMember() {
           
 
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
               {membershipPlans.map((plan) => (
                 <Card 
                   key={plan.id} 
-                  className={`relative hover:shadow-2xl transition-all duration-500 cursor-pointer group flex flex-col ${
-                    plan.popular ? 'ring-2 ring-yellow-500 scale-105 bg-gradient-to-br from-yellow-50 to-orange-50' : plan.bgColor
+                  className={`relative hover:shadow-2xl transition-all duration-500 cursor-pointer group flex flex-col h-full ${
+                    plan.popular ? 'ring-2 ring-yellow-500 bg-gradient-to-br from-yellow-50 to-orange-50' : plan.bgColor
                   } ${selectedPlan === plan.id ? 'ring-4 ring-blue-500 shadow-2xl' : ''}`}
                   onClick={() => handlePlanSelect(plan.id as 'purple' | 'gold' | 'black')}
                 >
@@ -650,7 +650,7 @@ export default function BecomeMember() {
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="space-y-5 px-6 pb-6">
+                  <CardContent className="space-y-5 px-6 pb-6 flex-1 flex flex-col">
                     {/* Host Features */}
                     <div>
                       <h4 className="font-semibold text-green-700 mb-2.5 flex items-center gap-2">
@@ -682,6 +682,8 @@ export default function BecomeMember() {
                         ))}
                       </ul>
                     </div>
+                    
+                    <div className="flex-1"></div>
                     
                     <Button 
                       className={`btn-animated-border ${plan.id === 'gold' ? 'btn-gold' : plan.id === 'black' ? 'btn-black' : 'btn-purple'} w-full py-4 text-lg font-semibold transition-all duration-300 border-2 mt-4`}
