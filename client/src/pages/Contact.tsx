@@ -62,7 +62,7 @@ export default function Contact() {
     'Billing Question',
     'Safety Concern',
     'Partnership Inquiry',
-    'Press & Media',
+    'Press & Media Inquiry',
     'Other'
   ];
 
@@ -284,15 +284,36 @@ export default function Contact() {
 
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                    Business Inquiries
+                    Press & Media Inquiries
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    For partnership opportunities, press inquiries, or business 
-                    development questions.
+                    For press inquiries, interviews, and media relations, contact our executive team:
                   </p>
-                  <div className="flex items-center gap-2 text-blue-600">
-                    <Mail className="w-5 h-5" />
-                    <span>management@sharewheelz.uk</span>
+                  <div className="space-y-3">
+                    <div>
+                      <p className="font-semibold text-gray-900">Brahim El Kettani</p>
+                      <p className="text-sm text-gray-600">CEO, CFO & Founder</p>
+                      <div className="flex items-center gap-2 text-blue-600 text-sm mt-1">
+                        <Mail className="w-4 h-4" />
+                        <span>brahim@sharewheelz.uk</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Mohammed Henna</p>
+                      <p className="text-sm text-gray-600">CTO, COO & Founder</p>
+                      <div className="flex items-center gap-2 text-blue-600 text-sm mt-1">
+                        <Mail className="w-4 h-4" />
+                        <span>mohammed@sharewheelz.uk</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">Olivia V</p>
+                      <p className="text-sm text-gray-600">CCO & CMO</p>
+                      <div className="flex items-center gap-2 text-blue-600 text-sm mt-1">
+                        <Mail className="w-4 h-4" />
+                        <span>olivia@sharewheelz.uk</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

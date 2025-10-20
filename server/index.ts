@@ -6,6 +6,7 @@ import cors from 'cors';
 import { applySecurity } from './middleware/security';
 import { createServer } from 'http';
 import registerRoutes from "./routes";
+import uploadRoutes from "./routes/upload";
 import { setupVite, serveStatic, log } from "./vite";
 import { EmailService } from "./services/email";
 import { CarRentalAgentService } from "./services/car-rental-agent";
@@ -115,6 +116,7 @@ app.use((req, res, next) => {
     });
   });
 
+  app.use('/api/upload', uploadRoutes);
   await registerRoutes(app);
 
   // Initialize sample data in production if database is empty

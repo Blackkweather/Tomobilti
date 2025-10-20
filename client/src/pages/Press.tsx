@@ -140,14 +140,19 @@ const Press: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Press Inquiries</h3>
               <div className="space-y-3">
                 <div>
-                  <p className="font-medium text-gray-900">Sarah Johnson</p>
-                  <p className="text-gray-600">Head of Communications</p>
-                  <p className="text-blue-600">sarah.johnson@sharewheelz.com</p>
+                  <p className="font-medium text-gray-900">Brahim El Kettani</p>
+                  <p className="text-gray-600">CEO, CFO & Founder</p>
+                  <p className="text-blue-600">brahim@sharewheelz.uk</p>
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">Mike Chen</p>
-                  <p className="text-gray-600">Media Relations Manager</p>
-                  <p className="text-blue-600">mike.chen@sharewheelz.com</p>
+                  <p className="font-medium text-gray-900">Mohammed Henna</p>
+                  <p className="text-gray-600">CTO, COO & Founder</p>
+                  <p className="text-blue-600">mohammed@sharewheelz.uk</p>
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">Olivia V</p>
+                  <p className="text-gray-600">CCO & CMO</p>
+                  <p className="text-blue-600">olivia@sharewheelz.uk</p>
                 </div>
               </div>
             </div>
@@ -155,15 +160,16 @@ const Press: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">General Media Contact</h3>
               <div className="space-y-3">
                 <p className="text-gray-600">
-                  <span className="font-medium">Phone:</span> +1 (555) 123-4567
+                  <span className="font-medium">Phone:</span> +44 20 7946 0958
                 </p>
                 <p className="text-gray-600">
-                  <span className="font-medium">Email:</span> press@sharewheelz.com
+                  <span className="font-medium">Email:</span> press@sharewheelz.uk
                 </p>
                 <p className="text-gray-600">
                   <span className="font-medium">Address:</span><br />
-                  123 Innovation Drive<br />
-                  San Francisco, CA 94105
+                  123 Oxford Street<br />
+                  London, W1D 2HG<br />
+                  United Kingdom
                 </p>
               </div>
             </div>
