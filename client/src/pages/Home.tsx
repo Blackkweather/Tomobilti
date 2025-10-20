@@ -674,9 +674,8 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 auto-rows-fr items-stretch">
               {(carsData && carsData.cars && carsData.cars.length > 0 ? carsData.cars.slice(0, 6) : featuredCars).map((car: any) => (
-                // CarCard expects a full Car shape; API items should match. We pass through as-is.
-                <div className="h-full">
-                  <CarCard key={car.id} car={car} />
+                <div key={car.id} className="h-full">
+                  <CarCard car={car} />
                 </div>
               ))}
             </div>
