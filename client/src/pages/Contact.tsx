@@ -295,7 +295,7 @@ export default function Contact() {
                       <p className="text-sm text-gray-600">CEO, CFO & Founder</p>
                       <div className="flex items-center gap-2 text-blue-600 text-sm mt-1">
                         <Mail className="w-4 h-4" />
-                        <span>brahim@sharewheelz.uk</span>
+                        <span>admin@sharewheelz.uk</span>
                       </div>
                     </div>
                     <div>
@@ -303,7 +303,7 @@ export default function Contact() {
                       <p className="text-sm text-gray-600">CTO, COO & Founder</p>
                       <div className="flex items-center gap-2 text-blue-600 text-sm mt-1">
                         <Mail className="w-4 h-4" />
-                        <span>mohammed@sharewheelz.uk</span>
+                        <span>management@sharewheelz.uk</span>
                       </div>
                     </div>
                     <div>
@@ -311,7 +311,7 @@ export default function Contact() {
                       <p className="text-sm text-gray-600">CCO & CMO</p>
                       <div className="flex items-center gap-2 text-blue-600 text-sm mt-1">
                         <Mail className="w-4 h-4" />
-                        <span>olivia@sharewheelz.uk</span>
+                        <span>admin@sharewheelz.uk</span>
                       </div>
                     </div>
                   </div>

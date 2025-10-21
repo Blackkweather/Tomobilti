@@ -245,8 +245,10 @@ export default function AddCar() {
           <form onSubmit={handleSubmit} className="p-4 sm:p-8 space-y-6 sm:space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Make</label>
+                <label htmlFor="make" className="block text-sm font-semibold text-gray-800 mb-3">Make</label>
                 <input
+                  id="make"
+                  name="make"
                   type="text"
                   value={form.make}
                   onChange={handleChange("make")}
@@ -257,8 +259,10 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Model</label>
+                <label htmlFor="model" className="block text-sm font-semibold text-gray-800 mb-3">Model</label>
                 <input
+                  id="model"
+                  name="model"
                   type="text"
                   value={form.model}
                   onChange={handleChange("model")}
@@ -269,8 +273,10 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Year</label>
+                <label htmlFor="year" className="block text-sm font-semibold text-gray-800 mb-3">Year</label>
                 <input
+                  id="year"
+                  name="year"
                   type="number"
                   value={form.year}
                   onChange={handleChange("year")}
@@ -282,8 +288,10 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Price per Day (£)</label>
+                <label htmlFor="pricePerDay" className="block text-sm font-semibold text-gray-800 mb-3">Price per Day (£)</label>
                 <input
+                  id="pricePerDay"
+                  name="pricePerDay"
                   type="number"
                   value={form.pricePerDay}
                   onChange={handleChange("pricePerDay")}
@@ -294,8 +302,10 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Fuel Type</label>
+                <label htmlFor="fuelType" className="block text-sm font-semibold text-gray-800 mb-3">Fuel Type</label>
                 <select
+                  id="fuelType"
+                  name="fuelType"
                   value={form.fuelType}
                   onChange={handleChange("fuelType")}
                   className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-mauve-500 focus:border-mauve-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
@@ -308,8 +318,10 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Transmission</label>
+                <label htmlFor="transmission" className="block text-sm font-semibold text-gray-800 mb-3">Transmission</label>
                 <select
+                  id="transmission"
+                  name="transmission"
                   value={form.transmission}
                   onChange={handleChange("transmission")}
                   className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-mauve-500 focus:border-mauve-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
@@ -320,8 +332,10 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Number of Seats</label>
+                <label htmlFor="seats" className="block text-sm font-semibold text-gray-800 mb-3">Number of Seats</label>
                 <input
+                  id="seats"
+                  name="seats"
                   type="number"
                   value={form.seats}
                   onChange={handleChange("seats")}
@@ -332,8 +346,10 @@ export default function AddCar() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Mileage</label>
+                <label htmlFor="mileage" className="block text-sm font-semibold text-gray-800 mb-3">Mileage</label>
                 <input
+                  id="mileage"
+                  name="mileage"
                   type="number"
                   value={form.mileage}
                   onChange={handleChange("mileage")}
@@ -344,8 +360,10 @@ export default function AddCar() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-800 mb-3">Location</label>
+                <label htmlFor="location" className="block text-sm font-semibold text-gray-800 mb-3">Location</label>
                 <input
+                  id="location"
+                  name="location"
                   type="text"
                   value={form.location}
                   onChange={handleChange("location")}
@@ -356,8 +374,10 @@ export default function AddCar() {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-gray-800 mb-3">License Plate</label>
+                <label htmlFor="licensePlate" className="block text-sm font-semibold text-gray-800 mb-3">License Plate</label>
                 <input
+                  id="licensePlate"
+                  name="licensePlate"
                   type="text"
                   value={form.licensePlate}
                   onChange={handleChange("licensePlate")}

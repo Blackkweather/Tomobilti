@@ -52,9 +52,9 @@ export default function GoogleCallback() {
           setTimeout(() => {
             // Redirect based on user type
             if (userData.user?.userType === 'owner') {
-              setLocation('/dashboard/owner');
+              setLocation('/owner-dashboard');
             } else if (userData.user?.userType === 'renter') {
-              setLocation('/dashboard/renter');
+              setLocation('/renter-dashboard');
             } else {
               setLocation('/dashboard');
             }
@@ -72,7 +72,7 @@ export default function GoogleCallback() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ accessToken: code }),
+          body: JSON.stringify({ code: code }),
         });
 
         if (!tokenResponse.ok) {
@@ -93,9 +93,9 @@ export default function GoogleCallback() {
         setTimeout(() => {
           // Redirect based on user type
           if (tokenData.user?.userType === 'owner') {
-            setLocation('/dashboard/owner');
+            setLocation('/owner-dashboard');
           } else if (tokenData.user?.userType === 'renter') {
-            setLocation('/dashboard/renter');
+            setLocation('/renter-dashboard');
           } else {
             setLocation('/dashboard');
           }

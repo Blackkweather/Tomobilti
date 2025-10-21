@@ -173,12 +173,12 @@ If unrelated question: "I'm here to help with ShareWheelz services. How can I as
       
               // Business/Enterprise rental requests
               if (message.includes('business') || message.includes('enterprise') || message.includes('company') || message.includes('10 ') || message.includes('multiple') || message.includes('fleet')) {
-                return "Hi! I'm Alanna from ShareWheelz Support. For business rentals like 10 Jaguar F-Pace vehicles, we offer special enterprise solutions! Contact our business team at business@sharewheelz.com or call +44 20 7123 4567. We provide volume discounts, dedicated account managers, and flexible terms for corporate clients. What's your company name and rental dates?";
+                return "Hi! I'm Alanna from ShareWheelz Support. For business rentals like 10 Jaguar F-Pace vehicles, we offer special enterprise solutions! Contact our business team at management@sharewheelz.uk or call +44 20 7123 4567. We provide volume discounts, dedicated account managers, and flexible terms for corporate clients. What's your company name and rental dates?";
               }
               
               // Contact/Problem/Support questions
               if (message.includes('contact') || message.includes('problem') || message.includes('issue') || message.includes('complaint') || message.includes('who should i contact')) {
-                return "Hi! I'm Alanna from ShareWheelz Support. I'm here 24/7 to help you! You can contact me directly through this chat, or reach our support team at support@sharewheelz.com. Gold members get priority support, Elite members get VIP support. What's your issue? I'll help resolve it right away.";
+                return "Hi! I'm Alanna from ShareWheelz Support. I'm here 24/7 to help you! You can contact me directly through this chat, or reach our support team at support@sharewheelz.uk. Gold members get priority support, Elite members get VIP support. What's your issue? I'll help resolve it right away.";
               }
       
       // Best membership question

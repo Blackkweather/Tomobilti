@@ -41,7 +41,6 @@ import Press from './pages/Press';
 import GoogleCallback from './pages/GoogleCallback';
 import FacebookCallback from './pages/FacebookCallback';
 import MicrosoftCallback from './pages/MicrosoftCallback';
-import GitHubCallback from './pages/GitHubCallback';
 import Fleet from './pages/Fleet';
 import Business from './pages/Business';
 import Contact from './pages/Contact';
@@ -158,7 +157,6 @@ function App() {
               <Route path="/auth/google/callback" component={GoogleCallback} />
               <Route path="/auth/facebook/callback" component={FacebookCallback} />
               <Route path="/auth/microsoft/callback" component={MicrosoftCallback} />
-              <Route path="/auth/github/callback" component={GitHubCallback} />
               <Route component={NotFound} />
             </Switch>
           </main>
