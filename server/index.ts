@@ -192,7 +192,7 @@ app.use((req, res, next) => {
             email: process.env.DEMO_USER_EMAIL || "admin@sharewheelz.uk",
             password: process.env.DEMO_USER_PASSWORD || "SecureDemo123!",
             firstName: "Olivia",
-            lastName: "Ibrahim",
+            lastName: "V",
             phone: "+44 20 1234 5678",
             userType: "owner"
           });
@@ -201,7 +201,7 @@ app.use((req, res, next) => {
             email: process.env.DEMO_USER2_EMAIL || "management@sharewheelz.uk",
             password: process.env.DEMO_USER_PASSWORD || "SecureDemo123!",
             firstName: "Mohammed",
-            lastName: "Ahmed",
+            lastName: "Henna",
             phone: "+44 20 8765 4321",
             userType: "owner"
           });
