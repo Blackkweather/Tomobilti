@@ -15,41 +15,54 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 router.post('/google', async (req, res) => {
   try {
     const sanitizedBody = sanitizeInput(req.body);
-    const { accessToken } = sanitizedBody;
+    const { accessToken, code } = sanitizedBody;
 
-    if (!accessToken) {
-      return res.status(400).json({ error: 'Google authorization code is required' });
+    console.log('OAuth request received:', { hasAccessToken: !!accessToken, hasCode: !!code });
+
+    let idToken = accessToken;
+
+    // If we received an authorization code, exchange it for tokens
+    if (code && !accessToken) {
+      console.log('Exchanging authorization code for tokens...');
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          client_id: process.env.GOOGLE_CLIENT_ID!,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+          code: code,
+          grant_type: 'authorization_code',
+          redirect_uri: `${req.protocol}://${req.get('host')}/google-callback`,
+        }),
+      });
+
+      if (!tokenResponse.ok) {
+        const errorText = await tokenResponse.text();
+        console.error('Token exchange failed:', errorText);
+        return res.status(400).json({ error: 'Failed to exchange code for tokens', details: errorText });
+      }
+
+      const tokenData = await tokenResponse.json();
+      console.log('Token exchange successful:', { hasIdToken: !!tokenData.id_token, hasAccessToken: !!tokenData.access_token });
+      
+      idToken = tokenData.id_token;
+
+      if (!idToken) {
+        return res.status(400).json({ error: 'No ID token received from Google' });
+      }
     }
 
-    // Exchange authorization code for tokens
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: process.env.GOOGLE_CLIENT_ID!,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-        code: accessToken,
-        grant_type: 'authorization_code',
-        redirect_uri: `${req.protocol}://${req.get('host')}/auth/google/callback`,
-      }),
-    });
-
-    if (!tokenResponse.ok) {
-      return res.status(400).json({ error: 'Failed to exchange code for tokens' });
+    if (!idToken) {
+      return res.status(400).json({ error: 'Google access token or authorization code is required' });
     }
 
-    const tokenData = await tokenResponse.json();
-    const { id_token } = tokenData;
-
-    if (!id_token) {
-      return res.status(400).json({ error: 'No ID token received from Google' });
-    }
+    console.log('About to verify ID token:', { tokenLength: idToken.length, tokenStart: idToken.substring(0, 20) });
 
     // Verify the Google ID token
     const ticket = await googleClient.verifyIdToken({
-      idToken: id_token,
+      idToken: idToken,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
@@ -76,6 +89,7 @@ router.post('/google', async (req, res) => {
         googleId: googleId,
         userType: 'renter' as const,
         isVerified: true,
+        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -149,9 +163,16 @@ router.post('/facebook', async (req, res) => {
     }
     
     const verifyResponse = await fetch(verifyUrl);
+    
+    if (!verifyResponse.ok) {
+      console.error('Facebook token verification failed:', verifyResponse.status, verifyResponse.statusText);
+      return res.status(400).json({ error: 'Failed to verify Facebook token' });
+    }
+    
     const verifyData = await verifyResponse.json();
     
     if (!verifyData.data || !verifyData.data.is_valid) {
+      console.error('Facebook token verification data:', verifyData);
       return res.status(400).json({ error: 'Invalid Facebook token' });
     }
 
@@ -163,9 +184,16 @@ router.post('/facebook', async (req, res) => {
     }
     
     const userResponse = await fetch(userInfoUrl);
+    
+    if (!userResponse.ok) {
+      console.error('Facebook user info request failed:', userResponse.status, userResponse.statusText);
+      return res.status(400).json({ error: 'Failed to get user information from Facebook' });
+    }
+    
     const userData = await userResponse.json();
     
     if (!userData.id) {
+      console.error('Facebook user data:', userData);
       return res.status(400).json({ error: 'Failed to get user information from Facebook' });
     }
 
@@ -182,6 +210,7 @@ router.post('/facebook', async (req, res) => {
         facebookId: userData.id,
         userType: 'renter' as const,
         isVerified: true,
+        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -259,6 +288,7 @@ router.post('/microsoft', async (req, res) => {
         microsoftId: mockUser.id,
         userType: 'renter' as const,
         isVerified: true,
+        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -322,6 +352,7 @@ router.post('/apple', async (req, res) => {
         appleId: mockUser.id,
         userType: 'renter' as const,
         isVerified: true,
+        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

@@ -1,0 +1,11 @@
+[2025-10-21T00:45:56.803Z] [ERROR] Request failed: POST /api/auth/login {"requestId":"ulzymwigi","method":"POST","endpoint":"/api/auth/login","statusCode":401,"responseTime":44}
+[2025-10-21T01:22:12.610Z] [ERROR] Request failed: POST /google {"requestId":"tyiltrojb","method":"POST","endpoint":"/google","statusCode":400,"responseTime":835}
+[2025-10-21T01:22:14.563Z] [ERROR] Request failed: POST /facebook {"requestId":"c9hr05vf9","method":"POST","endpoint":"/facebook","statusCode":400,"responseTime":6}
+[2025-10-21T01:22:15.637Z] [ERROR] Request failed: POST /microsoft {"requestId":"x7qdx7ynd","method":"POST","endpoint":"/microsoft","statusCode":500,"responseTime":103}
+[2025-10-21T01:34:30.028Z] [ERROR] Request failed: POST /google {"requestId":"g8k1rcgg0","method":"POST","endpoint":"/google","statusCode":400,"responseTime":549}
+[2025-10-21T02:17:37.180Z] [ERROR] Request failed: POST /google {"requestId":"8pf2w53aw","method":"POST","endpoint":"/google","statusCode":500,"responseTime":770}
+[2025-10-21T02:18:10.926Z] [ERROR] Request failed: POST /google {"requestId":"b12hx6gpg","method":"POST","endpoint":"/google","statusCode":400,"responseTime":3}
+[2025-10-21T02:19:55.925Z] [ERROR] Request failed: POST /google {"requestId":"shpzv1dqs","method":"POST","endpoint":"/google","statusCode":400,"responseTime":1022}
+[2025-10-21T02:21:37.001Z] [ERROR] Request failed: POST /google {"requestId":"gyvdkyaej","method":"POST","endpoint":"/google","statusCode":400,"responseTime":724}
+[2025-10-21T02:23:14.542Z] [ERROR] Request failed: POST /google {"requestId":"hefgklibz","method":"POST","endpoint":"/google","statusCode":400,"responseTime":1067}
+[2025-10-21T02:33:27.066Z] [ERROR] Request failed: POST /google {"requestId":"4ghi1eagy","method":"POST","endpoint":"/google","statusCode":400,"responseTime":880}

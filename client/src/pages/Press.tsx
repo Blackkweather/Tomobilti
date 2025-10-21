@@ -142,17 +142,17 @@ const Press: React.FC = () => {
                 <div>
                   <p className="font-medium text-gray-900">Brahim El Kettani</p>
                   <p className="text-gray-600">CEO, CFO & Founder</p>
-                  <p className="text-blue-600">brahim@sharewheelz.uk</p>
+                  <p className="text-blue-600">admin@sharewheelz.uk</p>
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Mohammed Henna</p>
                   <p className="text-gray-600">CTO, COO & Founder</p>
-                  <p className="text-blue-600">mohammed@sharewheelz.uk</p>
+                  <p className="text-blue-600">management@sharewheelz.uk</p>
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">Olivia V</p>
                   <p className="text-gray-600">CCO & CMO</p>
-                  <p className="text-blue-600">olivia@sharewheelz.uk</p>
+                  <p className="text-blue-600">admin@sharewheelz.uk</p>
                 </div>
               </div>
             </div>

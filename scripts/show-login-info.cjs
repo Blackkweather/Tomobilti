@@ -27,7 +27,7 @@ console.log('');
 console.log('2. Email: test@example.com');
 console.log('   Password: password123 (most likely)');
 console.log('');
-console.log('3. Email: admin@sharewheelz.com');
+console.log('3. Email: admin@sharewheelz.uk');
 console.log('   Password: password123 (most likely)');
 console.log('');
 console.log('4. Email: john.smith@example.com');

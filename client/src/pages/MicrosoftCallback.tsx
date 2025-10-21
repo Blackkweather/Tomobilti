@@ -51,7 +51,14 @@ export default function MicrosoftCallback() {
         
         // Redirect to dashboard after 2 seconds
         setTimeout(() => {
-          setLocation('/dashboard');
+          // Redirect based on user type
+          if (tokenData.user?.userType === 'owner') {
+            setLocation('/owner-dashboard');
+          } else if (tokenData.user?.userType === 'renter') {
+            setLocation('/renter-dashboard');
+          } else {
+            setLocation('/dashboard');
+          }
         }, 2000);
 
       } catch (error) {
@@ -115,6 +122,7 @@ export default function MicrosoftCallback() {
     </div>
   );
 }
+
 
 
 

@@ -189,19 +189,19 @@ app.use((req, res, next) => {
           
           // Create sample users and cars in memory
           const owner1 = await memStorage.createUser({
-            email: process.env.DEMO_USER_EMAIL || "demo@sharewheelz.uk",
+            email: process.env.DEMO_USER_EMAIL || "admin@sharewheelz.uk",
             password: process.env.DEMO_USER_PASSWORD || "SecureDemo123!",
-            firstName: "John",
-            lastName: "Smith",
+            firstName: "Olivia",
+            lastName: "Ibrahim",
             phone: "+44 20 1234 5678",
             userType: "owner"
           });
           
           const owner2 = await memStorage.createUser({
-            email: process.env.DEMO_USER2_EMAIL || "demo2@sharewheelz.uk",
+            email: process.env.DEMO_USER2_EMAIL || "management@sharewheelz.uk",
             password: process.env.DEMO_USER_PASSWORD || "SecureDemo123!",
-            firstName: "Sarah",
-            lastName: "Jones",
+            firstName: "Mohammed",
+            lastName: "Ahmed",
             phone: "+44 20 8765 4321",
             userType: "owner"
           });

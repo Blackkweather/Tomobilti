@@ -72,7 +72,7 @@ export default function BecomeMember() {
       // Simulate payment processing
       await new Promise(resolve => setTimeout(resolve, 3000));
       
-      // Simulate random success/failure for demo
+      // Simulate random success/failure for testing
       const isSuccess = Math.random() > 0.2; // 80% success rate
       
       if (isSuccess) {
@@ -967,7 +967,7 @@ export default function BecomeMember() {
                       <div className="flex items-center gap-3">
                         <CreditCard className="h-5 w-5 text-gray-500" />
                         <div>
-                          <div className="font-medium">Demo Payment</div>
+                          <div className="font-medium">Payment Processing</div>
                           <div className="text-sm text-gray-600">**** **** **** 1234</div>
                         </div>
                         <Lock className="h-4 w-4 text-green-500 ml-auto" />
@@ -1115,7 +1115,7 @@ export default function BecomeMember() {
               </p>
 
               <a
-                href="mailto:admin@sharewheelz.uk?subject=Membership Inquiry"
+                href="mailto:support@sharewheelz.uk?subject=Membership Inquiry"
                 className="flex items-center gap-4 p-5 border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 group"
               >
                 <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-blue-500 transition-colors duration-200">
@@ -1123,7 +1123,7 @@ export default function BecomeMember() {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold text-gray-900 text-lg">Email Us</div>
-                  <div className="text-sm text-gray-600">admin@sharewheelz.uk</div>
+                  <div className="text-sm text-gray-600">support@sharewheelz.uk</div>
                 </div>
               </a>
 
