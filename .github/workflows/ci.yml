@@ -66,6 +66,7 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage/lcov.info
+      continue-on-error: true
 
   # Security Audit
   security:
@@ -118,7 +119,7 @@ jobs:
         name: build-artifacts
         path: |
           dist/
-          client/dist/
+          dist/public/
 
   # End-to-End Tests
   e2e-tests:
