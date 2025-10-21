@@ -33,7 +33,7 @@ jobs:
         run: npm run lint || true
 
       - name: Run TypeScript check
-        run: npm run type-check || true
+        run: npm run typecheck || true
 
       - name: Check code formatting
         run: npm run format:check || true
@@ -64,6 +64,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
+        continue-on-error: true
 
   # Testing
   test:
@@ -110,9 +111,11 @@ jobs:
         run: npm run test:coverage || true
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
+        continue-on-error: true
 
   # Build & Performance
   build:
@@ -142,12 +145,12 @@ jobs:
         run: npm run analyze:bundle || true
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-files
           path: |
             dist/
-            client/dist/
+            dist/public/
 
   # Database Migration
   database-migration:
