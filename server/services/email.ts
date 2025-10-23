@@ -13,7 +13,7 @@ export interface EmailData {
 export interface VerificationEmailData {
   to: string;
   firstName: string;
-  verificationToken: string;
+  verificationCode: string;
 }
 
 export interface BookingConfirmationData {
@@ -34,11 +34,6 @@ export class EmailService {
    * Initialize email transporter
    */
   static initialize() {
-    // Temporarily disable email service for quick hosting
-    console.log('📧 Email service temporarily disabled for hosting');
-    console.log('   Email functionality will work in mock mode');
-    return;
-
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -64,7 +59,7 @@ export class EmailService {
    * Send email verification
    */
   static async sendVerificationEmail(data: VerificationEmailData): Promise<boolean> {
-    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${data.verificationToken}`;
+    // No URL needed for code-based verification
     
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -74,7 +69,7 @@ export class EmailService {
         </div>
         
         <div style="padding: 30px; background: #f9fafb;">
-          <h2 style="color: #1f2937; margin-bottom: 20px;">Welcome to Tomobilti!</h2>
+          <h2 style="color: #1f2937; margin-bottom: 20px;">Email Verification</h2>
           
           <p style="color: #4b5563; line-height: 1.6; margin-bottom: 20px;">
             Hi ${data.firstName},
@@ -82,26 +77,26 @@ export class EmailService {
           
           <p style="color: #4b5563; line-height: 1.6; margin-bottom: 30px;">
             Thank you for registering with Tomobilti! To complete your account setup, 
-            please verify your email address by clicking the button below:
+            please verify your email address using the verification code below:
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${verificationUrl}" 
-               style="background: #22c55e; color: white; padding: 15px 30px; text-decoration: none; 
-                      border-radius: 8px; font-weight: 600; display: inline-block;">
-              Verify Email Address
-            </a>
+            <div style="background: #ffffff; border: 2px solid #e5e7eb; border-radius: 8px; padding: 20px; display: inline-block;">
+              <div style="font-size: 32px; font-weight: bold; color: #1f2937; letter-spacing: 4px; font-family: 'Courier New', monospace;">
+                ${data.verificationCode}
+              </div>
+            </div>
           </div>
           
-          <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
-            If the button doesn't work, copy and paste this link into your browser:<br>
-            <a href="${verificationUrl}" style="color: #3b82f6;">${verificationUrl}</a>
+          <p style="color: #6b7280; font-size: 14px; text-align: center; margin-top: 20px;">
+            This code will expire in 15 minutes for security reasons.
           </p>
           
-          <p style="color: #6b7280; font-size: 14px; margin-top: 20px;">
-            This link will expire in 24 hours. If you didn't create an account with Tomobilti, 
-            please ignore this email.
-          </p>
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <p style="color: #6b7280; font-size: 12px; margin: 0;">
+              If you didn't create an account with Tomobilti, please ignore this email.
+            </p>
+          </div>
         </div>
         
         <div style="background: #1f2937; padding: 20px; text-align: center;">
@@ -112,10 +107,26 @@ export class EmailService {
       </div>
     `;
 
+    const text = `
+      Tomobilti - Email Verification
+      
+      Hi ${data.firstName},
+      
+      Thank you for registering with Tomobilti! To complete your account setup, 
+      please verify your email address using the verification code below:
+      
+      Verification Code: ${data.verificationCode}
+      
+      This code will expire in 15 minutes for security reasons.
+      
+      If you didn't create an account with Tomobilti, please ignore this email.
+    `;
+
     return this.sendEmail({
       to: data.to,
-      subject: 'Verify your email - Tomobilti',
+      subject: 'Verify Your Email - Tomobilti',
       html,
+      text
     });
   }
 
@@ -241,11 +252,6 @@ export class EmailService {
    */
   private static async sendEmail(data: EmailData): Promise<boolean> {
     try {
-      if (!this.transporter) {
-        console.log(`📧 Email service disabled - Would send to ${data.to}: ${data.subject}`);
-        return true; // Return true in development mode when email is disabled
-      }
-
       await this.transporter.sendMail({
         from: `"Tomobilti" <${process.env.SMTP_USER}>`,
         to: data.to,

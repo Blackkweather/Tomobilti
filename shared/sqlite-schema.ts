@@ -14,6 +14,28 @@ export const users = sqliteTable("users", {
   profileImage: text("profile_image"),
   userType: text("user_type").notNull().default("renter"), // "owner", "renter", "both"
   isVerified: integer("is_verified", { mode: 'boolean' }).notNull().default(false),
+  // Email verification fields
+  emailVerificationCode: text("email_verification_code"),
+  emailVerificationExpires: text("email_verification_expires"),
+  // Phone verification fields
+  phoneVerificationCode: text("phone_verification_code"),
+  phoneVerificationExpires: text("phone_verification_expires"),
+  isPhoneVerified: integer("is_phone_verified", { mode: 'boolean' }).notNull().default(false),
+  // Document verification fields
+  idDocumentStatus: text("id_document_status"), // "pending", "approved", "rejected"
+  idDocumentUploadedAt: text("id_document_uploaded_at"),
+  idDocumentData: text("id_document_data"), // Base64 encoded document
+  licenseDocumentStatus: text("license_document_status"), // "pending", "approved", "rejected"
+  licenseDocumentUploadedAt: text("license_document_uploaded_at"),
+  licenseDocumentData: text("license_document_data"), // Base64 encoded document
+  isIdVerified: integer("is_id_verified", { mode: 'boolean' }).notNull().default(false),
+  isLicenseVerified: integer("is_license_verified", { mode: 'boolean' }).notNull().default(false),
+  // Background check fields
+  backgroundCheckStatus: text("background_check_status"), // "pending", "completed", "failed"
+  backgroundCheckStartedAt: text("background_check_started_at"),
+  backgroundCheckCompletedAt: text("background_check_completed_at"),
+  backgroundCheckData: text("background_check_data"), // JSON string
+  isBackgroundChecked: integer("is_background_checked", { mode: 'boolean' }).notNull().default(false),
   // OAuth provider IDs
   googleId: text("google_id"),
   facebookId: text("facebook_id"),
