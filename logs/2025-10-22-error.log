@@ -1,0 +1,8 @@
+[2025-10-22T12:02:55.316Z] [ERROR] Request failed: POST /google {"requestId":"nyyxpav6o","method":"POST","endpoint":"/google","statusCode":500,"responseTime":897}
+[2025-10-22T12:02:56.802Z] [ERROR] Request failed: POST /facebook {"requestId":"va9ahzzgg","method":"POST","endpoint":"/facebook","statusCode":500,"responseTime":3}
+[2025-10-22T12:13:20.106Z] [ERROR] Request failed: GET /@fs/C:/MAMP/htdocs/Tomobilti/node_modules/.vite/deps/node-vibrant_browser.js {"requestId":"4koqyu7ee","method":"GET","endpoint":"/@fs/C:/MAMP/htdocs/Tomobilti/node_modules/.vite/deps/node-vibrant_browser.js","statusCode":504,"responseTime":3}
+[2025-10-22T12:41:39.612Z] [ERROR] Request failed: POST /google {"requestId":"4q313ialm","method":"POST","endpoint":"/google","statusCode":500,"responseTime":1376}
+[2025-10-22T12:43:20.203Z] [ERROR] Request failed: POST /google {"requestId":"5h10jxrut","method":"POST","endpoint":"/google","statusCode":500,"responseTime":3415}
+[2025-10-22T12:59:27.604Z] [ERROR] Request failed: POST /microsoft {"requestId":"lj89k0ja8","method":"POST","endpoint":"/microsoft","statusCode":500,"responseTime":98}
+[2025-10-22T13:03:17.211Z] [ERROR] Request failed: POST /microsoft {"requestId":"qtrn1pnkk","method":"POST","endpoint":"/microsoft","statusCode":500,"responseTime":229}
+[2025-10-22T13:05:38.706Z] [ERROR] Request failed: POST /microsoft {"requestId":"9dnvadsym","method":"POST","endpoint":"/microsoft","statusCode":500,"responseTime":110}

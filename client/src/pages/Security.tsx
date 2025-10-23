@@ -26,10 +26,19 @@ import SecurityVerification from '../components/SecurityVerification';
 import VehicleSafety from '../components/VehicleSafety';
 import SecurityReviews from '../components/SecurityReviews';
 import FraudDetection from '../components/FraudDetection';
+import EmailVerificationModal from '../components/EmailVerificationModal';
+import PhoneVerificationModal from '../components/PhoneVerificationModal';
+import DocumentUploadModal from '../components/DocumentUploadModal';
+import BackgroundCheckModal from '../components/BackgroundCheckModal';
 
 export default function Security() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('verification');
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isPhoneModalOpen, setIsPhoneModalOpen] = useState(false);
+  const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
+  const [documentType, setDocumentType] = useState<'id' | 'license'>('id');
+  const [isBackgroundModalOpen, setIsBackgroundModalOpen] = useState(false);
   const [emergencyContact, setEmergencyContact] = useState({
     name: user?.emergencyContactName || '',
     phone: user?.emergencyContactPhone || '',
@@ -51,127 +60,61 @@ export default function Security() {
     try {
       switch (type) {
         case 'email':
-          // Send verification email
-          const emailResponse = await fetch('/api/auth/send-verification-email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-            }
-          });
-          
-          if (emailResponse.ok) {
-            alert('Verification email sent! Please check your inbox.');
-          } else {
-            alert('Failed to send verification email. Please try again.');
-          }
+          // Open email verification modal
+          setIsEmailModalOpen(true);
           break;
           
         case 'phone':
-          // Request phone verification
-          const phone = prompt('Please enter your phone number for verification:');
-          if (phone) {
-            const phoneResponse = await fetch('/api/auth/verify-phone', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-              },
-              body: JSON.stringify({ phone })
-            });
-            
-            if (phoneResponse.ok) {
-              alert('SMS verification code sent! Please check your phone.');
-            } else {
-              alert('Failed to send verification SMS. Please try again.');
-            }
-          }
+          // Open phone verification modal
+          setIsPhoneModalOpen(true);
           break;
           
         case 'id':
-          // Handle ID document upload
-          const fileInput = document.createElement('input');
-          fileInput.type = 'file';
-          fileInput.accept = 'image/*,.pdf';
-          fileInput.onchange = async (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) {
-              const formData = new FormData();
-              formData.append('document', file);
-              formData.append('type', 'id');
-              
-              const idResponse = await fetch('/api/auth/upload-document', {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-                },
-                body: formData
-              });
-              
-              if (idResponse.ok) {
-                alert('ID document uploaded successfully! It will be reviewed within 24 hours.');
-              } else {
-                alert('Failed to upload ID document. Please try again.');
-              }
-            }
-          };
-          fileInput.click();
+          // Open ID document upload modal
+          setDocumentType('id');
+          setIsDocumentModalOpen(true);
           break;
           
         case 'license':
-          // Handle driving license upload
-          const licenseInput = document.createElement('input');
-          licenseInput.type = 'file';
-          licenseInput.accept = 'image/*,.pdf';
-          licenseInput.onchange = async (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0];
-            if (file) {
-              const formData = new FormData();
-              formData.append('document', file);
-              formData.append('type', 'license');
-              
-              const licenseResponse = await fetch('/api/auth/upload-document', {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-                },
-                body: formData
-              });
-              
-              if (licenseResponse.ok) {
-                alert('Driving license uploaded successfully! It will be reviewed within 24 hours.');
-              } else {
-                alert('Failed to upload driving license. Please try again.');
-              }
-            }
-          };
-          licenseInput.click();
+          // Open license document upload modal
+          setDocumentType('license');
+          setIsDocumentModalOpen(true);
           break;
           
         case 'background':
-          // Start background check
-          const backgroundResponse = await fetch('/api/auth/start-background-check', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-            }
-          });
-          
-          if (backgroundResponse.ok) {
-            alert('Background check initiated! You will be notified when it\'s complete (usually within 3-5 business days).');
-          } else {
-            alert('Failed to start background check. Please try again.');
-          }
+          // Open background check modal
+          setIsBackgroundModalOpen(true);
           break;
           
         default:
-    console.log(`Starting ${type} verification...`);
+          console.log(`Starting ${type} verification...`);
       }
     } catch (error) {
       console.error('Verification error:', error);
       alert('An error occurred during verification. Please try again.');
     }
+  };
+
+  const handleEmailVerificationSuccess = () => {
+    // Refresh user data or show success message
+    alert('Email verified successfully!');
+    // You might want to refresh the user data here
+    // or update the local state to reflect the verification
+  };
+
+  const handlePhoneVerificationSuccess = () => {
+    alert('Phone number verified successfully!');
+    // You might want to refresh the user data here
+  };
+
+  const handleDocumentUploadSuccess = () => {
+    alert(`${documentType === 'id' ? 'ID document' : 'Driving license'} uploaded successfully! It will be reviewed within 24 hours.`);
+    // You might want to refresh the user data here
+  };
+
+  const handleBackgroundCheckSuccess = () => {
+    alert('Background check initiated successfully! You will be notified when it\'s complete.');
+    // You might want to refresh the user data here
   };
 
   const handleEmergencyContactUpdate = async () => {
@@ -543,6 +486,34 @@ export default function Security() {
           </Tabs>
         </div>
       </div>
+
+      {/* Verification Modals */}
+      <EmailVerificationModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        onSuccess={handleEmailVerificationSuccess}
+        userEmail={user.email}
+      />
+
+      <PhoneVerificationModal
+        isOpen={isPhoneModalOpen}
+        onClose={() => setIsPhoneModalOpen(false)}
+        onSuccess={handlePhoneVerificationSuccess}
+        currentPhone={user.phone}
+      />
+
+      <DocumentUploadModal
+        isOpen={isDocumentModalOpen}
+        onClose={() => setIsDocumentModalOpen(false)}
+        onSuccess={handleDocumentUploadSuccess}
+        documentType={documentType}
+      />
+
+      <BackgroundCheckModal
+        isOpen={isBackgroundModalOpen}
+        onClose={() => setIsBackgroundModalOpen(false)}
+        onSuccess={handleBackgroundCheckSuccess}
+      />
     </div>
   );
 }

@@ -329,6 +329,294 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
     }
   });
 
+  // Email verification endpoints
+  app.post('/api/auth/send-verification-email', authMiddleware, async (req, res) => {
+    try {
+      const user = req.user!;
+      
+      // Check if user is already verified
+      if (user.isVerified) {
+        return res.status(400).json({ error: 'Email is already verified' });
+      }
+
+      // Generate 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+
+      // Update user with verification code
+      await storage.updateUser(user.id, {
+        emailVerificationCode: verificationCode,
+        emailVerificationExpires: expiresAt.toISOString()
+      });
+
+      // Send verification email
+      try {
+        await EmailService.sendVerificationEmail({
+          to: user.email,
+          firstName: user.firstName,
+          verificationCode: verificationCode
+        });
+        
+        res.json({ 
+          message: 'Verification code sent to your email',
+          expiresIn: 15 * 60 // 15 minutes in seconds
+        });
+      } catch (emailError) {
+        console.error('Failed to send verification email:', emailError);
+        res.status(500).json({ error: 'Failed to send verification email' });
+      }
+    } catch (error) {
+      console.error('Send verification email error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/auth/verify-email', authMiddleware, async (req, res) => {
+    try {
+      const { code } = req.body;
+      const user = req.user!;
+
+      if (!code || typeof code !== 'string') {
+        return res.status(400).json({ error: 'Verification code is required' });
+      }
+
+      // Check if user is already verified
+      if (user.isVerified) {
+        return res.status(400).json({ error: 'Email is already verified' });
+      }
+
+      // Check if verification code exists and is not expired
+      if (!user.emailVerificationCode || !user.emailVerificationExpires) {
+        return res.status(400).json({ error: 'No verification code found. Please request a new one.' });
+      }
+
+      const expiresAt = new Date(user.emailVerificationExpires);
+      if (expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Verification code has expired. Please request a new one.' });
+      }
+
+      // Verify the code
+      if (user.emailVerificationCode !== code) {
+        return res.status(400).json({ error: 'Invalid verification code' });
+      }
+
+      // Mark email as verified and clear verification code
+      const updatedUser = await storage.updateUser(user.id, {
+        isVerified: true,
+        emailVerificationCode: null,
+        emailVerificationExpires: null
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const sanitizedUser = sanitizeUser(updatedUser);
+      res.json({ 
+        message: 'Email verified successfully',
+        user: sanitizedUser 
+      });
+    } catch (error) {
+      console.error('Verify email error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Phone verification endpoints
+  app.post('/api/auth/send-phone-verification', authMiddleware, async (req, res) => {
+    try {
+      const user = req.user!;
+      const { phone } = req.body;
+      
+      if (!phone) {
+        return res.status(400).json({ error: 'Phone number is required' });
+      }
+
+      // Validate phone number format
+      const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+      if (!phoneRegex.test(phone)) {
+        return res.status(400).json({ error: 'Invalid phone number format' });
+      }
+
+      // Generate 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+
+      // Update user with phone verification code
+      await storage.updateUser(user.id, {
+        phone: phone,
+        phoneVerificationCode: verificationCode,
+        phoneVerificationExpires: expiresAt.toISOString()
+      });
+
+      // In a real implementation, you would send SMS here
+      // For now, we'll just log the code (in production, remove this)
+      console.log(`📱 SMS verification code for ${phone}: ${verificationCode}`);
+
+      res.json({ 
+        message: 'Verification code sent successfully',
+        // Remove this in production - only for development
+        code: process.env.NODE_ENV === 'development' ? verificationCode : undefined
+      });
+    } catch (error) {
+      console.error('Send phone verification error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/auth/verify-phone', authMiddleware, async (req, res) => {
+    try {
+      const user = req.user!;
+      const { phone, code } = req.body;
+      
+      if (!phone || !code) {
+        return res.status(400).json({ error: 'Phone number and verification code are required' });
+      }
+
+      // Check if verification code matches and is not expired
+      if (!user.phoneVerificationCode || !user.phoneVerificationExpires) {
+        return res.status(400).json({ error: 'No verification code found. Please request a new code.' });
+      }
+
+      if (user.phoneVerificationCode !== code) {
+        return res.status(400).json({ error: 'Invalid verification code' });
+      }
+
+      const expiresAt = new Date(user.phoneVerificationExpires);
+      if (expiresAt < new Date()) {
+        return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' });
+      }
+
+      // Mark phone as verified and clear verification code
+      await storage.updateUser(user.id, {
+        phone: phone,
+        isPhoneVerified: true,
+        phoneVerificationCode: null,
+        phoneVerificationExpires: null
+      });
+
+      res.json({ message: 'Phone number verified successfully' });
+    } catch (error) {
+      console.error('Verify phone error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Document upload endpoint
+  app.post('/api/auth/upload-document', authMiddleware, upload.single('document'), async (req, res) => {
+    try {
+      const user = req.user!;
+      const { type } = req.body;
+      
+      if (!req.file) {
+        return res.status(400).json({ error: 'No document file uploaded' });
+      }
+
+      if (!type || !['id', 'license'].includes(type)) {
+        return res.status(400).json({ error: 'Invalid document type. Must be "id" or "license"' });
+      }
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+      if (!allowedTypes.includes(req.file.mimetype)) {
+        return res.status(400).json({ error: 'Invalid file type. Only JPEG, PNG, WebP, and PDF files are allowed.' });
+      }
+
+      // Validate file size (10MB max)
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (req.file.size > maxSize) {
+        return res.status(400).json({ error: 'File size too large. Maximum size is 10MB.' });
+      }
+
+      // Convert file to base64 for storage
+      const fileBuffer = req.file.buffer;
+      const base64Data = fileBuffer.toString('base64');
+      const dataUrl = `data:${req.file.mimetype};base64,${base64Data}`;
+
+      // Update user with document information
+      const updateData: any = {
+        [`${type}DocumentStatus`]: 'pending',
+        [`${type}DocumentUploadedAt`]: new Date().toISOString()
+      };
+
+      if (type === 'id') {
+        updateData.idDocumentData = dataUrl;
+      } else if (type === 'license') {
+        updateData.licenseDocumentData = dataUrl;
+      }
+
+      await storage.updateUser(user.id, updateData);
+
+      res.json({ 
+        message: `${type === 'id' ? 'ID document' : 'Driving license'} uploaded successfully. It will be reviewed within 24 hours.`,
+        documentType: type,
+        status: 'pending'
+      });
+    } catch (error) {
+      console.error('Document upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Background check endpoint
+  app.post('/api/auth/start-background-check', authMiddleware, async (req, res) => {
+    try {
+      const user = req.user!;
+      const { fullName, dateOfBirth, address, city, postalCode, country, additionalInfo } = req.body;
+      
+      // Validate required fields
+      const requiredFields = ['fullName', 'dateOfBirth', 'address', 'city', 'postalCode', 'country'];
+      const missingFields = requiredFields.filter(field => !req.body[field]);
+      
+      if (missingFields.length > 0) {
+        return res.status(400).json({ 
+          error: 'Missing required fields', 
+          missingFields 
+        });
+      }
+
+      // Validate date format
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(dateOfBirth)) {
+        return res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+      }
+
+      // Update user with background check information
+      await storage.updateUser(user.id, {
+        backgroundCheckStatus: 'pending',
+        backgroundCheckStartedAt: new Date().toISOString(),
+        backgroundCheckData: {
+          fullName,
+          dateOfBirth,
+          address,
+          city,
+          postalCode,
+          country,
+          additionalInfo: additionalInfo || ''
+        }
+      });
+
+      // In a real implementation, you would initiate the background check with a third-party service
+      console.log(`🔍 Background check initiated for user ${user.id}:`, {
+        fullName,
+        dateOfBirth,
+        address,
+        city,
+        postalCode,
+        country
+      });
+
+      res.json({ 
+        message: 'Background check initiated successfully. You will be notified when it\'s complete (usually within 3-5 business days).',
+        status: 'pending',
+        estimatedCompletion: '3-5 business days'
+      });
+    } catch (error) {
+      console.error('Background check error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Messaging routes
   app.get('/api/conversations', authMiddleware, async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { authMiddleware } from '../middleware/auth';
-import { db } from '../db';
+import { db } from '../db_sqlite_simple';
 import { users } from '@shared/sqlite-schema';
 import { eq } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
@@ -85,10 +85,14 @@ router.post('/google', async (req, res) => {
         email: email!,
         firstName: name?.split(' ')[0] || '',
         lastName: name?.split(' ').slice(1).join(' ') || '',
+        phone: null,
         profileImage: picture || null,
-        googleId: googleId,
         userType: 'renter' as const,
         isVerified: true,
+        googleId: googleId,
+        facebookId: null,
+        appleId: null,
+        githubId: null,
         password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -104,7 +108,7 @@ router.post('/google', async (req, res) => {
             googleId: googleId,
             profileImage: picture || user.profileImage,
             updatedAt: new Date().toISOString()
-          })
+          } as any)
           .where(eq(users.id, user.id));
       }
     }
@@ -206,10 +210,14 @@ router.post('/facebook', async (req, res) => {
         email: userData.email,
         firstName: userData.name.split(' ')[0],
         lastName: userData.name.split(' ').slice(1).join(' '),
+        phone: null,
         profileImage: userData.picture?.data?.url || null,
-        facebookId: userData.id,
         userType: 'renter' as const,
         isVerified: true,
+        googleId: null,
+        facebookId: userData.id,
+        appleId: null,
+        githubId: null,
         password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -225,7 +233,7 @@ router.post('/facebook', async (req, res) => {
             facebookId: userData.id,
             profileImage: userData.picture?.data?.url || user.profileImage,
             updatedAt: new Date().toISOString()
-          })
+          } as any)
           .where(eq(users.id, user.id));
       }
     }
@@ -284,10 +292,14 @@ router.post('/microsoft', async (req, res) => {
         email: mockUser.email,
         firstName: mockUser.name.split(' ')[0],
         lastName: mockUser.name.split(' ').slice(1).join(' '),
+        phone: null,
         profileImage: mockUser.picture,
-        microsoftId: mockUser.id,
         userType: 'renter' as const,
         isVerified: true,
+        googleId: null,
+        facebookId: null,
+        appleId: null,
+        githubId: mockUser.id, // Using githubId field for Microsoft OAuth
         password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -348,10 +360,14 @@ router.post('/apple', async (req, res) => {
         email: mockUser.email,
         firstName: mockUser.name.split(' ')[0],
         lastName: mockUser.name.split(' ').slice(1).join(' '),
+        phone: null,
         profileImage: null,
-        appleId: mockUser.id,
         userType: 'renter' as const,
         isVerified: true,
+        googleId: null,
+        facebookId: null,
+        appleId: mockUser.id,
+        githubId: null,
         password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

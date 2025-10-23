@@ -58,6 +58,7 @@ import EarningsCalculator from './pages/EarningsCalculator';
 import MembershipBenefits from './pages/MembershipBenefits';
 import LoyaltyProgram from './pages/LoyaltyProgram';
 import LiveChat from './pages/LiveChat';
+import Security from './pages/Security';
 
 // Import components
 import Header from "./components/Header";
@@ -104,6 +105,7 @@ function App() {
               {/* Profile & Settings */}
               <Route path="/profile" component={Profile} />
               <Route path="/settings" component={Settings} />
+              <Route path="/security" component={Security} />
               
               {/* Car Management */}
               <Route path="/add-car" component={AddCar} />
