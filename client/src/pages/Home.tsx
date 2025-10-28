@@ -291,7 +291,7 @@ export default function Home() {
               return (
                 <div
                   key={section.id}
-                  className="group flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm border border-gray-100 min-h-[18rem] md:min-h-[16rem] lg:min-h-[18rem]"
+                  className="group flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm border border-gray-100 min-h-[18rem] md:min-h-[16rem] lg:min-h-[18rem] scroll-animate"
                   aria-labelledby={`section-${section.id}`}
                 >
                   <div className="flex-shrink-0 mb-4">
@@ -336,6 +336,21 @@ export default function Home() {
                         'btn-blue'
                       }`}
                       aria-label={section.buttonText}
+                      onMouseEnter={async (e) => {
+                        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                        const target = e.currentTarget;
+                        const mod: any = await import('animejs');
+                        const a = mod.default || mod.anime || mod;
+                        a.remove(target);
+                        a({ targets: target, scale: [1, 1.02], duration: 220, easing: 'easeOutQuad' });
+                      }}
+                      onMouseLeave={async (e) => {
+                        const target = e.currentTarget;
+                        const mod: any = await import('animejs');
+                        const a = mod.default || mod.anime || mod;
+                        a.remove(target);
+                        a({ targets: target, scale: 1, duration: 180, easing: 'easeOutQuad' });
+                      }}
                     >
                       {section.buttonText}
                     </button>
