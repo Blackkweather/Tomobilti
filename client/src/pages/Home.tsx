@@ -1,5 +1,3 @@
-// Featured cars will be fetched from the API
-const featuredCars: Car[] = [];
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -32,6 +30,9 @@ import { getFeaturedCarImages } from '../utils/carImages';
 import { useAuth } from '../contexts/AuthContext';
 import type { Car } from '@shared/schema';
 import EmailBanner from '../components/EmailBanner';
+
+// Featured cars will be fetched from the API
+const featuredCars: Car[] = [];
 
 export default function Home() {
   // Initialize scroll animations
@@ -291,7 +292,7 @@ export default function Home() {
               return (
                 <div
                   key={section.id}
-                  className="group flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm border border-gray-100 min-h-[18rem] md:min-h-[16rem] lg:min-h-[18rem] scroll-animate"
+                  className="group flex flex-col items-center text-center p-6 rounded-lg bg-white shadow-sm border border-gray-200 min-h-[18rem] md:min-h-[16rem] lg:min-h-[18rem] scroll-animate hover:border-gray-300 transition-colors duration-300"
                   aria-labelledby={`section-${section.id}`}
                 >
                   <div className="flex-shrink-0 mb-4">
@@ -363,7 +364,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-white overflow-hidden">
+      <section className="py-16 bg-white border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => {
@@ -383,7 +384,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50 overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -439,7 +440,7 @@ export default function Home() {
       </section>
 
   {/* How It Works Section */}
-  <section className="py-20 bg-gradient-to-r from-purple-50 to-blue-50 overflow-hidden">
+  <section className="py-20 bg-gradient-to-r from-purple-50 to-blue-50 border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 scroll-animate">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -474,7 +475,7 @@ export default function Home() {
       </section>
 
       {/* Car Categories Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden">
+      <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 border-b border-gray-100">
         <div className="container mx-auto px-4">
           <div className="text-center mb-20 scroll-animate">
             <h2 className="text-5xl font-bold gradient-text mb-6">
@@ -574,7 +575,7 @@ export default function Home() {
 
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 text-white relative">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-4xl font-bold mb-6">
