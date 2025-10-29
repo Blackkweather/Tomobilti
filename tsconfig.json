@@ -11,8 +11,7 @@
     "**/*.test.ts"
   ],
   "compilerOptions": {
-    "incremental": true,
-    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
+    "incremental": false,
     "noEmit": true,
     "module": "ESNext",
     "strict": false,

@@ -18,6 +18,9 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
     chunkSizeWarningLimit: 1000,
+    minify: 'esbuild',
+    sourcemap: false,
+    cssMinify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: (id) => {
