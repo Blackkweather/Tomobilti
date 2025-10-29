@@ -1,2 +1,0 @@
-[2025-10-18T23:35:49.701Z] [ERROR] Request failed: POST /api/email-leads {"requestId":"7l9vzqay6","method":"POST","endpoint":"/api/email-leads","statusCode":400,"responseTime":4}
-[2025-10-18T23:36:06.674Z] [ERROR] Request failed: POST /api/email-leads {"requestId":"r1dl55424","method":"POST","endpoint":"/api/email-leads","statusCode":400,"responseTime":4}

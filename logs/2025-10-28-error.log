@@ -1,1 +1,0 @@
-[2025-10-28T15:08:14.590Z] [ERROR] Request failed: GET /api/auth/me {"requestId":"9wqzwdgs6","method":"GET","endpoint":"/api/auth/me","statusCode":401,"responseTime":32}
