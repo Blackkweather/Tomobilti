@@ -14,6 +14,17 @@ import MessagingSocketServer from "./messaging";
 import MonitoringService from "./services/monitoring";
 import LoggingService from "./services/logging";
 
+// Add global error handlers for unhandled rejections and exceptions
+process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit - let the server continue running
+});
+
+process.on('uncaughtException', (error: Error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit - let the server continue running
+});
+
 const app = express();
 
 // Initialize monitoring and logging services
@@ -81,43 +92,52 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Initialize email service
-  EmailService.initialize();
-  
-  // Initialize Car Rental Agent service
-  const agentService = new CarRentalAgentService({
-    apiKey: process.env.OPENAI_API_KEY || '',
-    model: 'gpt-3.5-turbo',
-    temperature: 0.7,
-    maxTokens: 200,
-  });
-  
-  // Wait for storage to be initialized
-  if (process.env.NODE_ENV === 'production') {
-    // Waiting for storage initialization
-    // Give storage time to initialize
-    await new Promise(resolve => setTimeout(resolve, 2000));
-  }
-  
-  // Add health check endpoint with monitoring
-  app.get('/api/health', (req, res) => {
-    const healthStatus = monitoringService.getHealthStatus();
-    const alerts = monitoringService.getAlerts();
+  try {
+    // Initialize email service (non-blocking)
+    try {
+      EmailService.initialize();
+    } catch (error) {
+      log(`⚠️ Email service initialization failed: ${error}`);
+    }
     
-    res.json({
-      status: healthStatus.status,
-      timestamp: new Date().toISOString(),
-      uptime: healthStatus.uptime,
-      memoryUsage: healthStatus.memoryUsage,
-      averageResponseTime: healthStatus.averageResponseTime,
-      activeAlerts: healthStatus.activeAlerts,
-      alerts: alerts.slice(-5), // Last 5 alerts
-      version: process.env.npm_package_version || '1.0.0'
+    // Initialize Car Rental Agent service (non-blocking)
+    try {
+      const agentService = new CarRentalAgentService({
+        apiKey: process.env.OPENAI_API_KEY || '',
+        model: 'gpt-3.5-turbo',
+        temperature: 0.7,
+        maxTokens: 200,
+      });
+    } catch (error) {
+      log(`⚠️ Car Rental Agent service initialization failed: ${error}`);
+    }
+    
+    // Add health check endpoint with monitoring (must be early for Render health checks)
+    app.get('/api/health', (req, res) => {
+      const healthStatus = monitoringService.getHealthStatus();
+      const alerts = monitoringService.getAlerts();
+      
+      res.json({
+        status: healthStatus.status || 'ok',
+        timestamp: new Date().toISOString(),
+        uptime: healthStatus.uptime || 0,
+        memoryUsage: healthStatus.memoryUsage || {},
+        averageResponseTime: healthStatus.averageResponseTime || 0,
+        activeAlerts: healthStatus.activeAlerts || 0,
+        alerts: alerts ? alerts.slice(-5) : [], // Last 5 alerts
+        version: process.env.npm_package_version || '1.0.0'
+      });
     });
-  });
 
-  app.use('/api/upload', uploadRoutes);
-  await registerRoutes(app);
+    app.use('/api/upload', uploadRoutes);
+    
+    // Register routes (wrap in try-catch to prevent blocking)
+    try {
+      await registerRoutes(app);
+    } catch (error) {
+      log(`⚠️ Route registration error: ${error}`);
+      // Continue anyway - server should still start
+    }
 
   // Initialize sample data in production if database is empty
   if (process.env.NODE_ENV === 'production') {
@@ -355,58 +375,90 @@ app.use((req, res, next) => {
     }, 15000); // Wait 15 seconds after server starts
   }
   
-  // Create HTTP server and WebSocket server
-  const httpServer = createServer(app);
-  const messagingServer = new MessagingSocketServer(httpServer);
-  
-  // Make messaging server available globally for API routes
-  (global as any).messagingServer = messagingServer;
+    // Create HTTP server and WebSocket server
+    const httpServer = createServer(app);
+    
+    // Initialize WebSocket server (non-blocking)
+    let messagingServer;
+    try {
+      messagingServer = new MessagingSocketServer(httpServer);
+      // Make messaging server available globally for API routes
+      (global as any).messagingServer = messagingServer;
+    } catch (error) {
+      log(`⚠️ WebSocket server initialization failed: ${error}`);
+    }
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+      const status = err.status || err.statusCode || 500;
+      const message = err.message || "Internal Server Error";
 
-    // Log the error
-    loggingService.error('Unhandled error', {
-      error: err.stack,
-      status,
-      message
+      // Log the error
+      try {
+        loggingService.error('Unhandled error', {
+          error: err.stack,
+          status,
+          message
+        });
+      } catch (logError) {
+        console.error('Error logging failed:', logError);
+      }
+
+      res.status(status).json({ message });
+      // Don't throw - just log
+      console.error('Application error:', err);
     });
 
-    res.status(status).json({ message });
-    throw err;
-  });
-
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, httpServer);
-  } else {
-    serveStatic(app);
-  }
-
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
-  const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
-  
-  // Debug logging for deployment
-  log(`Environment: ${process.env.NODE_ENV}`);
-  log(`Binding to: ${host}:${port}`);
-  
-  httpServer.listen(port, host, () => {
-    log(`✅ Server successfully started on ${host}:${port}`);
-    log(`✅ WebSocket messaging server initialized`);
-  });
-  
-  // Handle server errors
-  httpServer.on('error', (error: any) => {
-    log(`❌ Server error: ${error.message}`);
-    if (error.code === 'EADDRINUSE') {
-      log(`Port ${port} is already in use`);
+    // importantly only setup vite in development and after
+    // setting up all the other routes so the catch-all route
+    // doesn't interfere with the other routes
+    try {
+      if (app.get("env") === "development") {
+        await setupVite(app, httpServer);
+      } else {
+        serveStatic(app);
+      }
+    } catch (error) {
+      log(`⚠️ Static file setup error: ${error}`);
+      // Add basic fallback route
+      app.use("*", (_req, res) => {
+        res.status(500).json({ error: "Server initialization incomplete" });
+      });
     }
-  });
+
+    // ALWAYS serve the app on the port specified in the environment variable PORT
+    // Render provides PORT automatically - never hardcode it
+    const port = parseInt(process.env.PORT || '5000', 10);
+    const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1';
+    
+    // Debug logging for deployment
+    log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    log(`PORT from environment: ${process.env.PORT || 'not set, using default 5000'}`);
+    log(`Binding to: ${host}:${port}`);
+    
+    // Start listening immediately - this is critical for Render
+    httpServer.listen(port, host, () => {
+      log(`✅ Server successfully started on ${host}:${port}`);
+      if (messagingServer) {
+        log(`✅ WebSocket messaging server initialized`);
+      }
+      log(`✅ Ready to accept connections`);
+    });
+    
+    // Handle server errors
+    httpServer.on('error', (error: any) => {
+      log(`❌ Server error: ${error.message}`);
+      if (error.code === 'EADDRINUSE') {
+        log(`Port ${port} is already in use`);
+      } else if (error.code === 'EACCES') {
+        log(`Permission denied binding to port ${port}`);
+      } else {
+        log(`Unknown server error: ${error.code || 'unknown'}`);
+      }
+    });
+    
+  } catch (error) {
+    // Fatal startup error - log and exit
+    console.error('Fatal startup error:', error);
+    process.exit(1);
+  }
 })();
