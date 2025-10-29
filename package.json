@@ -5,8 +5,8 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development tsx server/index.ts",
-		"build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --minify --sourcemap=false",
-		"postinstall": "node -e \"if (process.env.SKIP_SQLITE_REBUILD === 'true' || (process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('file:'))) { console.log('⏭️  Skipping better-sqlite3 rebuild (using PostgreSQL)'); } else { require('child_process').execSync('npm rebuild better-sqlite3', {stdio: 'inherit'}); }",
+		"build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist --minify",
+		"postinstall": "node -e \"if (process.env.SKIP_SQLITE_REBUILD === 'true' || (process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('file:'))) { console.log('Skipping better-sqlite3 rebuild (using PostgreSQL)'); } else { require('child_process').execSync('npm rebuild better-sqlite3', {stdio: 'inherit'}); }\"",
 		"start": "cross-env NODE_ENV=production node dist/index.js",
 		"check": "tsc",
 		"typecheck": "tsc --noEmit",
