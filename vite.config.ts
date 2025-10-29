@@ -21,36 +21,8 @@ export default defineConfig({
     minify: 'esbuild',
     sourcemap: false,
     cssMinify: 'esbuild',
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('node_modules')) {
-            // React core libraries
-            if (id.includes('react') || id.includes('react-dom') || id.includes('wouter')) {
-              return 'react-vendor';
-            }
-            // Radix UI components
-            if (id.includes('@radix-ui')) {
-              return 'ui-vendor';
-            }
-            // Form and validation libraries
-            if (id.includes('react-hook-form') || id.includes('zod') || id.includes('@hookform')) {
-              return 'form-vendor';
-            }
-            // Tanstack Query
-            if (id.includes('@tanstack')) {
-              return 'query-vendor';
-            }
-            // Other large libraries
-            if (id.includes('lucide-react') || id.includes('recharts') || id.includes('animejs')) {
-              return 'icons-charts-vendor';
-            }
-            // Everything else goes to vendor
-            return 'vendor';
-          }
-        },
-      },
-    },
+    // Let Vite handle chunking automatically - it resolves dependencies correctly
+    // No manual chunking needed - Vite's automatic chunking is better at dependency resolution
   },
   server: {
     port: 5000,
