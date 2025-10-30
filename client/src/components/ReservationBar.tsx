@@ -416,7 +416,7 @@ export default function ReservationBar({ car, onBook, className = '', config = {
         <CardHeader className="pb-3 px-4 sm:px-6">
           <CardTitle className="text-lg flex items-center">
             <Star className="h-5 w-5 mr-2 text-yellow-600" />
-            Hosted by {car.owner.name}
+            Hosted by {car.owner?.firstName && car.owner?.lastName ? `${car.owner.firstName} ${car.owner.lastName}` : car.owner?.name || 'Verified Owner'}
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 sm:px-6">

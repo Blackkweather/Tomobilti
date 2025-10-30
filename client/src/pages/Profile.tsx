@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '../hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -116,9 +117,11 @@ interface UserProfile {
 export default function Profile() {
   const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
   const [isEditing, setIsEditing] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [formData, setFormData] = useState({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -205,14 +208,65 @@ export default function Profile() {
     setIsEditing(false);
   };
 
-  const handlePasswordChange = () => {
+  const handlePasswordChange = async () => {
+    setIsChangingPassword(true);
+    
+    // Validate passwords match
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('New passwords do not match');
+      toast({
+        title: 'Password Mismatch',
+        description: 'New passwords do not match. Please try again.',
+        variant: 'destructive',
+      });
+      setIsChangingPassword(false);
       return;
     }
-    // TODO: Implement password change API call
-    setShowPasswordForm(false);
-    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+
+    // Validate password length
+    if (passwordData.newPassword.length < 8) {
+      toast({
+        title: 'Invalid Password',
+        description: 'New password must contain at least 8 characters.',
+        variant: 'destructive',
+      });
+      setIsChangingPassword(false);
+      return;
+    }
+
+    // Validate current password is provided
+    if (!passwordData.currentPassword) {
+      toast({
+        title: 'Missing Password',
+        description: 'Current password is required.',
+        variant: 'destructive',
+      });
+      setIsChangingPassword(false);
+      return;
+    }
+
+    try {
+      const { authApi } = await import('../lib/api');
+      await authApi.changePassword({
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword
+      });
+      
+      toast({
+        title: 'Success!',
+        description: 'Your password has been changed successfully.',
+      });
+      
+      setShowPasswordForm(false);
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (error: any) {
+      toast({
+        title: 'Password Change Failed',
+        description: error.message || 'Failed to change password. Please check your current password and try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   const getMembershipColor = (tier: string) => {
@@ -652,11 +706,30 @@ export default function Profile() {
                           />
                         </div>
                         <div className="flex gap-2">
-                          <Button onClick={handlePasswordChange}>
-                            <Save className="h-4 w-4 mr-2" />
-                            Update Password
+                          <Button 
+                            onClick={handlePasswordChange}
+                            disabled={isChangingPassword}
+                          >
+                            {isChangingPassword ? (
+                              <>
+                                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                                Updating...
+                              </>
+                            ) : (
+                              <>
+                                <Save className="h-4 w-4 mr-2" />
+                                Update Password
+                              </>
+                            )}
                           </Button>
-                          <Button variant="outline" onClick={() => setShowPasswordForm(false)}>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              setShowPasswordForm(false);
+                              setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                            }}
+                            disabled={isChangingPassword}
+                          >
                             Cancel
                           </Button>
                         </div>

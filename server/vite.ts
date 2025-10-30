@@ -78,15 +78,22 @@ export function serveStatic(app: Express) {
     );
   }
 
-  // Serve static files with proper MIME types
+  // Serve static files with proper MIME types and aggressive caching for hashed assets
   app.use(express.static(distPath, {
-    setHeaders: (res, path) => {
-      if (path.endsWith('.js')) {
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.js') || filePath.endsWith('.mjs')) {
         res.setHeader('Content-Type', 'application/javascript');
-      } else if (path.endsWith('.mjs')) {
-        res.setHeader('Content-Type', 'application/javascript');
-      } else if (path.endsWith('.css')) {
+      } else if (filePath.endsWith('.css')) {
         res.setHeader('Content-Type', 'text/css');
+      }
+
+      // Long cache for hashed assets, short cache for HTML
+      if (/\.[a-f0-9]{8,}\./i.test(filePath)) {
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      } else if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache');
+      } else {
+        res.setHeader('Cache-Control', 'public, max-age=3600');
       }
     }
   }));

@@ -1,4 +1,6 @@
 import { Express } from 'express';
+import fs from 'fs';
+import path from 'path';
 import { authMiddleware } from '../middleware/auth';
 import { storage } from '../storage';
 
@@ -446,6 +448,52 @@ export function registerAdminRoutes(app: Express) {
       res.json(stats);
     } catch (error) {
       console.error('Error fetching system stats:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Platform settings stored in a JSON file (lightweight persistence)
+  const settingsFile = path.resolve(import.meta.dirname, '..', 'platform-settings.json');
+  const defaultSettings = {
+    maintenanceMode: false,
+    bookingWindowDays: 90,
+    maxCancellationHours: 24
+  };
+
+  const readSettings = () => {
+    try {
+      if (fs.existsSync(settingsFile)) {
+        const raw = fs.readFileSync(settingsFile, 'utf-8');
+        const data = JSON.parse(raw);
+        return { ...defaultSettings, ...data };
+      }
+    } catch (_e) {}
+    return { ...defaultSettings };
+  };
+
+  const writeSettings = (settings: any) => {
+    fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2));
+  };
+
+  // Get settings
+  app.get('/api/admin/settings', (_req, res) => {
+    const settings = readSettings();
+    res.json(settings);
+  });
+
+  // Update settings
+  app.put('/api/admin/settings', async (req, res) => {
+    try {
+      const body = req.body || {};
+      const next = {
+        maintenanceMode: Boolean(body.maintenanceMode),
+        bookingWindowDays: Math.max(1, parseInt(body.bookingWindowDays ?? defaultSettings.bookingWindowDays, 10) || defaultSettings.bookingWindowDays),
+        maxCancellationHours: Math.max(0, parseInt(body.maxCancellationHours ?? defaultSettings.maxCancellationHours, 10) || defaultSettings.maxCancellationHours)
+      };
+      writeSettings(next);
+      res.json({ success: true, settings: next });
+    } catch (error) {
+      console.error('Error updating settings:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });

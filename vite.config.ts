@@ -21,6 +21,17 @@ export default defineConfig({
     minify: 'esbuild',
     sourcemap: false,
     cssMinify: 'esbuild',
+    cssCodeSplit: true,
+    modulePreload: { polyfill: false },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom"],
+          ui: ["lucide-react"],
+          data: ["@tanstack/react-query"],
+        }
+      }
+    }
     // Let Vite handle chunking automatically - it resolves dependencies correctly
     // No manual chunking needed - Vite's automatic chunking is better at dependency resolution
   },

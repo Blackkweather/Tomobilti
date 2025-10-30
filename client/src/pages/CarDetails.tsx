@@ -653,7 +653,7 @@ export default function CarDetails() {
                   currency: car.currency,
                   location: car.location,
                   owner: {
-                    name: car.owner?.firstName + ' ' + car.owner?.lastName || 'Owner',
+                    name: (car.owner?.firstName && car.owner?.lastName) ? `${car.owner.firstName} ${car.owner.lastName}` : car.owner?.name || 'Verified Owner',
                     rating: 0,
                     verified: true
                   },
@@ -679,7 +679,7 @@ export default function CarDetails() {
                   <div className="flex items-center justify-center w-8 h-8 bg-purple-100 rounded-lg mr-3">
                     <Star className="h-5 w-5 text-purple-600" />
                   </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Hosted by {car.owner?.firstName} {car.owner?.lastName}</h2>
+                  <h2 className="text-lg font-semibold text-gray-900">Hosted by {car.owner?.firstName && car.owner?.lastName ? `${car.owner.firstName} ${car.owner.lastName}` : car.owner?.name || 'Verified Owner'}</h2>
                 </div>
 
                 {/* Host Info */}
@@ -692,7 +692,7 @@ export default function CarDetails() {
                   </Avatar>
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg text-gray-900 mb-2">
-                      {car.owner?.firstName} {car.owner?.lastName}
+                      {car.owner?.firstName && car.owner?.lastName ? `${car.owner.firstName} ${car.owner.lastName}` : car.owner?.name || 'Verified Owner'}
                     </h3>
                     
                     {/* Rating and Reviews */}

@@ -28,6 +28,10 @@ import LoadingSpinner from '../components/LoadingSpinner';
 
 // Helper function for smart redirection based on user type
 const redirectBasedOnUserType = (userType: string, setLocation: (path: string) => void) => {
+  if (userType === 'admin') {
+    setLocation('/admin');
+    return;
+  }
   if (userType === 'owner') {
     setLocation('/owner-dashboard');
   } else if (userType === 'renter') {
@@ -35,7 +39,8 @@ const redirectBasedOnUserType = (userType: string, setLocation: (path: string) =
   } else if (userType === 'both') {
     setLocation('/dashboard'); // Show dashboard selector for users with both capabilities
   } else {
-    setLocation('/renter-dashboard'); // Fallback to renter dashboard
+    // Unknown user type: send to admin if token exists and UI will guard, otherwise renter
+    setLocation('/renter-dashboard');
   }
 };
 

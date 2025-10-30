@@ -59,12 +59,14 @@ import MembershipBenefits from './pages/MembershipBenefits';
 import LoyaltyProgram from './pages/LoyaltyProgram';
 import LiveChat from './pages/LiveChat';
 import Security from './pages/Security';
+import AdminPanel from './pages/AdminPanel';
 
 // Import components
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import EmailCaptureModal from "./components/EmailCaptureModal";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function App() {
   console.log('🚀 ShareWheelz App starting...');
@@ -83,12 +85,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ScrollToTop />
-        <div className="min-h-screen bg-white">
-          <Header />
-          
-          <main className="flex-1">
-            <Switch>
+        <ErrorBoundary>
+          <ScrollToTop />
+          <div className="min-h-screen bg-white">
+            <Header />
+            
+            <main className="flex-1">
+              <Switch>
               {/* Core Routes */}
               <Route path="/" component={Home} />
               <Route path="/login" component={Login} />
@@ -106,6 +109,10 @@ function App() {
               <Route path="/profile" component={Profile} />
               <Route path="/settings" component={Settings} />
               <Route path="/security" component={Security} />
+              
+              {/* Admin Panel */}
+              <Route path="/admin" component={AdminPanel} />
+              <Route path="/admin-panel" component={AdminPanel} />
               
               {/* Car Management */}
               <Route path="/add-car" component={AddCar} />
@@ -163,11 +170,12 @@ function App() {
             </Switch>
           </main>
           
-          <Footer />
-          <SupportChat />
-          <EmailCaptureModal />
-          <Toaster />
-        </div>
+            <Footer />
+            <SupportChat />
+            <EmailCaptureModal />
+            <Toaster />
+          </div>
+        </ErrorBoundary>
       </AuthProvider>
     </QueryClientProvider>
   );

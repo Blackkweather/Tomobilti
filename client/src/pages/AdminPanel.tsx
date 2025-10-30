@@ -32,7 +32,7 @@ const adminApi = {
   getAllCars: async () => {
     const response = await fetch('/api/admin/cars', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         'Content-Type': 'application/json'
       }
     });
@@ -44,7 +44,7 @@ const adminApi = {
     const response = await fetch(`/api/admin/cars/${carId}`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
@@ -57,7 +57,7 @@ const adminApi = {
     const response = await fetch(`/api/admin/cars/${carId}/toggle-availability`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         'Content-Type': 'application/json'
       }
     });
@@ -69,11 +69,36 @@ const adminApi = {
   getAllUsers: async () => {
     const response = await fetch('/api/admin/users', {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
         'Content-Type': 'application/json'
       }
     });
     if (!response.ok) throw new Error('Failed to fetch users');
+    return response.json();
+  },
+
+  // Bookings
+  getAllBookings: async () => {
+    const response = await fetch('/api/admin/bookings', {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch bookings');
+    return response.json();
+  },
+
+  updateBookingStatus: async (bookingId: string, status: string) => {
+    const response = await fetch(`/api/admin/bookings/${bookingId}/status`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status })
+    });
+    if (!response.ok) throw new Error('Failed to update booking status');
     return response.json();
   }
 };
@@ -107,37 +132,47 @@ export default function AdminPanel() {
   const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [editingCar, setEditingCar] = useState<Car | null>(null);
+  const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
+  const [settings, setSettings] = useState({ maintenanceMode: false, bookingWindowDays: 90, maxCancellationHours: 24 });
 
-  // Check if user is admin
-  if (!isAuthenticated || user?.userType !== 'admin') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="w-96">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
-              <p className="text-gray-600 mb-4">You need admin privileges to access this page.</p>
-              <Link href="/">
-                <Button>Go Home</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Fetch cars
-  const { data: cars, isLoading: carsLoading } = useQuery({
+  // Fetch cars (enabled only if admin)
+  const { data: cars, isLoading: carsLoading, error: carsError } = useQuery({
     queryKey: ['admin', 'cars'],
-    queryFn: adminApi.getAllCars
+    queryFn: adminApi.getAllCars,
+    retry: 1,
+    enabled: isAuthenticated && user?.userType === 'admin'
   });
 
-  // Fetch users
-  const { data: users, isLoading: usersLoading } = useQuery({
+  // Fetch users (enabled only if admin)
+  const { data: users, isLoading: usersLoading, error: usersError } = useQuery({
     queryKey: ['admin', 'users'],
-    queryFn: adminApi.getAllUsers
+    queryFn: adminApi.getAllUsers,
+    retry: 1,
+    enabled: isAuthenticated && user?.userType === 'admin'
+  });
+
+  // Fetch bookings (enabled only if admin)
+  const { data: bookings, isLoading: bookingsLoading, error: bookingsError } = useQuery({
+    queryKey: ['admin', 'bookings'],
+    queryFn: adminApi.getAllBookings,
+    retry: 1,
+    enabled: isAuthenticated && user?.userType === 'admin'
+  });
+
+  // Fetch platform settings
+  const { isLoading: settingsLoading, error: settingsError } = useQuery({
+    queryKey: ['admin', 'settings'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/settings', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      });
+      if (!res.ok) throw new Error('Failed to fetch settings');
+      return res.json();
+    },
+    enabled: isAuthenticated && user?.userType === 'admin',
+    onSuccess: (data: any) => setSettings(data)
   });
 
   // Update car mutation
@@ -157,6 +192,33 @@ export default function AdminPanel() {
     }
   });
 
+  // Update booking status mutation
+  const updateBookingStatusMutation = useMutation({
+    mutationFn: ({ bookingId, status }: { bookingId: string; status: string }) =>
+      adminApi.updateBookingStatus(bookingId, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'bookings'] });
+    }
+  });
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (payload: typeof settings) => {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Failed to update settings');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] });
+    }
+  });
+
   const handleEditCar = (car: Car) => {
     setEditingCar(car);
   };
@@ -170,6 +232,26 @@ export default function AdminPanel() {
   const handleToggleAvailability = (carId: string) => {
     toggleCarMutation.mutate(carId);
   };
+
+  // Check if user is admin - AFTER all hooks
+  if (!isAuthenticated || user?.userType !== 'admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-96">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <Shield className="h-16 w-16 text-red-500 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+              <p className="text-gray-600 mb-4">You need admin privileges to access this page.</p>
+              <Link href="/">
+                <Button>Go Home</Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -197,6 +279,22 @@ export default function AdminPanel() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {(carsError || usersError || bookingsError) && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center gap-2 text-red-800">
+              <AlertCircle className="h-5 w-5" />
+              <p className="font-semibold">API Error</p>
+            </div>
+            <p className="text-sm text-red-600 mt-1">
+              {carsError && `Cars: ${carsError.message} `}
+              {usersError && `Users: ${usersError.message} `}
+              {bookingsError && `Bookings: ${bookingsError.message}`}
+            </p>
+            <p className="text-xs text-red-500 mt-2">
+              Make sure you're logged in as an admin user and have valid authentication token.
+            </p>
+          </div>
+        )}
         <Tabs defaultValue="cars" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="cars" className="flex items-center gap-2">
@@ -231,9 +329,19 @@ export default function AdminPanel() {
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
+                ) : carsError ? (
+                  <div className="text-center py-8 text-red-600">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                    <p>Error loading cars: {carsError.message}</p>
+                  </div>
+                ) : !cars || cars.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Car className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p>No cars found in the system.</p>
+                  </div>
                 ) : (
                   <div className="space-y-4">
-                    {cars?.map((car: Car) => (
+                    {cars.map((car: Car) => (
                       <div key={car.id} className="border rounded-lg p-4 bg-white">
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
@@ -305,9 +413,19 @@ export default function AdminPanel() {
                   <div className="flex items-center justify-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                   </div>
+                ) : usersError ? (
+                  <div className="text-center py-8 text-red-600">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                    <p>Error loading users: {usersError.message}</p>
+                  </div>
+                ) : !users || users.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Users className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p>No users found in the system.</p>
+                  </div>
                 ) : (
                   <div className="space-y-4">
-                    {users?.map((adminUser: AdminUser) => (
+                    {users.map((adminUser: AdminUser) => (
                       <div key={adminUser.id} className="border rounded-lg p-4 bg-white">
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
@@ -410,26 +528,170 @@ export default function AdminPanel() {
           )}
 
           {/* Other tabs can be added here */}
-          <TabsContent value="bookings">
+          <TabsContent value="bookings" className="space-y-6">
             <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-8">
-                  <Calendar className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Bookings Management</h3>
-                  <p className="text-gray-600">Coming soon...</p>
-                </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  All Bookings ({bookings?.length || 0})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {bookingsLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  </div>
+                ) : bookingsError ? (
+                  <div className="text-center py-8 text-red-600">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                    <p>Error loading bookings: {bookingsError.message}</p>
+                  </div>
+                ) : !bookings || bookings.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p>No bookings found.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {bookings.map((booking: any) => (
+                      <div key={booking.id} className="border rounded-lg p-4 bg-white">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="font-semibold text-lg">{booking.carTitle}</h3>
+                              <Badge variant={booking.status === 'confirmed' ? 'default' : 'secondary'}>
+                                {booking.status}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                              <div>
+                                <span className="font-medium">Renter:</span> {booking.renterName}
+                              </div>
+                              <div>
+                                <span className="font-medium">Owner:</span> {booking.ownerName}
+                              </div>
+                              <div>
+                                <span className="font-medium">Start:</span> {new Date(booking.startDate).toLocaleString()}
+                              </div>
+                              <div>
+                                <span className="font-medium">End:</span> {new Date(booking.endDate).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setExpandedBookingId(expandedBookingId === booking.id ? null : booking.id)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateBookingStatusMutation.mutate({ bookingId: booking.id, status: 'confirmed' })}
+                              disabled={updateBookingStatusMutation.isPending || booking.status === 'confirmed'}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => updateBookingStatusMutation.mutate({ bookingId: booking.id, status: 'cancelled' })}
+                              disabled={updateBookingStatusMutation.isPending || booking.status === 'cancelled'}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                        {expandedBookingId === booking.id && (
+                          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
+                            <div>
+                              <p><span className="font-medium">Booking ID:</span> {booking.id}</p>
+                              <p><span className="font-medium">Status:</span> {booking.status}</p>
+                            </div>
+                            <div>
+                              <p><span className="font-medium">Created:</span> {new Date(booking.createdAt).toLocaleString()}</p>
+                              <p><span className="font-medium">Total:</span> {formatCurrency(Number(booking.totalPrice || booking.totalAmount || 0))}</p>
+                            </div>
+                            <div>
+                              <p><span className="font-medium">Notes:</span> {booking.notes || '—'}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="settings">
+          <TabsContent value="settings" className="space-y-6">
             <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-8">
-                  <Settings className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Platform Settings</h3>
-                  <p className="text-gray-600">Coming soon...</p>
-                </div>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5" />
+                  Platform Settings
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {settingsError ? (
+                  <div className="text-center py-8 text-red-600">
+                    <AlertCircle className="h-8 w-8 mx-auto mb-2" />
+                    <p>Error loading settings: {settingsError.message}</p>
+                  </div>
+                ) : (
+                  <form
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      updateSettingsMutation.mutate(settings);
+                    }}
+                  >
+                    <div className="col-span-1 md:col-span-3 flex items-center justify-between p-4 border rounded-lg bg-white">
+                      <div>
+                        <p className="font-medium">Maintenance Mode</p>
+                        <p className="text-sm text-gray-600">Temporarily disable new bookings</p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setSettings(s => ({ ...s, maintenanceMode: !s.maintenanceMode }))}
+                      >
+                        {settings.maintenanceMode ? 'Enabled' : 'Disabled'}
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="bookingWindowDays">Booking Window (days)</Label>
+                      <Input
+                        id="bookingWindowDays"
+                        type="number"
+                        value={settings.bookingWindowDays}
+                        min={1}
+                        onChange={(e) => setSettings(s => ({ ...s, bookingWindowDays: parseInt(e.target.value || '0', 10) }))}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="maxCancellationHours">Max Cancellation (hours)</Label>
+                      <Input
+                        id="maxCancellationHours"
+                        type="number"
+                        value={settings.maxCancellationHours}
+                        min={0}
+                        onChange={(e) => setSettings(s => ({ ...s, maxCancellationHours: parseInt(e.target.value || '0', 10) }))}
+                      />
+                    </div>
+
+                    <div className="col-span-1 md:col-span-3 flex justify-end gap-2">
+                      <Button type="submit" disabled={updateSettingsMutation.isPending}>
+                        {updateSettingsMutation.isPending ? 'Saving...' : 'Save Settings'}
+                      </Button>
+                    </div>
+                  </form>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

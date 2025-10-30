@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import compression from 'compression';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import cors from 'cors';
@@ -34,6 +35,8 @@ const loggingService = LoggingService;
 // Add monitoring and logging middleware
 app.use(monitoringService.middleware());
 app.use(loggingService.requestLogger());
+// Enable gzip/deflate/brotli compression for faster responses
+app.use(compression());
 
 // CORS configuration for development
 app.use(cors({

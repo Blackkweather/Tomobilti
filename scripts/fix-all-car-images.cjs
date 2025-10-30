@@ -1,0 +1,76 @@
+const postgres = require('postgres');
+
+async function fixAllCarImages() {
+  console.log('🚗 Fixing ALL car images with correct PostgreSQL array syntax...');
+
+  const useSsl = process.env.DB_SSL === 'true';
+  const rejectUnauthorized = process.env.DB_SSL_REJECT_UNAUTHORIZED === 'true';
+  const sql = postgres(process.env.DATABASE_URL, {
+    ssl: useSsl ? { rejectUnauthorized } : { rejectUnauthorized: false },
+    max: 1,
+    idle_timeout: 20,
+    connect_timeout: 10,
+  });
+
+  try {
+    // Update each car individually with proper array syntax
+    console.log('1. Updating Porsche...');
+    await sql`UPDATE cars SET images = ARRAY['/assets/CLASSIC.png']::text[] WHERE make = 'Porsche' AND model = '911 F'`;
+    
+    console.log('2. Updating Jaguar F-Type...');
+    await sql`UPDATE cars SET images = ARRAY['/assets/jaguar f type convertible 1.jpg', '/assets/jaguar f type convertible 2.jpeg']::text[] WHERE make = 'Jaguar' AND model = 'F-Type'`;
+    
+    console.log('3. Updating Tesla...');
+    await sql`UPDATE cars SET images = ARRAY['/assets/Tesla.jpg']::text[] WHERE make = 'Tesla' AND model = 'Model X'`;
+    
+    console.log('4. Updating Jaguar F-Pace...');
+    await sql`UPDATE cars SET images = ARRAY['/assets/f pace suv.jpeg', '/assets/f pace suv 2.jpeg', '/assets/f pace suv 3.jpeg', '/assets/f pace suv 4.jpeg']::text[] WHERE make = 'Jaguar' AND model = 'F-Pace Sport'`;
+    
+    console.log('5. Updating Range Rover...');
+    await sql`UPDATE cars SET images = ARRAY['/assets/Range Rover.jpg']::text[] WHERE make = 'Range Rover' AND model = 'Evoque Sport'`;
+    
+    console.log('6. Updating Ferrari...');
+    await sql`UPDATE cars SET images = ARRAY['/assets/Ferrari.jpg', '/assets/ferrari 2.jpg', '/assets/ferrari 3.jpg', '/assets/ferrari 4.jpg']::text[] WHERE make = 'Ferrari' AND model = 'La Ferrari'`;
+
+    // Verify all updates
+    console.log('\n📊 Verifying all car images:');
+    const cars = await sql`SELECT title, make, model, images FROM cars ORDER BY created_at`;
+    
+    cars.forEach((car, i) => {
+      const imageCount = car.images ? car.images.length : 0;
+      console.log(`${i+1}. ${car.title} (${car.make} ${car.model})`);
+      console.log(`   Images: ${imageCount} pictures`);
+      if (car.images && car.images.length > 0) {
+        car.images.forEach((img, idx) => console.log(`     ${idx+1}. ${img}`));
+      }
+      console.log('');
+    });
+
+    console.log('🎉 All car images fixed!');
+
+  } catch (error) {
+    console.error('❌ Error fixing car images:', error.message);
+  } finally {
+    await sql.end();
+  }
+}
+
+fixAllCarImages();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
