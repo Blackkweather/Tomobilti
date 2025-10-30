@@ -1525,8 +1525,31 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
 
   app.post("/api/bookings", requireAuth, async (req, res) => {
     try {
-  // For SQLite, dates are stored as text strings
-  const bookingData = insertBookingSchema.parse(req.body) as unknown;
+      // Normalize and defensively coerce incoming payload to expected shape
+      const body = req.body || {};
+      const normalizedBody = {
+        carId: body.carId,
+        renterId: body.renterId,
+        startDate: typeof body.startDate === 'string' ? body.startDate : new Date(body.startDate).toISOString(),
+        endDate: typeof body.endDate === 'string' ? body.endDate : new Date(body.endDate).toISOString(),
+        // Provide sensible defaults if client omitted these optional UI fields
+        startTime: body.startTime || '09:00',
+        endTime: body.endTime || '17:00',
+        totalAmount: String(body.totalAmount ?? body.total_price ?? '0.00'),
+        serviceFee: String(body.serviceFee ?? '0.00'),
+        insurance: String(body.insurance ?? '0.00'),
+        status: body.status || 'pending',
+        message: body.message ?? null,
+        paymentStatus: body.paymentStatus || 'pending',
+        paymentIntentId: body.paymentIntentId ?? null,
+      } as any;
+
+      // For SQLite, dates are stored as text strings
+      const parseResult = insertBookingSchema.safeParse(normalizedBody);
+      if (!parseResult.success) {
+        return res.status(400).json({ error: 'Invalid booking data', details: parseResult.error.flatten() });
+      }
+      const bookingData = parseResult.data as unknown;
   // Inline typed alias to satisfy TypeScript in this file (avoid coupling to shared types while schema types
   // may have upstream issues). booking fields are stored as strings in SQLite.
   const b = bookingData as {
