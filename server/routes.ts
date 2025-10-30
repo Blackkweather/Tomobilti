@@ -35,6 +35,9 @@ import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 
 export default function registerRoutes(app: Express) {
+  // In-memory stores for verification codes (avoid adding fields to User type)
+  const emailVerificationStore = new Map<string, { code: string; expiresAt: Date }>();
+  const phoneVerificationStore = new Map<string, { code: string; expiresAt: Date; phone: string }>();
   // Test endpoint to verify server is working
   app.get('/api/test', (req, res) => {
     res.json({
@@ -132,11 +135,15 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       
       // Send email verification
       try {
-        const verificationToken = generateToken(user.id); // You might want to create a separate verification token
+        // Generate initial email verification code and store it temporarily
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+        emailVerificationStore.set(user.id, { code: verificationCode, expiresAt });
+
         await EmailService.sendVerificationEmail({
           to: user.email,
           firstName: user.firstName,
-          verificationToken: verificationToken
+          verificationCode
         });
       } catch (emailError) {
         console.error('Failed to send verification email:', emailError);
@@ -335,7 +342,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       const user = req.user!;
       
       // Check if user is already verified
-      if (user.isVerified) {
+      if (user.isEmailVerified) {
         return res.status(400).json({ error: 'Email is already verified' });
       }
 
@@ -343,11 +350,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-      // Update user with verification code
-      await storage.updateUser(user.id, {
-        emailVerificationCode: verificationCode,
-        emailVerificationExpires: expiresAt.toISOString()
-      });
+      // Store verification code in-memory (temporary)
+      emailVerificationStore.set(user.id, { code: verificationCode, expiresAt });
 
       // Send verification email
       try {
@@ -381,31 +385,30 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       }
 
       // Check if user is already verified
-      if (user.isVerified) {
+      if (user.isEmailVerified) {
         return res.status(400).json({ error: 'Email is already verified' });
       }
 
       // Check if verification code exists and is not expired
-      if (!user.emailVerificationCode || !user.emailVerificationExpires) {
+      const emailRecord = emailVerificationStore.get(user.id);
+      if (!emailRecord) {
         return res.status(400).json({ error: 'No verification code found. Please request a new one.' });
       }
-
-      const expiresAt = new Date(user.emailVerificationExpires);
+      const expiresAt = new Date(emailRecord.expiresAt);
       if (expiresAt < new Date()) {
         return res.status(400).json({ error: 'Verification code has expired. Please request a new one.' });
       }
 
       // Verify the code
-      if (user.emailVerificationCode !== code) {
+      if (emailRecord.code !== code) {
         return res.status(400).json({ error: 'Invalid verification code' });
       }
 
-      // Mark email as verified and clear verification code
+      // Mark email as verified and clear stored code
       const updatedUser = await storage.updateUser(user.id, {
-        isVerified: true,
-        emailVerificationCode: null,
-        emailVerificationExpires: null
+        isEmailVerified: true,
       });
+      emailVerificationStore.delete(user.id);
 
       if (!updatedUser) {
         return res.status(404).json({ error: 'User not found' });
@@ -442,12 +445,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
 
-      // Update user with phone verification code
-      await storage.updateUser(user.id, {
-        phone: phone,
-        phoneVerificationCode: verificationCode,
-        phoneVerificationExpires: expiresAt.toISOString()
-      });
+      // Store phone verification code in-memory (temporary)
+      phoneVerificationStore.set(user.id, { code: verificationCode, expiresAt, phone });
 
       // In a real implementation, you would send SMS here
       // For now, we'll just log the code (in production, remove this)
@@ -474,15 +473,16 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       }
 
       // Check if verification code matches and is not expired
-      if (!user.phoneVerificationCode || !user.phoneVerificationExpires) {
+      const phoneRecord = phoneVerificationStore.get(user.id);
+      if (!phoneRecord) {
         return res.status(400).json({ error: 'No verification code found. Please request a new code.' });
       }
 
-      if (user.phoneVerificationCode !== code) {
+      if (phoneRecord.code !== code) {
         return res.status(400).json({ error: 'Invalid verification code' });
       }
 
-      const expiresAt = new Date(user.phoneVerificationExpires);
+      const expiresAt = new Date(phoneRecord.expiresAt);
       if (expiresAt < new Date()) {
         return res.status(400).json({ error: 'Verification code has expired. Please request a new code.' });
       }
@@ -491,9 +491,8 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       await storage.updateUser(user.id, {
         phone: phone,
         isPhoneVerified: true,
-        phoneVerificationCode: null,
-        phoneVerificationExpires: null
       });
+      phoneVerificationStore.delete(user.id);
 
       res.json({ message: 'Phone number verified successfully' });
     } catch (error) {

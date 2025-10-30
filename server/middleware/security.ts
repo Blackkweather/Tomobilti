@@ -11,8 +11,17 @@ export const securityHeaders = helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "https:", "blob:"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      connectSrc: ["'self'", "ws:", "wss:", "https://api.stripe.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com"],
+      connectSrc: [
+        "'self'",
+        "ws:",
+        "wss:",
+        "https://api.stripe.com",
+        // Allow weather data fetches used on the homepage and listings
+        "https://api.open-meteo.com",
+        // Allow Google Analytics networking when enabled
+        "https://www.google-analytics.com"
+      ],
       frameSrc: ["'none'"],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
