@@ -130,8 +130,8 @@ function App() {
               {/* Static Pages */}
               <Route path="/about" component={About} />
               <Route path="/support" component={Support} />
-              <Route path="/payment" component={Payment} />
-              <Route path="/booking-confirmation" component={BookingConfirmation} />
+              <Route path="/payment/:id" component={Payment} />
+              <Route path="/booking-confirmation/:bookingId?" component={BookingConfirmation} />
               <Route path="/favorites" component={Favorites} />
               
               {/* Legal Pages */}

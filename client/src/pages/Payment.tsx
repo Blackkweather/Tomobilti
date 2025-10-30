@@ -148,6 +148,46 @@ const Payment: React.FC = () => {
     });
   };
 
+  // Calculate pricing if not provided in booking
+  const calculatePricing = () => {
+    if (!booking) return { days: 0, subtotal: 0, serviceFee: 0, insurance: 0, total: 0 };
+    
+    // If booking already has calculated values and they're valid, use them
+    if (booking.totalAmount && booking.totalAmount > 0 && booking.serviceFee !== undefined && booking.insurance !== undefined) {
+      // Calculate days from dates for display
+      const startDate = new Date(booking.startDate);
+      const endDate = new Date(booking.endDate);
+      const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+      const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+      const subtotal = Number(booking.totalAmount) - Number(booking.serviceFee) - Number(booking.insurance);
+      
+      return {
+        days,
+        subtotal: subtotal > 0 ? subtotal : 0,
+        serviceFee: Number(booking.serviceFee) || 0,
+        insurance: Number(booking.insurance) || 0,
+        total: Number(booking.totalAmount) || 0
+      };
+    }
+    
+    // Calculate based on dates and car price
+    const startDate = new Date(booking.startDate);
+    const endDate = new Date(booking.endDate);
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+    
+    // Get price from car data if available, otherwise use 0 as fallback
+    const pricePerDay = booking.car?.pricePerDay ? Number(booking.car.pricePerDay) : 0;
+    const subtotal = days * pricePerDay;
+    const serviceFee = Math.round(subtotal * 0.10 * 100) / 100; // 10% service fee
+    const insurance = Math.round(subtotal * 0.05 * 100) / 100; // 5% insurance
+    const total = subtotal + serviceFee + insurance;
+    
+    return { days, subtotal, serviceFee, insurance, total };
+  };
+
+  const pricing = calculatePricing();
+
   // Show loading state
   if (loading) {
     return (
@@ -324,17 +364,25 @@ const Payment: React.FC = () => {
                     <span className="font-medium">{booking.car.pricePerDay} {booking.car.currency}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">Service Fee</span>
-                    <span className="font-medium">GBP {Number(booking.serviceFee || 0).toFixed(2)}</span>
+                    <span className="text-gray-600">Rental Duration</span>
+                    <span className="font-medium">{pricing.days} {pricing.days === 1 ? 'day' : 'days'}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">Insurance Discount</span>
-                    <span className="font-medium">GBP {Number(booking.insurance || 0).toFixed(2)}</span>
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-medium">GBP {pricing.subtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-gray-600">Service Fee</span>
+                    <span className="font-medium">GBP {pricing.serviceFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2">
+                    <span className="text-gray-600">Insurance</span>
+                    <span className="font-medium">GBP {pricing.insurance.toFixed(2)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between items-center py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-4">
                     <span className="text-lg font-semibold">Total Amount</span>
-                    <span className="text-xl font-bold text-blue-600">GBP {Number(booking.totalAmount || 0).toFixed(2)}</span>
+                    <span className="text-xl font-bold text-blue-600">GBP {pricing.total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -519,7 +567,7 @@ const Payment: React.FC = () => {
                     }}
                   >
                     <Lock className="h-5 w-5 mr-2" />
-                    Pay GBP {Number(booking.totalAmount || 0).toFixed(2)}
+                    Pay GBP {pricing.total.toFixed(2)}
                   </Button>
                 </div>
               )}
