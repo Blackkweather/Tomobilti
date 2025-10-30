@@ -148,8 +148,10 @@ app.use((req, res, next) => {
     setTimeout(async () => {
       try {
         console.log('Starting production database initialization...');
-        const { DatabaseStorage } = await import('./db');
+        const { DatabaseStorage, ensureDatabaseSchema } = await import('./db');
         const dbStorage = new DatabaseStorage();
+        // Ensure critical schema exists to avoid 42703 errors
+        await ensureDatabaseSchema();
         
         // Retry logic for database connection
         let retries = 5; // Increased retries

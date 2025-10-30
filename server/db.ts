@@ -89,6 +89,57 @@ const sql = postgres(config.connectionString, {
 
 export const db = drizzle(sql);
 
+// Ensure critical columns exist in production Postgres to avoid 42703 errors
+export async function ensureDatabaseSchema(): Promise<void> {
+  try {
+    // Cars table - new columns used by current codebase
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS vin text`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS registration_number text`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS mot_expiry timestamp`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS insurance_expiry timestamp`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS is_insured boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS insurance_provider text`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS insurance_policy_number text`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_airbags boolean DEFAULT true`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_abs boolean DEFAULT true`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_esp boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_bluetooth boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_gps boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_parking_sensors boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_alarm boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_immobilizer boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS has_tracking_device boolean DEFAULT false`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS mileage integer`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS last_service_date timestamp`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS next_service_due timestamp`;
+    await sql`ALTER TABLE cars ADD COLUMN IF NOT EXISTS condition text DEFAULT 'good'`;
+
+    // Users table - verification and membership fields used by code
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS membership_tier text DEFAULT 'none'`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_id text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status text DEFAULT 'inactive'`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_current_period_end timestamp`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS loyalty_points integer DEFAULT 0`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_email_verified boolean DEFAULT false`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_phone_verified boolean DEFAULT false`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_id_verified boolean DEFAULT false`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_license_verified boolean DEFAULT false`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_background_checked boolean DEFAULT false`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS id_document_url text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS license_document_url text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS insurance_document_url text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS emergency_contact_name text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS emergency_contact_phone text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS emergency_contact_relation text`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS security_score integer DEFAULT 0`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_blocked boolean DEFAULT false`;
+    await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS block_reason text`;
+  } catch (e) {
+    console.error('Auto schema ensure failed:', (e as any).message);
+  }
+}
+
 export class DatabaseStorage implements IStorage {
   // User operations
   async createUser(insertUser: InsertUser): Promise<User> {
