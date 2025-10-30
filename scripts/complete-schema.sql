@@ -145,45 +145,125 @@ CREATE TABLE IF NOT EXISTS public.messages (
 -- Foreign Keys
 -- =======================
 
-ALTER TABLE IF EXISTS public.cars
-  ADD CONSTRAINT cars_owner_id_fkey
-  FOREIGN KEY (owner_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'cars_owner_id_fkey' AND t.relname = 'cars'
+  ) THEN
+    ALTER TABLE public.cars
+      ADD CONSTRAINT cars_owner_id_fkey
+      FOREIGN KEY (owner_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.bookings
-  ADD CONSTRAINT bookings_car_id_fkey
-  FOREIGN KEY (car_id) REFERENCES public.cars(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'bookings_car_id_fkey' AND t.relname = 'bookings'
+  ) THEN
+    ALTER TABLE public.bookings
+      ADD CONSTRAINT bookings_car_id_fkey
+      FOREIGN KEY (car_id) REFERENCES public.cars(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.bookings
-  ADD CONSTRAINT bookings_renter_id_fkey
-  FOREIGN KEY (renter_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'bookings_renter_id_fkey' AND t.relname = 'bookings'
+  ) THEN
+    ALTER TABLE public.bookings
+      ADD CONSTRAINT bookings_renter_id_fkey
+      FOREIGN KEY (renter_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.reviews
-  ADD CONSTRAINT reviews_booking_id_fkey
-  FOREIGN KEY (booking_id) REFERENCES public.bookings(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'reviews_booking_id_fkey' AND t.relname = 'reviews'
+  ) THEN
+    ALTER TABLE public.reviews
+      ADD CONSTRAINT reviews_booking_id_fkey
+      FOREIGN KEY (booking_id) REFERENCES public.bookings(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.reviews
-  ADD CONSTRAINT reviews_car_id_fkey
-  FOREIGN KEY (car_id) REFERENCES public.cars(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'reviews_car_id_fkey' AND t.relname = 'reviews'
+  ) THEN
+    ALTER TABLE public.reviews
+      ADD CONSTRAINT reviews_car_id_fkey
+      FOREIGN KEY (car_id) REFERENCES public.cars(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.reviews
-  ADD CONSTRAINT reviews_reviewee_id_fkey
-  FOREIGN KEY (reviewee_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'reviews_reviewee_id_fkey' AND t.relname = 'reviews'
+  ) THEN
+    ALTER TABLE public.reviews
+      ADD CONSTRAINT reviews_reviewee_id_fkey
+      FOREIGN KEY (reviewee_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.reviews
-  ADD CONSTRAINT reviews_reviewer_id_fkey
-  FOREIGN KEY (reviewer_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'reviews_reviewer_id_fkey' AND t.relname = 'reviews'
+  ) THEN
+    ALTER TABLE public.reviews
+      ADD CONSTRAINT reviews_reviewer_id_fkey
+      FOREIGN KEY (reviewer_id) REFERENCES public.users(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.car_images
-  ADD CONSTRAINT car_images_car_id_cars_id_fk
-  FOREIGN KEY (car_id) REFERENCES public.cars(id) ON UPDATE NO ACTION ON DELETE CASCADE;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'car_images_car_id_cars_id_fk' AND t.relname = 'car_images'
+  ) THEN
+    ALTER TABLE public.car_images
+      ADD CONSTRAINT car_images_car_id_cars_id_fk
+      FOREIGN KEY (car_id) REFERENCES public.cars(id) ON UPDATE NO ACTION ON DELETE CASCADE;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.conversations
-  ADD CONSTRAINT conversations_booking_id_fk
-  FOREIGN KEY (booking_id) REFERENCES public.bookings(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'conversations_booking_id_fk' AND t.relname = 'conversations'
+  ) THEN
+    ALTER TABLE public.conversations
+      ADD CONSTRAINT conversations_booking_id_fk
+      FOREIGN KEY (booking_id) REFERENCES public.bookings(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
-ALTER TABLE IF EXISTS public.messages
-  ADD CONSTRAINT messages_conversation_id_fk
-  FOREIGN KEY (conversation_id) REFERENCES public.conversations(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint c
+    JOIN pg_class t ON t.oid = c.conrelid
+    WHERE c.conname = 'messages_conversation_id_fk' AND t.relname = 'messages'
+  ) THEN
+    ALTER TABLE public.messages
+      ADD CONSTRAINT messages_conversation_id_fk
+      FOREIGN KEY (conversation_id) REFERENCES public.conversations(id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END $$;
 
 -- =======================
 -- Indexes (performance)
@@ -216,6 +296,7 @@ CREATE INDEX IF NOT EXISTS idx_messages_conversation  ON public.messages(convers
 CREATE INDEX IF NOT EXISTS idx_messages_created_at    ON public.messages(created_at);
 
 COMMIT;
+
 
 
 
