@@ -6,6 +6,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Input } from '../components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import AnimatedConfirmDialog from '../components/AnimatedConfirmDialog';
 import { 
   Car, 
@@ -124,6 +126,73 @@ export default function CarManagement() {
 
   const handleViewCar = (carId: string) => {
     setLocation(`/cars/${carId}`);
+  };
+
+  const toggleSelectCar = (carId: string) => {
+    const newSelected = new Set(selectedCars);
+    if (newSelected.has(carId)) {
+      newSelected.delete(carId);
+    } else {
+      newSelected.add(carId);
+    }
+    setSelectedCars(newSelected);
+  };
+
+  const bulkToggleAvailability = async () => {
+    if (selectedCars.size === 0) return;
+    if (!window.confirm(`Toggle availability for ${selectedCars.size} car(s)?`)) return;
+
+    try {
+      for (const carId of selectedCars) {
+        const car = carsArray.find((c: any) => c.id === carId);
+        if (car) {
+          await carApi.updateCar(carId, { isAvailable: !car.isAvailable });
+        }
+      }
+      queryClient.invalidateQueries({ queryKey: ['cars', 'owner'] });
+      setSelectedCars(new Set());
+    } catch (error) {
+      console.error('Failed to toggle availability:', error);
+      alert('Failed to toggle availability for selected cars.');
+    }
+  };
+
+  const bulkExport = () => {
+    if (selectedCars.size === 0) {
+      alert('Please select cars to export.');
+      return;
+    }
+    const carsToExport = filteredCars.filter((car: any) => selectedCars.has(car.id));
+    const csvHeader = ["ID", "Make", "Model", "Year", "Price Per Day", "Location", "Fuel Type", "Transmission", "Seats", "Is Active", "Total Earnings", "Total Bookings", "Average Rating"];
+    const csvRows = carsToExport.map((car: any) => [
+      car.id,
+      car.make,
+      car.model,
+      car.year,
+      car.pricePerDay,
+      car.location,
+      car.fuelType,
+      car.transmission,
+      car.seats,
+      car.isActive ? 'Yes' : 'No',
+      car.totalEarnings || 0,
+      car.totalBookings || 0,
+      car.averageRating || 0
+    ]);
+
+    const csvContent = [
+      csvHeader.join(','),
+      ...csvRows.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'selected_cars.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    alert('Selected cars exported to CSV!');
   };
 
   // Redirect if not authenticated

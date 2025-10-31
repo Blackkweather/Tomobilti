@@ -413,10 +413,10 @@ export default function Favorites() {
               </div>
             ))}
           </div>
+            )}
+          </>
         )}
       </div>
-
-      {/* Footer is rendered globally in App; avoid duplicate */}
     </div>
   );
 }

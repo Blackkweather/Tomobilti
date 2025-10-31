@@ -12,6 +12,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { EmailService } from "./services/email";
 import { CarRentalAgentService } from "./services/car-rental-agent";
 import MessagingSocketServer from "./messaging";
+import NotificationService from "./services/notifications";
 import MonitoringService from "./services/monitoring";
 import LoggingService from "./services/logging";
 
