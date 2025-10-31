@@ -12,20 +12,34 @@ export default function EmailBanner() {
       try {
         const weatherData = await Promise.all(
           cities.map(async (city) => {
-            const response = await fetch(
-              `https://api.open-meteo.com/v1/forecast?latitude=${getCoords(city).lat}&longitude=${getCoords(city).lon}&current_weather=true`
-            );
-            const data = await response.json();
-            return {
-              city,
-              temp: Math.round(data.current_weather.temperature),
-              code: data.current_weather.weathercode
-            };
+            try {
+              const response = await fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${getCoords(city).lat}&longitude=${getCoords(city).lon}&current_weather=true`
+              );
+              if (!response.ok) throw new Error('Weather API error');
+              const data = await response.json();
+              return {
+                city,
+                temp: Math.round(data.current_weather?.temperature || 15),
+                code: data.current_weather?.weathercode || 0
+              };
+            } catch (error) {
+              // Fallback to default temperature if API fails
+              return {
+                city,
+                temp: 15, // Default UK temperature
+                code: 0
+              };
+            }
           })
         );
         setWeather(weatherData);
       } catch (error) {
-        console.error('Weather fetch error:', error);
+        // Set default temperatures if all requests fail
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('Weather fetch error:', error);
+        }
+        setWeather(cities.map(city => ({ city, temp: 15, code: 0 })));
       }
     };
     fetchWeather();

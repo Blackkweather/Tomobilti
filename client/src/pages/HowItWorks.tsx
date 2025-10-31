@@ -1,6 +1,7 @@
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Car, Users, Shield, CreditCard, MapPin, Star } from 'lucide-react';
+import { useLocation } from 'wouter';
 
 const steps = [
   {
@@ -44,6 +45,12 @@ const benefits = [
 ];
 
 export default function HowItWorks() {
+  const [, setLocation] = useLocation();
+
+  const handleListMyCar = () => {
+    setLocation('/add-car-dynamic');
+  };
+
   return (
     <div className="min-h-screen pt-20">
       {/* Hero Section */}
@@ -125,7 +132,12 @@ export default function HowItWorks() {
               <p className="text-primary-foreground/90 mb-8 text-lg">
                 Sign up for free and start generating income today.
               </p>
-              <Button variant="secondary" size="lg" className="hover-elevate">
+              <Button 
+                variant="secondary" 
+                size="lg" 
+                className="hover-elevate"
+                onClick={handleListMyCar}
+              >
                 List My Car
               </Button>
             </CardContent>

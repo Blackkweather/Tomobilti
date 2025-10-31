@@ -177,8 +177,9 @@ export default function AddCarDynamic() {
       // Add all form fields
       Object.entries(carData).forEach(([key, value]) => {
         if (key === 'images') {
-          carData.images.forEach((file: File, index: number) => {
-            formData.append(`image_${index}`, file);
+          // Append all images with the same field name 'images' for multer
+          carData.images.forEach((file: File) => {
+            formData.append('images', file);
           });
         } else if (key === 'features') {
           formData.append('features', JSON.stringify(value));
@@ -191,7 +192,7 @@ export default function AddCarDynamic() {
         method: 'POST',
         body: formData,
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }
       });
 

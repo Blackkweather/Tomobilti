@@ -5,7 +5,9 @@ import { apiRequest } from "../lib/queryClient";
 import { getSpecificCarImage } from "../utils/carImages";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { Star, MapPin, Heart, Trash2, Eye, Calendar } from "lucide-react";
+import { Input } from "../components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Star, MapPin, Heart, Trash2, Eye, Calendar, Filter, Search, Share2, Download, X, CheckSquare, Square } from "lucide-react";
 
 
 interface FavoriteCar {
@@ -29,6 +31,11 @@ interface FavoriteCar {
 export default function Favorites() {
   const queryClient = useQueryClient();
   const [sortBy, setSortBy] = useState<"recent" | "price" | "rating">("recent");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [priceFilter, setPriceFilter] = useState("all");
+  const [locationFilter, setLocationFilter] = useState("all");
+  const [selectedFavorites, setSelectedFavorites] = useState<Set<string>>(new Set());
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: favorites = [], isLoading } = useQuery<FavoriteCar[]>({
     queryKey: ["/api/favorites"],
@@ -43,7 +50,26 @@ export default function Favorites() {
     },
   });
 
-  const sortedFavorites = [...favorites].sort((a, b) => {
+  // Filter favorites
+  const filteredFavorites = favorites.filter((fav) => {
+    const matchesSearch = 
+      fav.car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      fav.car.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      fav.car.location.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesPrice = 
+      priceFilter === "all" ||
+      (priceFilter === "low" && fav.car.pricePerDay < 100) ||
+      (priceFilter === "mid" && fav.car.pricePerDay >= 100 && fav.car.pricePerDay < 200) ||
+      (priceFilter === "high" && fav.car.pricePerDay >= 200);
+    
+    const matchesLocation = locationFilter === "all" || fav.car.location.toLowerCase().includes(locationFilter.toLowerCase());
+    
+    return matchesSearch && matchesPrice && matchesLocation;
+  });
+
+  // Sort filtered favorites
+  const sortedFavorites = [...filteredFavorites].sort((a, b) => {
     switch (sortBy) {
       case "price":
         return a.car.pricePerDay - b.car.pricePerDay;
@@ -54,6 +80,41 @@ export default function Favorites() {
         return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     }
   });
+
+  const toggleSelect = (carId: string) => {
+    const newSelected = new Set(selectedFavorites);
+    if (newSelected.has(carId)) {
+      newSelected.delete(carId);
+    } else {
+      newSelected.add(carId);
+    }
+    setSelectedFavorites(newSelected);
+  };
+
+  const selectAll = () => {
+    if (selectedFavorites.size === sortedFavorites.length) {
+      setSelectedFavorites(new Set());
+    } else {
+      setSelectedFavorites(new Set(sortedFavorites.map(f => f.carId)));
+    }
+  };
+
+  const bulkRemove = () => {
+    if (selectedFavorites.size === 0) return;
+    if (window.confirm(`Remove ${selectedFavorites.size} favorite(s)?`)) {
+      selectedFavorites.forEach(carId => {
+        removeFavoriteMutation.mutate(carId);
+      });
+      setSelectedFavorites(new Set());
+    }
+  };
+
+  const shareFavorites = () => {
+    const carIds = sortedFavorites.map(f => f.carId).join(',');
+    const shareUrl = `${window.location.origin}/cars?favorites=${carIds}`;
+    navigator.clipboard.writeText(shareUrl);
+    alert('Favorites list link copied to clipboard!');
+  };
 
   const formatCurrency = (amount: number) => `£${amount}`;
 
@@ -82,27 +143,136 @@ export default function Favorites() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-bold gradient-text mb-4">My Favorites</h1>
           <p className="text-xl text-gray-700 font-medium">
-            {favorites.length} saved car{favorites.length !== 1 ? 's' : ''}
+            {filteredFavorites.length} of {favorites.length} saved car{favorites.length !== 1 ? 's' : ''}
           </p>
         </div>
 
-        {/* Sort Controls */}
+        {/* Search and Filter Controls */}
         {favorites.length > 0 && (
-          <div className="flex justify-center mb-8">
-            <div className="bg-white rounded-lg shadow-sm p-4">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700 font-medium"
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+              {/* Search */}
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <Input
+                  placeholder="Search favorites..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  >
+                    <X className="h-4 w-4 text-gray-400" />
+                  </button>
+                )}
+              </div>
+
+              {/* Filter Toggle */}
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2"
               >
-                <option value="recent">Recently Added</option>
-                <option value="price">Price: Low to High</option>
-                <option value="rating">Highest Rated</option>
-              </select>
+                <Filter className="h-4 w-4" />
+                Filters
+              </Button>
+
+              {/* Share */}
+              <Button
+                variant="outline"
+                onClick={shareFavorites}
+                className="flex items-center gap-2"
+              >
+                <Share2 className="h-4 w-4" />
+                Share
+              </Button>
             </div>
+
+            {/* Expanded Filters */}
+            {showFilters && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Price Range</label>
+                  <Select value={priceFilter} onValueChange={setPriceFilter}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Prices</SelectItem>
+                      <SelectItem value="low">Under £100/day</SelectItem>
+                      <SelectItem value="mid">£100-£200/day</SelectItem>
+                      <SelectItem value="high">Over £200/day</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Location</label>
+                  <Input
+                    placeholder="Filter by location..."
+                    value={locationFilter === "all" ? "" : locationFilter}
+                    onChange={(e) => setLocationFilter(e.target.value || "all")}
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Sort By</label>
+                  <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="recent">Recently Added</SelectItem>
+                      <SelectItem value="price">Price: Low to High</SelectItem>
+                      <SelectItem value="rating">Highest Rated</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+
+            {/* Bulk Actions */}
+            {favorites.length > 0 && (
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={selectAll}
+                    className="flex items-center gap-2"
+                  >
+                    {selectedFavorites.size === sortedFavorites.length ? (
+                      <CheckSquare className="h-4 w-4" />
+                    ) : (
+                      <Square className="h-4 w-4" />
+                    )}
+                    {selectedFavorites.size === sortedFavorites.length ? 'Deselect All' : 'Select All'}
+                  </Button>
+                  {selectedFavorites.size > 0 && (
+                    <span className="text-sm text-gray-600">
+                      {selectedFavorites.size} selected
+                    </span>
+                  )}
+                </div>
+                {selectedFavorites.size > 0 && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={bulkRemove}
+                    className="flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Remove Selected ({selectedFavorites.size})
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -122,10 +292,40 @@ export default function Favorites() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedFavorites.map((favorite) => (
-              <div key={favorite.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                <div className="relative">
+          <>
+            {filteredFavorites.length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-lg shadow-sm">
+                <Filter className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">No favorites match your filters</h3>
+                <p className="text-gray-600 mb-6">Try adjusting your search or filter criteria</p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setPriceFilter('all');
+                    setLocationFilter('all');
+                    setShowFilters(false);
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {sortedFavorites.map((favorite) => (
+                  <div key={favorite.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group relative">
+                    {/* Selection Checkbox */}
+                    <button
+                      onClick={() => toggleSelect(favorite.carId)}
+                      className="absolute top-2 left-2 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                    >
+                      {selectedFavorites.has(favorite.carId) ? (
+                        <CheckSquare className="h-5 w-5 text-blue-600" />
+                      ) : (
+                        <Square className="h-5 w-5 text-gray-400" />
+                      )}
+                    </button>
+                    <div className="relative">
                   <img
                     src={getSpecificCarImage(favorite.car)}
                     alt={`${favorite.car.make} ${favorite.car.model}`}

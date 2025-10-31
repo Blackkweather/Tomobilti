@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -37,6 +38,7 @@ import {
 // import Calendar from './Calendar'; // Temporarily disabled
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'wouter';
+import { bookingApi } from '../lib/api';
 
 interface ReservationBarProps {
   car: {
@@ -85,6 +87,53 @@ export default function ReservationBar({ car, onBook, className = '', config = {
   const [isBooking, setIsBooking] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [dateError, setDateError] = useState<string | null>(null);
+
+  // Fetch bookings for this car to determine unavailable dates
+  const { data: bookingsData } = useQuery({
+    queryKey: ['carBookings', car.id],
+    queryFn: () => bookingApi.getCarBookings(car.id),
+    enabled: !!car.id,
+  });
+
+  const bookings = bookingsData?.bookings || [];
+
+  // Calculate unavailable dates from bookings
+  const getUnavailableDates = (): Date[] => {
+    const unavailable: Date[] = [];
+    bookings.forEach((booking: any) => {
+      const start = new Date(booking.startDate);
+      const end = new Date(booking.endDate);
+      const current = new Date(start);
+      while (current <= end) {
+        unavailable.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+      }
+    });
+    return unavailable;
+  };
+
+  const unavailableDates = getUnavailableDates();
+  
+  // Check if a date is unavailable
+  const isDateUnavailable = (date: Date): boolean => {
+    const dateStr = date.toISOString().split('T')[0];
+    return unavailableDates.some(d => d.toISOString().split('T')[0] === dateStr);
+  };
+
+  // Check if date range overlaps with any booking
+  const isDateRangeUnavailable = (start: Date, end: Date): boolean => {
+    const startStr = start.toISOString().split('T')[0];
+    const endStr = end.toISOString().split('T')[0];
+    
+    return bookings.some((booking: any) => {
+      const bookingStart = new Date(booking.startDate).toISOString().split('T')[0];
+      const bookingEnd = new Date(booking.endDate).toISOString().split('T')[0];
+      
+      // Check if dates overlap
+      return (startStr <= bookingEnd && endStr >= bookingStart);
+    });
+  };
 
   // Default configuration values
   const defaultConfig = {
@@ -125,9 +174,29 @@ export default function ReservationBar({ car, onBook, className = '', config = {
   };
 
   const handleDateSelect = (start: Date | null, end: Date | null) => {
+    setDateError(null);
+    
+    if (start && isDateUnavailable(start)) {
+      setDateError('Start date is not available. Please select a different date.');
+      return;
+    }
+    
+    if (end && isDateUnavailable(end)) {
+      setDateError('End date is not available. Please select a different date.');
+      return;
+    }
+    
+    if (start && end && start > end) {
+      setDateError('Start date must be before end date.');
+      return;
+    }
+    
+    if (start && end && isDateRangeUnavailable(start, end)) {
+      setDateError('Selected dates overlap with an existing booking. Please choose different dates.');
+      return;
+    }
+    
     setSelectedDates({ start, end });
-    if (start) setSelectedDates(prev => ({ ...prev, start }));
-    if (end) setSelectedDates(prev => ({ ...prev, end }));
   };
 
   // getDateRangeText function removed - no longer needed
@@ -261,7 +330,12 @@ export default function ReservationBar({ car, onBook, className = '', config = {
                     const date = e.target.value ? new Date(e.target.value) : null;
                     handleDateSelect(date, selectedDates.end);
                   }}
-                  className="w-full px-2 py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-xs sm:text-sm"
+                  min={new Date().toISOString().split('T')[0]}
+                  className={`w-full px-2 py-2 border rounded-lg focus:ring-1 focus:ring-blue-200 text-xs sm:text-sm ${
+                    dateError && dateError.includes('Start date') 
+                      ? 'border-red-500 focus:border-red-500' 
+                      : 'border-gray-200 focus:border-blue-500'
+                  }`}
                 />
               </div>
               <div>
@@ -273,10 +347,27 @@ export default function ReservationBar({ car, onBook, className = '', config = {
                     const date = e.target.value ? new Date(e.target.value) : null;
                     handleDateSelect(selectedDates.start, date);
                   }}
-                  className="w-full px-2 py-2 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-200 text-xs sm:text-sm"
+                  min={selectedDates.start ? selectedDates.start.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
+                  className={`w-full px-2 py-2 border rounded-lg focus:ring-1 focus:ring-blue-200 text-xs sm:text-sm ${
+                    dateError && dateError.includes('End date') 
+                      ? 'border-red-500 focus:border-red-500' 
+                      : 'border-gray-200 focus:border-blue-500'
+                  }`}
                 />
               </div>
             </div>
+            {dateError && (
+              <div className="flex items-start gap-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-red-600">{dateError}</p>
+              </div>
+            )}
+            {unavailableDates.length > 0 && (
+              <div className="text-xs text-gray-500 flex items-center gap-1">
+                <CalendarIcon className="h-3 w-3" />
+                <span>{unavailableDates.length} date{unavailableDates.length !== 1 ? 's' : ''} already booked</span>
+              </div>
+            )}
           </div>
 
           {/* Guest Selection - Compact */}

@@ -14,10 +14,17 @@ export class NotificationService {
   private static io: SocketIOServer;
   private static connectedUsers: Map<string, string> = new Map(); // userId -> socketId
 
+  private static initialized = false;
+
   /**
    * Initialize Socket.IO server
    */
   static initialize(httpServer: HTTPServer): SocketIOServer {
+    // Prevent double initialization
+    if (this.initialized && this.io) {
+      return this.io;
+    }
+
     this.io = new SocketIOServer(httpServer, {
       cors: {
         origin: process.env.NODE_ENV === 'production' 
@@ -25,8 +32,11 @@ export class NotificationService {
           : process.env.FRONTEND_URL || "http://localhost:5000",
         methods: ["GET", "POST"],
         credentials: true
-      }
+      },
+      path: '/notifications-socket'
     });
+
+    this.initialized = true;
 
     this.io.on('connection', (socket) => {
       console.log(`📱 User connected: ${socket.id}`);

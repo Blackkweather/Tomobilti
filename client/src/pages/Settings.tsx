@@ -273,15 +273,15 @@ export default function Settings() {
             <CardHeader>
               <CardTitle className="flex items-center">
                 <Bell className="w-5 h-5 mr-2 text-blue-600" />
-                Préférences
+                Preferences
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Notifications par email</Label>
-                    <p className="text-sm text-gray-500">Recevoir des notifications par email</p>
+                    <Label>Email Notifications</Label>
+                    <p className="text-sm text-gray-500">Receive notifications by email</p>
                   </div>
                   <Switch
                     checked={preferences.emailNotifications}
@@ -293,8 +293,8 @@ export default function Settings() {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Notifications SMS</Label>
-                    <p className="text-sm text-gray-500">Recevoir des notifications par SMS</p>
+                    <Label>SMS Notifications</Label>
+                    <p className="text-sm text-gray-500">Receive notifications by SMS</p>
                   </div>
                   <Switch
                     checked={preferences.smsNotifications}
@@ -306,8 +306,8 @@ export default function Settings() {
 
                 <div className="flex items-center justify-between">
               <div>
-                    <Label>Emails marketing</Label>
-                    <p className="text-sm text-gray-500">Recevoir des offres et promotions</p>
+                    <Label>Marketing Emails</Label>
+                    <p className="text-sm text-gray-500">Receive offers and promotions</p>
                   </div>
                   <Switch
                     checked={preferences.marketingEmails}
@@ -322,7 +322,7 @@ export default function Settings() {
 
               <div className="space-y-4">
                 <div>
-                  <Label>Langue</Label>
+                  <Label>Language</Label>
                   <Select value={preferences.language} onValueChange={(value) => 
                     handlePreferencesChange('language', value)
                   }>
@@ -338,7 +338,7 @@ export default function Settings() {
                 </div>
 
                 <div>
-                  <Label>Devise</Label>
+                  <Label>Currency</Label>
                   <Select value={preferences.currency} onValueChange={(value) => 
                     handlePreferencesChange('currency', value)
                   }>
@@ -361,7 +361,7 @@ export default function Settings() {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Shield className="w-5 h-5 mr-2 text-red-600" />
-              Sécurité
+              Security
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -369,12 +369,12 @@ export default function Settings() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center">
                 <Key className="w-4 h-4 mr-2" />
-                Changer le mot de passe
+                Change Password
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+                  <Label htmlFor="currentPassword">Current Password</Label>
                   <Input
                     id="currentPassword"
                     type="password"
@@ -383,7 +383,7 @@ export default function Settings() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                  <Label htmlFor="newPassword">New Password</Label>
                 <Input 
                     id="newPassword"
                   type="password" 
@@ -392,7 +392,7 @@ export default function Settings() {
                 />
               </div>
               <div>
-                  <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
+                  <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <Input 
                     id="confirmPassword"
                   type="password" 
@@ -408,7 +408,7 @@ export default function Settings() {
                 className="bg-blue-600 hover:bg-blue-700"
               >
                 <Key className="w-4 h-4 mr-2" />
-                {isLoading ? 'Modification...' : 'Modifier le mot de passe'}
+                {isLoading ? 'Changing...' : 'Change Password'}
               </Button>
             </div>
 
@@ -418,13 +418,13 @@ export default function Settings() {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold flex items-center text-red-600">
                 <AlertTriangle className="w-4 h-4 mr-2" />
-                Zone de danger
+                Danger Zone
               </h3>
               
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <h4 className="font-semibold text-red-800 mb-2">Supprimer le compte</h4>
+                <h4 className="font-semibold text-red-800 mb-2">Delete Account</h4>
                 <p className="text-sm text-red-700 mb-4">
-                  Cette action est irréversible. Toutes vos données seront supprimées définitivement.
+                  This action is irreversible. All your data will be permanently deleted.
                 </p>
                 
                 {!showDeleteConfirm ? (
@@ -434,18 +434,18 @@ export default function Settings() {
                     className="bg-red-600 hover:bg-red-700"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
-                    Supprimer mon compte
+                    Delete My Account
                   </Button>
                 ) : (
                   <div className="space-y-3">
                     <div>
-                      <Label htmlFor="deletePassword" className="text-red-800">Confirmer avec votre mot de passe</Label>
+                      <Label htmlFor="deletePassword" className="text-red-800">Confirm with your password</Label>
                       <Input
                         id="deletePassword"
                         type="password"
                         value={deletePassword}
                         onChange={(e) => setDeletePassword(e.target.value)}
-                        placeholder="Entrez votre mot de passe"
+                        placeholder="Enter your password"
                         className="border-red-300 focus:border-red-500"
                       />
                     </div>

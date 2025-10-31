@@ -155,7 +155,9 @@ export const carApi = {
   },
 
   getOwnerCars: async (ownerId: string) => {
-    return apiRequest(`${API_BASE}/cars/owner/${ownerId}`);
+    const response = await apiRequest(`${API_BASE}/cars/owner/${ownerId}`);
+    // Handle both array response and object with cars property
+    return Array.isArray(response) ? response : (response?.cars || []);
   }
 };
 
@@ -171,6 +173,10 @@ export const bookingApi = {
 
   getOwnerBookings: async (ownerId: string) => {
     return apiRequest(`${API_BASE}/bookings/owner/${ownerId}`);
+  },
+
+  getCarBookings: async (carId: string) => {
+    return apiRequest(`${API_BASE}/bookings/car/${carId}`);
   },
 
   createBooking: async (bookingData: any) => {

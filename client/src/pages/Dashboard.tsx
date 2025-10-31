@@ -33,12 +33,12 @@ export default function Dashboard() {
   useEffect(() => {
     if (isAuthenticated && user) {
       if (user.userType === 'owner') {
-        setLocation('/dashboard/owner');
+        setLocation('/owner-dashboard');
       } else if (user.userType === 'renter') {
-        setLocation('/dashboard/renter');
+        setLocation('/renter-dashboard');
       } else if (user.userType === 'both') {
         // For users who can both rent and own, redirect to owner dashboard by default
-        setLocation('/dashboard/owner');
+        setLocation('/owner-dashboard');
       }
     }
   }, [isAuthenticated, user, setLocation]);

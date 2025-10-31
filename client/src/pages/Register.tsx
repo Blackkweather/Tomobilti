@@ -59,6 +59,7 @@ export default function Register() {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -68,17 +69,99 @@ export default function Register() {
     }
   }, [isAuthenticated, loading, user, setLocation]);
 
+  const validateField = (field: keyof typeof form, value: string) => {
+    const errors: Record<string, string> = { ...fieldErrors };
+    
+    switch (field) {
+      case 'email':
+        if (!value) {
+          errors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          errors.email = 'Please enter a valid email address';
+        } else {
+          delete errors.email;
+        }
+        break;
+      case 'firstName':
+        if (!value) {
+          errors.firstName = 'First name is required';
+        } else if (value.length < 2) {
+          errors.firstName = 'First name must be at least 2 characters';
+        } else {
+          delete errors.firstName;
+        }
+        break;
+      case 'lastName':
+        if (!value) {
+          errors.lastName = 'Last name is required';
+        } else if (value.length < 2) {
+          errors.lastName = 'Last name must be at least 2 characters';
+        } else {
+          delete errors.lastName;
+        }
+        break;
+      case 'password':
+        if (!value) {
+          errors.password = 'Password is required';
+        } else if (value.length < 8) {
+          errors.password = 'Password must be at least 8 characters';
+        } else {
+          delete errors.password;
+        }
+        // Re-validate confirmPassword if it exists
+        if (form.confirmPassword) {
+          if (form.confirmPassword !== value) {
+            errors.confirmPassword = 'Passwords do not match';
+          } else {
+            delete errors.confirmPassword;
+          }
+        }
+        break;
+      case 'confirmPassword':
+        if (!value) {
+          errors.confirmPassword = 'Please confirm your password';
+        } else if (value !== form.password) {
+          errors.confirmPassword = 'Passwords do not match';
+        } else {
+          delete errors.confirmPassword;
+        }
+        break;
+      case 'phone':
+        if (value && !validateUKPhoneNumber(value)) {
+          errors.phone = 'Please enter a valid UK phone number';
+        } else {
+          delete errors.phone;
+        }
+        break;
+    }
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Validate all fields
+    const isValid = ['firstName', 'lastName', 'email', 'password', 'confirmPassword'].every(
+      field => validateField(field as keyof typeof form, form[field as keyof typeof form])
+    );
+    
+    if (!isValid) {
+      setError('Please fix the errors above');
+      return;
+    }
 
-    // Validation
+    // Additional validation
     if (form.password !== form.confirmPassword) {
+      setFieldErrors(prev => ({ ...prev, confirmPassword: 'Passwords do not match' }));
       setError('Passwords do not match');
       return;
     }
 
     if (form.password.length < 8) {
+      setFieldErrors(prev => ({ ...prev, password: 'Password must contain at least 8 characters' }));
       setError('Password must contain at least 8 characters');
       return;
     }
@@ -105,8 +188,15 @@ export default function Register() {
   };
 
   const handleChange = (field: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm(prev => ({ ...prev, [field]: e.target.value }));
+    const value = e.target.value;
+    setForm(prev => ({ ...prev, [field]: value }));
     if (error) setError('');
+    // Validate field on change
+    validateField(field, value);
+  };
+
+  const handleBlur = (field: keyof typeof form) => () => {
+    validateField(field, form[field]);
   };
 
   return (
@@ -244,10 +334,16 @@ export default function Register() {
                         disabled={isLoading}
                         value={form.firstName}
                         onChange={handleChange('firstName')}
-                        className="pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        onBlur={handleBlur('firstName')}
+                        className={`pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                          fieldErrors.firstName ? 'border-red-500' : ''
+                        }`}
                         placeholder="First name"
                       />
                     </div>
+                    {fieldErrors.firstName && (
+                      <p className="text-xs text-red-600">{fieldErrors.firstName}</p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
@@ -264,10 +360,16 @@ export default function Register() {
                         disabled={isLoading}
                         value={form.lastName}
                         onChange={handleChange('lastName')}
-                        className="pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        onBlur={handleBlur('lastName')}
+                        className={`pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                          fieldErrors.lastName ? 'border-red-500' : ''
+                        }`}
                         placeholder="Last name"
                       />
                     </div>
+                    {fieldErrors.lastName && (
+                      <p className="text-xs text-red-600">{fieldErrors.lastName}</p>
+                    )}
                   </div>
                 </div>
 
@@ -278,20 +380,26 @@ export default function Register() {
                   </Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      disabled={isLoading}
-                      value={form.email}
-                      onChange={handleChange('email')}
-                      className="pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                      placeholder="votre@email.com"
-                    />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        disabled={isLoading}
+                        value={form.email}
+                        onChange={handleChange('email')}
+                        onBlur={handleBlur('email')}
+                        className={`pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                          fieldErrors.email ? 'border-red-500' : ''
+                        }`}
+                        placeholder="votre@email.com"
+                      />
+                    </div>
+                    {fieldErrors.email && (
+                      <p className="text-xs text-red-600">{fieldErrors.email}</p>
+                    )}
                   </div>
-                </div>
 
                 {/* Phone Field */}
                 <div className="space-y-2">
@@ -310,11 +418,18 @@ export default function Register() {
                       onChange={(e) => {
                         const formatted = formatUKPhoneNumber(e.target.value);
                         setForm(prev => ({ ...prev, phone: formatted }));
+                        validateField('phone', formatted);
                       }}
-                      className="pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                      onBlur={handleBlur('phone')}
+                      className={`pl-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                        fieldErrors.phone ? 'border-red-500' : ''
+                      }`}
                       placeholder={getUKPhonePlaceholder()}
                     />
                   </div>
+                  {fieldErrors.phone && (
+                    <p className="text-xs text-red-600">{fieldErrors.phone}</p>
+                  )}
                   <p className="text-xs text-gray-500">
                     Enter UK mobile (+44 7XXX XXX XXX) or landline (+44 20X XXX XXXX)
                   </p>
@@ -376,20 +491,26 @@ export default function Register() {
                       autoComplete="new-password"
                       required
                       disabled={isLoading}
-                      value={form.password}
-                      onChange={handleChange('password')}
-                      className="pl-10 pr-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                      placeholder="Create a strong password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
+                        value={form.password}
+                        onChange={handleChange('password')}
+                        onBlur={handleBlur('password')}
+                        className={`pl-10 pr-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                          fieldErrors.password ? 'border-red-500' : ''
+                        }`}
+                        placeholder="Create a strong password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {fieldErrors.password && (
+                      <p className="text-xs text-red-600">{fieldErrors.password}</p>
+                    )}
                   </div>
-                </div>
 
                 {/* Confirm Password Field */}
                 <div className="space-y-2">
@@ -405,20 +526,26 @@ export default function Register() {
                       autoComplete="new-password"
                       required
                       disabled={isLoading}
-                      value={form.confirmPassword}
-                      onChange={handleChange('confirmPassword')}
-                      className="pl-10 pr-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                      placeholder="Confirm your password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
+                        value={form.confirmPassword}
+                        onChange={handleChange('confirmPassword')}
+                        onBlur={handleBlur('confirmPassword')}
+                        className={`pl-10 pr-10 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${
+                          fieldErrors.confirmPassword ? 'border-red-500' : ''
+                        }`}
+                        placeholder="Confirm your password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    {fieldErrors.confirmPassword && (
+                      <p className="text-xs text-red-600">{fieldErrors.confirmPassword}</p>
+                    )}
                   </div>
-                </div>
 
                 {/* Error Alert */}
                 {error && (

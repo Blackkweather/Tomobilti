@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -71,7 +71,7 @@ interface BookingData {
 }
 
 const Payment: React.FC = () => {
-  const [, setLocation] = useLocation();
+  const [loc, setLocation] = useLocation();
   const { user } = useAuth();
   const [booking, setBooking] = useState<BookingData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,9 +87,15 @@ const Payment: React.FC = () => {
   const [detectedCard, setDetectedCard] = useState<CardInfo | null>(null);
 
   // Extract booking ID from URL
-  const bookingId = location.pathname.split('/payment/')[1];
+  const bookingId = useMemo(() => {
+    if (!loc) return '';
+    const parts = loc.split('/payment/');
+    return parts[1] || '';
+  }, [loc]);
 
-  console.log('Payment component loaded, bookingId:', bookingId);
+  if (import.meta.env?.DEV) {
+    console.log('Payment component loaded, bookingId:', bookingId);
+  }
 
   // Detect card type when card number changes
   useEffect(() => {
@@ -148,6 +154,15 @@ const Payment: React.FC = () => {
     });
   };
 
+  const formatCurrency = (amount: number, currency?: string) => {
+    const cur = currency || booking?.car?.currency || 'GBP';
+    try {
+      return new Intl.NumberFormat('en-GB', { style: 'currency', currency: cur }).format(amount);
+    } catch {
+      return `${cur} ${amount.toFixed(2)}`;
+    }
+  };
+
   // Calculate pricing if not provided in booking
   const calculatePricing = () => {
     if (!booking) return { days: 0, subtotal: 0, serviceFee: 0, insurance: 0, total: 0 };
@@ -186,7 +201,34 @@ const Payment: React.FC = () => {
     return { days, subtotal, serviceFee, insurance, total };
   };
 
-  const pricing = calculatePricing();
+  const pricing = useMemo(calculatePricing, [booking]);
+
+  // Validation helpers (client-side UX only)
+  const digitsOnly = (value: string) => value.replace(/\D/g, '');
+  const luhnValid = useMemo(() => {
+    try {
+      return CardDetector.validateLuhn(digitsOnly(cardNumber));
+    } catch {
+      return false;
+    }
+  }, [cardNumber]);
+
+  const expiryValid = useMemo(() => {
+    if (!expiryMonth || !expiryYear) return false;
+    const mm = parseInt(expiryMonth, 10);
+    const yy = parseInt(expiryYear.length === 2 ? `20${expiryYear}` : expiryYear, 10);
+    if (Number.isNaN(mm) || Number.isNaN(yy) || mm < 1 || mm > 12) return false;
+    const endOfMonth = new Date(yy, mm, 0, 23, 59, 59, 999);
+    return endOfMonth.getTime() >= Date.now();
+  }, [expiryMonth, expiryYear]);
+
+  const cvvValid = useMemo(() => {
+    const length = detectedCard?.cvvLength || 3;
+    return digitsOnly(cvv).length === length;
+  }, [cvv, detectedCard]);
+
+  const nameValid = cardholderName.trim().length > 1;
+  const isCardValid = luhnValid && expiryValid && cvvValid && nameValid;
 
   // Show loading state
   if (loading) {
@@ -361,7 +403,7 @@ const Payment: React.FC = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Daily Rate</span>
-                    <span className="font-medium">{booking.car.pricePerDay} {booking.car.currency}</span>
+                    <span className="font-medium">{formatCurrency(booking.car.pricePerDay, booking.car.currency)}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Rental Duration</span>
@@ -369,20 +411,20 @@ const Payment: React.FC = () => {
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">GBP {pricing.subtotal.toFixed(2)}</span>
+                    <span className="font-medium">{formatCurrency(pricing.subtotal, booking.car.currency)}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Service Fee</span>
-                    <span className="font-medium">GBP {pricing.serviceFee.toFixed(2)}</span>
+                    <span className="font-medium">{formatCurrency(pricing.serviceFee, booking.car.currency)}</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-gray-600">Insurance</span>
-                    <span className="font-medium">GBP {pricing.insurance.toFixed(2)}</span>
+                    <span className="font-medium">{formatCurrency(pricing.insurance, booking.car.currency)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between items-center py-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg px-4">
                     <span className="text-lg font-semibold">Total Amount</span>
-                    <span className="text-xl font-bold text-blue-600">GBP {pricing.total.toFixed(2)}</span>
+                    <span className="text-xl font-bold text-blue-600">{formatCurrency(pricing.total, booking.car.currency)}</span>
                   </div>
                 </div>
               </div>
@@ -404,9 +446,11 @@ const Payment: React.FC = () => {
               <h3 className="text-lg font-semibold mb-4">Payment Methods</h3>
               
               {/* Payment Icons Row */}
-              <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="flex items-center justify-center gap-4 mb-6" role="tablist" aria-label="Payment methods">
                 {/* Credit Card */}
                 <button
+                  role="tab"
+                  aria-selected={selectedMethod === 'card'}
                   className={`p-3 rounded-lg border-2 transition-all ${
                     selectedMethod === 'card' 
                       ? 'border-blue-500 bg-blue-50' 
@@ -419,6 +463,8 @@ const Payment: React.FC = () => {
 
                 {/* PayPal */}
                 <button
+                  role="tab"
+                  aria-selected={selectedMethod === 'paypal'}
                   className={`p-3 rounded-lg border-2 transition-all ${
                     selectedMethod === 'paypal' 
                       ? 'border-blue-500 bg-blue-50' 
@@ -431,6 +477,8 @@ const Payment: React.FC = () => {
 
                 {/* Apple Pay */}
                 <button
+                  role="tab"
+                  aria-selected={selectedMethod === 'apple'}
                   className={`p-3 rounded-lg border-2 transition-all ${
                     selectedMethod === 'apple' 
                       ? 'border-gray-500 bg-gray-50' 
@@ -443,6 +491,8 @@ const Payment: React.FC = () => {
 
                 {/* Google Pay */}
                 <button
+                  role="tab"
+                  aria-selected={selectedMethod === 'google'}
                   className={`p-3 rounded-lg border-2 transition-all ${
                     selectedMethod === 'google' 
                       ? 'border-gray-500 bg-gray-50' 
@@ -455,6 +505,8 @@ const Payment: React.FC = () => {
 
                 {/* Samsung Pay */}
                 <button
+                  role="tab"
+                  aria-selected={selectedMethod === 'samsung'}
                   className={`p-3 rounded-lg border-2 transition-all ${
                     selectedMethod === 'samsung' 
                       ? 'border-gray-500 bg-gray-50' 
@@ -505,7 +557,13 @@ const Payment: React.FC = () => {
                           setCardNumber(formatted);
                         }}
                         className="mt-1"
+                        inputMode="numeric"
+                        autoComplete="cc-number"
+                        aria-invalid={!luhnValid}
                       />
+                      {!luhnValid && cardNumber.length >= 12 && (
+                        <div className="text-sm text-red-600 mt-1" aria-live="polite">Invalid card number</div>
+                      )}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
@@ -525,7 +583,13 @@ const Payment: React.FC = () => {
                             }
                           }}
                           className="mt-1"
+                          inputMode="numeric"
+                          autoComplete="cc-exp"
+                          aria-invalid={!expiryValid}
                         />
+                        {!expiryValid && (expiryMonth.length + expiryYear.length) >= 3 && (
+                          <div className="text-sm text-red-600 mt-1" aria-live="polite">Enter a valid future date</div>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="cvv">CVV</Label>
@@ -542,7 +606,13 @@ const Payment: React.FC = () => {
                             }
                           }}
                           className="mt-1"
+                          inputMode="numeric"
+                          autoComplete="cc-csc"
+                          aria-invalid={!cvvValid}
                         />
+                        {!cvvValid && cvv.length > 0 && (
+                          <div className="text-sm text-red-600 mt-1" aria-live="polite">CVV must be {detectedCard?.cvvLength || 3} digits</div>
+                        )}
                       </div>
                     </div>
                     <div>
@@ -554,20 +624,29 @@ const Payment: React.FC = () => {
                         value={cardholderName}
                         onChange={(e) => setCardholderName(e.target.value)}
                         className="mt-1"
+                        autoComplete="cc-name"
+                        aria-invalid={!nameValid && cardholderName.length > 0}
                       />
+                      {!nameValid && cardholderName.length > 0 && (
+                        <div className="text-sm text-red-600 mt-1" aria-live="polite">Enter the name on the card</div>
+                      )}
                     </div>
                   </div>
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold"
+                    disabled={!isCardValid}
+                    aria-disabled={!isCardValid}
                     onClick={() => {
-                      console.log('Payment button clicked');
-                      console.log('Booking ID:', booking.id);
-                      console.log('Redirecting to:', `/booking-confirmation/${booking.id}`);
+                      if (import.meta.env?.DEV) {
+                        console.log('Payment button clicked');
+                        console.log('Booking ID:', booking.id);
+                        console.log('Redirecting to:', `/booking-confirmation/${booking.id}`);
+                      }
                       setLocation(`/booking-confirmation/${booking.id}`);
                     }}
                   >
                     <Lock className="h-5 w-5 mr-2" />
-                    Pay GBP {pricing.total.toFixed(2)}
+                    Pay {formatCurrency(pricing.total, booking.car.currency)}
                   </Button>
                 </div>
               )}
@@ -599,8 +678,10 @@ const Payment: React.FC = () => {
                   <Button 
                     className="w-full bg-black hover:bg-gray-800 text-white py-3 text-lg font-semibold"
                     onClick={() => {
-                      console.log('Apple Pay button clicked');
-                      console.log('Booking ID:', booking.id);
+                      if (import.meta.env?.DEV) {
+                        console.log('Apple Pay button clicked');
+                        console.log('Booking ID:', booking.id);
+                      }
                       setLocation(`/booking-confirmation/${booking.id}`);
                     }}
                   >
@@ -620,8 +701,10 @@ const Payment: React.FC = () => {
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold"
                     onClick={() => {
-                      console.log('Google Pay button clicked');
-                      console.log('Booking ID:', booking.id);
+                      if (import.meta.env?.DEV) {
+                        console.log('Google Pay button clicked');
+                        console.log('Booking ID:', booking.id);
+                      }
                       setLocation(`/booking-confirmation/${booking.id}`);
                     }}
                   >
@@ -641,8 +724,10 @@ const Payment: React.FC = () => {
                   <Button 
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg font-semibold"
                     onClick={() => {
-                      console.log('Samsung Pay button clicked');
-                      console.log('Booking ID:', booking.id);
+                      if (import.meta.env?.DEV) {
+                        console.log('Samsung Pay button clicked');
+                        console.log('Booking ID:', booking.id);
+                      }
                       setLocation(`/booking-confirmation/${booking.id}`);
                     }}
                   >

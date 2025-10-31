@@ -212,6 +212,15 @@ export default function DocumentUploadModal({
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
+              role="button"
+              tabIndex={0}
+              aria-label="Drop zone for document upload"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  fileInputRef.current?.click();
+                }
+              }}
             >
               <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <p className="text-lg font-medium text-gray-900 mb-2">
@@ -242,14 +251,15 @@ export default function DocumentUploadModal({
                     <p className="text-sm text-gray-500">{formatFileSize(selectedFile.size)}</p>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={removeFile}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={removeFile}
+                className="text-red-600 hover:text-red-700"
+                aria-label="Remove selected file"
+              >
+                <X className="h-4 w-4" />
+              </Button>
               </div>
             </div>
           )}
@@ -261,6 +271,7 @@ export default function DocumentUploadModal({
             accept={currentInfo.acceptedTypes}
             onChange={handleFileChange}
             className="hidden"
+            aria-label={`Select ${documentType} document to upload`}
           />
 
           {/* Action Buttons */}
@@ -269,6 +280,8 @@ export default function DocumentUploadModal({
               onClick={handleUpload}
               disabled={!selectedFile || isUploading}
               className="flex-1"
+              aria-label="Upload selected document"
+              aria-busy={isUploading}
             >
               {isUploading ? (
                 <>

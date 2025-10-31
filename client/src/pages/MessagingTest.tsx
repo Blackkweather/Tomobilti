@@ -54,10 +54,10 @@ const MessagingTest: React.FC = () => {
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={() => setLocation('/dashboard/renter')} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={() => setLocation('/renter-dashboard')} className="bg-blue-600 hover:bg-blue-700">
                 Go to Renter Dashboard
               </Button>
-              <Button onClick={() => setLocation('/dashboard/owner')} variant="outline">
+              <Button onClick={() => setLocation('/owner-dashboard')} variant="outline">
                 Go to Owner Dashboard
               </Button>
             </div>

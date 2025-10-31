@@ -20,7 +20,18 @@ import {
   Shield,
   Crown,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  BarChart3,
+  Search,
+  X,
+  Ban,
+  CheckSquare,
+  XCircle,
+  TrendingUp,
+  DollarSign,
+  Activity,
+  FileText,
+  Download
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -62,6 +73,66 @@ const adminApi = {
       }
     });
     if (!response.ok) throw new Error('Failed to toggle car availability');
+    return response.json();
+  },
+
+  deleteCar: async (carId: string) => {
+    const response = await fetch(`/api/cars/${carId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to delete car');
+    return response.json();
+  },
+
+  blockUser: async (userId: string) => {
+    const response = await fetch(`/api/admin/users/${userId}/block`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to block user');
+    return response.json();
+  },
+
+  unblockUser: async (userId: string) => {
+    const response = await fetch(`/api/admin/users/${userId}/unblock`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to unblock user');
+    return response.json();
+  },
+
+  verifyUser: async (userId: string) => {
+    const response = await fetch(`/api/admin/users/${userId}/verify`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to verify user');
+    return response.json();
+  },
+
+  unverifyUser: async (userId: string) => {
+    const response = await fetch(`/api/admin/users/${userId}/unverify`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!response.ok) throw new Error('Failed to unverify user');
     return response.json();
   },
 
@@ -123,7 +194,9 @@ interface AdminUser {
   firstName: string;
   lastName: string;
   userType: string;
-  isVerified: boolean;
+  isVerified?: boolean;
+  isIdVerified?: boolean;
+  isLicenseVerified?: boolean;
   isBlocked: boolean;
   createdAt: string;
 }
@@ -133,7 +206,13 @@ export default function AdminPanel() {
   const queryClient = useQueryClient();
   const [editingCar, setEditingCar] = useState<Car | null>(null);
   const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
   const [settings, setSettings] = useState({ maintenanceMode: false, bookingWindowDays: 90, maxCancellationHours: 24 });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'available' | 'unavailable'>('all');
+  const [userFilterType, setUserFilterType] = useState<'all' | 'owner' | 'renter' | 'admin'>('all');
+  const [bookingFilterStatus, setBookingFilterStatus] = useState<'all' | 'confirmed' | 'pending' | 'cancelled' | 'completed'>('all');
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Fetch cars (enabled only if admin)
   const { data: cars, isLoading: carsLoading, error: carsError } = useQuery({
@@ -160,7 +239,7 @@ export default function AdminPanel() {
   });
 
   // Fetch platform settings
-  const { isLoading: settingsLoading, error: settingsError } = useQuery({
+  const { data: settingsData, isLoading: settingsLoading, error: settingsError } = useQuery({
     queryKey: ['admin', 'settings'],
     queryFn: async () => {
       const res = await fetch('/api/admin/settings', {
@@ -171,9 +250,15 @@ export default function AdminPanel() {
       if (!res.ok) throw new Error('Failed to fetch settings');
       return res.json();
     },
-    enabled: isAuthenticated && user?.userType === 'admin',
-    onSuccess: (data: any) => setSettings(data)
+    enabled: isAuthenticated && user?.userType === 'admin'
   });
+
+  // Update settings state when data is fetched
+  useEffect(() => {
+    if (settingsData) {
+      setSettings(settingsData);
+    }
+  }, [settingsData]);
 
   // Update car mutation
   const updateCarMutation = useMutation({
@@ -189,6 +274,43 @@ export default function AdminPanel() {
     mutationFn: adminApi.toggleCarAvailability,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'cars'] });
+    }
+  });
+
+  // Delete car mutation
+  const deleteCarMutation = useMutation({
+    mutationFn: adminApi.deleteCar,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'cars'] });
+    }
+  });
+
+  // User management mutations
+  const blockUserMutation = useMutation({
+    mutationFn: adminApi.blockUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    }
+  });
+
+  const unblockUserMutation = useMutation({
+    mutationFn: adminApi.unblockUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    }
+  });
+
+  const verifyUserMutation = useMutation({
+    mutationFn: adminApi.verifyUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    }
+  });
+
+  const unverifyUserMutation = useMutation({
+    mutationFn: adminApi.unverifyUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     }
   });
 
@@ -232,6 +354,66 @@ export default function AdminPanel() {
   const handleToggleAvailability = (carId: string) => {
     toggleCarMutation.mutate(carId);
   };
+
+  const handleDeleteCar = (carId: string, carTitle: string) => {
+    if (window.confirm(`Are you sure you want to delete "${carTitle}"? This action cannot be undone.`)) {
+      deleteCarMutation.mutate(carId);
+    }
+  };
+
+  const handleBlockUser = (userId: string) => {
+    if (window.confirm('Are you sure you want to block this user?')) {
+      blockUserMutation.mutate(userId);
+    }
+  };
+
+  const handleUnblockUser = (userId: string) => {
+    unblockUserMutation.mutate(userId);
+  };
+
+  const handleVerifyUser = (userId: string) => {
+    verifyUserMutation.mutate(userId);
+  };
+
+  const handleUnverifyUser = (userId: string) => {
+    unverifyUserMutation.mutate(userId);
+  };
+
+  // Calculate stats
+  const stats = {
+    totalUsers: users?.length || 0,
+    totalCars: cars?.length || 0,
+    totalBookings: bookings?.length || 0,
+    activeBookings: bookings?.filter((b: any) => b.status === 'confirmed').length || 0,
+    availableCars: cars?.filter((c: Car) => c.isAvailable).length || 0,
+    verifiedUsers: users?.filter((u: AdminUser) => u.isVerified || (u.isIdVerified && u.isLicenseVerified)).length || 0,
+    blockedUsers: users?.filter((u: AdminUser) => u.isBlocked).length || 0,
+  };
+
+  // Filter functions
+  const filteredCars = cars?.filter((car: Car) => {
+    const matchesSearch = car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      car.model.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterType === 'all' || 
+      (filterType === 'available' && car.isAvailable) ||
+      (filterType === 'unavailable' && !car.isAvailable);
+    return matchesSearch && matchesFilter;
+  }) || [];
+
+  const filteredUsers = users?.filter((user: AdminUser) => {
+    const matchesSearch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = userFilterType === 'all' || user.userType === userFilterType;
+    return matchesSearch && matchesFilter;
+  }) || [];
+
+  const filteredBookings = bookings?.filter((booking: any) => {
+    const matchesSearch = booking.carTitle?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      booking.renterName?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = bookingFilterStatus === 'all' || booking.status === bookingFilterStatus;
+    return matchesSearch && matchesFilter;
+  }) || [];
 
   // Check if user is admin - AFTER all hooks
   if (!isAuthenticated || user?.userType !== 'admin') {
@@ -295,19 +477,23 @@ export default function AdminPanel() {
             </p>
           </div>
         )}
-        <Tabs defaultValue="cars" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Overview
+            </TabsTrigger>
             <TabsTrigger value="cars" className="flex items-center gap-2">
               <Car className="h-4 w-4" />
-              Cars Management
+              Cars ({stats.totalCars})
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Users Management
+              Users ({stats.totalUsers})
             </TabsTrigger>
             <TabsTrigger value="bookings" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              Bookings
+              Bookings ({stats.totalBookings})
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
@@ -315,14 +501,176 @@ export default function AdminPanel() {
             </TabsTrigger>
           </TabsList>
 
+          {/* Overview/Dashboard Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.verifiedUsers} verified, {stats.blockedUsers} blocked
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Cars</CardTitle>
+                  <Car className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalCars}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.availableCars} available
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{stats.totalBookings}</div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.activeBookings} active
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Platform Status</CardTitle>
+                  <Activity className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    <Badge variant={settings.maintenanceMode ? "destructive" : "default"}>
+                      {settings.maintenanceMode ? "Maintenance" : "Active"}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    System operational
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Quick Actions
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button variant="outline" className="w-full justify-start" onClick={() => setActiveTab('cars')}>
+                    <Car className="h-4 w-4 mr-2" />
+                    Manage Cars
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => setActiveTab('users')}>
+                    <Users className="h-4 w-4 mr-2" />
+                    Manage Users
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => setActiveTab('bookings')}>
+                    <Calendar className="h-4 w-4 mr-2" />
+                    View Bookings
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" onClick={() => setActiveTab('settings')}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Platform Settings
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5" />
+                    System Alerts
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {stats.blockedUsers > 0 && (
+                    <div className="flex items-center gap-2 p-2 bg-yellow-50 rounded mb-2">
+                      <AlertCircle className="h-4 w-4 text-yellow-600" />
+                      <p className="text-sm">{stats.blockedUsers} blocked user(s)</p>
+                    </div>
+                  )}
+                  {stats.totalCars === 0 && (
+                    <div className="flex items-center gap-2 p-2 bg-blue-50 rounded mb-2">
+                      <Car className="h-4 w-4 text-blue-600" />
+                      <p className="text-sm">No cars in the system</p>
+                    </div>
+                  )}
+                  {settings.maintenanceMode && (
+                    <div className="flex items-center gap-2 p-2 bg-red-50 rounded mb-2">
+                      <AlertCircle className="h-4 w-4 text-red-600" />
+                      <p className="text-sm">Maintenance mode is active</p>
+                    </div>
+                  )}
+                  {stats.blockedUsers === 0 && stats.totalCars > 0 && !settings.maintenanceMode && (
+                    <p className="text-sm text-gray-500">No alerts at this time</p>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
           {/* Cars Management */}
           <TabsContent value="cars" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Car className="h-5 w-5" />
-                  All Cars ({cars?.length || 0})
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Car className="h-5 w-5" />
+                    All Cars ({filteredCars.length})
+                  </CardTitle>
+                </div>
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search cars..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      >
+                        <X className="h-4 w-4 text-gray-400" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={filterType === 'all' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setFilterType('all')}
+                    >
+                      All
+                    </Button>
+                    <Button
+                      variant={filterType === 'available' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setFilterType('available')}
+                    >
+                      Available
+                    </Button>
+                    <Button
+                      variant={filterType === 'unavailable' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setFilterType('unavailable')}
+                    >
+                      Unavailable
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {carsLoading ? (
@@ -339,9 +687,14 @@ export default function AdminPanel() {
                     <Car className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                     <p>No cars found in the system.</p>
                   </div>
+                ) : filteredCars.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Car className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p>No cars found matching your search.</p>
+                  </div>
                 ) : (
                   <div className="space-y-4">
-                    {cars.map((car: Car) => (
+                    {filteredCars.map((car: Car) => (
                       <div key={car.id} className="border rounded-lg p-4 bg-white">
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
@@ -382,12 +735,22 @@ export default function AdminPanel() {
                               size="sm"
                               onClick={() => handleToggleAvailability(car.id)}
                               disabled={toggleCarMutation.isPending}
+                              title={car.isAvailable ? "Make Unavailable" : "Make Available"}
                             >
                               {car.isAvailable ? (
                                 <ToggleRight className="h-4 w-4 text-green-600" />
                               ) : (
                                 <ToggleLeft className="h-4 w-4 text-gray-400" />
                               )}
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteCar(car.id, car.title)}
+                              disabled={deleteCarMutation.isPending}
+                              title="Delete Car"
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
@@ -403,10 +766,61 @@ export default function AdminPanel() {
           <TabsContent value="users" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  All Users ({users?.length || 0})
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    All Users ({filteredUsers.length})
+                  </CardTitle>
+                </div>
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search users..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      >
+                        <X className="h-4 w-4 text-gray-400" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={userFilterType === 'all' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setUserFilterType('all')}
+                    >
+                      All
+                    </Button>
+                    <Button
+                      variant={userFilterType === 'owner' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setUserFilterType('owner')}
+                    >
+                      Owners
+                    </Button>
+                    <Button
+                      variant={userFilterType === 'renter' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setUserFilterType('renter')}
+                    >
+                      Renters
+                    </Button>
+                    <Button
+                      variant={userFilterType === 'admin' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setUserFilterType('admin')}
+                    >
+                      Admins
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {usersLoading ? (
@@ -423,9 +837,14 @@ export default function AdminPanel() {
                     <Users className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                     <p>No users found in the system.</p>
                   </div>
+                ) : filteredUsers.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Users className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p>No users found matching your search.</p>
+                  </div>
                 ) : (
                   <div className="space-y-4">
-                    {users.map((adminUser: AdminUser) => (
+                    {filteredUsers.map((adminUser: AdminUser) => (
                       <div key={adminUser.id} className="border rounded-lg p-4 bg-white">
                         <div className="flex items-center justify-between">
                           <div className="flex-1">
@@ -434,7 +853,7 @@ export default function AdminPanel() {
                               <Badge variant={adminUser.userType === 'admin' ? 'default' : 'secondary'}>
                                 {adminUser.userType}
                               </Badge>
-                              {adminUser.isVerified && (
+                              {(adminUser.isVerified || (adminUser.isIdVerified && adminUser.isLicenseVerified)) && (
                                 <Badge variant="outline" className="text-green-600">
                                   <CheckCircle className="h-3 w-3 mr-1" />
                                   Verified
@@ -455,14 +874,64 @@ export default function AdminPanel() {
                                 <span className="font-medium">Joined:</span> {new Date(adminUser.createdAt).toLocaleDateString()}
                               </div>
                             </div>
+                            {expandedUserId === adminUser.id && (
+                              <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm space-y-2">
+                                <p><span className="font-medium">User ID:</span> {adminUser.id}</p>
+                                <p><span className="font-medium">Account Created:</span> {new Date(adminUser.createdAt).toLocaleString()}</p>
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center gap-2">
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setExpandedUserId(expandedUserId === adminUser.id ? null : adminUser.id)}
+                              title="View Details"
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button variant="outline" size="sm">
-                              <Edit className="h-4 w-4" />
-                            </Button>
+                            {(adminUser.isVerified || (adminUser.isIdVerified && adminUser.isLicenseVerified)) ? (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleUnverifyUser(adminUser.id)}
+                                disabled={unverifyUserMutation.isPending}
+                                title="Unverify User"
+                              >
+                                <XCircle className="h-4 w-4 text-yellow-600" />
+                              </Button>
+                            ) : (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleVerifyUser(adminUser.id)}
+                                disabled={verifyUserMutation.isPending}
+                                title="Verify User"
+                              >
+                                <CheckSquare className="h-4 w-4 text-green-600" />
+                              </Button>
+                            )}
+                            {adminUser.isBlocked ? (
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleUnblockUser(adminUser.id)}
+                                disabled={unblockUserMutation.isPending}
+                                title="Unblock User"
+                              >
+                                <CheckCircle className="h-4 w-4 text-green-600" />
+                              </Button>
+                            ) : (
+                              <Button 
+                                variant="destructive" 
+                                size="sm"
+                                onClick={() => handleBlockUser(adminUser.id)}
+                                disabled={blockUserMutation.isPending}
+                                title="Block User"
+                              >
+                                <Ban className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -531,10 +1000,68 @@ export default function AdminPanel() {
           <TabsContent value="bookings" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  All Bookings ({bookings?.length || 0})
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    All Bookings ({filteredBookings.length})
+                  </CardTitle>
+                </div>
+                <div className="flex items-center gap-4 mt-4">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search bookings..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                      >
+                        <X className="h-4 w-4 text-gray-400" />
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={bookingFilterStatus === 'all' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setBookingFilterStatus('all')}
+                    >
+                      All
+                    </Button>
+                    <Button
+                      variant={bookingFilterStatus === 'confirmed' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setBookingFilterStatus('confirmed')}
+                    >
+                      Confirmed
+                    </Button>
+                    <Button
+                      variant={bookingFilterStatus === 'pending' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setBookingFilterStatus('pending')}
+                    >
+                      Pending
+                    </Button>
+                    <Button
+                      variant={bookingFilterStatus === 'cancelled' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setBookingFilterStatus('cancelled')}
+                    >
+                      Cancelled
+                    </Button>
+                    <Button
+                      variant={bookingFilterStatus === 'completed' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setBookingFilterStatus('completed')}
+                    >
+                      Completed
+                    </Button>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
                 {bookingsLoading ? (
@@ -551,9 +1078,14 @@ export default function AdminPanel() {
                     <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                     <p>No bookings found.</p>
                   </div>
+                ) : filteredBookings.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <p>No bookings found matching your search.</p>
+                  </div>
                 ) : (
                   <div className="space-y-4">
-                    {bookings.map((booking: any) => (
+                    {filteredBookings.map((booking: any) => (
                       <div key={booking.id} className="border rounded-lg p-4 bg-white">
                         <div className="flex items-center justify-between">
                           <div className="flex-1">

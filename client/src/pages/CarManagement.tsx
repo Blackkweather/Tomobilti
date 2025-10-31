@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import AnimatedConfirmDialog from '../components/AnimatedConfirmDialog';
 import { 
   Car, 
   Edit, 
@@ -27,7 +28,15 @@ import {
   MoreHorizontal,
   BarChart3,
   Activity,
-  Zap
+  Zap,
+  Grid,
+  List,
+  CheckSquare,
+  Square,
+  ToggleLeft,
+  ToggleRight,
+  Download,
+  Share2
 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 
@@ -40,6 +49,10 @@ export default function CarManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('name');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [carToDelete, setCarToDelete] = useState<string | null>(null);
+  const [selectedCars, setSelectedCars] = useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Fetch owner's cars
   const { data: cars, isLoading, error } = useQuery({
@@ -58,13 +71,20 @@ export default function CarManagement() {
   });
 
   const handleDeleteCar = (carId: string) => {
-    if (confirm('Are you sure you want to delete this car? This action cannot be undone.')) {
-      deleteCarMutation.mutate(carId);
+    setCarToDelete(carId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (carToDelete) {
+      deleteCarMutation.mutate(carToDelete);
+      setCarToDelete(null);
     }
   };
 
-  // Filter and sort cars
-  const filteredCars = cars?.filter((car: any) => {
+  // Filter and sort cars - ensure cars is always an array
+  const carsArray = Array.isArray(cars) ? cars : (cars?.cars || []);
+  const filteredCars = carsArray.filter((car: any) => {
     const matchesSearch = car.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          car.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          car.model.toLowerCase().includes(searchTerm.toLowerCase());
@@ -91,11 +111,11 @@ export default function CarManagement() {
 
   // Calculate analytics
   const analytics = {
-    totalCars: cars?.length || 0,
-    activeCars: cars?.filter((car: any) => car.isActive).length || 0,
-    totalEarnings: cars?.reduce((sum: number, car: any) => sum + (car.totalEarnings || 0), 0) || 0,
-    totalBookings: cars?.reduce((sum: number, car: any) => sum + (car.totalBookings || 0), 0) || 0,
-    averageRating: cars?.reduce((sum: number, car: any) => sum + (car.averageRating || 0), 0) / (cars?.length || 1) || 0
+    totalCars: carsArray.length || 0,
+    activeCars: carsArray.filter((car: any) => car.isActive).length || 0,
+    totalEarnings: carsArray.reduce((sum: number, car: any) => sum + (car.totalEarnings || 0), 0) || 0,
+    totalBookings: carsArray.reduce((sum: number, car: any) => sum + (car.totalBookings || 0), 0) || 0,
+    averageRating: carsArray.reduce((sum: number, car: any) => sum + (car.averageRating || 0), 0) / (carsArray.length || 1) || 0
   };
 
   const handleEditCar = (carId: string) => {
@@ -163,7 +183,7 @@ export default function CarManagement() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">My Cars</h1>
               <p className="text-gray-600 mt-1">
@@ -171,6 +191,13 @@ export default function CarManagement() {
               </p>
             </div>
             <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+              >
+                {viewMode === 'grid' ? <List className="h-4 w-4 mr-2" /> : <Grid className="h-4 w-4 mr-2" />}
+                {viewMode === 'grid' ? 'List' : 'Grid'}
+              </Button>
               <Button
                 onClick={() => setLocation('/add-car')}
                 className="bg-blue-600 hover:bg-blue-700"
@@ -180,6 +207,80 @@ export default function CarManagement() {
               </Button>
             </div>
           </div>
+
+          {/* Search and Filters */}
+          <div className="mt-6 flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Input
+                placeholder="Search cars..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Cars</SelectItem>
+                <SelectItem value="active">Active Only</SelectItem>
+                <SelectItem value="inactive">Inactive Only</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full md:w-[180px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="name">Name</SelectItem>
+                <SelectItem value="price">Price</SelectItem>
+                <SelectItem value="earnings">Earnings</SelectItem>
+                <SelectItem value="bookings">Bookings</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Bulk Actions */}
+          {selectedCars.size > 0 && (
+            <div className="mt-4 flex items-center justify-between bg-blue-50 p-4 rounded-lg">
+              <span className="text-sm font-medium text-blue-900">
+                {selectedCars.size} car(s) selected
+              </span>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={bulkToggleAvailability}
+                >
+                  <ToggleRight className="h-4 w-4 mr-2" />
+                  Toggle Availability
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={bulkExport}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    if (window.confirm(`Delete ${selectedCars.size} car(s)?`)) {
+                      selectedCars.forEach(carId => handleDeleteCar(carId));
+                      setSelectedCars(new Set());
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Selected
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -247,51 +348,11 @@ export default function CarManagement() {
           </Card>
         </div>
 
-        {/* Search and Filter Controls */}
-        <Card className="mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Search cars by name, make, or model..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              
-              <div className="flex gap-2">
-                <select
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="all">All Cars</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-                
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="name">Sort by Name</option>
-                  <option value="price">Sort by Price</option>
-                  <option value="earnings">Sort by Earnings</option>
-                  <option value="bookings">Sort by Bookings</option>
-                </select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {!cars || cars.length === 0 ? (
+        {!carsArray || carsArray.length === 0 ? (
           <Card className="text-center py-12">
             <CardContent>
               <Car className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -313,7 +374,18 @@ export default function CarManagement() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredCars.map((car: any) => (
-              <Card key={car.id} className="group hover:shadow-lg transition-shadow">
+              <Card key={car.id} className="group hover:shadow-lg transition-shadow relative">
+                {/* Selection Checkbox */}
+                <button
+                  onClick={() => toggleSelectCar(car.id)}
+                  className="absolute top-4 left-4 z-10 bg-white rounded-full p-2 shadow-md hover:bg-gray-50"
+                >
+                  {selectedCars.has(car.id) ? (
+                    <CheckSquare className="h-5 w-5 text-blue-600" />
+                  ) : (
+                    <Square className="h-5 w-5 text-gray-400" />
+                  )}
+                </button>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -442,6 +514,21 @@ export default function CarManagement() {
           </div>
         )}
       </div>
+
+      {/* Animated Confirm Dialog */}
+      <AnimatedConfirmDialog
+        isOpen={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setCarToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Car?"
+        message="Are you sure you want to delete this car? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
 
       {/* Footer is rendered globally in App */}
     </div>

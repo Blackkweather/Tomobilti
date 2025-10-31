@@ -46,7 +46,7 @@ const redirectBasedOnUserType = (userType: string, setLocation: (path: string) =
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const { login, isAuthenticated, loading, user } = useAuth();
+  const { login, isAuthenticated, loading, user, logout } = useAuth();
   const [form, setForm] = useState({
     email: '',
     password: ''
@@ -62,6 +62,42 @@ export default function Login() {
       redirectBasedOnUserType(user.userType, setLocation);
     }
   }, [isAuthenticated, loading, user, setLocation]);
+
+  // Show message if already authenticated
+  if (isAuthenticated && !loading && user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="max-w-md w-full shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-gray-900">
+              Already Signed In
+            </CardTitle>
+            <p className="text-gray-600 mt-2">
+              You're already logged in as <span className="font-medium">{user.email}</span>
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button
+              onClick={() => {
+                logout();
+                window.location.reload();
+              }}
+              className="w-full bg-blue-600 hover:bg-blue-700"
+            >
+              Sign Out and Switch Account
+            </Button>
+            <Button
+              onClick={() => redirectBasedOnUserType(user.userType, setLocation)}
+              variant="outline"
+              className="w-full"
+            >
+              Go to Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

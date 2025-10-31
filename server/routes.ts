@@ -38,6 +38,7 @@ export default function registerRoutes(app: Express) {
   // In-memory stores for verification codes (avoid adding fields to User type)
   const emailVerificationStore = new Map<string, { code: string; expiresAt: Date }>();
   const phoneVerificationStore = new Map<string, { code: string; expiresAt: Date; phone: string }>();
+  const passwordResetStore = new Map<string, { token: string; userId: string; expiresAt: Date }>();
   // Test endpoint to verify server is working
   app.get('/api/test', (req, res) => {
     res.json({
@@ -553,6 +554,107 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       });
     } catch (error) {
       console.error('Document upload error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // Password reset endpoints
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Invalid email format' });
+      }
+
+      // Find user by email
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Don't reveal if email exists (security best practice)
+        return res.json({ 
+          message: 'If an account exists with this email, a password reset link has been sent.'
+        });
+      }
+
+      // Generate secure reset token
+      const crypto = await import('crypto');
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      // Store reset token
+      passwordResetStore.set(resetToken, { 
+        token: resetToken, 
+        userId: user.id, 
+        expiresAt 
+      });
+
+      // Send password reset email
+      try {
+        await EmailService.sendPasswordResetEmail({
+          to: user.email,
+          firstName: user.firstName,
+          resetToken: resetToken
+        });
+        
+        res.json({ 
+          message: 'If an account exists with this email, a password reset link has been sent.',
+          // In development, return token for testing
+          ...(process.env.NODE_ENV === 'development' && { resetToken })
+        });
+      } catch (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+        res.status(500).json({ error: 'Failed to send password reset email' });
+      }
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      
+      if (!token || !password) {
+        return res.status(400).json({ error: 'Token and password are required' });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+      }
+
+      // Check if reset token exists and is valid
+      const resetRecord = passwordResetStore.get(token);
+      if (!resetRecord) {
+        return res.status(400).json({ error: 'Invalid or expired reset token. Please request a new one.' });
+      }
+
+      // Check if token has expired
+      if (resetRecord.expiresAt < new Date()) {
+        passwordResetStore.delete(token);
+        return res.status(400).json({ error: 'Reset token has expired. Please request a new one.' });
+      }
+
+      // Update user password
+      const success = await storage.updateUserPassword(resetRecord.userId, password);
+      if (!success) {
+        return res.status(500).json({ error: 'Failed to update password' });
+      }
+
+      // Delete used token
+      passwordResetStore.delete(token);
+
+      res.json({ 
+        message: 'Password reset successfully. You can now login with your new password.'
+      });
+    } catch (error) {
+      console.error('Reset password error:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -1523,6 +1625,22 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
     }
   });
 
+  app.get("/api/bookings/car/:carId", async (req, res) => {
+    try {
+      const bookings = await storage.getBookingsByCar(req.params.carId);
+      
+      // Filter out cancelled bookings and return only active/confirmed bookings
+      const activeBookings = bookings.filter(
+        booking => booking.status !== 'cancelled'
+      );
+      
+      res.json({ bookings: activeBookings });
+    } catch (error) {
+      console.error('Error fetching bookings by car:', error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
   app.post("/api/bookings", requireAuth, async (req, res) => {
     try {
       // Normalize and defensively coerce incoming payload to expected shape
@@ -1544,9 +1662,17 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         paymentIntentId: body.paymentIntentId ?? null,
       } as any;
 
-      // For SQLite, dates are stored as text strings
-      const parseResult = insertBookingSchema.safeParse(normalizedBody);
+  // For SQLite, dates are stored as text strings
+      // Map client fields to schema fields
+      const schemaMappedBody = {
+        ...normalizedBody,
+        totalPrice: parseFloat(normalizedBody.totalAmount || '0'),
+        currency: normalizedBody.currency || 'GBP'
+      };
+      
+      const parseResult = insertBookingSchema.safeParse(schemaMappedBody);
       if (!parseResult.success) {
+        console.error('Booking validation error:', parseResult.error);
         return res.status(400).json({ error: 'Invalid booking data', details: parseResult.error.flatten() });
       }
       const bookingData = parseResult.data as unknown;
@@ -1557,7 +1683,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
     renterId: string;
     startDate: string;
     endDate: string;
-    totalAmount: string;
+    totalPrice: number;
     status?: string;
   };
       
@@ -1584,7 +1710,19 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         return res.status(400).json({ error: "Car is already booked for these dates" });
       }
       
-  const booking = await storage.createBooking(b as any);
+      // Map schema fields back to database fields for storage.createBooking
+      const dbBookingData = {
+        ...b,
+        totalAmount: String(b.totalPrice), // Convert totalPrice back to totalAmount string for database
+        serviceFee: normalizedBody.serviceFee,
+        insurance: normalizedBody.insurance,
+        startTime: normalizedBody.startTime,
+        endTime: normalizedBody.endTime,
+        message: normalizedBody.message,
+        paymentIntentId: normalizedBody.paymentIntentId,
+      };
+      
+  const booking = await storage.createBooking(dbBookingData as any);
       
       // Send booking confirmation email to renter
       try {
@@ -1597,7 +1735,7 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
             carTitle: car.title,
             startDate: b.startDate,
             endDate: b.endDate,
-            totalAmount: parseFloat(String(b.totalAmount)),
+            totalAmount: parseFloat(String(b.totalPrice)),
             currency: car.currency,
             bookingId: booking.id
           });
@@ -1609,10 +1747,11 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       
       res.status(201).json(booking);
     } catch (error) {
+      console.error('Booking creation error:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: "Invalid booking data", details: error.errors });
       }
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error", message: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 

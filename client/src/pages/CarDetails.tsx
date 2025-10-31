@@ -45,9 +45,10 @@ import { Link, useLocation } from "wouter";
 import ReservationBar from "../components/ReservationBar";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useAuth } from "../contexts/AuthContext";
-import { carApi } from "../lib/api";
+import { carApi, reviewApi } from "../lib/api";
 import { getSpecificCarImage } from "../utils/carImages";
 import type { Car } from '@shared/schema';
+import { useQuery } from '@tanstack/react-query';
 
 // Mapping des images par type de voiture
 const carTypeImages: Record<string, string> = {
@@ -293,6 +294,18 @@ export default function CarDetails() {
     retry: 1,
     retryDelay: 1000,
   });
+
+  // Fetch reviews for this car
+  const { data: reviewsData } = useQuery({
+    queryKey: ['reviews', carId],
+    queryFn: () => reviewApi.getCarReviews(carId!),
+    enabled: !!carId,
+  });
+
+  const reviews = reviewsData?.reviews || [];
+  const averageRating = reviews.length > 0 
+    ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length 
+    : 0;
 
   if (isLoading) {
     return (
@@ -637,6 +650,83 @@ export default function CarDetails() {
                     </div>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Reviews Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Star className="h-5 w-5 mr-2 text-yellow-500" />
+                    Reviews {reviews.length > 0 && `(${reviews.length})`}
+                  </div>
+                  {reviews.length > 0 && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-bold">{averageRating.toFixed(1)}</span>
+                      <div className="flex">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${
+                              i < Math.round(averageRating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {reviews.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Star className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-600">No reviews yet. Be the first to review this car!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {reviews.map((review: any) => (
+                      <div key={review.id} className="border-b last:border-b-0 pb-4 last:pb-0">
+                        <div className="flex items-start gap-4">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback>
+                              {review.user?.firstName?.[0] || 'U'}
+                              {review.user?.lastName?.[0] || ''}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-2">
+                              <div>
+                                <h4 className="font-semibold">
+                                  {review.user?.firstName} {review.user?.lastName || 'Anonymous'}
+                                </h4>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <div className="flex">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`h-3 w-3 ${
+                                          i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="text-sm text-gray-500">
+                                    {new Date(review.createdAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            {review.comment && (
+                              <p className="text-gray-700 mt-2">{review.comment}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>

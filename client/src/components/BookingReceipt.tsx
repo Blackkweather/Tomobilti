@@ -82,129 +82,367 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
   };
 
   const handleDownloadPdf = async () => {
-    // Build branded HTML (same as print template) but render off-screen
+    // Build professional branded PDF template
+    const logoUrl = `${window.location.origin}/assets/MAIN LOGO.png`;
     const html = `
+      <!DOCTYPE html>
       <html>
         <head>
-          <meta charset=\"utf-8\" />
+          <meta charset="utf-8" />
           <title>Booking Receipt - ${bookingId}</title>
           <style>
-            @page { size: A4; margin: 14mm; }
-            :root {
-              --brand: #2563eb;
-              --brand-2: #7c3aed;
-              --text: #111827;
-              --muted: #6b7280;
-              --line: #e5e7eb;
-              --bg: #ffffff;
+            @page { 
+              size: A4; 
+              margin: 15mm;
             }
-            * { box-sizing: border-box; }
-            body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif; margin: 0; color: var(--text); background: var(--bg); }
-            .container { padding: 14mm; }
-            .header { display:flex; align-items:center; justify-content:space-between; border-bottom: 2px solid var(--line); padding-bottom: 12px; margin-bottom: 18px; }
-            .brand { display:flex; align-items:center; gap: 12px; }
-            .brand img { height: 42px; width:auto; }
-            .brand-name { font-size: 22px; font-weight: 800; letter-spacing: .2px; color: var(--brand); }
-            .doc-meta { text-align:right; font-size: 12px; color: var(--muted); }
-            .title { margin: 6px 0 0; font-size: 20px; color: var(--text); font-weight:700; }
-            .badge { display:inline-block; padding: 4px 10px; background: #ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius: 999px; font-size: 12px; font-weight:600; }
-            .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
-            .card { border:1px solid var(--line); border-radius: 10px; padding: 14px; }
-            .section-title { margin: 0 0 10px; font-size: 14px; font-weight:700; color: var(--brand); }
-            .row { display:flex; justify-content: space-between; gap: 10px; margin: 6px 0; font-size: 13px; }
-            .label { color: var(--muted); }
-            table { width:100%; border-collapse: collapse; font-size: 13px; }
-            th, td { padding: 10px 12px; text-align: left; }
-            thead th { background: #f8fafc; border-bottom: 1px solid var(--line); color:#334155; font-weight:700; }
-            tbody td { border-bottom: 1px solid var(--line); }
-            tfoot td { border-top: 2px solid var(--line); font-weight:800; font-size: 14px; }
-            .muted { color: var(--muted); }
-            .footer { text-align:center; margin-top: 16px; font-size: 11px; color: var(--muted); }
+            * { 
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              margin: 0;
+              padding: 20px;
+              color: #1f2937;
+              background: #ffffff;
+              line-height: 1.6;
+            }
+            .receipt-container {
+              max-width: 800px;
+              margin: 0 auto;
+              background: #ffffff;
+            }
+            .receipt-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              border-bottom: 3px solid #2563eb;
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+            .logo-section {
+              display: flex;
+              align-items: center;
+              gap: 15px;
+            }
+            .logo-section img {
+              height: 60px;
+              width: auto;
+              object-fit: contain;
+            }
+            .brand-info {
+              display: flex;
+              flex-direction: column;
+            }
+            .brand-name {
+              font-size: 28px;
+              font-weight: 800;
+              color: #2563eb;
+              letter-spacing: -0.5px;
+              margin-bottom: 4px;
+            }
+            .brand-tagline {
+              font-size: 12px;
+              color: #6b7280;
+              font-weight: 500;
+            }
+            .receipt-info {
+              text-align: right;
+            }
+            .receipt-title {
+              font-size: 24px;
+              font-weight: 700;
+              color: #111827;
+              margin-bottom: 8px;
+            }
+            .receipt-number {
+              font-size: 14px;
+              color: #6b7280;
+              margin-bottom: 4px;
+            }
+            .receipt-date {
+              font-size: 12px;
+              color: #9ca3af;
+              margin-bottom: 8px;
+            }
+            .status-badge {
+              display: inline-block;
+              padding: 6px 14px;
+              background: #d1fae5;
+              color: #065f46;
+              border: 1px solid #a7f3d0;
+              border-radius: 20px;
+              font-size: 12px;
+              font-weight: 600;
+            }
+            .content-section {
+              margin-bottom: 25px;
+            }
+            .section-title {
+              font-size: 18px;
+              font-weight: 700;
+              color: #2563eb;
+              margin-bottom: 15px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            .info-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-bottom: 25px;
+            }
+            .info-card {
+              background: #f9fafb;
+              border: 1px solid #e5e7eb;
+              border-radius: 8px;
+              padding: 18px;
+            }
+            .info-row {
+              display: flex;
+              justify-content: space-between;
+              padding: 8px 0;
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .info-row:last-child {
+              border-bottom: none;
+            }
+            .info-label {
+              font-size: 13px;
+              color: #6b7280;
+              font-weight: 500;
+            }
+            .info-value {
+              font-size: 13px;
+              color: #111827;
+              font-weight: 600;
+              text-align: right;
+            }
+            .pricing-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              background: #ffffff;
+            }
+            .pricing-table thead {
+              background: #f3f4f6;
+            }
+            .pricing-table th {
+              padding: 12px 16px;
+              text-align: left;
+              font-size: 13px;
+              font-weight: 700;
+              color: #374151;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            .pricing-table td {
+              padding: 12px 16px;
+              font-size: 13px;
+              color: #111827;
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .pricing-table tbody tr:hover {
+              background: #f9fafb;
+            }
+            .pricing-table tfoot {
+              background: #f3f4f6;
+            }
+            .pricing-table tfoot td {
+              font-size: 16px;
+              font-weight: 800;
+              color: #2563eb;
+              border-top: 3px solid #2563eb;
+              padding: 15px 16px;
+            }
+            .pricing-table .amount {
+              text-align: right;
+              font-weight: 600;
+            }
+            .pricing-table tfoot .amount {
+              font-size: 18px;
+            }
+            .footer-section {
+              margin-top: 40px;
+              padding-top: 20px;
+              border-top: 2px solid #e5e7eb;
+              text-align: center;
+            }
+            .footer-text {
+              font-size: 11px;
+              color: #6b7280;
+              line-height: 1.8;
+            }
+            .footer-text strong {
+              color: #111827;
+            }
+            .notes-box {
+              background: #fef3c7;
+              border-left: 4px solid #f59e0b;
+              padding: 12px 16px;
+              border-radius: 4px;
+              font-size: 12px;
+              color: #92400e;
+              line-height: 1.6;
+            }
           </style>
         </head>
         <body>
-          <div class=\"container\">
-            <div class=\"header\">
-              <div class=\"brand\">
-                <img src=\"/assets/MAIN LOGO.png?v=5\" alt=\"ShareWheelz\" />
-                <div>
-                  <div class=\"brand-name\">ShareWheelz</div>
-                  <div class=\"muted\" style=\"font-size:11px;\">Modern car sharing platform</div>
+          <div class="receipt-container">
+            <div class="receipt-header">
+              <div class="logo-section">
+                <img src="${logoUrl}" alt="ShareWheelz Logo" onerror="this.style.display='none';" />
+                <div class="brand-info">
+                  <div class="brand-name">ShareWheelz</div>
+                  <div class="brand-tagline">Premium Car Sharing Platform</div>
                 </div>
               </div>
-              <div class=\"doc-meta\">
-                <div class=\"title\">Booking Receipt</div>
-                <div>Receipt #${bookingId}</div>
-                <div>${new Date().toLocaleString('en-GB')}</div>
-                <div class=\"badge\" style=\"margin-top:6px;\">Confirmed</div>
+              <div class="receipt-info">
+                <div class="receipt-title">Booking Receipt</div>
+                <div class="receipt-number">Receipt #${bookingId}</div>
+                <div class="receipt-date">${new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                <div class="status-badge" style="margin-top: 8px;">✓ Confirmed</div>
               </div>
             </div>
 
-            <div class=\"grid\">
-              <div class=\"card\">
-                <div class=\"section-title\">Booking Details</div>
-                <div class=\"row\"><span class=\"label\">Vehicle</span><span>${booking.car.year} ${booking.car.make} ${booking.car.model}</span></div>
-                <div class=\"row\"><span class=\"label\">License Plate</span><span>${booking.car.licensePlate}</span></div>
-                <div class=\"row\"><span class=\"label\">Pickup</span><span>${formatDate(booking.dates.startDate)} — ${formatTime(booking.dates.startTime)}</span></div>
-                <div class=\"row\"><span class=\"label\">Return</span><span>${formatDate(booking.dates.endDate)} — ${formatTime(booking.dates.endTime)}</span></div>
-                <div class=\"row\"><span class=\"label\">Duration</span><span>${booking.pricing.totalDays} day(s)</span></div>
+            <div class="content-section">
+              <div class="section-title">Vehicle & Booking Details</div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Vehicle</span>
+                    <span class="info-value">${booking.car.year} ${booking.car.make} ${booking.car.model}</span>
               </div>
-              <div class=\"card\">
-                <div class=\"section-title\">Contacts</div>
-                <div class=\"row\"><span class=\"label\">Owner</span><span>${booking.owner.name} — ${booking.owner.phone}</span></div>
-                <div class=\"row\"><span class=\"label\">Renter</span><span>${booking.renter.name} — ${booking.renter.phone}</span></div>
-                <div class=\"row\"><span class=\"label\">Support</span><span>support@sharewheelz.uk</span></div>
+                  <div class="info-row">
+                    <span class="info-label">License Plate</span>
+                    <span class="info-value">${booking.car.licensePlate}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Pickup Date</span>
+                    <span class="info-value">${formatDate(booking.dates.startDate)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Pickup Time</span>
+                    <span class="info-value">${formatTime(booking.dates.startTime)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Return Date</span>
+                    <span class="info-value">${formatDate(booking.dates.endDate)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Return Time</span>
+                    <span class="info-value">${formatTime(booking.dates.endTime)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Duration</span>
+                    <span class="info-value">${booking.pricing.totalDays} ${booking.pricing.totalDays === 1 ? 'day' : 'days'}</span>
+                  </div>
+                </div>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Car Owner</span>
+                    <span class="info-value">${booking.owner.name}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Owner Phone</span>
+                    <span class="info-value">${booking.owner.phone}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Owner Email</span>
+                    <span class="info-value" style="font-size: 11px;">${booking.owner.email}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Renter</span>
+                    <span class="info-value">${booking.renter.name}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Renter Phone</span>
+                    <span class="info-value">${booking.renter.phone}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Renter Email</span>
+                    <span class="info-value" style="font-size: 11px;">${booking.renter.email}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Support</span>
+                    <span class="info-value">support@sharewheelz.uk</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class=\"card\" style=\"margin-bottom:18px;\">
-              <div class=\"section-title\">Pricing</div>
-              <table>
+            <div class="content-section">
+              <div class="section-title">Payment Breakdown</div>
+              <table class="pricing-table">
                 <thead>
                   <tr>
                     <th>Description</th>
-                    <th style=\"width: 180px;\">Amount</th>
+                    <th class="amount">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Daily Rate × ${booking.pricing.totalDays} day(s)</td>
-                    <td>£${booking.pricing.subtotal.toFixed(2)}</td>
+                    <td>Daily Rate (${booking.car.make} ${booking.car.model}) × ${booking.pricing.totalDays} ${booking.pricing.totalDays === 1 ? 'day' : 'days'}</td>
+                    <td class="amount">£${booking.pricing.subtotal.toFixed(2)}</td>
                   </tr>
                   <tr>
-                    <td>Service Fee</td>
-                    <td>£${booking.pricing.serviceFee.toFixed(2)}</td>
+                    <td>Service Fee (10%)</td>
+                    <td class="amount">£${booking.pricing.serviceFee.toFixed(2)}</td>
                   </tr>
                   <tr>
-                    <td>Insurance</td>
-                    <td>£${booking.pricing.insurance.toFixed(2)}</td>
+                    <td>Insurance Coverage (5%)</td>
+                    <td class="amount">£${booking.pricing.insurance.toFixed(2)}</td>
                   </tr>
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td>Total</td>
-                    <td>£${booking.pricing.total.toFixed(2)}</td>
+                    <td><strong>Total Amount Paid</strong></td>
+                    <td class="amount"><strong>£${booking.pricing.total.toFixed(2)}</strong></td>
                   </tr>
                 </tfoot>
               </table>
             </div>
 
-            <div class=\"grid\">
-              <div class=\"card\">
-                <div class=\"section-title\">Payment</div>
-                <div class=\"row\"><span class=\"label\">Method</span><span>${booking.payment.method}</span></div>
-                <div class=\"row\"><span class=\"label\">Transaction ID</span><span>${booking.payment.transactionId}</span></div>
-                <div class=\"row\"><span class=\"label\">Status</span><span>${booking.payment.status}</span></div>
-                <div class=\"row\"><span class=\"label\">Paid At</span><span>${new Date(booking.payment.paidAt).toLocaleString('en-GB')}</span></div>
+            <div class="content-section">
+              <div class="section-title">Payment Information</div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Payment Method</span>
+                    <span class="info-value">${booking.payment.method}</span>
               </div>
-              <div class=\"card\">
-                <div class=\"section-title\">Notes</div>
-                <div class=\"muted\" style=\"font-size:12px; line-height:1.5;\">Please present this receipt upon pickup. Ensure your driving license and ID match the booking details. Contact support for any changes.</div>
+                  <div class="info-row">
+                    <span class="info-label">Transaction ID</span>
+                    <span class="info-value" style="font-size: 11px;">${booking.payment.transactionId}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Payment Status</span>
+                    <span class="info-value" style="color: #059669;">${booking.payment.status}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Paid At</span>
+                    <span class="info-value">${new Date(booking.payment.paidAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+                <div class="info-card">
+                  <div class="notes-box">
+                    <strong>Important Notes:</strong><br>
+                    • Please present this receipt upon vehicle pickup<br>
+                    • Ensure your driving license and ID match the booking details<br>
+                    • Contact support for any changes or cancellations<br>
+                    • Free cancellation available up to 24 hours before pickup
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class=\"footer\">
-              Thank you for choosing ShareWheelz • sharewheelz.uk • Company No. 00000000
+            <div class="footer-section">
+              <div class="footer-text">
+                <strong>ShareWheelz</strong> • The UK's Premier Car Sharing Platform<br>
+                Website: <strong>sharewheelz.uk</strong> • Email: support@sharewheelz.uk • Phone: +44 20 1234 5678<br>
+                Company Registration No: 00000000 • VAT No: GB000000000<br>
+                Thank you for choosing ShareWheelz. We hope you enjoy your journey!
+              </div>
             </div>
           </div>
         </body>
@@ -263,12 +501,499 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
   };
 
   const handlePrintReceipt = () => {
-    window.print();
+    // Build the same professional template for printing
+    const logoUrl = `${window.location.origin}/assets/MAIN LOGO.png`;
+    const printHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Booking Receipt - ${bookingId}</title>
+          <style>
+            @page { 
+              size: A4; 
+              margin: 15mm;
+            }
+            * { 
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            body { 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+              margin: 0;
+              padding: 20px;
+              color: #1f2937;
+              background: #ffffff;
+              line-height: 1.6;
+            }
+            .receipt-container {
+              max-width: 800px;
+              margin: 0 auto;
+              background: #ffffff;
+            }
+            .receipt-header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              border-bottom: 3px solid #2563eb;
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+            .logo-section {
+              display: flex;
+              align-items: center;
+              gap: 15px;
+            }
+            .logo-section img {
+              height: 60px;
+              width: auto;
+              object-fit: contain;
+            }
+            .brand-info {
+              display: flex;
+              flex-direction: column;
+            }
+            .brand-name {
+              font-size: 28px;
+              font-weight: 800;
+              color: #2563eb;
+              letter-spacing: -0.5px;
+              margin-bottom: 4px;
+            }
+            .brand-tagline {
+              font-size: 12px;
+              color: #6b7280;
+              font-weight: 500;
+            }
+            .receipt-info {
+              text-align: right;
+            }
+            .receipt-title {
+              font-size: 24px;
+              font-weight: 700;
+              color: #111827;
+              margin-bottom: 8px;
+            }
+            .receipt-number {
+              font-size: 14px;
+              color: #6b7280;
+              margin-bottom: 4px;
+            }
+            .receipt-date {
+              font-size: 12px;
+              color: #9ca3af;
+              margin-bottom: 8px;
+            }
+            .status-badge {
+              display: inline-block;
+              padding: 6px 14px;
+              background: #d1fae5;
+              color: #065f46;
+              border: 1px solid #a7f3d0;
+              border-radius: 20px;
+              font-size: 12px;
+              font-weight: 600;
+            }
+            .content-section {
+              margin-bottom: 25px;
+            }
+            .section-title {
+              font-size: 18px;
+              font-weight: 700;
+              color: #2563eb;
+              margin-bottom: 15px;
+              padding-bottom: 8px;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            .info-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-bottom: 25px;
+            }
+            .info-card {
+              background: #f9fafb;
+              border: 1px solid #e5e7eb;
+              border-radius: 8px;
+              padding: 18px;
+            }
+            .info-row {
+              display: flex;
+              justify-content: space-between;
+              padding: 8px 0;
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .info-row:last-child {
+              border-bottom: none;
+            }
+            .info-label {
+              font-size: 13px;
+              color: #6b7280;
+              font-weight: 500;
+            }
+            .info-value {
+              font-size: 13px;
+              color: #111827;
+              font-weight: 600;
+              text-align: right;
+            }
+            .pricing-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              background: #ffffff;
+            }
+            .pricing-table thead {
+              background: #f3f4f6;
+            }
+            .pricing-table th {
+              padding: 12px 16px;
+              text-align: left;
+              font-size: 13px;
+              font-weight: 700;
+              color: #374151;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            .pricing-table td {
+              padding: 12px 16px;
+              font-size: 13px;
+              color: #111827;
+              border-bottom: 1px solid #e5e7eb;
+            }
+            .pricing-table tfoot {
+              background: #f3f4f6;
+            }
+            .pricing-table tfoot td {
+              font-size: 16px;
+              font-weight: 800;
+              color: #2563eb;
+              border-top: 3px solid #2563eb;
+              padding: 15px 16px;
+            }
+            .pricing-table .amount {
+              text-align: right;
+              font-weight: 600;
+            }
+            .pricing-table tfoot .amount {
+              font-size: 18px;
+            }
+            .footer-section {
+              margin-top: 40px;
+              padding-top: 20px;
+              border-top: 2px solid #e5e7eb;
+              text-align: center;
+            }
+            .footer-text {
+              font-size: 11px;
+              color: #6b7280;
+              line-height: 1.8;
+            }
+            .footer-text strong {
+              color: #111827;
+            }
+            .notes-box {
+              background: #fef3c7;
+              border-left: 4px solid #f59e0b;
+              padding: 12px 16px;
+              border-radius: 4px;
+              font-size: 12px;
+              color: #92400e;
+              line-height: 1.6;
+            }
+            @media print {
+              body {
+                padding: 0;
+              }
+              .receipt-container {
+                max-width: 100%;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="receipt-container">
+            <div class="receipt-header">
+              <div class="logo-section">
+                <img src="${logoUrl}" alt="ShareWheelz Logo" onerror="this.style.display='none';" />
+                <div class="brand-info">
+                  <div class="brand-name">ShareWheelz</div>
+                  <div class="brand-tagline">Premium Car Sharing Platform</div>
+                </div>
+              </div>
+              <div class="receipt-info">
+                <div class="receipt-title">Booking Receipt</div>
+                <div class="receipt-number">Receipt #${bookingId}</div>
+                <div class="receipt-date">${new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                <div class="status-badge" style="margin-top: 8px;">✓ Confirmed</div>
+              </div>
+            </div>
+
+            <div class="content-section">
+              <div class="section-title">Vehicle & Booking Details</div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Vehicle</span>
+                    <span class="info-value">${booking.car.year} ${booking.car.make} ${booking.car.model}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">License Plate</span>
+                    <span class="info-value">${booking.car.licensePlate}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Pickup Date</span>
+                    <span class="info-value">${formatDate(booking.dates.startDate)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Pickup Time</span>
+                    <span class="info-value">${formatTime(booking.dates.startTime)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Return Date</span>
+                    <span class="info-value">${formatDate(booking.dates.endDate)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Return Time</span>
+                    <span class="info-value">${formatTime(booking.dates.endTime)}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Duration</span>
+                    <span class="info-value">${booking.pricing.totalDays} ${booking.pricing.totalDays === 1 ? 'day' : 'days'}</span>
+                  </div>
+                </div>
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Car Owner</span>
+                    <span class="info-value">${booking.owner.name}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Owner Phone</span>
+                    <span class="info-value">${booking.owner.phone}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Owner Email</span>
+                    <span class="info-value" style="font-size: 11px;">${booking.owner.email}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Renter</span>
+                    <span class="info-value">${booking.renter.name}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Renter Phone</span>
+                    <span class="info-value">${booking.renter.phone}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Renter Email</span>
+                    <span class="info-value" style="font-size: 11px;">${booking.renter.email}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Support</span>
+                    <span class="info-value">support@sharewheelz.uk</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="content-section">
+              <div class="section-title">Payment Breakdown</div>
+              <table class="pricing-table">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th class="amount">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Daily Rate (${booking.car.make} ${booking.car.model}) × ${booking.pricing.totalDays} ${booking.pricing.totalDays === 1 ? 'day' : 'days'}</td>
+                    <td class="amount">£${booking.pricing.subtotal.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Service Fee (10%)</td>
+                    <td class="amount">£${booking.pricing.serviceFee.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Insurance Coverage (5%)</td>
+                    <td class="amount">£${booking.pricing.insurance.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td><strong>Total Amount Paid</strong></td>
+                    <td class="amount"><strong>£${booking.pricing.total.toFixed(2)}</strong></td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div class="content-section">
+              <div class="section-title">Payment Information</div>
+              <div class="info-grid">
+                <div class="info-card">
+                  <div class="info-row">
+                    <span class="info-label">Payment Method</span>
+                    <span class="info-value">${booking.payment.method}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Transaction ID</span>
+                    <span class="info-value" style="font-size: 11px;">${booking.payment.transactionId}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Payment Status</span>
+                    <span class="info-value" style="color: #059669;">${booking.payment.status}</span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Paid At</span>
+                    <span class="info-value">${new Date(booking.payment.paidAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                  </div>
+                </div>
+                <div class="info-card">
+                  <div class="notes-box">
+                    <strong>Important Notes:</strong><br>
+                    • Please present this receipt upon vehicle pickup<br>
+                    • Ensure your driving license and ID match the booking details<br>
+                    • Contact support for any changes or cancellations<br>
+                    • Free cancellation available up to 24 hours before pickup
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer-section">
+              <div class="footer-text">
+                <strong>ShareWheelz</strong> • The UK's Premier Car Sharing Platform<br>
+                Website: <strong>sharewheelz.uk</strong> • Email: support@sharewheelz.uk • Phone: +44 20 1234 5678<br>
+                Company Registration No: 00000000 • VAT No: GB000000000<br>
+                Thank you for choosing ShareWheelz. We hope you enjoy your journey!
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Open a new window with the receipt and trigger print
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printHtml);
+      printWindow.document.close();
+      // Wait for images to load, then print
+      printWindow.onload = () => {
+        setTimeout(() => {
+          printWindow.print();
+        }, 500);
+      };
+    }
   };
 
   const handleEmailReceipt = () => {
     // In a real implementation, this would send an email
     alert('Receipt has been sent to your email address!');
+  };
+
+  const handlePreviewReceipt = () => {
+    const logoUrl = `${window.location.origin}/assets/MAIN LOGO.png`;
+    const previewHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Booking Receipt - ${bookingId}</title>
+          <style>
+            @page { size: A4; margin: 15mm; }
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; margin: 0; padding: 20px; color: #1f2937; background: #ffffff; }
+            .receipt-container { max-width: 800px; margin: 0 auto; }
+            .receipt-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+            .logo-section { display: flex; align-items: center; gap: 15px; }
+            .logo-section img { height: 60px; width: auto; object-fit: contain; }
+            .brand-name { font-size: 28px; font-weight: 800; color: #2563eb; letter-spacing: -0.5px; margin-bottom: 4px; }
+            .brand-tagline { font-size: 12px; color: #6b7280; font-weight: 500; }
+            .receipt-info { text-align: right; }
+            .receipt-title { font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 8px; }
+            .status-badge { display: inline-block; padding: 6px 14px; background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; border-radius: 20px; font-size: 12px; font-weight: 600; }
+            .section-title { font-size: 18px; font-weight: 700; color: #2563eb; margin: 25px 0 15px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            .info-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 18px; }
+            .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb; }
+            .info-row:last-child { border-bottom: none; }
+            .info-label { font-size: 13px; color: #6b7280; font-weight: 500; }
+            .info-value { font-size: 13px; color: #111827; font-weight: 600; text-align: right; }
+            .pricing-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #ffffff; }
+            .pricing-table th { padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #374151; border-bottom: 2px solid #e5e7eb; }
+            .pricing-table td { padding: 12px 16px; font-size: 13px; color: #111827; border-bottom: 1px solid #e5e7eb; }
+            .pricing-table tfoot td { font-size: 16px; font-weight: 800; color: #2563eb; border-top: 3px solid #2563eb; padding: 15px 16px; }
+            .footer-section { margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb; text-align: center; }
+            .footer-text { font-size: 11px; color: #6b7280; line-height: 1.8; }
+          </style>
+        </head>
+        <body>
+          <div class="receipt-container">
+            <div class="receipt-header">
+              <div class="logo-section">
+                <img src="${logoUrl}" alt="ShareWheelz Logo" onerror="this.style.display='none';" />
+                <div>
+                  <div class="brand-name">ShareWheelz</div>
+                  <div class="brand-tagline">Premium Car Sharing Platform</div>
+                </div>
+              </div>
+              <div class="receipt-info">
+                <div class="receipt-title">Booking Receipt</div>
+                <div>Receipt #${bookingId}</div>
+                <div>${new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
+                <div class="status-badge" style="margin-top: 8px;">✓ Confirmed</div>
+              </div>
+            </div>
+            <div class="section-title">Vehicle & Booking Details</div>
+            <div class="info-grid">
+              <div class="info-card">
+                <div class="info-row"><span class="info-label">Vehicle</span><span class="info-value">${booking.car.year} ${booking.car.make} ${booking.car.model}</span></div>
+                <div class="info-row"><span class="info-label">License Plate</span><span class="info-value">${booking.car.licensePlate}</span></div>
+                <div class="info-row"><span class="info-label">Pickup</span><span class="info-value">${formatDate(booking.dates.startDate)} • ${formatTime(booking.dates.startTime)}</span></div>
+                <div class="info-row"><span class="info-label">Return</span><span class="info-value">${formatDate(booking.dates.endDate)} • ${formatTime(booking.dates.endTime)}</span></div>
+                <div class="info-row"><span class="info-label">Duration</span><span class="info-value">${booking.pricing.totalDays} ${booking.pricing.totalDays === 1 ? 'day' : 'days'}</span></div>
+              </div>
+              <div class="info-card">
+                <div class="info-row"><span class="info-label">Owner</span><span class="info-value">${booking.owner.name} — ${booking.owner.phone}</span></div>
+                <div class="info-row"><span class="info-label">Renter</span><span class="info-value">${booking.renter.name} — ${booking.renter.phone}</span></div>
+                <div class="info-row"><span class="info-label">Support</span><span class="info-value">support@sharewheelz.uk</span></div>
+              </div>
+            </div>
+            <div class="section-title">Payment Breakdown</div>
+            <table class="pricing-table">
+              <thead>
+                <tr><th>Description</th><th style="text-align:right;">Amount</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Daily Rate × ${booking.pricing.totalDays} ${booking.pricing.totalDays === 1 ? 'day' : 'days'}</td><td style="text-align:right;">£${booking.pricing.subtotal.toFixed(2)}</td></tr>
+                <tr><td>Service Fee</td><td style="text-align:right;">£${booking.pricing.serviceFee.toFixed(2)}</td></tr>
+                <tr><td>Insurance</td><td style="text-align:right;">£${booking.pricing.insurance.toFixed(2)}</td></tr>
+              </tbody>
+              <tfoot>
+                <tr><td>Total</td><td style="text-align:right;">£${booking.pricing.total.toFixed(2)}</td></tr>
+              </tfoot>
+            </table>
+            <div class="section-title">Payment Info</div>
+            <div class="info-grid">
+              <div class="info-card">
+                <div class="info-row"><span class="info-label">Method</span><span class="info-value">${booking.payment.method}</span></div>
+                <div class="info-row"><span class="info-label">Transaction ID</span><span class="info-value">${booking.payment.transactionId}</span></div>
+                <div class="info-row"><span class="info-label">Status</span><span class="info-value">${booking.payment.status}</span></div>
+                <div class="info-row"><span class="info-label">Paid At</span><span class="info-value">${new Date(booking.payment.paidAt).toLocaleString('en-GB')}</span></div>
+              </div>
+              <div class="info-card"><div style="font-size:12px;color:#92400e;">Please bring ID and license at pickup.</div></div>
+            </div>
+            <div class="footer-section"><div class="footer-text"><strong>ShareWheelz</strong> • sharewheelz.uk • Company No. 00000000</div></div>
+          </div>
+        </body>
+      </html>
+    `;
+    const w = window.open('', '_blank');
+    if (w) {
+      w.document.open();
+      w.document.write(previewHtml);
+      w.document.close();
+    }
   };
 
   return (
@@ -435,6 +1160,14 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
               </CardHeader>
               <CardContent className="space-y-3">
                 <Button 
+                  onClick={handlePreviewReceipt}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Receipt className="h-4 w-4 mr-2" />
+                  Preview Receipt
+                </Button>
+                <Button 
                   onClick={handleDownloadPdf}
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
@@ -518,7 +1251,7 @@ export default function BookingReceipt({ bookingId, booking }: BookingReceiptPro
 
         {/* Bottom Actions */}
         <div className="mt-8 text-center">
-          <Link href="/dashboard/renter">
+          <Link href="/renter-dashboard">
             <Button className="bg-blue-600 hover:bg-blue-700 mr-4">
               Go to Dashboard
             </Button>

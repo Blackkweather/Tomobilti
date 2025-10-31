@@ -3,6 +3,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./contexts/AuthContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import { Toaster } from "./components/ui/toaster";
 import SupportChat from "./components/SupportChat";
 import { initGA, trackPageView } from "./lib/analytics";
@@ -60,6 +61,7 @@ import LoyaltyProgram from './pages/LoyaltyProgram';
 import LiveChat from './pages/LiveChat';
 import Security from './pages/Security';
 import AdminPanel from './pages/AdminPanel';
+import Analytics from './pages/Analytics';
 
 // Import components
 import Header from "./components/Header";
@@ -85,12 +87,21 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ErrorBoundary>
+        <NotificationProvider>
+          <ErrorBoundary>
           <ScrollToTop />
           <div className="min-h-screen bg-white">
+            {/* Skip to main content link for accessibility */}
+            <a
+              href="#main-content"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              aria-label="Skip to main content"
+            >
+              Skip to main content
+            </a>
             <Header />
             
-            <main className="flex-1">
+            <main id="main-content" className="flex-1" role="main" aria-label="Main content">
               <Switch>
               {/* Core Routes */}
               <Route path="/" component={Home} />
@@ -113,6 +124,9 @@ function App() {
               {/* Admin Panel */}
               <Route path="/admin" component={AdminPanel} />
               <Route path="/admin-panel" component={AdminPanel} />
+              
+              {/* Analytics */}
+              <Route path="/analytics" component={Analytics} />
               
               {/* Car Management */}
               <Route path="/add-car" component={AddCar} />
@@ -175,7 +189,8 @@ function App() {
             <EmailCaptureModal />
             <Toaster />
           </div>
-        </ErrorBoundary>
+          </ErrorBoundary>
+        </NotificationProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

@@ -25,10 +25,8 @@ export default function EmailCaptureModal({
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log('EmailCaptureModal mounted');
     // Show email capture modal after 2 seconds
     const timer = setTimeout(() => {
-      console.log('Opening email modal');
       setIsOpen(true);
     }, 2000);
     
@@ -86,7 +84,10 @@ export default function EmailCaptureModal({
               totalBrightness += brightness;
               validChecks++;
               
-              console.log('Background detected:', { bgColor, brightness, element: element.tagName });
+              // Only log in development mode
+              if (process.env.NODE_ENV === 'development') {
+                console.debug('Background detected:', { bgColor, brightness, element: element.tagName });
+              }
               break; // Found a valid background, check next point
             }
           }
@@ -97,7 +98,10 @@ export default function EmailCaptureModal({
       const avgBrightness = validChecks > 0 ? totalBrightness / validChecks : 0;
       const isLight = avgBrightness > 180; // Threshold for light background
       
-      console.log('Average brightness:', avgBrightness, 'Is light:', isLight);
+      // Only log in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('Average brightness:', avgBrightness, 'Is light:', isLight);
+      }
       setIsDarkText(isLight);
     };
 

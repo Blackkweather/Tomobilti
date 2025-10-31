@@ -196,7 +196,7 @@ export default function About() {
           </p>
           <div className="flex gap-4 justify-center">
             {!isAuthenticated && (
-              <Link href="/login">
+              <Link href="/register">
                 <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
                   Sign Up Now
                 </Button>

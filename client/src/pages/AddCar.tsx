@@ -50,7 +50,7 @@ export default function AddCar() {
     licensePlate: "",
     images: [],
   });
-  const [errors, setErrors] = useState<Partial<CarForm>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof CarForm, string>>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addCarMutation = useMutation({
@@ -70,7 +70,7 @@ export default function AddCar() {
       return response.json();
     },
     onSuccess: () => {
-      setLocation("/dashboard/owner");
+      setLocation("/owner-dashboard");
     },
     onError: (error: Error) => {
       setErrors({ make: error.message });
@@ -78,7 +78,7 @@ export default function AddCar() {
   });
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<CarForm> = {};
+    const newErrors: Partial<Record<keyof CarForm, string>> = {};
 
     if (!form.make.trim()) newErrors.make = "Make is required";
     if (!form.model.trim()) newErrors.model = "Model is required";
@@ -507,7 +507,7 @@ export default function AddCar() {
             <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200/50">
               <Button
                 type="button"
-                onClick={() => setLocation("/dashboard/owner")}
+                onClick={() => setLocation("/owner-dashboard")}
                 variant="outline"
                 className="px-8 py-3 border-2 border-gray-200 hover:border-mauve-300 hover:bg-mauve-50 transition-all duration-200"
               >

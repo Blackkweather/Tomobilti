@@ -24,14 +24,21 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  ArrowLeft
+  ArrowLeft,
+  Download,
+  Calendar as CalendarIcon
 } from 'lucide-react';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'wouter';
 
 
 export default function Analytics() {
   const [selectedPeriod, setSelectedPeriod] = useState('6months');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [useDateRange, setUseDateRange] = useState(false);
   const { user } = useAuth();
   const [, setLocation] = useLocation();
 
@@ -185,7 +192,31 @@ export default function Analytics() {
   const error = carsError || bookingsError;
 
   const handleBack = () => {
-    setLocation('/dashboard/owner');
+    setLocation('/owner-dashboard');
+  };
+
+  const generateCSV = () => {
+    const analytics = calculateRealAnalytics();
+    const rows = [
+      ['Metric', 'Value'],
+      ['Total Earnings', `£${analytics.earnings.total.toFixed(2)}`],
+      ['This Month Earnings', `£${analytics.earnings.thisMonth.toFixed(2)}`],
+      ['Total Bookings', analytics.bookings.total.toString()],
+      ['This Month Bookings', analytics.bookings.thisMonth.toString()],
+      ['Active Cars', analytics.cars.active.toString()],
+      ['Average Rating', analytics.cars.averageRating.toFixed(2)],
+    ];
+    return rows.map(row => row.join(',')).join('\n');
+  };
+
+  const downloadCSV = (csv: string, filename: string) => {
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   if (isLoading) {
@@ -291,37 +322,113 @@ export default function Analytics() {
             </div>
           </div>
           
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button
-              variant={selectedPeriod === '1month' ? 'default' : 'outline'}
-              onClick={() => setSelectedPeriod('1month')}
-              className="hover-elevate"
+              variant="outline"
+              onClick={() => {
+                const csv = generateCSV();
+                downloadCSV(csv, 'analytics-export.csv');
+              }}
             >
-              1 Month
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
             </Button>
             <Button
-              variant={selectedPeriod === '3months' ? 'default' : 'outline'}
-              onClick={() => setSelectedPeriod('3months')}
-              className="hover-elevate"
+              variant="outline"
+              onClick={() => {
+                window.print();
+              }}
             >
-              3 Months
-            </Button>
-            <Button
-              variant={selectedPeriod === '6months' ? 'default' : 'outline'}
-              onClick={() => setSelectedPeriod('6months')}
-              className="hover-elevate"
-            >
-              6 Months
-            </Button>
-            <Button
-              variant={selectedPeriod === '1year' ? 'default' : 'outline'}
-              onClick={() => setSelectedPeriod('1year')}
-              className="hover-elevate"
-            >
-              1 Year
+              <Download className="h-4 w-4 mr-2" />
+              Export PDF
             </Button>
           </div>
         </div>
+
+        {/* Period Selection with Date Range Picker */}
+        <Card className="mb-6">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              <div className="flex gap-2">
+                <Button
+                  variant={selectedPeriod === '1month' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setSelectedPeriod('1month');
+                    setUseDateRange(false);
+                  }}
+                  className="hover-elevate"
+                >
+                  1 Month
+                </Button>
+                <Button
+                  variant={selectedPeriod === '3months' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setSelectedPeriod('3months');
+                    setUseDateRange(false);
+                  }}
+                  className="hover-elevate"
+                >
+                  3 Months
+                </Button>
+                <Button
+                  variant={selectedPeriod === '6months' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setSelectedPeriod('6months');
+                    setUseDateRange(false);
+                  }}
+                  className="hover-elevate"
+                >
+                  6 Months
+                </Button>
+                <Button
+                  variant={selectedPeriod === '1year' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setSelectedPeriod('1year');
+                    setUseDateRange(false);
+                  }}
+                  className="hover-elevate"
+                >
+                  1 Year
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="useDateRange"
+                  checked={useDateRange}
+                  onChange={(e) => {
+                    setUseDateRange(e.target.checked);
+                    if (e.target.checked) setSelectedPeriod('');
+                  }}
+                  className="w-4 h-4"
+                />
+                <Label htmlFor="useDateRange" className="cursor-pointer">Custom Date Range</Label>
+              </div>
+            </div>
+            {useDateRange && (
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <Label htmlFor="startDate">Start Date</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="endDate">End Date</Label>
+                  <Input
+                    id="endDate"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -53,7 +53,7 @@ export default function EditCar() {
   });
   const [newImages, setNewImages] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [errors, setErrors] = useState<Partial<Car>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof Car, string>>>({});
 
   const { data: car, isLoading } = useQuery({
     queryKey: ['car', id],
@@ -143,7 +143,7 @@ export default function EditCar() {
       console.log('Mutation success:', data);
       queryClient.invalidateQueries({ queryKey: ['car', id] });
       queryClient.invalidateQueries({ queryKey: ['cars', 'owner'] });
-      setLocation("/dashboard/owner");
+      setLocation("/owner-dashboard");
     },
     onError: (error: Error) => {
       console.error('Mutation error:', error);
@@ -152,7 +152,7 @@ export default function EditCar() {
   });
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<Car> = {};
+    const newErrors: Partial<Record<keyof Car, string>> = {};
 
     if (!form.make?.trim()) newErrors.make = "Make is required";
     if (!form.model?.trim()) newErrors.model = "Model is required";
@@ -293,7 +293,7 @@ export default function EditCar() {
             <h2 className="text-2xl font-bold text-gray-900">Car not found</h2>
             <p className="text-muted-foreground">The car you're looking for doesn't exist or you don't have permission to edit it.</p>
             <Button
-              onClick={() => setLocation("/dashboard/owner")}
+              onClick={() => setLocation("/owner-dashboard")}
               className="mt-4"
             >
               Back to Dashboard
@@ -629,7 +629,7 @@ export default function EditCar() {
               </Button>
               <Button
                 type="button"
-                onClick={() => setLocation("/dashboard/owner")}
+                onClick={() => setLocation("/owner-dashboard")}
                 variant="outline"
                 className="px-8 py-3 border-2 border-gray-200 hover:border-mauve-300 hover:bg-mauve-50 transition-all duration-200"
               >

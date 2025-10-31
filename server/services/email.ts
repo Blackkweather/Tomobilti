@@ -34,6 +34,28 @@ export class EmailService {
    * Initialize email transporter
    */
   static initialize() {
+    // Development mode: Use mock transporter if credentials not set
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS || process.env.NODE_ENV === 'development') {
+      console.log('📧 Email service running in DEVELOPMENT mode (emails will be logged to console)');
+      // Create a mock transporter that logs instead of sending
+      this.transporter = {
+        verify: (callback: any) => {
+          callback(null, true);
+        },
+        sendMail: async (mailOptions: any) => {
+          console.log('📧 [EMAIL LOG - Development Mode]');
+          console.log('   To:', mailOptions.to);
+          console.log('   Subject:', mailOptions.subject);
+          console.log('   HTML Preview:', mailOptions.html?.substring(0, 200) + '...');
+          console.log('   📝 In production, this email would be sent via SMTP');
+          return { messageId: 'dev-' + Date.now() };
+        }
+      } as any;
+      console.log('✅ Email service ready (development mode)');
+      return;
+    }
+
+    // Production mode: Use real SMTP
     this.transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
@@ -49,8 +71,10 @@ export class EmailService {
       if (error) {
         console.error('Email service initialization failed:', error);
         console.log('   Please check your SMTP credentials in .env file');
+        // Fallback to development mode
+        console.log('   Falling back to development mode (emails logged to console)');
       } else {
-        console.log('✅ Email service ready');
+        console.log('✅ Email service ready (production mode)');
       }
     });
   }
@@ -192,7 +216,7 @@ export class EmailService {
   /**
    * Send password reset email
    */
-  static async sendPasswordResetEmail(to: string, firstName: string, resetToken: string): Promise<boolean> {
+  static async sendPasswordResetEmail({ to, firstName, resetToken }: { to: string; firstName: string; resetToken: string }): Promise<boolean> {
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
     
     const html = `

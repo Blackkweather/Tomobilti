@@ -139,9 +139,32 @@ export default function RenterDashboard() {
     }
   };
 
-  const formatCurrency = (amount: string | number) => {
+  const formatCurrency = (amount: string | number | null | undefined) => {
+    if (amount == null || amount === '') return '£0.00';
     const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
-    return `£${numAmount.toLocaleString()}`;
+    if (isNaN(numAmount) || !isFinite(numAmount)) return '£0.00';
+    return `£${numAmount.toFixed(2)}`;
+  };
+
+  // Calculate booking total if missing
+  const calculateBookingTotal = (booking: any) => {
+    if (booking.totalAmount && !isNaN(parseFloat(booking.totalAmount))) {
+      return booking.totalAmount;
+    }
+    
+    // Calculate from booking data
+    if (booking.startDate && booking.endDate && booking.car?.pricePerDay) {
+      const start = new Date(booking.startDate);
+      const end = new Date(booking.endDate);
+      const days = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+      const pricePerDay = parseFloat(booking.car.pricePerDay) || 0;
+      const subtotal = days * pricePerDay;
+      const serviceFee = subtotal * 0.1; // 10%
+      const insurance = subtotal * 0.05; // 5%
+      return subtotal + serviceFee + insurance;
+    }
+    
+    return 0;
   };
 
   const formatDate = (dateString: string | Date | null) => {
@@ -193,6 +216,7 @@ export default function RenterDashboard() {
             <Button 
               variant="outline" 
               className="hover-elevate active-elevate-2"
+              onClick={() => setLocation('/settings')}
             >
               <Settings className="h-4 w-4 mr-2" />
               Settings
@@ -401,7 +425,7 @@ export default function RenterDashboard() {
                                     )}
                                   </p>
                                   <p className="font-bold text-2xl text-rose-600">
-                                    {formatCurrency(booking.totalAmount)}
+                                    {formatCurrency(calculateBookingTotal(booking))}
                                   </p>
                                 </div>
                                 
@@ -472,7 +496,11 @@ export default function RenterDashboard() {
                     <div className="pt-4 border-t">
                       <h4 className="font-semibold text-lg mb-3">Quick Actions</h4>
                       <div className="space-y-2">
-                        <Button variant="outline" className="w-full justify-start hover-elevate">
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start hover-elevate"
+                          onClick={() => setLocation('/cars')}
+                        >
                           <div className="flex items-center gap-3">
                             <div className="p-2 bg-rose-100 rounded-lg">
                               <Car className="h-4 w-4 text-rose-600" />
@@ -483,7 +511,11 @@ export default function RenterDashboard() {
                             </div>
                           </div>
                         </Button>
-                        <Button variant="outline" className="w-full justify-start hover-elevate">
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start hover-elevate"
+                          onClick={() => setSelectedTab('favorites')}
+                        >
                           <div className="flex items-center gap-3">
                             <div className="p-2 bg-mauve-100 rounded-lg">
                               <Heart className="h-4 w-4 text-mauve-600" />

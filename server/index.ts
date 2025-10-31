@@ -372,6 +372,16 @@ app.use((req, res, next) => {
       log(`⚠️ WebSocket server initialization failed: ${error}`);
     }
 
+    // Initialize Notification Service (WebSocket for real-time notifications)
+    let notificationServer;
+    try {
+      notificationServer = NotificationService.initialize(httpServer);
+      (global as any).notificationServer = notificationServer;
+      log(`✅ Notification service initialized`);
+    } catch (error) {
+      log(`⚠️ Notification service initialization failed: ${error}`);
+    }
+
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
       const status = err.status || err.statusCode || 500;
       const message = err.message || "Internal Server Error";

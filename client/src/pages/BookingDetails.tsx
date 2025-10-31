@@ -42,7 +42,7 @@ export default function BookingDetails() {
         <div className="max-w-4xl mx-auto">
           <Button 
             variant="outline" 
-            onClick={() => setLocation('/dashboard/owner')}
+            onClick={() => setLocation('/owner-dashboard')}
             className="mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -84,7 +84,7 @@ export default function BookingDetails() {
       <div className="max-w-4xl mx-auto">
         <Button 
           variant="outline" 
-          onClick={() => setLocation('/dashboard/owner')}
+          onClick={() => setLocation('/owner-dashboard')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
