@@ -8,10 +8,11 @@ export const csrfProtection = (req: any, res: any, next: any) => {
     return next();
   }
 
-  // Only skip CSRF for essential auth endpoints
+  // Skip CSRF for API routes that use token-based authentication
   const skipCSRFPaths = [
     '/api/auth/login',
-    '/api/auth/register'
+    '/api/auth/register',
+    '/api/admin'  // Admin routes use Bearer token auth, no CSRF needed
   ];
 
   if (skipCSRFPaths.some(path => req.path.startsWith(path))) {
