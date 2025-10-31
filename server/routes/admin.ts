@@ -109,6 +109,42 @@ export function registerAdminRoutes(app: Express) {
     }
   });
 
+  // Reset user password (Admin only)
+  app.post('/api/admin/users/:id/reset-password', async (req, res) => {
+    try {
+      const { newPassword } = req.body;
+      
+      if (!newPassword) {
+        return res.status(400).json({ error: 'New password is required' });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+      }
+
+      const userId = req.params.id;
+      const user = await storage.getUserById(userId);
+      
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      const success = await storage.updateUserPassword(userId, newPassword);
+      
+      if (!success) {
+        return res.status(500).json({ error: 'Failed to reset password' });
+      }
+
+      res.json({ 
+        success: true, 
+        message: `Password reset successfully for ${user.email}` 
+      });
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Get all cars
   app.get('/api/admin/cars', async (req, res) => {
     try {

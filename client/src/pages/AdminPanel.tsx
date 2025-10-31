@@ -31,7 +31,8 @@ import {
   DollarSign,
   Activity,
   FileText,
-  Download
+  Download,
+  Lock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -136,6 +137,22 @@ const adminApi = {
     return response.json();
   },
 
+  resetUserPassword: async (userId: string, newPassword: string) => {
+    const response = await fetch(`/api/admin/users/${userId}/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ newPassword })
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to reset password');
+    }
+    return response.json();
+  },
+
   // Users
   getAllUsers: async () => {
     const response = await fetch('/api/admin/users', {
@@ -213,6 +230,8 @@ export default function AdminPanel() {
   const [userFilterType, setUserFilterType] = useState<'all' | 'owner' | 'renter' | 'admin'>('all');
   const [bookingFilterStatus, setBookingFilterStatus] = useState<'all' | 'confirmed' | 'pending' | 'cancelled' | 'completed'>('all');
   const [activeTab, setActiveTab] = useState('overview');
+  const [resetPasswordUserId, setResetPasswordUserId] = useState<string | null>(null);
+  const [newPassword, setNewPassword] = useState('');
 
   // Fetch cars (enabled only if admin)
   const { data: cars, isLoading: carsLoading, error: carsError } = useQuery({
@@ -314,6 +333,21 @@ export default function AdminPanel() {
     }
   });
 
+  // Reset password mutation
+  const resetPasswordMutation = useMutation({
+    mutationFn: ({ userId, password }: { userId: string; password: string }) =>
+      adminApi.resetUserPassword(userId, password),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      setResetPasswordUserId(null);
+      setNewPassword('');
+      alert('Password reset successfully!');
+    },
+    onError: (error: Error) => {
+      alert(`Failed to reset password: ${error.message}`);
+    }
+  });
+
   // Update booking status mutation
   const updateBookingStatusMutation = useMutation({
     mutationFn: ({ bookingId, status }: { bookingId: string; status: string }) =>
@@ -377,6 +411,27 @@ export default function AdminPanel() {
 
   const handleUnverifyUser = (userId: string) => {
     unverifyUserMutation.mutate(userId);
+  };
+
+  const handleResetPassword = (userId: string) => {
+    setResetPasswordUserId(userId);
+    setNewPassword('');
+  };
+
+  const handleSubmitResetPassword = () => {
+    if (!resetPasswordUserId || !newPassword) {
+      alert('Please enter a new password');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      alert('Password must be at least 8 characters long');
+      return;
+    }
+
+    if (window.confirm('Are you sure you want to reset this user\'s password?')) {
+      resetPasswordMutation.mutate({ userId: resetPasswordUserId, password: newPassword });
+    }
   };
 
   // Calculate stats
@@ -890,6 +945,14 @@ export default function AdminPanel() {
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleResetPassword(adminUser.id)}
+                              title="Reset Password"
+                            >
+                              <Lock className="h-4 w-4 text-blue-600" />
+                            </Button>
                             {(adminUser.isVerified || (adminUser.isIdVerified && adminUser.isLicenseVerified)) ? (
                               <Button 
                                 variant="outline" 
@@ -995,6 +1058,69 @@ export default function AdminPanel() {
               </Card>
             </div>
           )}
+
+          {/* Password Reset Modal */}
+          {resetPasswordUserId && (() => {
+            const userToReset = users?.find((u: AdminUser) => u.id === resetPasswordUserId);
+            return (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <Card className="w-full max-w-md">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Lock className="h-5 w-5" />
+                      Reset User Password
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {userToReset && (
+                        <div className="p-3 bg-blue-50 rounded-lg">
+                          <p className="text-sm font-medium text-gray-700">
+                            Resetting password for:
+                          </p>
+                          <p className="text-sm text-gray-900 mt-1">
+                            {userToReset.firstName} {userToReset.lastName} ({userToReset.email})
+                          </p>
+                        </div>
+                      )}
+                      <div>
+                        <Label htmlFor="newPassword">New Password</Label>
+                        <Input
+                          id="newPassword"
+                          type="password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          placeholder="Enter new password (min 8 characters)"
+                          className="mt-1"
+                          autoFocus
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Password must be at least 8 characters long</p>
+                      </div>
+                      <div className="flex justify-end gap-2 mt-6">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setResetPasswordUserId(null);
+                            setNewPassword('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          type="button"
+                          onClick={handleSubmitResetPassword}
+                          disabled={resetPasswordMutation.isPending || !newPassword || newPassword.length < 8}
+                        >
+                          {resetPasswordMutation.isPending ? 'Resetting...' : 'Reset Password'}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })()}
 
           {/* Other tabs can be added here */}
           <TabsContent value="bookings" className="space-y-6">
