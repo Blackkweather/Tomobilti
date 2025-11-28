@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '../components/ui/button';
@@ -7,10 +7,11 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List, Car } from 'lucide-react';
+import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List, Car, Map } from 'lucide-react';
 import CarCard from '../components/CarCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { LocationPicker } from '../components/LocationPicker';
+import CarMap from '../components/CarMap';
 import { carApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../utils/currency';
@@ -29,7 +30,7 @@ export default function Cars() {
     seats: ''
   });
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>('grid');
   const [sortBy, setSortBy] = useState('price');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isAuthenticated } = useAuth();
@@ -455,10 +456,10 @@ export default function Cars() {
                   <span className="text-sm text-gray-500">({carsData.total} total)</span>
                 </p>
                 {hasActiveFilters && (
-                  <Badge variant="secondary" className="bg-mauve-100 text-mauve-800">
+                  <div className="inline-flex items-center rounded-md border border-transparent bg-mauve-100 text-mauve-800 px-2.5 py-0.5 text-xs font-semibold">
                     <Filter className="w-3 h-3 mr-1" />
                     Filtered
-                  </Badge>
+                  </div>
                 )}
               </div>
             )}
@@ -484,6 +485,7 @@ export default function Cars() {
                 size="sm"
                 onClick={() => setViewMode('grid')}
                 className="rounded-r-none"
+                title="Grid View"
               >
                 <Grid className="w-4 h-4" />
               </Button>
@@ -491,9 +493,22 @@ export default function Cars() {
                 variant={viewMode === 'list' ? 'default' : 'ghost'}
                 size="sm"
                 onClick={() => setViewMode('list')}
-                className="rounded-l-none"
+                className="rounded-none border-x"
+                title="List View"
               >
                 <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'map' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => {
+                  console.log('🗺️ Switching to map view');
+                  setViewMode('map');
+                }}
+                className="rounded-l-none"
+                title="Map View"
+              >
+                <Map className="w-4 h-4" />
               </Button>
             </div>
 
@@ -549,21 +564,56 @@ export default function Cars() {
           </div>
         )}
 
-        {/* Cars Grid */}
-        {!isLoading && !error && filteredCars.length > 0 && (
+        {/* Map View */}
+        {!isLoading && !error && filteredCars.length > 0 && viewMode === 'map' && (
+          <div className="mb-8">
+            <div className="mb-4 flex items-center justify-between bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                  🗺️ Map View
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Showing {filteredCars.length} {filteredCars.length === 1 ? 'car' : 'cars'} on the map
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className="flex items-center gap-2"
+              >
+                <Grid className="w-4 h-4" />
+                Back to Grid
+              </Button>
+            </div>
+            <div className="border-2 border-blue-300 rounded-lg overflow-hidden shadow-lg">
+              <CarMap 
+                cars={filteredCars}
+                selectedCity={filters.location}
+                onCarClick={(carId) => {
+                  window.location.href = `/cars/${carId}`;
+                }}
+                className="h-[600px] w-full"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Cars Grid/List */}
+        {!isLoading && !error && filteredCars.length > 0 && viewMode !== 'map' && (
           <div className={
             viewMode === 'grid' 
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
               : "flex flex-col gap-4"
           }>
-            {filteredCars.map((car) => (
-              <CarCard 
-                key={car.id}
-                car={car} 
-                isFavorited={favorites.includes(car.id)}
-                onToggleFavorite={() => toggleFavorite(car.id)}
-              />
-            ))}
+            {filteredCars.map((car) => 
+              React.createElement(CarCard, {
+                key: car.id,
+                car: car,
+                isFavorited: favorites.includes(car.id),
+                onToggleFavorite: () => toggleFavorite(car.id)
+              })
+            )}
           </div>
         )}
 
