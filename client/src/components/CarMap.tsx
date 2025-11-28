@@ -2,7 +2,7 @@ import React, { useEffect, useRef, Suspense } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Loader2 } from 'lucide-react';
+import { MapPin as MapPinIcon, Loader2 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 import { getCityCoordinates } from '../utils/ukCities';
 import { Link } from 'wouter';
@@ -129,7 +129,7 @@ export default function CarMap({ cars, selectedCity, onCarClick, className = '' 
     return (
       <div className={`w-full h-full bg-gray-100 rounded-lg flex items-center justify-center ${className}`}>
         <div className="text-center text-gray-500">
-          <MapPin className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <MapPinIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p className="text-lg font-medium">No location data available</p>
           <p className="text-sm mt-2">Cars need latitude/longitude or city information to display on map</p>
         </div>
@@ -191,7 +191,7 @@ export default function CarMap({ cars, selectedCity, onCarClick, className = '' 
                         {formatCurrency(car.pricePerDay)}/day
                       </p>
                       <p className="text-xs text-gray-500 mb-2">
-                        <MapPin className="w-3 h-3 inline mr-1" />
+                        <MapPinIcon className="w-3 h-3 inline mr-1" />
                         {car.city}
                       </p>
                       <Link href={`/cars/${car.id}`}>
