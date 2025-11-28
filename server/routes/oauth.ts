@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { authMiddleware } from '../middleware/auth';
-import { db } from '../db_sqlite_simple';
-import { users } from '@shared/sqlite-schema';
-import { eq } from 'drizzle-orm';
+import { storage } from '../storage';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { sanitizeInput, validateUrl } from '../middleware/sanitize';
@@ -74,42 +72,37 @@ router.post('/google', async (req, res) => {
     const { email, name, picture, sub: googleId } = payload;
 
     // Check if user already exists
-    let user = await db.select().from(users).where(eq(users.email, email)).limit(1).then(rows => rows[0] || null);
+    let user = await storage.getUserByEmail(email!);
     let isNewUser = false;
 
     if (!user) {
       isNewUser = true;
       // Create new user
-      const newUser = {
-        id: crypto.randomUUID(),
+      user = await storage.createUser({
         email: email!,
         firstName: name?.split(' ')[0] || '',
         lastName: name?.split(' ').slice(1).join(' ') || '',
         phone: null,
         profileImage: picture || null,
-        userType: 'renter' as const,
-        isVerified: true,
-        googleId: googleId,
-        facebookId: null,
-        appleId: null,
-        githubId: null,
-        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      await db.insert(users).values(newUser);
-      user = newUser;
+        userType: 'renter',
+        password: '', // OAuth users don't need password
+      });
+      
+      // Update with OAuth ID if storage supports it
+      if ((user as any).googleId !== undefined) {
+        await storage.updateUser(user.id, {
+          ...user,
+          googleId: googleId,
+        } as any);
+      }
     } else {
       // Update existing user with Google ID if not set
-      if (!user.googleId) {
-        await db.update(users)
-          .set({ 
-            googleId: googleId,
-            profileImage: picture || user.profileImage,
-            updatedAt: new Date().toISOString()
-          } as any)
-          .where(eq(users.id, user.id));
+      if ((user as any).googleId === null || (user as any).googleId === undefined) {
+        await storage.updateUser(user.id, {
+          ...user,
+          googleId: googleId,
+          profileImage: picture || user.profileImage,
+        } as any);
       }
     }
 
@@ -202,39 +195,34 @@ router.post('/facebook', async (req, res) => {
     }
 
     // Check if user exists
-    let user = await db.select().from(users).where(eq(users.email, userData.email)).limit(1).then(rows => rows[0] || null);
+    let user = await storage.getUserByEmail(userData.email);
 
     if (!user) {
-      const newUser = {
-        id: crypto.randomUUID(),
+      user = await storage.createUser({
         email: userData.email,
         firstName: userData.name.split(' ')[0],
         lastName: userData.name.split(' ').slice(1).join(' '),
         phone: null,
         profileImage: userData.picture?.data?.url || null,
-        userType: 'renter' as const,
-        isVerified: true,
-        googleId: null,
-        facebookId: userData.id,
-        appleId: null,
-        githubId: null,
-        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      await db.insert(users).values(newUser);
-      user = newUser;
+        userType: 'renter',
+        password: '', // OAuth users don't need password
+      });
+      
+      // Update with Facebook ID if storage supports it
+      if ((user as any).facebookId !== undefined) {
+        await storage.updateUser(user.id, {
+          ...user,
+          facebookId: userData.id,
+        } as any);
+      }
     } else {
       // Update existing user with Facebook ID if not set
-      if (!user.facebookId) {
-        await db.update(users)
-          .set({ 
-            facebookId: userData.id,
-            profileImage: userData.picture?.data?.url || user.profileImage,
-            updatedAt: new Date().toISOString()
-          } as any)
-          .where(eq(users.id, user.id));
+      if ((user as any).facebookId === null || (user as any).facebookId === undefined) {
+        await storage.updateUser(user.id, {
+          ...user,
+          facebookId: userData.id,
+          profileImage: userData.picture?.data?.url || user.profileImage,
+        } as any);
       }
     }
 
@@ -284,29 +272,26 @@ router.post('/microsoft', async (req, res) => {
     };
 
     // Check if user exists
-    let user = await db.select().from(users).where(eq(users.email, mockUser.email)).limit(1).then(rows => rows[0] || null);
+    let user = await storage.getUserByEmail(mockUser.email);
 
     if (!user) {
-      const newUser = {
-        id: crypto.randomUUID(),
+      user = await storage.createUser({
         email: mockUser.email,
         firstName: mockUser.name.split(' ')[0],
         lastName: mockUser.name.split(' ').slice(1).join(' '),
         phone: null,
         profileImage: mockUser.picture,
-        userType: 'renter' as const,
-        isVerified: true,
-        googleId: null,
-        facebookId: null,
-        appleId: null,
-        githubId: mockUser.id, // Using githubId field for Microsoft OAuth
-        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      await db.insert(users).values(newUser);
-      user = newUser;
+        userType: 'renter',
+        password: '', // OAuth users don't need password
+      });
+      
+      // Update with Microsoft ID (using githubId field) if storage supports it
+      if ((user as any).githubId !== undefined) {
+        await storage.updateUser(user.id, {
+          ...user,
+          githubId: mockUser.id,
+        } as any);
+      }
     }
 
     const jwtToken = jwt.sign(
@@ -352,29 +337,26 @@ router.post('/apple', async (req, res) => {
       name: user?.name || 'Apple User',
     };
 
-    let dbUser = await db.select().from(users).where(eq(users.email, mockUser.email)).limit(1).then(rows => rows[0] || null);
+    let dbUser = await storage.getUserByEmail(mockUser.email);
 
     if (!dbUser) {
-      const newUser = {
-        id: crypto.randomUUID(),
+      dbUser = await storage.createUser({
         email: mockUser.email,
         firstName: mockUser.name.split(' ')[0],
         lastName: mockUser.name.split(' ').slice(1).join(' '),
         phone: null,
         profileImage: null,
-        userType: 'renter' as const,
-        isVerified: true,
-        googleId: null,
-        facebookId: null,
-        appleId: mockUser.id,
-        githubId: null,
-        password: '$2b$12$oauth_user_no_password_required', // Placeholder password for OAuth users
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      await db.insert(users).values(newUser);
-      dbUser = newUser;
+        userType: 'renter',
+        password: '', // OAuth users don't need password
+      });
+      
+      // Update with Apple ID if storage supports it
+      if ((dbUser as any).appleId !== undefined) {
+        await storage.updateUser(dbUser.id, {
+          ...dbUser,
+          appleId: mockUser.id,
+        } as any);
+      }
     }
 
     const jwtToken = jwt.sign(

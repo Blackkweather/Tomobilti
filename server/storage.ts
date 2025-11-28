@@ -910,33 +910,52 @@ export class MemStorage implements IStorage {
 
 // Storage factory function
 async function createStorageInstance() {
-  // Check if we have a valid database URL or if we're in development
-  const hasValidDatabase = process.env.DATABASE_URL && 
+  // Check if we have a valid PostgreSQL database URL
+  const hasValidPostgresDatabase = process.env.DATABASE_URL && 
     !process.env.DATABASE_URL.startsWith('file:') && 
     process.env.DATABASE_URL.includes('://');
 
-  // In development, always try to use SQLite database
+  // In development, try SQLite first, then PostgreSQL, then fallback to in-memory
   const isDevelopment = process.env.NODE_ENV === 'development';
 
-  if (hasValidDatabase || isDevelopment) {
+  // If we have PostgreSQL, use it (don't load SQLite at all)
+  if (hasValidPostgresDatabase) {
     try {
-      // Attempting to connect to database
+      // Use PostgreSQL storage (from db.ts)
+      const { DatabaseStorage, ensureDatabaseSchema } = await import('./db');
+      await ensureDatabaseSchema();
+      const dbStorage = new DatabaseStorage();
+      
+      // Test the connection
+      await dbStorage.searchCars({ page: 1, limit: 1 });
+      console.log('Using PostgreSQL storage');
+      return dbStorage;
+    } catch (error) {
+      console.error('PostgreSQL connection failed, falling back to in-memory storage:', error);
+      return new MemStorage();
+    }
+  }
+
+  // In development, try SQLite if no PostgreSQL
+  if (isDevelopment) {
+    try {
+      // Attempting to connect to SQLite database
       const { DatabaseStorage } = await import('./db_sqlite_simple');
       const dbStorage = new DatabaseStorage();
       
       // Test the connection
       await dbStorage.searchCars({ page: 1, limit: 1 });
-      // Database connection successful
+      console.log('Using SQLite storage');
       return dbStorage;
     } catch (error) {
-      // Database connection failed
-      // Falling back to in-memory storage
+      console.error('SQLite connection failed, falling back to in-memory storage:', error);
       return new MemStorage();
     }
-  } else {
-    // No database URL found, using in-memory storage
-    return new MemStorage();
   }
+
+  // No database URL found, using in-memory storage
+  console.log('Using in-memory storage');
+  return new MemStorage();
 }
 
 // Create storage instance
