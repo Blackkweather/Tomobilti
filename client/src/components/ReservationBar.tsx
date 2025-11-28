@@ -176,26 +176,32 @@ export default function ReservationBar({ car, onBook, className = '', config = {
   const handleDateSelect = (start: Date | null, end: Date | null) => {
     setDateError(null);
     
+    // Validate and set dates even if one is null (allows progressive selection)
     if (start && isDateUnavailable(start)) {
       setDateError('Start date is not available. Please select a different date.');
+      setSelectedDates({ start: null, end: end || null });
       return;
     }
     
     if (end && isDateUnavailable(end)) {
       setDateError('End date is not available. Please select a different date.');
+      setSelectedDates({ start: start || null, end: null });
       return;
     }
     
     if (start && end && start > end) {
       setDateError('Start date must be before end date.');
+      setSelectedDates({ start, end: null });
       return;
     }
     
     if (start && end && isDateRangeUnavailable(start, end)) {
       setDateError('Selected dates overlap with an existing booking. Please choose different dates.');
+      setSelectedDates({ start, end: null });
       return;
     }
     
+    // Always update dates, even if validation passes
     setSelectedDates({ start, end });
   };
 
@@ -327,7 +333,7 @@ export default function ReservationBar({ car, onBook, className = '', config = {
                   type="date"
                   value={selectedDates.start ? selectedDates.start.toISOString().split('T')[0] : ''}
                   onChange={(e) => {
-                    const date = e.target.value ? new Date(e.target.value) : null;
+                    const date = e.target.value ? new Date(e.target.value + 'T00:00:00') : null;
                     handleDateSelect(date, selectedDates.end);
                   }}
                   min={new Date().toISOString().split('T')[0]}
@@ -344,7 +350,7 @@ export default function ReservationBar({ car, onBook, className = '', config = {
                   type="date"
                   value={selectedDates.end ? selectedDates.end.toISOString().split('T')[0] : ''}
                   onChange={(e) => {
-                    const date = e.target.value ? new Date(e.target.value) : null;
+                    const date = e.target.value ? new Date(e.target.value + 'T00:00:00') : null;
                     handleDateSelect(selectedDates.start, date);
                   }}
                   min={selectedDates.start ? selectedDates.start.toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
@@ -426,8 +432,8 @@ export default function ReservationBar({ car, onBook, className = '', config = {
           {/* Book Button - Compact */}
           <Button
             onClick={handleBook}
-            disabled={!selectedDates.start || !selectedDates.end || isBooking}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-10 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+            disabled={!selectedDates.start || !selectedDates.end || isBooking || !!dateError}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-10 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isBooking ? (
               <div className="flex items-center">

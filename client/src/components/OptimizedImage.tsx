@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import LazyImage from './LazyImage';
+import { useState, useEffect, useRef } from 'react';
+import { Loader2 } from 'lucide-react';
 
 interface OptimizedImageProps {
   src: string;
@@ -7,11 +7,11 @@ interface OptimizedImageProps {
   className?: string;
   width?: number;
   height?: number;
-  quality?: number;
-  priority?: boolean;
-  sizes?: string;
-  onLoad?: () => void;
-  onError?: () => void;
+  loading?: 'lazy' | 'eager';
+  onError?: (e: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+  onClick?: () => void;
+  objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+  placeholder?: string;
 }
 
 export default function OptimizedImage({
@@ -20,123 +20,87 @@ export default function OptimizedImage({
   className = '',
   width,
   height,
-  quality = 85,
-  priority = false,
-  sizes,
-  onLoad,
-  onError
+  loading = 'lazy',
+  onError,
+  onClick,
+  objectFit = 'cover',
+  placeholder
 }: OptimizedImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [imageSrc, setImageSrc] = useState<string>(placeholder || src);
+  const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState<string>('');
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Generate optimized image URLs
-  const generateImageUrls = (originalSrc: string) => {
-    const baseName = originalSrc.split('/').pop()?.split('.')[0] || 'image';
-    const basePath = originalSrc.replace(/\/[^/]+$/, '');
-    
-    return {
-      webp: `${basePath}/${baseName}.webp`,
-      avif: `${basePath}/${baseName}.avif`,
-      fallback: originalSrc
-    };
-  };
-
   useEffect(() => {
-    const urls = generateImageUrls(src);
-    
-    // Try AVIF first (best compression)
-    const testImg = new Image();
-    testImg.onload = () => {
-      setCurrentSrc(urls.avif);
-    };
-    testImg.onerror = () => {
-      // Fallback to WebP
-      const testWebP = new Image();
-      testWebP.onload = () => {
-        setCurrentSrc(urls.webp);
-      };
-      testWebP.onerror = () => {
-        // Fallback to original
-        setCurrentSrc(urls.fallback);
-      };
-      testWebP.src = urls.webp;
-    };
-    testImg.src = urls.avif;
-  }, [src]);
+    // Reset state when src changes
+    setIsLoading(true);
+    setHasError(false);
+    setImageSrc(placeholder || src);
+  }, [src, placeholder]);
 
   const handleLoad = () => {
-    setIsLoaded(true);
-    onLoad?.();
+    setIsLoading(false);
+    // Once loaded, switch to actual image if we were showing placeholder
+    if (placeholder && imageSrc === placeholder) {
+      setImageSrc(src);
+    }
   };
 
-  const handleError = () => {
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    setIsLoading(false);
     setHasError(true);
-    onError?.();
+    if (onError) {
+      onError(e);
+    } else {
+      // Default fallback
+      setImageSrc('/assets/placeholder-car.png');
+    }
   };
 
-  if (hasError) {
-    return (
-      <div 
-        className={`bg-gray-200 flex items-center justify-center ${className}`}
-        style={{ width, height }}
-      >
-        <span className="text-gray-500 text-sm">Image failed to load</span>
-      </div>
-    );
-  }
+  // Generate responsive srcset for Cloudinary images
+  const getSrcSet = (imageUrl: string): string | undefined => {
+    if (!imageUrl || imageUrl.startsWith('data:') || imageUrl.startsWith('/assets/')) {
+      return undefined; // Don't generate srcset for data URLs or local assets
+    }
+    
+    // If it's a Cloudinary URL, we could add transformations here
+    // For now, return undefined to use the original src
+    return undefined;
+  };
 
-  if (priority) {
-    // Render immediately for above-the-fold images
-    return (
-      <picture className={className}>
-        <source srcSet={generateSrcSet(src, 'avif')} type="image/avif" />
-        <source srcSet={generateSrcSet(src, 'webp')} type="image/webp" />
-        <img
-          ref={imgRef}
-          src={currentSrc || src}
-          alt={alt}
-          width={width}
-          height={height}
-          className={`transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
-          onLoad={handleLoad}
-          onError={handleError}
-          loading="eager"
-          decoding="async"
-        />
-      </picture>
-    );
-  }
-
-  // Use lazy loading for below-the-fold images
   return (
-    <LazyImage
-      src={currentSrc || src}
-      alt={alt}
-      className={className}
-      placeholder="/assets/placeholder.jpg"
-      onLoad={handleLoad}
-    />
+    <div className={`relative ${className}`} style={{ width, height }}>
+      {/* Loading skeleton */}
+      {isLoading && (
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse flex items-center justify-center">
+          <Loader2 className="h-8 w-8 text-gray-400 animate-spin" />
+        </div>
+      )}
+      
+      {/* Error state */}
+      {hasError && !imageSrc && (
+        <div className="absolute inset-0 bg-gray-200 flex items-center justify-center">
+          <span className="text-gray-400 text-sm">Image not available</span>
+        </div>
+      )}
+      
+      {/* Actual image */}
+      <img
+        ref={imgRef}
+        src={imageSrc}
+        alt={alt}
+        loading={loading}
+        width={width}
+        height={height}
+        onLoad={handleLoad}
+        onError={handleError}
+        onClick={onClick}
+        className={`${className} ${isLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+        style={{ objectFit }}
+        decoding="async"
+        // Add fetchpriority for above-the-fold images
+        fetchPriority={loading === 'eager' ? 'high' : 'auto'}
+      />
+    </div>
   );
 }
-
-// Generate srcset for responsive images
-function generateSrcSet(baseSrc: string, format: string): string {
-  const baseName = baseSrc.split('/').pop()?.split('.')[0] || 'image';
-  const basePath = baseSrc.replace(/\/[^/]+$/, '');
-  
-  const sizes = [
-    { width: 400, suffix: 'sm' },
-    { width: 800, suffix: 'md' },
-    { width: 1200, suffix: 'lg' },
-    { width: 1920, suffix: 'xl' }
-  ];
-
-  return sizes
-    .map(size => `${basePath}/${baseName}_${size.suffix}.${format} ${size.width}w`)
-    .join(', ');
-}
-
-// Export utility functions
-export { generateSrcSet };

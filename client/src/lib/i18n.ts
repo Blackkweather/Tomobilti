@@ -487,6 +487,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: 'en', // Default language for UK platform
     fallbackLng: 'en',
     debug: process.env.NODE_ENV === 'development',
     
@@ -495,8 +496,10 @@ i18n
     },
     
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage', 'htmlTag'], // Removed 'navigator' to prevent browser language override
       caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
+      // Only detect if explicitly set in localStorage, otherwise use default 'en'
     },
   });
 

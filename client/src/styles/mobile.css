@@ -1,0 +1,117 @@
+/* Mobile Optimization Styles for ShareWheelz */
+
+/* Touch-friendly targets - minimum 44x44px for accessibility */
+button,
+a,
+input[type="button"],
+input[type="submit"],
+input[type="date"],
+select {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Remove tap highlight on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Improve touch scrolling */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+/* Prevent text size adjustment on iOS */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Improve form input appearance on mobile */
+input,
+textarea,
+select {
+  font-size: 16px; /* Prevents zoom on iOS */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Better focus states for mobile */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent pull-to-refresh on mobile (optional) */
+body {
+  overscroll-behavior-y: contain;
+}
+
+/* Improve button spacing on mobile */
+@media (max-width: 640px) {
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .button-group button {
+    width: 100%;
+  }
+}
+
+/* Optimize images for mobile */
+@media (max-width: 768px) {
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* Improve card layouts on mobile */
+@media (max-width: 640px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* Better spacing for mobile forms */
+@media (max-width: 640px) {
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+  
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+/* Improve dropdown menus on mobile */
+@media (max-width: 640px) {
+  .dropdown-menu {
+    min-width: 200px;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* Better modal sizing on mobile */
+@media (max-width: 640px) {
+  .modal-content {
+    width: calc(100vw - 2rem);
+    max-width: 100%;
+    margin: 1rem;
+  }
+}
+
+
+

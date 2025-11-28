@@ -17,7 +17,22 @@ export const setAuthToken = (token: string | null) => {
 
 export const getAuthToken = (): string | null => authToken;
 
-// API request helper with auth and error handling
+// Enhanced error handling
+class ApiError extends Error {
+  status?: number;
+  code?: string;
+  details?: any;
+
+  constructor(message: string, status?: number, code?: string, details?: any) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.details = details;
+  }
+}
+
+// API request helper with enhanced auth and error handling
 const apiRequest = async (
   url: string, 
   options: RequestInit = {}
@@ -31,17 +46,72 @@ const apiRequest = async (
     headers.Authorization = `Bearer ${authToken}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ error: 'Erreur réseau' }));
-    throw new Error(errorData.error || `Erreur HTTP: ${response.status}`);
+    // Handle non-JSON responses
+    const contentType = response.headers.get('content-type');
+    const isJson = contentType && contentType.includes('application/json');
+
+    if (!response.ok) {
+      let errorMessage = 'An error occurred';
+      let errorDetails = null;
+
+      if (isJson) {
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || `HTTP error: ${response.status}`;
+          errorDetails = errorData.details || errorData;
+        } catch {
+          errorMessage = `HTTP error: ${response.status} ${response.statusText}`;
+        }
+      } else {
+        const text = await response.text();
+        errorMessage = text || `HTTP error: ${response.status} ${response.statusText}`;
+      }
+
+      // Create user-friendly error messages
+      if (response.status === 401) {
+        errorMessage = 'Your session has expired. Please log in again.';
+      } else if (response.status === 403) {
+        errorMessage = 'You do not have permission to perform this action.';
+      } else if (response.status === 404) {
+        errorMessage = 'The requested resource was not found.';
+      } else if (response.status === 429) {
+        errorMessage = 'Too many requests. Please try again later.';
+      } else if (response.status >= 500) {
+        errorMessage = 'Server error. Please try again later.';
+      }
+
+      throw new ApiError(errorMessage, response.status, undefined, errorDetails);
+    }
+
+    if (isJson) {
+      return await response.json();
+    } else {
+      return await response.text();
+    }
+  } catch (error) {
+    // Handle network errors
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new ApiError('Network error. Please check your internet connection and try again.', 0, 'NETWORK_ERROR');
+    }
+    
+    // Re-throw ApiError as-is
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    
+    // Wrap other errors
+    throw new ApiError(
+      error instanceof Error ? error.message : 'An unexpected error occurred',
+      0,
+      'UNKNOWN_ERROR'
+    );
   }
-
-  return response.json();
 };
 
 // Authentication API

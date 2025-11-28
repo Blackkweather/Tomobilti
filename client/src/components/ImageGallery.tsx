@@ -41,7 +41,9 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
             src={images[currentIndex]}
             alt={`${alt} - Image ${currentIndex + 1}`}
             className="w-full h-full object-cover transition-transform duration-400 ease-out"
-            loading="lazy"
+            loading={currentIndex === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+            fetchPriority={currentIndex === 0 ? 'high' : 'auto'}
           />
           
           {/* Navigation Arrows */}
@@ -92,6 +94,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
                   alt={`${alt} thumbnail ${index + 1}`}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  decoding="async"
                 />
               </button>
             ))}

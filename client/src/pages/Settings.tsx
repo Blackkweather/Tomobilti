@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { authApi } from '../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -44,10 +44,26 @@ export default function Settings() {
     emailNotifications: user?.preferences?.emailNotifications ?? true,
     smsNotifications: user?.preferences?.smsNotifications ?? false,
     marketingEmails: user?.preferences?.marketingEmails ?? false,
-    language: user?.preferences?.language ?? 'en',
+    language: user?.preferences?.language ?? 'en', // Default to English for UK platform
     currency: user?.preferences?.currency ?? 'GBP',
     timezone: user?.preferences?.timezone ?? 'Europe/London'
   });
+  
+  // Ensure language is set to 'en' if not explicitly set (default for UK platform)
+  // This fixes the issue where Settings page shows French text
+  useEffect(() => {
+    // Import i18n dynamically to avoid circular dependencies
+    import('../lib/i18n').then((i18nModule) => {
+      const i18n = i18nModule.default;
+      const currentLang = i18n.language || localStorage.getItem('i18nextLng');
+      
+      // If language is French or not set, default to English for UK platform
+      if (!currentLang || currentLang === 'fr' || currentLang.startsWith('fr')) {
+        i18n.changeLanguage('en');
+        localStorage.setItem('i18nextLng', 'en');
+      }
+    });
+  }, []);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',

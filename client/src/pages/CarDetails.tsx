@@ -431,6 +431,9 @@ export default function CarDetails() {
                         alt={car.title}
                         className="w-full h-full object-contain cursor-pointer transition-transform duration-300"
                         onClick={() => setShowImageModal(true)}
+                        loading={currentImageIndex === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        fetchPriority={currentImageIndex === 0 ? 'high' : 'auto'}
                       />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-blue-50 to-purple-50">
@@ -505,6 +508,8 @@ export default function CarDetails() {
                             src={image}
                             alt={`${car.title} ${index + 1}`}
                             className="w-full h-full object-cover"
+                            loading="lazy"
+                            decoding="async"
                           />
                         </button>
                       ))}

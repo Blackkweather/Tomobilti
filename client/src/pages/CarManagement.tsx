@@ -483,6 +483,8 @@ export default function CarManagement() {
                         src={car.images[0]}
                         alt={car.title}
                         className="w-full h-48 object-cover rounded-lg"
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           e.currentTarget.src = '/assets/placeholder-car.png';
                         }}

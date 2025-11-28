@@ -33,6 +33,7 @@ import {
 } from "./middleware/auth";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import { cache } from "./cache";
 
 export default function registerRoutes(app: Express) {
   // In-memory stores for verification codes (avoid adding fields to User type)
@@ -1228,6 +1229,18 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
   app.get("/api/cars", async (req, res) => {
     try {
       const filters = carSearchSchema.parse(req.query);
+      
+      // Generate cache key based on filters
+      const cacheKey = `cars:${JSON.stringify(filters)}`;
+      
+      // Try to get from cache first
+      const cachedResult = cache.get(cacheKey);
+      if (cachedResult) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cachedResult);
+      }
+      
+      res.set('X-Cache', 'MISS');
       const result = await storage.searchCars(filters);
       
       // Enrich cars with owner info and reviews
@@ -1264,13 +1277,18 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         })
       );
       
-      res.json({
+      const response = {
         cars: enrichedCars,
         total: result.total,
         page: filters.page,
         limit: filters.limit,
         totalPages: Math.ceil(result.total / filters.limit)
-      });
+      };
+      
+      // Cache the response for 5 minutes
+      cache.set(cacheKey, response, 5 * 60 * 1000);
+      
+      res.json(response);
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: "Invalid search parameters", details: error.errors });
@@ -1282,6 +1300,15 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
 
   app.get("/api/cars/:id", async (req, res) => {
     try {
+      // Try to get from cache first
+      const cacheKey = `car:${req.params.id}`;
+      const cachedCar = cache.get(cacheKey);
+      if (cachedCar) {
+        res.set('X-Cache', 'HIT');
+        return res.json(cachedCar);
+      }
+      
+      res.set('X-Cache', 'MISS');
       const car = await storage.getCar(req.params.id);
       if (!car) {
         return res.status(404).json({ error: "Vehicle not found" });
@@ -1327,13 +1354,18 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
         : 0;
 
-      res.json({
+      const response = {
         ...car,
         owner: owner ? sanitizeUser(owner) : null,
         rating: Number(averageRating.toFixed(1)),
         reviewCount: reviews.length,
         reviews: enrichedReviews
-      });
+      };
+      
+      // Cache the response for 5 minutes
+      cache.set(cacheKey, response, 5 * 60 * 1000);
+      
+      res.json(response);
     } catch (error) {
       // Get car error logged internally
       res.status(500).json({ error: "Internal server error" });
@@ -1415,6 +1447,12 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       const validatedCarData = enhancedInsertCarSchema.parse(carDataWithDefaults);
       
       const car = await storage.createCar(validatedCarData);
+      
+      // Invalidate car listings cache
+      cache.delete(`car:${car.id}`);
+      // Clear all car search caches
+      cache.clear();
+      
       res.status(201).json({
         message: "Vehicle created successfully",
         car
@@ -1497,6 +1535,10 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
         return res.status(404).json({ error: "Vehicle not found" });
       }
       
+      // Invalidate cache for this specific car and all listings
+      cache.delete(`car:${req.params.id}`);
+      cache.clear(); // Clear all car search caches
+      
       res.json({
         message: "Véhicule mis à jour avec succès",
         car
@@ -1517,6 +1559,11 @@ app.use('/api', generalLimiter); // DISABLED FOR DEVELOPMENT
       if (!success) {
         return res.status(404).json({ error: "Vehicle not found" });
       }
+      
+      // Invalidate cache for this car and all listings
+      cache.delete(`car:${req.params.id}`);
+      cache.clear(); // Clear all car search caches
+      
       res.json({ message: "Véhicule supprimé avec succès" });
     } catch (error) {
       // Delete car error logged internally
