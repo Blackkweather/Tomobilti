@@ -3,6 +3,8 @@
  * Common utilities for writing tests across the ShareWheelz platform
  */
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - vitest is a dev dependency, available at test runtime
 import { vi } from 'vitest';
 
 /**

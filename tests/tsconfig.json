@@ -1,12 +1,18 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["vitest/globals", "node"],
-    "noEmit": true
+    "types": ["node"],
+    "noEmit": true,
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx"
+    "./**/*.ts",
+    "./**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }
 

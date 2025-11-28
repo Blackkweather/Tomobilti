@@ -3,8 +3,6 @@
  * Provides helpers for managing test database state
  */
 
-import { vi } from 'vitest';
-
 /**
  * Test database configuration
  * In a real implementation, this would connect to a test database
