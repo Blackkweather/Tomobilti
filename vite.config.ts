@@ -13,6 +13,13 @@ export default defineConfig({
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
+  optimizeDeps: {
+    include: ['leaflet', 'react-leaflet'],
+    exclude: [],
+  },
+  ssr: {
+    noExternal: ['react-leaflet'],
+  },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
@@ -29,11 +36,14 @@ export default defineConfig({
           react: ["react", "react-dom"],
           ui: ["lucide-react"],
           data: ["@tanstack/react-query"],
+          leaflet: ["leaflet", "react-leaflet"],
         }
       }
+    },
+    commonjsOptions: {
+      include: [/leaflet/, /react-leaflet/, /node_modules/],
+      transformMixedEsModules: true,
     }
-    // Let Vite handle chunking automatically - it resolves dependencies correctly
-    // No manual chunking needed - Vite's automatic chunking is better at dependency resolution
   },
   server: {
     port: 5000,

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, Suspense } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { MapPin, Car, Loader2 } from 'lucide-react';
+import { MapPin, Loader2 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 import { getCityCoordinates } from '../utils/ukCities';
 import { Link } from 'wouter';
@@ -213,4 +213,3 @@ export default function CarMap({ cars, selectedCity, onCarClick, className = '' 
     </div>
   );
 }
-
