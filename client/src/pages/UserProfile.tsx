@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "../lib/queryClient";
 
-interface UserProfile {
+interface UserProfileData {
   id: string;
   email: string;
   firstName: string;
@@ -24,9 +23,9 @@ export default function UserProfile() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [form, setForm] = useState<Partial<UserProfile>>({});
+  const [form, setForm] = useState<Partial<UserProfileData>>({});
 
-  const { data: user, isLoading } = useQuery<UserProfile>({
+  const { data: user, isLoading } = useQuery<UserProfileData>({
     queryKey: ["/api/auth/me"],
   });
 
@@ -67,7 +66,7 @@ export default function UserProfile() {
     updateProfileMutation.mutate(formData);
   };
 
-  const handleChange = (field: keyof UserProfile) => (
+  const handleChange = (field: keyof UserProfileData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setForm(prev => ({ ...prev, [field]: e.target.value }));

@@ -10,9 +10,7 @@ import {
   DollarSign, 
   Users, 
   Settings, 
-  Search,
-  X,
-  Check
+  Search
 } from 'lucide-react';
 
 interface CarFilterDropdownProps {

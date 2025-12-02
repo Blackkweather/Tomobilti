@@ -6,7 +6,6 @@ import {
   Download, 
   Mail, 
   Calendar, 
-  MapPin, 
   CreditCard, 
   Car,
   User,

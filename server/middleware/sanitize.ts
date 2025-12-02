@@ -20,6 +20,7 @@ export const sanitizeInput = (input: any): any => {
       .replace(/<iframe[^>]*>.*?<\/iframe>/gis, '')
       .replace(/\\u[0-9a-fA-F]{4}/g, '')
       .replace(/\\x[0-9a-fA-F]{2}/g, '')
+      // eslint-disable-next-line no-control-regex
       .replace(/[\x00-\x1f\x7f-\x9f]/g, '')
       .trim();
   }
@@ -98,6 +99,7 @@ export const validatePath = (filePath: string): boolean => {
     '%2e%2e', '%2f', '%5c', '\0', '\x00'
   ];
   
+  // eslint-disable-next-line no-control-regex
   if (/[\x00-\x1f\x7f-\x9f]/.test(filePath)) {
     return false;
   }

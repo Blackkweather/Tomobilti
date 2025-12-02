@@ -14,8 +14,7 @@ import {
   CheckCircle, 
   Clock, 
   RefreshCw,
-  AlertCircle,
-  Shield
+  AlertCircle
 } from 'lucide-react';
 
 interface PhoneVerificationModalProps {

@@ -1,16 +1,13 @@
-import { useState } from 'react';
 import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Star, MapPin, Fuel, Zap, Heart, Shield, Users, Settings, Calendar, Info, BookOpen, Award, Mountain } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getCarImage, getSpecificCarImage } from '../utils/carImages';
+import { getSpecificCarImage } from '../utils/carImages';
 import ImageGallery from './ImageGallery';
 import { formatCurrency } from '../utils/currency';
 import type { Car } from '@shared/schema';
 import { useLocation } from 'wouter';
-import { Link } from 'wouter';
 
 interface CarCardProps {
   car: Car & {

@@ -17,7 +17,6 @@ import {
   MapPin,
   Eye,
   Edit,
-  Trash2,
   CheckCircle,
   XCircle,
   AlertCircle

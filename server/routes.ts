@@ -5,34 +5,27 @@ import { storage } from './storage';
 import jwt from 'jsonwebtoken';
 import { 
   carSearchSchema, 
-  insertCarSchema, 
   insertBookingSchema, 
   insertReviewSchema,
   loginSchema,
   registerSchema,
   enhancedInsertCarSchema,
-  insertEmailLeadSchema,
-  InsertBooking,
-  InsertReview
+  insertEmailLeadSchema
 } from "@shared/sqlite-schema";
 import { z } from "zod";
-import { csrfProtection } from "./middleware/csrf";
-import { sanitizeMiddleware, sanitizeInput } from "./middleware/sanitize";
+import { sanitizeMiddleware } from "./middleware/sanitize";
 import { EmailService } from "./services/email";
-import { CarRentalAgentService } from "./services/car-rental-agent";
 import OpenAIService from "./services/openai";
 import multer from 'multer';
 import { 
   authMiddleware, 
   optionalAuthMiddleware,
-  requireAuth, 
-  requireOwner,
+  requireAuth,
   requireCarOwnership,
   generateToken,
   sanitizeUser
 } from "./middleware/auth";
 import rateLimit from "express-rate-limit";
-import helmet from "helmet";
 import { cache } from "./cache";
 
 export default function registerRoutes(app: Express) {

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Button } from './ui/button';
-import { AlertTriangle, X, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 // Import animejs dynamically similar to Home.tsx
 let animeInstance: any = null;

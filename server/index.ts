@@ -1,8 +1,6 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import compression from 'compression';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import { applySecurity } from './middleware/security';
 import { createServer } from 'http';

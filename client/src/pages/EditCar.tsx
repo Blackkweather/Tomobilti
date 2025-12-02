@@ -5,7 +5,7 @@ import { carApi } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Shield, Car, X, Plus, Upload } from "lucide-react";
+import { Shield, Car as CarIcon, Plus, Upload } from "lucide-react";
 
 interface Car {
   id: string;
@@ -311,7 +311,7 @@ export default function EditCar() {
           <div className="px-8 py-6 border-b border-gray-200/50 bg-gradient-to-r from-mauve-500/10 to-bleu-500/10 rounded-t-2xl">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-gradient-to-r from-mauve-500 to-bleu-500 rounded-xl">
-                <Car className="h-6 w-6 text-white" />
+                <CarIcon className="h-6 w-6 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-mauve-600 to-bleu-600 bg-clip-text text-transparent">

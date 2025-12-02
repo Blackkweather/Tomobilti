@@ -2,22 +2,17 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Progress } from '../components/ui/progress';
 import { 
   BarChart3, 
-  PieChart, 
   LineChart, 
-  TrendingUp, 
-  TrendingDown,
+  TrendingUp,
   PoundSterling,
   Calendar,
   Car,
   Star,
-  Users,
   ArrowUpRight,
-  ArrowDownRight,
   Activity,
   Target,
   Award,
@@ -25,8 +20,7 @@ import {
   CheckCircle,
   XCircle,
   ArrowLeft,
-  Download,
-  Calendar as CalendarIcon
+  Download
 } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';

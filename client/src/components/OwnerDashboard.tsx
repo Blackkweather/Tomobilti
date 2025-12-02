@@ -19,45 +19,22 @@ import {
   Edit,
   User,
   Eye,
-  MoreHorizontal,
   ArrowUpRight,
-  ArrowDownRight,
   Activity,
   Target,
   Award,
   MapPin,
-  Users,
   MessageSquare,
   Settings,
   BarChart3,
   PieChart,
   LineChart,
-  Zap,
-  Shield,
-  Gift,
-  Bell,
-  Filter,
-  Search,
-  Download,
   RefreshCw,
   TrendingDown,
-  DollarSign,
-  CreditCard,
-  Wallet,
-  Receipt,
-  FileText,
-  AlertTriangle,
-  Info,
-  HelpCircle,
-  ExternalLink,
-  ChevronRight,
-  ChevronDown,
-  Maximize2,
-  Minimize2
+  DollarSign
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'wouter';
-import { carApi, bookingApi } from '../lib/api';
 
 // Helper function to calculate car statistics
 const calculateCarStats = (cars: any[], bookings: any[]) => {

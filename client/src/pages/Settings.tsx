@@ -11,11 +11,8 @@ import { Separator } from '../components/ui/separator';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import { 
   User, 
-  Mail, 
-  Phone, 
   Shield, 
   Bell, 
-  Globe, 
   Key,
   Trash2,
   Save,

@@ -1,26 +1,18 @@
 import { useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
 
 import { 
   Building2, 
-  Users, 
   BarChart3, 
   Shield, 
   Clock, 
-  Star, 
   CheckCircle,
   ArrowRight,
-  TrendingUp,
   PoundSterling,
   Car,
   Phone,
-  Mail,
-  Calendar,
-  MapPin,
-  Award,
-  Zap
+  Calendar
 } from 'lucide-react';
 
 export default function Business() {

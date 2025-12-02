@@ -4,9 +4,7 @@ import {
   Send, 
   CheckCircle, 
   XCircle, 
-  Phone, 
-  Calendar, 
-  AlertTriangle,
+  Calendar,
   Loader2,
   Copy,
   Eye

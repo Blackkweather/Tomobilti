@@ -13,29 +13,18 @@ import {
   MapPin, 
   Star, 
   Users, 
-  CreditCard, 
-  Phone, 
-  Mail, 
-  MessageCircle,
+  CreditCard,
   CheckCircle,
-  ArrowRight,
   Crown,
   Award,
-  Zap,
-  Heart,
   TrendingUp,
   Lock,
   Globe,
   Calendar,
   DollarSign,
   UserCheck,
-  Car as CarIcon,
   Building,
-  Briefcase,
-  Home,
-  Plane,
-  Train,
-  Bus
+  Briefcase
 } from 'lucide-react';
 
 export default function Services() {

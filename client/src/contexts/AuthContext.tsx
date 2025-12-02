@@ -88,46 +88,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await authApi.login({ email, password });
-      setUser(response.user);
-      return response; // Return response for redirection logic
-    } catch (error) {
-      throw error;
-    }
+    const response = await authApi.login({ email, password });
+    setUser(response.user);
+    return response;
   };
 
   const register = async (userData: any) => {
-    try {
-      const response = await authApi.register(userData);
-      setUser(response.user);
-      return response; // Return response for redirection logic
-    } catch (error) {
-      throw error;
-    }
+    const response = await authApi.register(userData);
+    setUser(response.user);
+    return response;
   };
 
   const oauthLogin = async (provider: string, token: string, userData?: any) => {
-    try {
-      const response = await fetch(`/api/auth/oauth/${provider}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token, ...userData }),
-      });
+    const response = await fetch(`/api/auth/oauth/${provider}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token, ...userData }),
+    });
 
-      if (!response.ok) {
-        throw new Error(`${provider} authentication failed`);
-      }
-
-      const data = await response.json();
-      setUser(data.user);
-      setAuthToken(data.token);
-      return data;
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      throw new Error(`${provider} authentication failed`);
     }
+
+    const data = await response.json();
+    setUser(data.user);
+    setAuthToken(data.token);
+    return data;
   };
 
   const logout = () => {

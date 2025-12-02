@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'wouter';
+import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { carApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -19,26 +19,17 @@ import {
   Calendar, 
   Fuel, 
   Settings,
-  Upload,
   Image as ImageIcon,
-  TrendingUp,
   DollarSign,
-  Clock,
   Star,
-  Filter,
   Search,
-  MoreHorizontal,
-  BarChart3,
   Activity,
-  Zap,
   Grid,
   List,
   CheckSquare,
   Square,
-  ToggleLeft,
   ToggleRight,
-  Download,
-  Share2
+  Download
 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 

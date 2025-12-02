@@ -9,7 +9,7 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   Users, 
-  Car, 
+  Car as CarIcon, 
   Calendar, 
   Settings, 
   Edit, 
@@ -28,10 +28,7 @@ import {
   CheckSquare,
   XCircle,
   TrendingUp,
-  DollarSign,
   Activity,
-  FileText,
-  Download,
   Lock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -539,7 +536,7 @@ export default function AdminPanel() {
               Overview
             </TabsTrigger>
             <TabsTrigger value="cars" className="flex items-center gap-2">
-              <Car className="h-4 w-4" />
+              <CarIcon className="h-4 w-4" />
               Cars ({stats.totalCars})
             </TabsTrigger>
             <TabsTrigger value="users" className="flex items-center gap-2">
@@ -574,7 +571,7 @@ export default function AdminPanel() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Cars</CardTitle>
-                  <Car className="h-4 w-4 text-muted-foreground" />
+                  <CarIcon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{stats.totalCars}</div>
@@ -623,7 +620,7 @@ export default function AdminPanel() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button variant="outline" className="w-full justify-start" onClick={() => setActiveTab('cars')}>
-                    <Car className="h-4 w-4 mr-2" />
+                    <CarIcon className="h-4 w-4 mr-2" />
                     Manage Cars
                   </Button>
                   <Button variant="outline" className="w-full justify-start" onClick={() => setActiveTab('users')}>
@@ -656,7 +653,7 @@ export default function AdminPanel() {
                   )}
                   {stats.totalCars === 0 && (
                     <div className="flex items-center gap-2 p-2 bg-blue-50 rounded mb-2">
-                      <Car className="h-4 w-4 text-blue-600" />
+                      <CarIcon className="h-4 w-4 text-blue-600" />
                       <p className="text-sm">No cars in the system</p>
                     </div>
                   )}
@@ -680,7 +677,7 @@ export default function AdminPanel() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
-                    <Car className="h-5 w-5" />
+                    <CarIcon className="h-5 w-5" />
                     All Cars ({filteredCars.length})
                   </CardTitle>
                 </div>
@@ -739,12 +736,12 @@ export default function AdminPanel() {
                   </div>
                 ) : !cars || cars.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    <Car className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <CarIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                     <p>No cars found in the system.</p>
                   </div>
                 ) : filteredCars.length === 0 ? (
                   <div className="text-center py-8 text-gray-500">
-                    <Car className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                    <CarIcon className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                     <p>No cars found matching your search.</p>
                   </div>
                 ) : (

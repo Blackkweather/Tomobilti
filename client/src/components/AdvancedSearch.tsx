@@ -8,14 +8,11 @@ import { Slider } from './ui/slider';
 import { Checkbox } from './ui/checkbox';
 import { 
   Search, 
-  MapPin, 
   Calendar, 
   Filter, 
   X, 
-  Car, 
   Fuel, 
   Settings,
-  Star,
   Shield,
   Zap
 } from 'lucide-react';

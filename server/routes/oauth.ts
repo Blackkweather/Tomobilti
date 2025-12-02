@@ -1,9 +1,7 @@
 import { Router } from 'express';
 import { OAuth2Client } from 'google-auth-library';
-import { authMiddleware } from '../middleware/auth';
 import { storage } from '../storage';
 import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
 import { sanitizeInput, validateUrl } from '../middleware/sanitize';
 
 const router = Router();

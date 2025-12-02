@@ -6,7 +6,6 @@ import {
   XCircle, 
   Loader2,
   Copy,
-  Settings,
   MessageSquare,
   Calendar,
   User,

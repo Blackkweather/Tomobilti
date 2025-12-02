@@ -3,7 +3,6 @@ import { useRoute } from "wouter";
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import {
   DropdownMenu,
@@ -16,7 +15,6 @@ import {
   MapPin, 
   Users, 
   Fuel, 
-  Settings, 
   Calendar, 
   ArrowLeft, 
   Heart, 
@@ -26,16 +24,12 @@ import {
   Zap, 
   Car as CarIcon, 
   CheckCircle,
-  AlertCircle,
   Phone,
   Mail,
   MessageCircle,
   Camera,
   ChevronLeft,
   ChevronRight,
-  User,
-  Info,
-  BookOpen,
   Copy,
   MessageSquare,
   Award,

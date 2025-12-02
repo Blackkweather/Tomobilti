@@ -1,20 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import Hero from '../components/Hero';
-import { carApi } from '../lib/api';
 import CarCard from '../components/CarCard';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import LoadingSpinner from '../components/LoadingSpinner';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { 
   MapPin, 
   Shield, 
-  Users, 
-  Target,
-  Lock,
+  Users,
   PoundSterling,
   Crown,
   CarIcon,
@@ -26,7 +22,6 @@ import {
   Heart,
   Mountain
 } from 'lucide-react';
-import { getFeaturedCarImages } from '../utils/carImages';
 import { useAuth } from '../contexts/AuthContext';
 import type { Car } from '@shared/schema';
 import EmailBanner from '../components/EmailBanner';

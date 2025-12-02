@@ -1,82 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, Link } from 'wouter';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
-import { Alert, AlertDescription } from '../components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { 
   Loader2, 
   CreditCard, 
-  CheckCircle, 
-  XCircle, 
-  Calendar, 
-  MapPin, 
-  Car, 
-  Shield, 
-  Lock, 
-  ArrowLeft,
-  Clock,
-  User,
-  Phone,
-  Mail,
-  AlertTriangle,
+  Calendar,
   Info,
-  Gift,
-  Star,
   Zap,
-  Settings,
-  Users,
   DollarSign,
-  TrendingUp,
-  TrendingDown,
   BarChart3,
-  PieChart,
   Download,
-  Eye,
-  EyeOff,
-  Filter,
   Search,
   RefreshCw,
   Plus,
-  Minus,
   Receipt,
-  FileText,
   Banknote,
   Wallet,
-  Smartphone,
-  Laptop,
-  Monitor,
-  Printer,
   Share2,
-  Bookmark,
-  Archive,
-  Trash2,
-  Edit,
   MoreHorizontal,
   ChevronDown,
   ChevronRight,
-  ExternalLink,
-  Copy,
-  QrCode,
-  Send,
-  MessageSquare,
-  Bell,
-  HelpCircle,
-  ShieldCheck,
-  Award,
-  Target,
-  Activity,
   PieChart as PieChartIcon,
   LineChart,
-  TrendingUp as TrendingUpIcon,
-  TrendingDown as TrendingDownIcon
+  TrendingUp as TrendingUpIcon
 } from 'lucide-react';
-import { bookingApi, paymentApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 
 

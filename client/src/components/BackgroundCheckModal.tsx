@@ -17,7 +17,6 @@ import {
   AlertCircle,
   User,
   FileText,
-  Calendar,
   MapPin
 } from 'lucide-react';
 
@@ -108,7 +107,7 @@ export default function BackgroundCheckModal({
         const errorData = await response.json();
         setError(errorData.error || 'Failed to start background check');
       }
-    } catch (error) {
+    } catch (_error) {
       setError('Network error. Please try again.');
     } finally {
       setIsSubmitting(false);

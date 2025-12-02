@@ -15,15 +15,10 @@ import {
   CheckCircle,
   ArrowRight,
   Award,
-  Clock,
-  MapPin,
   Phone,
   Mail,
   MessageCircle,
-  ThumbsUp,
-  Heart,
-  Sparkles,
-  CreditCard
+  Sparkles
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 

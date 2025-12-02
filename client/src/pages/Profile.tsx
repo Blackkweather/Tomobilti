@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -13,58 +13,27 @@ import { Switch } from '../components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Textarea } from '../components/ui/textarea';
 import { Separator } from '../components/ui/separator';
-import { Alert, AlertDescription } from '../components/ui/alert';
 import { 
-  User, 
   Mail, 
   Phone, 
   Calendar as CalendarIcon, 
   Crown, 
-  CheckCircle, 
-  Clock,
+  CheckCircle,
   Edit,
   Save,
   X,
   Camera,
   MapPin,
-  Globe,
   Shield,
   Bell,
-  Settings,
   Key,
-  Eye,
-  EyeOff,
-  Upload,
   Download,
-  Trash2,
   Star,
-  Award,
-  TrendingUp,
   Car,
   Calendar,
-  CreditCard,
-  FileText,
-  Lock,
-  Unlock,
-  AlertTriangle,
-  Info,
-  Check,
-  XCircle,
-  Plus,
-  Minus,
   RefreshCw,
-  Share2,
-  Bookmark,
-  Heart,
-  MessageSquare,
   Activity,
-  BarChart3,
-  PieChart,
-  LineChart,
   DollarSign,
-  Users,
-  Zap,
-  Target,
   Award as AwardIcon
 } from 'lucide-react';
 

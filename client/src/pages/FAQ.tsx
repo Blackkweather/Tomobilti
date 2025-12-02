@@ -10,20 +10,14 @@ import {
   ChevronUp, 
   MessageCircle, 
   Phone, 
-  Mail, 
-  Clock,
+  Mail,
   Star,
   Car,
-  PoundSterling,
-  Shield,
   Users,
   Settings,
   CreditCard,
-  MapPin,
   Calendar,
-  AlertCircle,
-  CheckCircle,
-  Info
+  AlertCircle
 } from 'lucide-react';
 import { Link } from 'wouter';
 

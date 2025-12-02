@@ -1,22 +1,17 @@
 import { useState } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
 import { 
   Shield, 
   AlertTriangle, 
   CheckCircle, 
-  Phone, 
-  Mail, 
-  Clock,
-  Car,
+  Phone,
   User,
   Camera,
   FileText,
   Star,
   Award,
   Lock,
-  Eye,
   Heart
 } from 'lucide-react';
 

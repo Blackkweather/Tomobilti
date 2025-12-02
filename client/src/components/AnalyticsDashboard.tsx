@@ -8,14 +8,11 @@ import {
   TrendingDown, 
   PoundSterling, 
   Calendar, 
-  Users, 
-  Car, 
-  Star,
+  Users,
   Eye,
   Clock,
   MapPin,
   BarChart3,
-  PieChart,
   Activity,
   Download
 } from 'lucide-react';
@@ -56,7 +53,7 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsDashboard() {
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState<'7d' | '30d' | '90d' | '1y'>('30d');

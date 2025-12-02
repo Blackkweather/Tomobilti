@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "../lib/queryClient";
 
-interface NotificationSettings {
+interface NotificationPreferences {
   emailNotifications: {
     bookingConfirmations: boolean;
     bookingReminders: boolean;
@@ -23,7 +23,7 @@ interface NotificationSettings {
 
 export default function NotificationSettings() {
   const queryClient = useQueryClient();
-  const [settings, setSettings] = useState<NotificationSettings>({
+  const [settings, setSettings] = useState<NotificationPreferences>({
     emailNotifications: {
       bookingConfirmations: true,
       bookingReminders: true,
@@ -42,7 +42,7 @@ export default function NotificationSettings() {
     },
   });
 
-  const { data: currentSettings } = useQuery<NotificationSettings>({
+  const { data: currentSettings } = useQuery<NotificationPreferences>({
     queryKey: ["/api/users/notification-settings"],
   });
 
@@ -53,7 +53,7 @@ export default function NotificationSettings() {
   }, [currentSettings]);
 
   const updateSettingsMutation = useMutation({
-    mutationFn: async (data: NotificationSettings) => {
+    mutationFn: async (data: NotificationPreferences) => {
       await apiRequest("PUT", "/api/users/notification-settings", data);
     },
     onSuccess: () => {
@@ -61,7 +61,7 @@ export default function NotificationSettings() {
     },
   });
 
-  const handleToggle = (category: keyof NotificationSettings, setting: string) => {
+  const handleToggle = (category: keyof NotificationPreferences, setting: string) => {
     setSettings(prev => ({
       ...prev,
       [category]: {

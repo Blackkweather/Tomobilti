@@ -9,19 +9,13 @@ import {
   Gift, 
   Camera,
   CheckCircle,
-  ArrowRight,
   Clock,
   Heart,
   Sparkles,
   Award,
   Crown,
-  Zap,
   Car,
-  Wine,
-  Music,
-  Gamepad2,
-  Utensils,
-  Plane
+  Wine
 } from 'lucide-react';
 import { Link } from 'wouter';
 

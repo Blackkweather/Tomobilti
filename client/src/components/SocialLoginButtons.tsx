@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from './ui/button';
-import { Card } from './ui/card';
 import { useAuth } from '../contexts/AuthContext';
 import { setAuthToken } from '../lib/api';
 import { Alert, AlertDescription } from './ui/alert';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 interface OAuthProvider {
   name: string;

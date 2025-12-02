@@ -11,7 +11,6 @@ import {
 } from './ui/dropdown-menu';
 import { 
   Calendar as CalendarIcon,
-  Clock,
   Users,
   MapPin,
   CreditCard,
@@ -21,13 +20,10 @@ import {
   Star,
   Car,
   LogIn,
-  Zap,
   Fuel,
   Settings,
   Heart,
   Share2,
-  Info,
-  Calculator,
   ArrowRight,
   Lock,
   Gift,

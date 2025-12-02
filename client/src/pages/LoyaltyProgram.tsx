@@ -8,20 +8,15 @@ import {
   Star, 
   Gift, 
   Users, 
-  Car, 
-  PoundSterling,
+  Car,
   CheckCircle,
-  ArrowRight,
   Crown,
   Zap,
   Sparkles,
   Heart,
   Trophy,
   Target,
-  Calendar,
-  MapPin,
-  Clock,
-  ThumbsUp
+  Calendar
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 

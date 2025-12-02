@@ -17,10 +17,7 @@ import {
   Car,
   CreditCard,
   User,
-  Settings,
-  AlertCircle,
-  CheckCircle,
-  Star
+  Settings
 } from 'lucide-react';
 
 export default function Help() {

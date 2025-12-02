@@ -13,7 +13,7 @@ import {
 } from './ui/dropdown-menu';
 import { Badge } from './ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown, ChevronDown, HelpCircle, Phone, AlertTriangle, Users, PoundSterling, Headphones, MessageCircle, Filter } from 'lucide-react';
+import { Search, Menu, Car, User, Settings, LogOut, Plus, Shield, Bell, Crown, ChevronDown, PoundSterling, Filter } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { notificationApi } from '../lib/api';
 import LoadingSpinner from './LoadingSpinner';

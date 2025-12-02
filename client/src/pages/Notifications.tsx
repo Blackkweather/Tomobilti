@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { notificationApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -11,28 +11,18 @@ import {
   Bell, 
   Check, 
   CheckCheck, 
-  ArrowLeft, 
   Trash2, 
   Settings, 
-  Filter, 
   Search, 
   RefreshCw,
   AlertCircle,
-  Info,
-  CheckCircle,
-  XCircle,
-  Star,
   MessageSquare,
   Calendar,
   DollarSign,
-  Car,
-  User,
   Clock,
   MoreHorizontal,
-  Archive,
   Pin,
-  Eye,
-  EyeOff
+  Eye
 } from 'lucide-react';
 import { useLocation, Link } from 'wouter';
 

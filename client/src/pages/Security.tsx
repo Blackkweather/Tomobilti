@@ -6,14 +6,10 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
 import { 
   Shield, 
   User, 
   Phone, 
-  Mail, 
-  CreditCard, 
-  Car, 
   FileText,
   AlertTriangle,
   CheckCircle,
@@ -23,7 +19,6 @@ import {
   Eye
 } from 'lucide-react';
 import SecurityVerification from '../components/SecurityVerification';
-import VehicleSafety from '../components/VehicleSafety';
 import SecurityReviews from '../components/SecurityReviews';
 import FraudDetection from '../components/FraudDetection';
 import EmailVerificationModal from '../components/EmailVerificationModal';

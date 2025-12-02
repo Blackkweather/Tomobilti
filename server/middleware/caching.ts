@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import redisCache from './redisCache';
+// import redisCache from './redisCache';
 
 interface CacheConfig {
   ttl?: number;
@@ -37,38 +37,7 @@ class CachingMiddleware {
         : this.generateDefaultKey(req);
 
       try {
-        // Try to get from cache
-        const cachedData = await redisCache.get(cacheKey, {
-          ttl: config.ttl,
-          prefix: 'api'
-        });
-
-        if (cachedData) {
-          // Cache hit - return cached data
-          res.set('X-Cache', 'HIT');
-          res.set('X-Cache-Key', cacheKey);
-          return res.json(cachedData);
-        }
-
-        // Cache miss - continue to handler
-        res.set('X-Cache', 'MISS');
-        res.set('X-Cache-Key', cacheKey);
-
-        // Override res.json to cache the response
-        const originalJson = res.json;
-        res.json = function(data: any) {
-          // Cache the response
-          redisCache.set(cacheKey, data, {
-            ttl: config.ttl || 300, // Default 5 minutes
-            prefix: 'api'
-          }).catch(error => {
-            console.error('Failed to cache response:', error);
-          });
-
-          // Call original json method
-          return originalJson.call(this, data);
-        };
-
+        // Redis cache disabled - skip caching
         next();
       } catch (error) {
         console.error('Cache middleware error:', error);
@@ -86,15 +55,7 @@ class CachingMiddleware {
       }
 
       try {
-        // Generate cache key pattern
-        const cacheKeyPattern = config.keyGenerator 
-          ? config.keyGenerator(req)
-          : this.generateDefaultKey(req);
-
-        // Invalidate cache
-        await redisCache.flush(`sharewheelz:api:${cacheKeyPattern}*`);
-
-        res.set('X-Cache-Invalidated', 'true');
+        // Redis cache disabled - skip invalidation
         next();
       } catch (error) {
         console.error('Cache invalidation error:', error);

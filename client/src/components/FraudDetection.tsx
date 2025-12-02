@@ -13,8 +13,6 @@ import {
   User,
   CreditCard,
   MapPin,
-  Phone,
-  Mail,
   Activity
 } from 'lucide-react';
 

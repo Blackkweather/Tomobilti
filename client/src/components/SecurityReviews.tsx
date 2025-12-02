@@ -9,12 +9,8 @@ import {
   Star, 
   Shield, 
   ThumbsUp, 
-  ThumbsDown, 
   Flag, 
   CheckCircle,
-  AlertTriangle,
-  Clock,
-  User,
   Car,
   Calendar
 } from 'lucide-react';

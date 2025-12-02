@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, MessageCircle, Clock, HelpCircle, TestTube, CheckCircle, AlertCircle } from 'lucide-react';
+import { X, Send, MessageCircle, TestTube, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';

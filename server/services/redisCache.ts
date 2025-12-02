@@ -1,5 +1,4 @@
 import Redis from 'ioredis';
-import { promisify } from 'util';
 
 interface CacheOptions {
   ttl?: number; // Time to live in seconds

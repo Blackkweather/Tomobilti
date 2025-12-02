@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -21,13 +21,9 @@ import {
   Award,
   MessageSquare,
   Settings,
-  BarChart3,
   LineChart,
   TrendingUp,
   PoundSterling,
-  Eye,
-  Zap,
-  Shield,
   Gift
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';

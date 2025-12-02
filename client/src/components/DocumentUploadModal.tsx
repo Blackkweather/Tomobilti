@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import { Button } from './ui/button';
-import { Label } from './ui/label';
 import { 
   Dialog, 
   DialogContent, 

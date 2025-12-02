@@ -4,14 +4,11 @@ import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { 
-  Cookie, 
   Settings, 
   Shield, 
   BarChart3, 
-  Users, 
   Target,
   CheckCircle,
-  X,
   AlertTriangle,
   Info
 } from 'lucide-react';

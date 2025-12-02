@@ -69,6 +69,7 @@ export const validateInput = (req: any, res: any, next: any) => {
   // Check for null bytes and control characters
   const checkForMaliciousInput = (obj: any): boolean => {
     if (typeof obj === 'string') {
+      // eslint-disable-next-line no-control-regex
       return /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/.test(obj);
     }
     if (typeof obj === 'object' && obj !== null) {

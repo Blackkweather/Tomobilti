@@ -12,32 +12,21 @@ import {
   DollarSign, 
   User, 
   Car, 
-  MapPin, 
   Phone, 
   Mail, 
   CheckCircle, 
   XCircle, 
-  AlertCircle, 
-  Eye, 
   MessageSquare, 
   Download, 
-  Filter, 
   Search, 
   TrendingUp, 
   BarChart3, 
   PieChart, 
   Activity,
-  Star,
   Award,
   RefreshCw,
-  MoreHorizontal,
   ChevronDown,
-  ChevronRight,
-  ExternalLink,
-  FileText,
-  CreditCard,
-  Shield,
-  Zap
+  ChevronRight
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 

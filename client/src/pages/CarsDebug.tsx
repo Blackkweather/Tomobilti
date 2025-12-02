@@ -1,13 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link, useLocation } from 'wouter';
+import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '../components/ui/button';
-import { Card, CardContent } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Badge } from '../components/ui/badge';
-import { MapPin, Star, Fuel, Settings, Users, RotateCcw, Heart, Filter, Search, Grid, List } from 'lucide-react';
+import { RotateCcw, Filter, Search, Grid, List } from 'lucide-react';
 import CarCardSimple from '../components/CarCardSimple';
 import CarsSearchBar from '../components/CarsSearchBar';
 import LoadingSpinner from '../components/LoadingSpinner';

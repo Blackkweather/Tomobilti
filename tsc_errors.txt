@@ -1,0 +1,82 @@
+﻿
+> sharewheelz-platform@1.0.0 check
+> tsc
+
+client/src/components/ReservationBar.tsx(512,35): error TS2339: Property 'firstName' does not exist on type '{ name: string; rating: number; verified: boolean; }'.
+client/src/components/ReservationBar.tsx(512,59): error TS2339: Property 'lastName' does not exist on type '{ name: string; rating: number; verified: boolean; }'.
+client/src/components/ReservationBar.tsx(512,83): error TS2339: Property 'firstName' does not exist on type '{ name: string; rating: number; verified: boolean; }'.
+client/src/components/ReservationBar.tsx(512,106): error TS2339: Property 'lastName' does not exist on type '{ name: string; rating: number; verified: boolean; }'.
+client/src/pages/CarsDebug.tsx(65,48): error TS2345: Argument of type '{ location: string; minPrice: number; maxPrice: number; fuelType: string; transmission: string; startDate: string; endDate: string; page: number; limit: number; }' is not assignable to parameter of type '{ fuelType?: string[]; transmission?: "manual" | "automatic"; seats?: number; location?: string; city?: string; startDate?: string; endDate?: string; minPrice?: number; maxPrice?: number; sortBy?: "date" | "rating" | "price"; sortOrder?: "asc" | "desc"; page?: number; limit?: number; }'.
+  Types of property 'fuelType' are incompatible.
+    Type 'string' is not assignable to type 'string[]'.
+client/src/pages/Security.tsx(408,17): error TS2322: Type 'string' is not assignable to type '"renter" | "owner"'.
+client/src/utils/carImages.ts(155,87): error TS2537: Type '{ bmw: { '3 series': string; '5 series': string; '7 series': string; x3: string; x5: string; m3: string; m4: string; i3: string; i8: string; }; mercedes: { 'c-class': string; 'e-class': string; 's-class': string; gla: string; glc: string; gle: string; amg: string; sls: string; }; ... 11 more ...; default: string; }' has no matching index signature for type 'string'.
+client/src/utils/carImages.ts(156,92): error TS2537: Type '{ bmw: { '3 series': string; '5 series': string; '7 series': string; x3: string; x5: string; m3: string; m4: string; i3: string; i8: string; }; mercedes: { 'c-class': string; 'e-class': string; 's-class': string; gla: string; glc: string; gle: string; amg: string; sls: string; }; ... 11 more ...; default: string; }' has no matching index signature for type 'string'.
+server/db.ts(143,14): error TS2420: Class 'DatabaseStorage' incorrectly implements interface 'IStorage'.
+  Type 'DatabaseStorage' is missing the following properties from type 'IStorage': createEmailLead, getEmailLeadByEmail
+server/db.ts(331,5): error TS2322: Type '{ id: string; carId: string; renterId: string; startDate: Date; endDate: Date; startTime: string; endTime: string; totalAmount: string; serviceFee: string; insurance: string; status: string; ... 4 more ...; updatedAt: Date; }[]' is not assignable to type '{ id: string; createdAt: Date; updatedAt: Date; carId: string; renterId: string; startDate: Date; endDate: Date; startTime: string; endTime: string; totalAmount: string; ... 9 more ...; paymentIntentId: string; }[]'.
+  Type '{ id: string; carId: string; renterId: string; startDate: Date; endDate: Date; startTime: string; endTime: string; totalAmount: string; serviceFee: string; insurance: string; status: string; ... 4 more ...; updatedAt: Date; }' is missing the following properties from type '{ id: string; createdAt: Date; updatedAt: Date; carId: string; renterId: string; startDate: Date; endDate: Date; startTime: string; endTime: string; totalAmount: string; ... 9 more ...; paymentIntentId: string; }': membershipDiscount, membershipDiscountPercentage, loyaltyPointsEarned, loyaltyPointsRedeemed
+server/db.ts(375,53): error TS2345: Argument of type 'Partial<{ currency?: string; carId?: string; renterId?: string; startDate?: string; endDate?: string; status?: "pending" | "confirmed" | "cancelled" | "completed"; paymentStatus?: "pending" | "paid" | "failed" | "refunded"; totalPrice?: number; paymentId?: string; notes?: string; }>' is not assignable to parameter of type '{ carId?: string | SQL<unknown> | PgColumn<ColumnBaseConfig<ColumnDataType, string>, {}, {}>; renterId?: string | SQL<unknown> | PgColumn<...>; ... 6 more ...; insurance?: string | ... 1 more ... | PgColumn<...>; }'.
+  Types of property 'startDate' are incompatible.
+    Type 'string' is not assignable to type 'SQL<unknown> | Date | PgColumn<ColumnBaseConfig<ColumnDataType, string>, {}, {}>'.
+server/db.ts(381,14): error TS2353: Object literal may only specify known properties, and 'status' does not exist in type '{ carId?: string | SQL<unknown> | PgColumn<ColumnBaseConfig<ColumnDataType, string>, {}, {}>; renterId?: string | SQL<unknown> | PgColumn<...>; ... 6 more ...; insurance?: string | ... 1 more ... | PgColumn<...>; }'.
+server/db.ts(510,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(530,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(550,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(570,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(590,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(610,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(671,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(691,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(711,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(731,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(751,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(771,7): error TS2322: Type 'string' is not assignable to type 'number'.
+server/db.ts(790,16): error TS2353: Object literal may only specify known properties, and 'password' does not exist in type '{ email?: string | SQL<unknown> | PgColumn<ColumnBaseConfig<ColumnDataType, string>, {}, {}>; firstName?: string | SQL<unknown> | PgColumn<...>; lastName?: string | ... 1 more ... | PgColumn<...>; }'.
+server/middleware/caching.ts(2,24): error TS2307: Cannot find module './redisCache' or its corresponding type declarations.
+server/services/car-rental-agent.ts(165,13): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(body: ChatCompletionCreateParamsNonStreaming, options?: RequestOptions): APIPromise<ChatCompletion>', gave the following error.
+    Type 'string | ((runContext: RunContext<unknown>, agent: Agent<unknown, "text">) => string | Promise<string>)' is not assignable to type 'string | ChatCompletionContentPartText[] | ChatCompletionContentPart[] | (ChatCompletionContentPartText | ChatCompletionContentPartRefusal)[]'.
+      Type '(runContext: RunContext<unknown>, agent: Agent<unknown, "text">) => string | Promise<string>' is not assignable to type 'string | ChatCompletionContentPartText[] | ChatCompletionContentPart[] | (ChatCompletionContentPartText | ChatCompletionContentPartRefusal)[]'.
+  Overload 2 of 3, '(body: ChatCompletionCreateParamsStreaming, options?: RequestOptions): APIPromise<Stream<ChatCompletionChunk>>', gave the following error.
+    Type 'string | ((runContext: RunContext<unknown>, agent: Agent<unknown, "text">) => string | Promise<string>)' is not assignable to type 'string | ChatCompletionContentPartText[] | ChatCompletionContentPart[] | (ChatCompletionContentPartText | ChatCompletionContentPartRefusal)[]'.
+      Type '(runContext: RunContext<unknown>, agent: Agent<unknown, "text">) => string | Promise<string>' is not assignable to type 'string | ChatCompletionContentPartText[] | ChatCompletionContentPart[] | (ChatCompletionContentPartText | ChatCompletionContentPartRefusal)[]'.
+  Overload 3 of 3, '(body: ChatCompletionCreateParamsBase, options?: RequestOptions): APIPromise<ChatCompletion | Stream<ChatCompletionChunk>>', gave the following error.
+    Type 'string | ((runContext: RunContext<unknown>, agent: Agent<unknown, "text">) => string | Promise<string>)' is not assignable to type 'string | ChatCompletionContentPartText[] | ChatCompletionContentPart[] | (ChatCompletionContentPartText | ChatCompletionContentPartRefusal)[]'.
+      Type '(runContext: RunContext<unknown>, agent: Agent<unknown, "text">) => string | Promise<string>' is not assignable to type 'string | ChatCompletionContentPartText[] | ChatCompletionContentPart[] | (ChatCompletionContentPartText | ChatCompletionContentPartRefusal)[]'.
+server/services/subscription.ts(6,3): error TS2322: Type '"2024-12-18.acacia"' is not assignable to type '"2025-08-27.basil"'.
+shared/sqlite-schema.ts(8,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.
+shared/sqlite-schema.ts(56,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.
+shared/sqlite-schema.ts(87,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.
+shared/sqlite-schema.ts(112,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.
+shared/sqlite-schema.ts(129,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(130,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(131,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(135,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(136,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(137,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(141,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(142,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(143,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(147,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(148,3): error TS2322: Type 'boolean' is not assignable to type 'never'.
+shared/sqlite-schema.ts(224,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.
+shared/sqlite-schema.ts(239,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.
+shared/sqlite-schema.ts(252,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.
+shared/sqlite-schema.ts(267,3): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'id' does not exist in type '(columnTypes: { blob: { (): SQLiteBlobJsonBuilderInitial<"">; <TMode extends BlobMode = BlobMode>(config?: BlobConfig<TMode>): Equal<TMode, "bigint"> extends true ? SQLiteBigIntBuilderInitial<...> : Equal<...> extends true ? SQLiteBlobBufferBuilderInitial<...> : SQLiteBlobJsonBuilderInitial<...>; <TName extends stri...'.

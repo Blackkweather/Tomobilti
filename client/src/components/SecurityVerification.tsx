@@ -6,14 +6,12 @@ import { Progress } from './ui/progress';
 import { 
   Shield, 
   CheckCircle, 
-  XCircle, 
   Clock, 
   Upload, 
   Phone, 
   Mail, 
   CreditCard,
   Car,
-  FileText,
   AlertTriangle,
   Star
 } from 'lucide-react';

@@ -3,7 +3,7 @@ import { useLocation } from 'wouter';
 import { useAuth } from '../contexts/AuthContext';
 import { setAuthToken } from '../lib/api';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 export default function GoogleCallback() {
   const [, setLocation] = useLocation();

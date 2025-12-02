@@ -1,8 +1,8 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import { users, cars, bookings, reviews, notifications } from '@shared/schema';
-import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch, Notification, InsertNotification } from '@shared/schema';
-import { eq, and, gte, lte, inArray, like, sql as sqlOp, count, desc, asc } from 'drizzle-orm';
+import type { User, Car, Booking, Review, InsertUser, InsertCar, InsertBooking, InsertReview, CarSearch, Notification, InsertNotification, EmailLead, InsertEmailLead } from '@shared/schema';
+import { eq, and, gte, inArray, like, sql as sqlOp, count, desc, asc } from 'drizzle-orm';
 import type { IStorage } from './storage';
 import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
@@ -10,12 +10,12 @@ import { randomUUID } from 'crypto';
 // Database configuration with cloud support
 const getDatabaseConfig = () => {
   const databaseUrl = process.env.DATABASE_URL;
-  
+
   console.log('Database configuration check:');
   console.log('DATABASE_URL:', databaseUrl ? 'SET' : 'NOT SET');
   console.log('DB_HOST:', process.env.DB_HOST || 'NOT SET');
   console.log('NODE_ENV:', process.env.NODE_ENV);
-  
+
   // If DATABASE_URL is provided, use it (cloud or local PostgreSQL)
   if (databaseUrl && !databaseUrl.startsWith('file:')) {
     console.log('Using DATABASE_URL for connection');
@@ -26,7 +26,7 @@ const getDatabaseConfig = () => {
       } : false
     };
   }
-  
+
   // Fallback to individual parameters for cloud providers
   if (process.env.DB_HOST && process.env.DB_HOST !== 'localhost') {
     const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`;
@@ -38,11 +38,11 @@ const getDatabaseConfig = () => {
       } : false
     };
   }
-  
+
   // For Render production, try to use Render's PostgreSQL if available
   if (process.env.NODE_ENV === 'production') {
     console.log('Production environment detected, checking for Render PostgreSQL...');
-    
+
     // Check for Render PostgreSQL environment variables
     const renderDbUrl = process.env.RENDER_POSTGRES_URL || process.env.POSTGRES_URL;
     if (renderDbUrl) {
@@ -52,14 +52,14 @@ const getDatabaseConfig = () => {
         ssl: { rejectUnauthorized: false }
       };
     }
-    
+
     // If no Render DB, try to construct from Render environment variables
     const renderDbHost = process.env.RENDER_POSTGRES_HOST || process.env.POSTGRES_HOST;
     const renderDbPort = process.env.RENDER_POSTGRES_PORT || process.env.POSTGRES_PORT || '5432';
     const renderDbName = process.env.RENDER_POSTGRES_DB || process.env.POSTGRES_DB;
     const renderDbUser = process.env.RENDER_POSTGRES_USER || process.env.POSTGRES_USER;
     const renderDbPassword = process.env.RENDER_POSTGRES_PASSWORD || process.env.POSTGRES_PASSWORD;
-    
+
     if (renderDbHost && renderDbName && renderDbUser && renderDbPassword) {
       const connectionString = `postgresql://${renderDbUser}:${renderDbPassword}@${renderDbHost}:${renderDbPort}/${renderDbName}`;
       console.log('Using Render PostgreSQL parameters');
@@ -69,7 +69,7 @@ const getDatabaseConfig = () => {
       };
     }
   }
-  
+
   // Default local PostgreSQL
   console.log('Using localhost fallback for connection');
   return {
@@ -158,7 +158,7 @@ export class DatabaseStorage implements IStorage {
     if (insertUser.password && insertUser.password.trim() !== '') {
       userData.password = await bcrypt.hash(insertUser.password, 12);
     }
-    
+
     const [user] = await db.insert(users).values(userData).returning();
     return user;
   }
@@ -166,7 +166,7 @@ export class DatabaseStorage implements IStorage {
   async verifyPassword(email: string, password: string): Promise<User | null> {
     const user = await this.getUserByEmail(email);
     if (!user) return null;
-    
+
     const isValid = await bcrypt.compare(password, user.password);
     return isValid ? user : null;
   }
@@ -177,7 +177,7 @@ export class DatabaseStorage implements IStorage {
     if (updates.password) {
       updateData.password = await bcrypt.hash(updates.password, 12);
     }
-    
+
     const [user] = await db
       .update(users)
       .set({ ...updateData, updatedAt: new Date() })
@@ -253,7 +253,7 @@ export class DatabaseStorage implements IStorage {
             )`
           )
         );
-      
+
       conditions.push(sqlOp`${cars.id} NOT IN (${conflictingBookingsQuery})`);
     }
 
@@ -268,7 +268,7 @@ export class DatabaseStorage implements IStorage {
     // Apply sorting and pagination
     const sortColumn = filters.sortBy === 'price' ? cars.pricePerDay : cars.createdAt;
     const sortDirection = filters.sortOrder === 'desc' ? desc : asc;
-    
+
     const offset = (filters.page - 1) * filters.limit;
     const results = await db
       .select()
@@ -288,7 +288,7 @@ export class DatabaseStorage implements IStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
+
     const [car] = await db.insert(cars).values(carData).returning();
     return car;
   }
@@ -298,7 +298,7 @@ export class DatabaseStorage implements IStorage {
       ...updates,
       updatedAt: new Date(),
     };
-    
+
     const [car] = await db
       .update(cars)
       .set(updateData)
@@ -363,7 +363,7 @@ export class DatabaseStorage implements IStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
+
     const [booking] = await db.insert(bookings).values(bookingData).returning();
     return booking;
   }
@@ -371,14 +371,14 @@ export class DatabaseStorage implements IStorage {
   async updateBooking(id: string, updates: Partial<InsertBooking>): Promise<Booking | undefined> {
     const existing = await db.select().from(bookings).where(eq(bookings.id, id)).limit(1);
     if (existing.length === 0) return undefined;
-    
-    const [booking] = await db.update(bookings).set(updates).where(eq(bookings.id, id)).returning();
+
+    const [booking] = await db.update(bookings).set(updates as any).where(eq(bookings.id, id)).returning();
     return booking;
   }
 
   async cancelBooking(id: string): Promise<boolean> {
     const [booking] = await db.update(bookings)
-      .set({ status: 'cancelled' as any })
+      .set({ status: 'cancelled' } as any)
       .where(eq(bookings.id, id))
       .returning();
     return !!booking;
@@ -404,7 +404,7 @@ export class DatabaseStorage implements IStorage {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
+
     const [review] = await db.insert(reviews).values(reviewData).returning();
     return review;
   }
@@ -420,7 +420,7 @@ export class DatabaseStorage implements IStorage {
     const ownerReviews = await this.getReviewsByCarOwner(ownerId);
 
     const completedBookings = ownerBookings.filter(b => b.status === "completed");
-    const totalEarnings = completedBookings.reduce((sum, booking) => 
+    const totalEarnings = completedBookings.reduce((sum, booking) =>
       sum + parseFloat(booking.totalAmount), 0
     );
 
@@ -452,38 +452,38 @@ export class DatabaseStorage implements IStorage {
   async forceInitializeCars() {
     try {
       console.log('Force initializing cars...');
-      
+
       // Get existing users or create them
       let existingUsers = await db.select().from(users);
       console.log(`Found ${existingUsers.length} existing users`);
-      
+
       let owners = existingUsers.filter(user => user.userType === 'owner');
       console.log(`Found ${owners.length} existing owners`);
-      
+
       if (owners.length === 0) {
         console.log('No owners found, creating sample users and cars...');
         await this.createSampleUsersAndCars();
         console.log('Sample users and cars created successfully');
         return; // createSampleUsersAndCars already creates cars
       }
-      
+
       // Check if cars exist
       const existingCars = await db.select().from(cars);
       console.log(`Found ${existingCars.length} existing cars`);
-      
+
       if (existingCars.length > 0) {
         console.log('Cars already exist, skipping creation');
         return;
       }
-      
+
       // If we have owners but no cars, we need to create cars
       console.log('Creating cars for existing owners...');
       await this.createSampleCarsForOwners(owners);
-      
+
       // Verify cars were created
       const finalCars = await db.select().from(cars);
       console.log(`Successfully created ${finalCars.length} cars`);
-      
+
     } catch (error) {
       console.error('Error in forceInitializeCars:', error);
       throw error;
@@ -492,10 +492,10 @@ export class DatabaseStorage implements IStorage {
 
   private async createSampleCarsForOwners(owners: any[]) {
     console.log(`Creating cars for ${owners.length} owners...`);
-    
+
     const owner1 = owners[0];
     const owner2 = owners[1] || owners[0]; // Use first owner if only one exists
-    
+
     // Create YOUR UK luxury cars for ShareWheelz platform
     await this.createCar({
       ownerId: owner1.id,
@@ -631,7 +631,7 @@ export class DatabaseStorage implements IStorage {
     });
 
     const owner2 = await this.createUser({
-      email: "james.wilson@example.com", 
+      email: "james.wilson@example.com",
       password: process.env.DEMO_USER_PASSWORD || "demo_password_123",
       firstName: "James",
       lastName: "Wilson",
@@ -640,7 +640,7 @@ export class DatabaseStorage implements IStorage {
     });
 
     const owner3 = await this.createUser({
-      email: "sarah.jones@example.com", 
+      email: "sarah.jones@example.com",
       password: process.env.DEMO_USER_PASSWORD || "demo_password_123",
       firstName: "Sarah",
       lastName: "Jones",
@@ -650,7 +650,7 @@ export class DatabaseStorage implements IStorage {
 
     await this.createUser({
       email: "emma.brown@example.com",
-      password: process.env.DEMO_USER_PASSWORD || "demo_password_123", 
+      password: process.env.DEMO_USER_PASSWORD || "demo_password_123",
       firstName: "Emma",
       lastName: "Brown",
       phone: "+44 131 234 5678",

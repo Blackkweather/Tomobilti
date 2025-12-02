@@ -6,7 +6,6 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Separator } from '../components/ui/separator';
 import { Badge } from '../components/ui/badge';
-import { Alert, AlertDescription } from '../components/ui/alert';
 import { 
   Loader2, 
   CreditCard, 
@@ -18,22 +17,12 @@ import {
   Shield, 
   Lock, 
   ArrowLeft,
-  Clock,
-  User,
-  Phone,
-  Mail,
-  AlertTriangle,
-  Info,
   Gift,
-  Star,
-  Zap,
-  Settings,
-  Users
+  Star
 } from 'lucide-react';
-import { bookingApi, paymentApi } from '../lib/api';
+import { bookingApi } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
-import CardDetector, { CardInfo, CARD_TYPES } from '../utils/cardDetector';
-import PaymentForm from '../components/PaymentForm';
+import CardDetector, { CardInfo } from '../utils/cardDetector';
 
 interface BookingData {
   id: string;

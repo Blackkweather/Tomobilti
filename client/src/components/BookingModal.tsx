@@ -9,7 +9,7 @@ import { Card, CardContent } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { Calendar as CalendarIcon, MapPin, Fuel, Users, Star, Shield, Clock, CreditCard, Smartphone, Building2 } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Users, Star, Shield, Clock, CreditCard, Smartphone, Building2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 import type { Car } from '@shared/schema';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, TrendingUp, Car, Calendar, MapPin, Info } from 'lucide-react';
+import { Calculator, TrendingUp, Car, MapPin, Info } from 'lucide-react';
 
 interface VehicleType {
   id: string;

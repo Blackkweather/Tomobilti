@@ -13,12 +13,7 @@ import {
   CheckCircle,
   ArrowRight,
   TrendingUp,
-  PoundSterling,
-  MapPin,
-  Calendar,
-  Wrench,
-  Phone,
-  Mail
+  Phone
 } from 'lucide-react';
 
 export default function Fleet() {

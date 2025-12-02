@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
-import { Upload, X, Image as ImageIcon, Plus } from 'lucide-react';
+import { Upload, X, Plus } from 'lucide-react';
 
 interface ImageUploadProps {
   images: string[];

@@ -1,6 +1,5 @@
 import { Link } from 'wouter';
 import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Star, MapPin, Fuel, Users, Settings, Calendar as CalendarIcon, Heart, Eye } from 'lucide-react';
 import type { Car } from '@shared/schema';
