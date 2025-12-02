@@ -117,7 +117,8 @@ export default function Header() {
       description: 'Find and book a car easily near you.',
       icon: Car,
       subItems: [
-        { href: '/cars', label: 'Browse Cars', description: 'Search our wide selection' },
+        { href: '/cars', label: 'Browse Cars', description: 'Map + List split view' },
+        { href: '/cars/grid', label: 'Grid View', description: 'Classic grid layout' },
         { href: '/favorites', label: 'My Favorites', description: 'Saved vehicles' }
       ]
     },

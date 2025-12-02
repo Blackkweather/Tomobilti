@@ -15,6 +15,7 @@ import Register from "./pages/Register";
 import SelectRole from "./pages/SelectRole";
 import Cars from "./pages/Cars";
 import CarDetails from "./pages/CarDetails";
+import SplitScreenCars from "./pages/SplitScreenCars";
 import DashboardSelector from "./components/DashboardSelector";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import RenterDashboard from "./pages/RenterDashboard";
@@ -108,7 +109,8 @@ function App() {
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
               <Route path="/select-role" component={SelectRole} />
-              <Route path="/cars" component={Cars} />
+              <Route path="/cars" component={SplitScreenCars} />
+              <Route path="/cars/grid" component={Cars} />
               <Route path="/cars/:id" component={CarDetails} />
               
               {/* Dashboard Routes */}
