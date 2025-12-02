@@ -1,28 +1,11 @@
 import React, { useEffect, useRef, Suspense } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapPin as MapPinIcon, Loader2 } from 'lucide-react';
 import { formatCurrency } from '../utils/currency';
 import { getCityCoordinates } from '../utils/ukCities';
 import { Link } from 'wouter';
-
-// Fix for default marker icons in React-Leaflet
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
-
-const DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconRetinaUrl: iconRetina,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
 
 interface Car {
   id: string;
@@ -153,7 +136,8 @@ export default function CarMap({ cars, selectedCity, onCarClick, className = '' 
           style={{ height: '100%', width: '100%', minHeight: '400px' }}
           scrollWheelZoom={true}
           className="z-0"
-          key={`map-${carsWithCoords.length}`} // Force re-render when cars change
+          preferCanvas={true}
+          key={`map-${carsWithCoords.length}`}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -163,10 +147,14 @@ export default function CarMap({ cars, selectedCity, onCarClick, className = '' 
           <MapUpdater cars={cars} />
 
           {carsWithCoords.map(({ car, coords }) => (
-            <Marker
+            <CircleMarker
               key={car.id}
-              position={coords}
-              icon={DefaultIcon}
+              center={coords}
+              radius={5}
+              fillColor="#2563eb"
+              fillOpacity={1}
+              color="#1e40af"
+              weight={1}
             >
               <Popup>
                 <div className="p-2 min-w-[200px]">
@@ -206,7 +194,7 @@ export default function CarMap({ cars, selectedCity, onCarClick, className = '' 
                   </div>
                 </div>
               </Popup>
-            </Marker>
+            </CircleMarker>
           ))}
         </MapContainer>
       </Suspense>

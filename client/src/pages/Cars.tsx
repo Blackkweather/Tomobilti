@@ -115,17 +115,15 @@ export default function Cars() {
   }, []);
 
 
-  // Fetch cars data - Use a simple key since we're doing all filtering client-side
+  // Fetch ALL cars at once - no pagination for optimal map performance
   const { data: carsData, isLoading, error } = useQuery({
-    queryKey: ['cars'],
-    queryFn: () => carApi.searchCars({
-      sortBy: 'date' as const,
-      sortOrder: 'desc' as const,
-      page: 1,
-      limit: 50,
-      // Remove all filters from API call - we'll apply them client-side
-      // This ensures we get all cars and can filter them properly
-    }),
+    queryKey: ['allCars'],
+    queryFn: async () => {
+      // Fetch all cars without pagination
+      const response = await fetch('/api/cars?limit=10000');
+      if (!response.ok) throw new Error('Failed to fetch cars');
+      return response.json();
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
