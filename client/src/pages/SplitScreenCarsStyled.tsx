@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
 import { Grid, List } from 'lucide-react';
-import styled from 'styled-components';
+// import styled from 'styled-components'; // Removed - using Tailwind CSS instead
 import 'leaflet/dist/leaflet.css';
 
 // TypeScript Interface
@@ -19,149 +19,7 @@ interface Car {
 
 type ViewMode = 'grid' | 'list';
 
-// Styled Components
-const Container = styled.div`
-  display: flex;
-  height: 100vh;
-  overflow: hidden;
-`;
-
-const LeftPanel = styled.div`
-  width: 50%;
-  height: 100%;
-`;
-
-const RightPanel = styled.div`
-  width: 50%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: #f9fafb;
-`;
-
-const Header = styled.div`
-  padding: 20px;
-  background-color: white;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Title = styled.h1`
-  font-size: 24px;
-  font-weight: bold;
-  margin: 0;
-`;
-
-const ToggleContainer = styled.div`
-  display: flex;
-  gap: 8px;
-`;
-
-const ToggleButton = styled.button<{ $active: boolean }>`
-  padding: 8px 12px;
-  border: 1px solid ${props => props.$active ? '#2563eb' : '#d1d5db'};
-  background-color: ${props => props.$active ? '#2563eb' : 'white'};
-  color: ${props => props.$active ? 'white' : 'black'};
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: ${props => props.$active ? '#1d4ed8' : '#f3f4f6'};
-  }
-`;
-
-const ScrollContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px;
-`;
-
-const GridContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-`;
-
-const ListContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const Card = styled.div<{ $listMode: boolean }>`
-  background-color: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: transform 0.2s;
-  display: ${props => props.$listMode ? 'flex' : 'block'};
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-`;
-
-const CardImage = styled.img<{ $listMode: boolean }>`
-  width: ${props => props.$listMode ? '200px' : '100%'};
-  height: 180px;
-  object-fit: cover;
-`;
-
-const CardContent = styled.div`
-  padding: 16px;
-  flex: 1;
-`;
-
-const CardTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
-`;
-
-const CardCity = styled.p`
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0 0 8px 0;
-`;
-
-const CardPrice = styled.p`
-  font-size: 18px;
-  font-weight: bold;
-  color: #2563eb;
-  margin: 0 0 12px 0;
-`;
-
-const CardButton = styled.button`
-  width: 100%;
-  padding: 8px 16px;
-  background-color: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: #1d4ed8;
-  }
-`;
-
-const Loading = styled.div`
-  text-align: center;
-  padding: 40px;
-  font-size: 18px;
-  color: #6b7280;
-`;
+// Tailwind CSS classes instead of styled-components
 
 export default function SplitScreenCarsStyled() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -194,9 +52,9 @@ export default function SplitScreenCarsStyled() {
   }, []);
 
   return (
-    <Container>
-      {/* Left Panel - Map (40%) */}
-      <LeftPanel>
+    <div className="flex h-screen overflow-hidden">
+      {/* Left Panel - Map (50%) */}
+      <div className="w-1/2 h-full">
         <MapContainer
           center={[54.5, -2.0]}
           zoom={6}
@@ -227,56 +85,72 @@ export default function SplitScreenCarsStyled() {
             </CircleMarker>
           ))}
         </MapContainer>
-      </LeftPanel>
+      </div>
 
-      {/* Right Panel - Car List (60%) */}
-      <RightPanel>
-        <Header>
-          <Title>Available Cars ({cars.length})</Title>
-          <ToggleContainer>
-            <ToggleButton $active={viewMode === 'grid'} onClick={() => setViewMode('grid')}>
+      {/* Right Panel - Car List (50%) */}
+      <div className="w-1/2 h-full flex flex-col bg-gray-50">
+        <div className="p-5 bg-white border-b border-gray-200 flex justify-between items-center">
+          <h1 className="text-2xl font-bold m-0">Available Cars ({cars.length})</h1>
+          <div className="flex gap-2">
+            <button 
+              className={`p-2 px-3 border rounded-md cursor-pointer flex items-center justify-center transition-all ${viewMode === 'grid' ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-white text-black hover:bg-gray-50'}`}
+              onClick={() => setViewMode('grid')}
+            >
               <Grid size={20} />
-            </ToggleButton>
-            <ToggleButton $active={viewMode === 'list'} onClick={() => setViewMode('list')}>
+            </button>
+            <button 
+              className={`p-2 px-3 border rounded-md cursor-pointer flex items-center justify-center transition-all ${viewMode === 'list' ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-300 bg-white text-black hover:bg-gray-50'}`}
+              onClick={() => setViewMode('list')}
+            >
               <List size={20} />
-            </ToggleButton>
-          </ToggleContainer>
-        </Header>
+            </button>
+          </div>
+        </div>
 
-        <ScrollContainer>
+        <div className="flex-1 overflow-y-auto p-5">
           {loading ? (
-            <Loading>Loading cars...</Loading>
+            <div className="text-center py-10 text-lg text-gray-500">Loading cars...</div>
           ) : viewMode === 'grid' ? (
-            <GridContainer>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {cars.map(car => (
-                <Card key={car.id} $listMode={false}>
-                  <CardImage src={car.image} alt={car.name} $listMode={false} />
-                  <CardContent>
-                    <CardTitle>{car.name}</CardTitle>
-                    {car.city && <CardCity>{car.city}</CardCity>}
-                    <CardPrice>£{car.price}/day</CardPrice>
-                    <CardButton>View Details</CardButton>
-                  </CardContent>
-                </Card>
+                <div key={car.id} className="bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer transition-transform hover:-translate-y-1 hover:shadow-md">
+                  <img src={car.image} alt={car.name} className="w-full h-45 object-cover" />
+                  <div className="p-4 flex-1">
+                    <h3 className="text-base font-semibold mb-2">{car.name}</h3>
+                    {car.city && <p className="text-sm text-gray-500 mb-2">{car.city}</p>}
+                    <p className="text-lg font-bold text-blue-600 mb-3">£{car.price}/day</p>
+                    <button 
+                      onClick={() => window.location.href = `/cars/${car.id}`}
+                      className="w-full py-2 px-4 bg-blue-600 text-white border-none rounded-md cursor-pointer text-sm font-medium transition-colors hover:bg-blue-700"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
               ))}
-            </GridContainer>
+            </div>
           ) : (
-            <ListContainer>
+            <div className="flex flex-col gap-4">
               {cars.map(car => (
-                <Card key={car.id} $listMode={true}>
-                  <CardImage src={car.image} alt={car.name} $listMode={true} />
-                  <CardContent>
-                    <CardTitle>{car.name}</CardTitle>
-                    {car.city && <CardCity>{car.city}</CardCity>}
-                    <CardPrice>£{car.price}/day</CardPrice>
-                    <CardButton>View Details</CardButton>
-                  </CardContent>
-                </Card>
+                <div key={car.id} className="bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer transition-transform hover:-translate-y-1 hover:shadow-md flex">
+                  <img src={car.image} alt={car.name} className="w-48 h-45 object-cover" />
+                  <div className="p-4 flex-1">
+                    <h3 className="text-base font-semibold mb-2">{car.name}</h3>
+                    {car.city && <p className="text-sm text-gray-500 mb-2">{car.city}</p>}
+                    <p className="text-lg font-bold text-blue-600 mb-3">£{car.price}/day</p>
+                    <button 
+                      onClick={() => window.location.href = `/cars/${car.id}`}
+                      className="w-full py-2 px-4 bg-blue-600 text-white border-none rounded-md cursor-pointer text-sm font-medium transition-colors hover:bg-blue-700"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </div>
               ))}
-            </ListContainer>
+            </div>
           )}
-        </ScrollContainer>
-      </RightPanel>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 }

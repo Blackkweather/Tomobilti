@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMapEvents, useMap } from 'react-leaflet';
-import { Grid, List } from 'lucide-react';
+import { Grid, List, Zap } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -11,6 +11,8 @@ interface Car {
   lng: number;
   price: number;
   image: string;
+  instantBook?: boolean;
+  deliveryAvailable?: boolean;
 }
 
 type ViewMode = 'grid' | 'list';
@@ -49,7 +51,9 @@ export default function SplitScreenCars() {
           lat: parseFloat(car.latitude) || 51.5074,
           lng: parseFloat(car.longitude) || -0.1278,
           price: parseFloat(car.pricePerDay),
-          image: car.images?.[0] || '/placeholder.jpg'
+          image: car.images?.[0] || '/placeholder.jpg',
+          instantBook: car.instantBook || false,
+          deliveryAvailable: car.deliveryAvailable || false
         }));
         setCars(transformedCars);
         setFilteredCars(transformedCars);
@@ -160,9 +164,26 @@ export default function SplitScreenCars() {
                 >
                   <img src={car.image} alt={car.name} style={styles.cardImage} />
                   <div style={styles.cardContent}>
+                    {car.instantBook && (
+                      <div style={styles.instantBadge}>
+                        <Zap size={14} style={{ fill: 'currentColor' }} />
+                        <span>Instant Book</span>
+                      </div>
+                    )}
                     <h3 style={styles.cardTitle}>{car.name}</h3>
                     <p style={styles.cardPrice}>£{car.price}/day</p>
-                    <button style={styles.cardButton}>View Details</button>
+                    {car.deliveryAvailable && (
+                      <p style={styles.deliveryBadge}>🚚 Delivery available</p>
+                    )}
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = `/cars/${car.id}`;
+                      }}
+                      style={styles.cardButton}
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               ))}
@@ -293,5 +314,23 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '40px',
     fontSize: '18px',
     color: '#6b7280'
+  },
+  instantBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '4px 10px',
+    backgroundColor: '#9333ea',
+    color: 'white',
+    fontSize: '12px',
+    fontWeight: '600',
+    borderRadius: '12px',
+    marginBottom: '8px'
+  },
+  deliveryBadge: {
+    fontSize: '13px',
+    color: '#059669',
+    margin: '4px 0 8px 0',
+    fontWeight: '500'
   }
 };

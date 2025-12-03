@@ -117,14 +117,30 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
   // Prepare images array - use car images if available, otherwise fallback to demo image
   const carImages = images && images.length > 0 ? images : [carImage];
 
-  const handleMoreDetails = () => {
-    if (!id) return;
+  const handleMoreDetails = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('🔍 More Details clicked for car:', { id, title, make, model });
+    if (!id) {
+      console.error('❌ Car ID is missing:', car);
+      alert('Car ID is missing. Cannot navigate to details.');
+      return;
+    }
+    console.log('✅ Navigating to car details:', `/cars/${id}`);
     setLocation(`/cars/${id}`);
   };
 
-  const handleBooking = () => {
-    if (!id) return;
-    setLocation(`/cars/${id}#booking`);
+  const handleBooking = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('📅 Book Now clicked for car:', { id, title, make, model });
+    if (!id) {
+      console.error('❌ Car ID is missing:', car);
+      alert('Car ID is missing. Cannot navigate to booking.');
+      return;
+    }
+    console.log('✅ Navigating to car booking:', `/cars/${id}`);
+    setLocation(`/cars/${id}`);
   };
 
   return (
@@ -156,26 +172,26 @@ export default function CarCard({ car, isFavorited = false, onToggleFavorite }: 
         </div>
 
         {/* Action Buttons - Below Image */}
-        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 relative z-20">
-          <div className="flex gap-3 relative z-20">
+        <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 bg-white">
+          <div className="flex gap-3">
             <Button 
-              type="button"
               onClick={handleMoreDetails}
               variant="outline"
               size="sm"
-              className="flex-1 btn-gray text-sm font-semibold pointer-events-auto"
+              className="flex-1 text-sm font-semibold hover:bg-gray-50 border-gray-300 cursor-pointer z-50 relative"
+              style={{ pointerEvents: 'auto' }}
             >
               <Info className="w-4 h-4 mr-2" />
-              <span>More Details</span>
+              More Details
             </Button>
             <Button 
-              type="button"
               onClick={handleBooking}
               size="sm"
-              className="flex-1 btn-blue text-sm font-semibold pointer-events-auto"
+              className="flex-1 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white cursor-pointer z-50 relative"
+              style={{ pointerEvents: 'auto' }}
             >
               <BookOpen className="w-4 h-4 mr-2" />
-              <span>Book Now</span>
+              Book Now
             </Button>
           </div>
         </div>

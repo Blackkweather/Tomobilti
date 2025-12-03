@@ -504,44 +504,7 @@ export default function ReservationBar({ car, onBook, className = '', config = {
         </CardContent>
       </Card>
 
-      {/* Owner Info */}
-      <Card className="shadow-lg border-0 bg-white">
-        <CardHeader className="pb-3 px-4 sm:px-6">
-          <CardTitle className="text-lg flex items-center">
-            <Star className="h-5 w-5 mr-2 text-yellow-600" />
-            Hosted by {car.owner?.firstName && car.owner?.lastName ? `${car.owner.firstName} ${car.owner.lastName}` : car.owner?.name || 'Verified Owner'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm sm:text-base">
-              {car.owner.name.charAt(0)}
-            </div>
-            <div className="flex-1">
-              <div className="font-semibold text-gray-900 text-sm sm:text-base">{car.owner.name}</div>
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-2 w-2 sm:h-3 sm:w-3 ${
-                        i < Math.floor(car.owner.rating) ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span>{car.owner.rating}</span>
-                {car.owner.verified && (
-                  <Badge className="bg-green-100 text-green-700 text-xs">
-                    <CheckCircle className="h-2 w-2 sm:h-3 sm:w-3 mr-1" />
-                    Verified
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+
 
       {/* Calendar Modal - Removed for simplicity */}
     </div>

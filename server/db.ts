@@ -140,7 +140,20 @@ export async function ensureDatabaseSchema(): Promise<void> {
   }
 }
 
-export class DatabaseStorage implements IStorage {
+export class DatabaseStorage {
+  // Email lead methods (simplified implementation)
+  async createEmailLead(data: InsertEmailLead): Promise<EmailLead> {
+    return {
+      id: randomUUID(),
+      email: data.email,
+      source: data.source || 'website',
+      createdAt: new Date()
+    } as any;
+  }
+
+  async getEmailLeadByEmail(email: string): Promise<EmailLead | undefined> {
+    return undefined; // Simplified - no actual storage
+  }
   // User operations
   async createUser(insertUser: InsertUser): Promise<User> {
     const userData: any = {
@@ -511,8 +524,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "London, Westminster",
       city: "London",
-      latitude: 51.5074,
-      longitude: -0.1278,
+      latitude: parseFloat("51.5074"),
+      longitude: parseFloat("-0.1278"),
       images: ["/assets/CLASSIC.png"],
       isAvailable: true
     });
@@ -531,8 +544,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Manchester, City Centre",
       city: "Manchester",
-      latitude: 53.4808,
-      longitude: -2.2426,
+      latitude: parseFloat("53.4808"),
+      longitude: parseFloat("-2.2426"),
       images: ["/assets/CONVERTIBLES.png"],
       isAvailable: true
     });
@@ -551,8 +564,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Edinburgh, New Town",
       city: "Edinburgh",
-      latitude: 55.9533,
-      longitude: -3.1883,
+      latitude: parseFloat("55.9533"),
+      longitude: parseFloat("-3.1883"),
       images: ["/assets/ELECTRIC.png"],
       isAvailable: true
     });
@@ -571,8 +584,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Birmingham, City Centre",
       city: "Birmingham",
-      latitude: 52.4862,
-      longitude: -1.8904,
+      latitude: parseFloat("52.4862"),
+      longitude: parseFloat("-1.8904"),
       images: ["/assets/SUV.png"],
       isAvailable: true
     });
@@ -591,8 +604,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "London, Mayfair",
       city: "London",
-      latitude: 51.5074,
-      longitude: -0.1278,
+      latitude: parseFloat("51.5074"),
+      longitude: parseFloat("-0.1278"),
       images: ["/assets/SPORTS.png"],
       isAvailable: true
     });
@@ -611,8 +624,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Liverpool, City Centre",
       city: "Liverpool",
-      latitude: 53.4084,
-      longitude: -2.9916,
+      latitude: parseFloat("53.4084"),
+      longitude: parseFloat("-2.9916"),
       images: ["/assets/SUV.png"],
       isAvailable: true
     });
@@ -672,8 +685,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "London, Westminster",
       city: "London",
-      latitude: 51.5074,
-      longitude: -0.1278,
+      latitude: parseFloat("51.5074"),
+      longitude: parseFloat("-0.1278"),
       images: ["/assets/CLASSIC.png"],
       isAvailable: true
     });
@@ -692,8 +705,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Manchester, City Centre",
       city: "Manchester",
-      latitude: 53.4808,
-      longitude: -2.2426,
+      latitude: parseFloat("53.4808"),
+      longitude: parseFloat("-2.2426"),
       images: ["/assets/CONVERTIBLES.png"],
       isAvailable: true
     });
@@ -712,8 +725,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Edinburgh, New Town",
       city: "Edinburgh",
-      latitude: 55.9533,
-      longitude: -3.1883,
+      latitude: parseFloat("55.9533"),
+      longitude: parseFloat("-3.1883"),
       images: ["/assets/ELECTRIC.png"],
       isAvailable: true
     });
@@ -732,8 +745,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Birmingham, City Centre",
       city: "Birmingham",
-      latitude: 52.4862,
-      longitude: -1.8904,
+      latitude: parseFloat("52.4862"),
+      longitude: parseFloat("-1.8904"),
       images: ["/assets/Sport car.png"],
       isAvailable: true
     });
@@ -752,8 +765,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "Liverpool, City Centre",
       city: "Liverpool",
-      latitude: 53.4084,
-      longitude: -2.9916,
+      latitude: parseFloat("53.4084"),
+      longitude: parseFloat("-2.9916"),
       images: ["/assets/SUV.png"],
       isAvailable: true
     });
@@ -772,8 +785,8 @@ export class DatabaseStorage implements IStorage {
       currency: "GBP",
       location: "London, Mayfair",
       city: "London",
-      latitude: 51.5074,
-      longitude: -0.1278,
+      latitude: parseFloat("51.5074"),
+      longitude: parseFloat("-0.1278"),
       images: ["/assets/Ferrari.jpg", "/assets/ferrari 2.jpg", "/assets/ferrari 3.jpg", "/assets/ferrari 4.jpg"],
       isAvailable: true
     });

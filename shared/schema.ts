@@ -78,6 +78,16 @@ export const cars = pgTable("cars", {
   images: text("images").array().default([]),
   isAvailable: boolean("is_available").notNull().default(true),
   
+  // Turo-style features
+  instantBook: boolean("instant_book").default(false),
+  deliveryAvailable: boolean("delivery_available").default(false),
+  deliveryFee: decimal("delivery_fee", { precision: 10, scale: 2 }).default("0"),
+  deliveryRadius: integer("delivery_radius").default(0), // in miles
+  minTripDuration: integer("min_trip_duration").default(1), // in days
+  maxTripDuration: integer("max_trip_duration").default(30), // in days
+  cancellationPolicy: text("cancellation_policy").default("flexible"), // "flexible", "moderate", "strict"
+  features: text("features").array().default([]), // ["bluetooth", "gps", "usb", "childSeat"]
+  
   // Vehicle Security & Safety
   vin: text("vin"), // Vehicle Identification Number
   registrationNumber: text("registration_number"),
@@ -122,6 +132,29 @@ export const bookings = pgTable("bookings", {
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   serviceFee: decimal("service_fee", { precision: 10, scale: 2 }).notNull(),
   insurance: decimal("insurance", { precision: 10, scale: 2 }).notNull(),
+  
+  // Turo-style booking features
+  tripProtectionTier: text("trip_protection_tier").default("basic"), // "basic", "standard", "premium"
+  deliveryRequested: boolean("delivery_requested").default(false),
+  deliveryAddress: text("delivery_address"),
+  deliveryFee: decimal("delivery_fee", { precision: 10, scale: 2 }).default("0"),
+  additionalDrivers: text("additional_drivers").array().default([]), // array of user IDs
+  youngDriverFee: decimal("young_driver_fee", { precision: 10, scale: 2 }).default("0"),
+  promoCode: text("promo_code"),
+  promoDiscount: decimal("promo_discount", { precision: 10, scale: 2 }).default("0"),
+  
+  // Check-in/Check-out
+  checkInPhotos: text("check_in_photos").array().default([]),
+  checkOutPhotos: text("check_out_photos").array().default([]),
+  checkInMileage: integer("check_in_mileage"),
+  checkOutMileage: integer("check_out_mileage"),
+  checkInFuelLevel: integer("check_in_fuel_level"), // 0-100
+  checkOutFuelLevel: integer("check_out_fuel_level"), // 0-100
+  checkInNotes: text("check_in_notes"),
+  checkOutNotes: text("check_out_notes"),
+  damageReported: boolean("damage_reported").default(false),
+  damageDescription: text("damage_description"),
+  damagePhotos: text("damage_photos").array().default([]),
   
   // Membership & Discount Fields
   membershipDiscount: decimal("membership_discount", { precision: 10, scale: 2 }).default("0"),

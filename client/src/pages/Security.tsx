@@ -405,7 +405,7 @@ export default function Security() {
                     bookingDate: '2024-01-08'
                   }
                 ]}
-                userType={user.userType || 'renter'}
+                userType={(user.userType as 'renter' | 'owner') || 'renter'}
                 onAddReview={(review) => console.log('Adding review:', review)}
                 onReportReview={(reviewId) => console.log('Reporting review:', reviewId)}
                 onHelpfulReview={(reviewId) => console.log('Marking helpful:', reviewId)}

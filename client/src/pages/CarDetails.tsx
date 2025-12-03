@@ -38,6 +38,8 @@ import {
 import { Link, useLocation } from "wouter";
 import ReservationBar from "../components/ReservationBar";
 import LoadingSpinner from "../components/LoadingSpinner";
+import AvailabilityCalendar from "../components/AvailabilityCalendar";
+import SimilarCars from "../components/SimilarCars";
 import { useAuth } from "../contexts/AuthContext";
 import { carApi, reviewApi } from "../lib/api";
 import { getSpecificCarImage } from "../utils/carImages";
@@ -652,6 +654,9 @@ export default function CarDetails() {
               </CardContent>
             </Card>
 
+            {/* Availability Calendar */}
+            <AvailabilityCalendar carId={car.id} bookedDates={[]} />
+
             {/* Reviews Section */}
             <Card>
               <CardHeader>
@@ -728,6 +733,14 @@ export default function CarDetails() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Similar Cars */}
+            <SimilarCars 
+              currentCarId={car.id} 
+              make={car.make} 
+              pricePerDay={Number(car.pricePerDay)} 
+              city={car.city} 
+            />
           </div>
 
           {/* Sidebar */}

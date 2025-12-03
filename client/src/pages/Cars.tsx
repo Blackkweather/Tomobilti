@@ -285,6 +285,8 @@ export default function Cars() {
     console.log('🔍 SEARCH: Filters applied and URL updated to:', newUrl);
   };
 
+  console.log('Cars page - filtered cars:', filteredCars.length, filteredCars.map(c => ({ id: c.id, title: c.title })));
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-mauve-50 via-white to-bleu-50">
       {/* Hero Section with Attractive Image */}
@@ -600,14 +602,15 @@ export default function Cars() {
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
               : "flex flex-col gap-4"
           }>
-            {filteredCars.map((car) => 
-              React.createElement(CarCard, {
+            {filteredCars.map((car) => {
+              console.log('Rendering car card:', { id: car.id, title: car.title, make: car.make, model: car.model });
+              return React.createElement(CarCard, {
                 key: car.id,
                 car: car,
                 isFavorited: favorites.includes(car.id),
                 onToggleFavorite: () => toggleFavorite(car.id)
-              })
-            )}
+              });
+            })}
           </div>
         )}
 

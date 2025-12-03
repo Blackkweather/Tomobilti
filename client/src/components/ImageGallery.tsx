@@ -43,7 +43,7 @@ export default function ImageGallery({ images, alt, className = '' }: ImageGalle
             className="w-full h-full object-cover transition-transform duration-400 ease-out"
             loading={currentIndex === 0 ? 'eager' : 'lazy'}
             decoding="async"
-            fetchPriority={currentIndex === 0 ? 'high' : 'auto'}
+            {...(currentIndex === 0 && { fetchPriority: 'high' })}
           />
           
           {/* Navigation Arrows */}

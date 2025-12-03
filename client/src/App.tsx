@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, useLocation, Router } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -71,14 +71,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import EmailCaptureModal from "./components/EmailCaptureModal";
 import ErrorBoundary from "./components/ErrorBoundary";
 
-function App() {
-  console.log('🚀 ShareWheelz App starting...');
+function AppContent() {
   const [location] = useLocation();
-
-  // Initialize Google Analytics
-  useEffect(() => {
-    initGA();
-  }, []);
 
   // Track page views
   useEffect(() => {
@@ -86,24 +80,21 @@ function App() {
   }, [location]);
   
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <NotificationProvider>
-          <ErrorBoundary>
-          <ScrollToTop />
-          <div className="min-h-screen bg-white">
-            {/* Skip to main content link for accessibility */}
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              aria-label="Skip to main content"
-            >
-              Skip to main content
-            </a>
-            <Header />
-            
-            <main id="main-content" className="flex-1" role="main" aria-label="Main content">
-              <Switch>
+    <ErrorBoundary>
+      <ScrollToTop />
+      <div className="min-h-screen bg-white">
+        {/* Skip to main content link for accessibility */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          aria-label="Skip to main content"
+        >
+          Skip to main content
+        </a>
+        <Header />
+        
+        <main id="main-content" className="flex-1" role="main" aria-label="Main content">
+          <Switch>
               {/* Core Routes */}
               <Route path="/" component={Home} />
               <Route path="/login" component={Login} />
@@ -183,15 +174,33 @@ function App() {
               <Route path="/auth/facebook/callback" component={FacebookCallback} />
               <Route path="/auth/microsoft/callback" component={MicrosoftCallback} />
               <Route component={NotFound} />
-            </Switch>
-          </main>
-          
-            <Footer />
-            <SupportChat />
-            <EmailCaptureModal />
-            <Toaster />
-          </div>
-          </ErrorBoundary>
+          </Switch>
+        </main>
+        
+        <Footer />
+        <SupportChat />
+        <EmailCaptureModal />
+        <Toaster />
+      </div>
+    </ErrorBoundary>
+  );
+}
+
+function App() {
+  console.log('🚀 ShareWheelz App starting...');
+  
+  // Initialize Google Analytics
+  useEffect(() => {
+    initGA();
+  }, []);
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <NotificationProvider>
+          <Router>
+            <AppContent />
+          </Router>
         </NotificationProvider>
       </AuthProvider>
     </QueryClientProvider>

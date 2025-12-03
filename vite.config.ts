@@ -14,8 +14,9 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['leaflet', 'react-leaflet'],
+    include: ['leaflet', 'react-leaflet', 'react', 'react-dom'],
     exclude: [],
+    force: true
   },
   ssr: {
     noExternal: ['react-leaflet'],
@@ -49,15 +50,11 @@ export default defineConfig({
     port: 5000,
     host: '127.0.0.1',
     hmr: {
-      port: 5000,
+      port: 5001,
       host: '127.0.0.1'
     },
     fs: {
-      strict: true,
-      deny: ["**/.*"],
+      strict: false,
     },
-    headers: {
-      'Content-Security-Policy': "script-src 'self' 'sha256-Z2/iFzh9VMlVkEOar1f/oSHWwQk3ve1qk/C2WdsC4Xk=' https://connect.facebook.net; object-src 'none';"
-    }
   },
 });

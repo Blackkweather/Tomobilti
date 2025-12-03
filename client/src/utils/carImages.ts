@@ -151,9 +151,9 @@ export const getCarImage = ({ make, model }: { make: string; model: string }): s
   const modelKey = model.toLowerCase().trim();
   
   // Check if we have a specific image for this make and model
-  if (carImages[makeKey as keyof typeof carImages] && 
-      carImages[makeKey as keyof typeof carImages][modelKey as keyof typeof carImages[typeof makeKey]]) {
-    return carImages[makeKey as keyof typeof carImages][modelKey as keyof typeof carImages[typeof makeKey]];
+  const makeImages = carImages[makeKey as keyof typeof carImages];
+  if (makeImages && typeof makeImages === 'object' && modelKey in makeImages) {
+    return (makeImages as any)[modelKey];
   }
   
   // Fallback to default
